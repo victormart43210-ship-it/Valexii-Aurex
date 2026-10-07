@@ -2,7 +2,6 @@
 import hashlib
 import json
 import unittest
-from contextlib import nullcontext
 from unittest.mock import patch
 
 from aurex.adapters.oss_witnesses import (
