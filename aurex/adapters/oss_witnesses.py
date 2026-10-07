@@ -61,7 +61,11 @@ def mobsf_json_witness(report: Mapping[str, Any], expected_apk_sha256: str) -> W
     if reported != apk_digest:
         return Witness("MobSF", "CONTESTED", observed, report_hash, (),
                        "MobSF report SHA-256 does not match the expected APK")
-    if "security_score" not in report and "code_analysis" not in report and "manifest_analysis" not in report:
+    if (
+        "security_score" not in report
+        and "code_analysis" not in report
+        and "manifest_analysis" not in report
+    ):
         return Witness("MobSF", "INSUFFICIENT", observed, report_hash, (),
                        "Digest matches, but security result fields were not supplied")
     return Witness("MobSF", "INSUFFICIENT", observed, report_hash,
