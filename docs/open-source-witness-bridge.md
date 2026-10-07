@@ -31,6 +31,22 @@ varies by version: map/export an explicitly verified SHA-256 field before ingest
 artifact transfer; published finding classification; Android runtime tests;
 independent review; exact APK digest; release authority elsewhere.
 
+
+### Local executable evidence bridge
+
+```bash
+python -m aurex.adapters.oss_cli --apk ./candidate.apk --mobsf-report ./mobsf-report.json
+python -m aurex.adapters.oss_cli --moon-utc 2026-10-07T00:00:00Z
+```
+
+The CLI reads local files only, independently streams the APK SHA-256, checks
+that exported MobSF data explicitly contains a matching SHA-256, and emits a
+bounded JSON witness. Reports bigger than 16 MiB are rejected. An exit code of
+**0 means the ingestion command completed with INSUFFICIENT evidence**, **not**
+that the application passed a security check. Exit code 3 signifies HOLD or
+CONTESTED evidence; exit code 2 indicates input failure. Raw APK bytes are
+never uploaded by this bridge.
+
 ## Astronomy Engine — LUX calendar witness
 
 Upstream: https://github.com/cosinekitty/astronomy ; MIT.
