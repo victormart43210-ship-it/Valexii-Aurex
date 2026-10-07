@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://valexii.ai/aurex/protocol/challenge-result.schema.json",
+  "title": "AUREX Challenge Result",
+  "type": "object",
+  "required": ["request_id", "status", "rationale", "authority_granted"],
+  "properties": {
+    "request_id": {"type": "string"},
+    "status": {"enum": ["SUPPORTED", "CONTESTED", "INSUFFICIENT", "STALE", "HOLD"]},
+    "rationale": {"type": "string"},
+    "evidence_used": {"type": "array", "items": {"type": "string"}},
+    "generated_at": {"type": "string", "format": "date-time"},
+    "authority_granted": {"const": false}
+  },
+  "additionalProperties": false
+}
