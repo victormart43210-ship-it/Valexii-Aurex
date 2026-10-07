@@ -1,19 +1,25 @@
 [project]
 name = "valexii-aurex"
-version = "0.0.1"
+version = "0.1.0a1"
 description = "External evidence, challenge, and evaluation engine for governed AI systems"
 requires-python = ">=3.12"
 license = {text = "Apache-2.0"}
 authors = [{name = "VALEXII.AI"}]
 dependencies = [
   "pydantic>=2.9,<3",
+  "fastapi>=0.115,<1",
+  "uvicorn>=0.32,<1",
 ]
+
+[project.scripts]
+aurex = "aurex.cli:main"
 
 [project.optional-dependencies]
 dev = [
   "pytest>=8,<9",
   "ruff>=0.8,<1",
   "mypy>=1.13,<2",
+  "httpx>=0.27,<1",
 ]
 
 [tool.pytest.ini_options]
