@@ -1,6 +1,5 @@
 """Tests for paired statistical evaluation layer and machine-readable experiment reports."""
 
-
 from aurex.evals.experiment_report import build_experiment_report
 from aurex.evals.statistical import PairedItemOutcome, analyze_paired_outcomes
 from aurex.experiments.admission import AdmissionDecision
@@ -26,10 +25,18 @@ def make_manifest() -> ExperimentManifest:
 
 def test_paired_statistical_analysis_basics() -> None:
     outcomes = (
-        PairedItemOutcome(item_id="q1", baseline_correct=False, experimental_correct=True), # improved
-        PairedItemOutcome(item_id="q2", baseline_correct=True, experimental_correct=True),  # unchanged
-        PairedItemOutcome(item_id="q3", baseline_correct=False, experimental_correct=False),# unchanged
-        PairedItemOutcome(item_id="q4", baseline_correct=True, experimental_correct=False), # regressed
+        PairedItemOutcome(
+            item_id="q1", baseline_correct=False, experimental_correct=True
+        ),  # improved
+        PairedItemOutcome(
+            item_id="q2", baseline_correct=True, experimental_correct=True
+        ),  # unchanged
+        PairedItemOutcome(
+            item_id="q3", baseline_correct=False, experimental_correct=False
+        ),  # unchanged
+        PairedItemOutcome(
+            item_id="q4", baseline_correct=True, experimental_correct=False
+        ),  # regressed
     )
 
     stat = analyze_paired_outcomes(outcomes, total_items=5)
@@ -49,9 +56,7 @@ def test_paired_statistical_analysis_basics() -> None:
 
 
 def test_relative_uplift_zero_denominator_handled() -> None:
-    outcomes = (
-        PairedItemOutcome(item_id="q1", baseline_correct=False, experimental_correct=True),
-    )
+    outcomes = (PairedItemOutcome(item_id="q1", baseline_correct=False, experimental_correct=True),)
     stat = analyze_paired_outcomes(outcomes)
     assert stat.baseline_score == 0.0
     assert stat.experimental_score == 1.0

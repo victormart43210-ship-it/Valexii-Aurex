@@ -79,10 +79,15 @@ def analyze_paired_outcomes(
     relative_uplift = (exp_score - base_score) / base_score if base_score > 0 else None
 
     # Contingency table counts for discordance
-    improved = sum(1 for item in outcomes if not item.baseline_correct and item.experimental_correct)
-    regressed = sum(1 for item in outcomes if item.baseline_correct and not item.experimental_correct)
+    improved = sum(
+        1 for item in outcomes if not item.baseline_correct and item.experimental_correct
+    )
+    regressed = sum(
+        1 for item in outcomes if item.baseline_correct and not item.experimental_correct
+    )
     unchanged = sum(
-        1 for item in outcomes
+        1
+        for item in outcomes
         if (item.baseline_correct and item.experimental_correct)
         or (not item.baseline_correct and not item.experimental_correct)
     )

@@ -1,6 +1,6 @@
 """Fail-closed admission rules for experiment results."""
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -19,7 +19,7 @@ class VerificationAttestation(BaseModel):
     experiment_id: str = ""
     verifier_family: str = ""
     verification_protocol_version: str = "1.0"
-    timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    timestamp: datetime = Field(default_factory=lambda: datetime.now(UTC))
     signature_scheme: str = "none"
     signature: str = ""
 
@@ -57,16 +57,22 @@ def decide_admission(
     if not run_complete:
         return AdmissionDecision(status=ResultStatus.HOLD, rationale="run is incomplete")
     if not manifest.dataset_authorized:
-        return AdmissionDecision(status=ResultStatus.HOLD, rationale="dataset authorization not established")
+        return AdmissionDecision(
+            status=ResultStatus.HOLD, rationale="dataset authorization not established"
+        )
     if not manifest.contamination_checked:
-        return AdmissionDecision(status=ResultStatus.HOLD, rationale="contamination check not established")
+        return AdmissionDecision(
+            status=ResultStatus.HOLD, rationale="contamination check not established"
+        )
     if attestation is None:
         return AdmissionDecision(
             status=ResultStatus.NOT_VERIFIED,
             rationale="independent verification is missing",
         )
     if attestation.experiment_id and attestation.experiment_id != manifest.experiment_id:
-        return AdmissionDecision(status=ResultStatus.HOLD, rationale="attestation experiment ID mismatch")
+        return AdmissionDecision(
+            status=ResultStatus.HOLD, rationale="attestation experiment ID mismatch"
+        )
     if attestation.verifier_id != manifest.verifier.verifier_id:
         return AdmissionDecision(status=ResultStatus.HOLD, rationale="verifier identity mismatch")
     if attestation.verifier_family and attestation.verifier_family != manifest.verifier.family:
@@ -74,5 +80,9 @@ def decide_admission(
     if attestation.manifest_sha256 != manifest_sha256 or attestation.run_sha256 != run_sha256:
         return AdmissionDecision(status=ResultStatus.HOLD, rationale="attestation target mismatch")
     if not attestation.passed:
-        return AdmissionDecision(status=ResultStatus.FAIL, rationale="independent verifier rejected run")
-    return AdmissionDecision(status=ResultStatus.PASS, rationale="independent verification admitted")
+        return AdmissionDecision(
+            status=ResultStatus.FAIL, rationale="independent verifier rejected run"
+        )
+    return AdmissionDecision(
+        status=ResultStatus.PASS, rationale="independent verification admitted"
+    )

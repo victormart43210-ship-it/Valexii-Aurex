@@ -1,4 +1,5 @@
 """Authorized benchmark outcomes gate. This does not download or grade HLE."""
+
 import hashlib
 import json
 from pathlib import Path
@@ -12,8 +13,15 @@ class BenchmarkHold(ValueError):
 def assess_pair(manifest_file: Path, outcomes_file: Path) -> dict[str, Any]:
     raw = manifest_file.read_bytes()
     manifest = json.loads(raw)
-    required = ("dataset_sha256", "dataset_revision", "item_ids", "baseline_model",
-                "aurex_model", "judge_id", "evaluation_protocol_sha256")
+    required = (
+        "dataset_sha256",
+        "dataset_revision",
+        "item_ids",
+        "baseline_model",
+        "aurex_model",
+        "judge_id",
+        "evaluation_protocol_sha256",
+    )
     if any(not manifest.get(k) for k in required):
         raise BenchmarkHold("Incomplete manifest")
     for flag in ("judge_independent", "contamination_checked", "dataset_authorized"):
@@ -39,7 +47,10 @@ def assess_pair(manifest_file: Path, outcomes_file: Path) -> dict[str, Any]:
         key = row["item_id"]
         if key in results or key not in ids:
             raise BenchmarkHold("Duplicate or unknown outcome")
-        if type(row.get("base_correct")) is not bool or type(row.get("governed_correct")) is not bool:
+        if (
+            type(row.get("base_correct")) is not bool
+            or type(row.get("governed_correct")) is not bool
+        ):
             raise BenchmarkHold("Scores must be independently graded booleans")
         results[key] = row
     if set(results) != set(ids):
@@ -49,10 +60,15 @@ def assess_pair(manifest_file: Path, outcomes_file: Path) -> dict[str, Any]:
     improved = sum(not r["base_correct"] and r["governed_correct"] for r in results.values())
     regressed = sum(r["base_correct"] and not r["governed_correct"] for r in results.values())
     n = len(ids)
-    return {"status": "PAIRED_COUNTS_VALIDATED_NOT_HLE_CERTIFIED", "n": n,
-            "base_correct": base, "governed_correct": governed,
-            "percentage_point_delta": 100 * (governed - base) / n,
-            "relative_uplift": (governed - base) / base if base else None,
-            "improved_pairs": improved, "regressed_pairs": regressed,
-            "manifest_sha256": hashlib.sha256(raw).hexdigest(),
-            "outcomes_sha256": hashlib.sha256(content).hexdigest()}
+    return {
+        "status": "PAIRED_COUNTS_VALIDATED_NOT_HLE_CERTIFIED",
+        "n": n,
+        "base_correct": base,
+        "governed_correct": governed,
+        "percentage_point_delta": 100 * (governed - base) / n,
+        "relative_uplift": (governed - base) / base if base else None,
+        "improved_pairs": improved,
+        "regressed_pairs": regressed,
+        "manifest_sha256": hashlib.sha256(raw).hexdigest(),
+        "outcomes_sha256": hashlib.sha256(content).hexdigest(),
+    }

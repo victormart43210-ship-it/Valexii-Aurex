@@ -20,7 +20,9 @@ Solver = Callable[[str], str]
 def sanitize_error_message(msg: str) -> str:
     # Scrub URLs, credentials, and obvious tokens from error messages
     msg = re.sub(r"https?://[^\s]+", "[REDACTED_URL]", msg)
-    msg = re.sub(r"(bearer|key|token|secret)[:=]\s*\S+", "[REDACTED_CREDENTIAL]", msg, flags=re.IGNORECASE)
+    msg = re.sub(
+        r"(bearer|key|token|secret)[:=]\s*\S+", "[REDACTED_CREDENTIAL]", msg, flags=re.IGNORECASE
+    )
     return msg
 
 

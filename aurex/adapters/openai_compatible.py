@@ -1,4 +1,5 @@
 """Credential-scoped OpenAI-compatible HTTPS model adapter."""
+
 import json
 import os
 from typing import Any
@@ -9,7 +10,9 @@ from aurex.adapters.base import ModelAdapter, ModelAnswer
 
 
 class _NoRedirect(HTTPRedirectHandler):
-    def redirect_request(self, req: Any, fp: Any, code: int, msg: str, headers: Any, newurl: str) -> Any:
+    def redirect_request(
+        self, req: Any, fp: Any, code: int, msg: str, headers: Any, newurl: str
+    ) -> Any:
         raise ValueError("Model endpoint redirects are forbidden")
 
 
@@ -24,8 +27,15 @@ class OpenAICompatibleAdapter(ModelAdapter):
         timeout_seconds: float = 60.0,
     ) -> None:
         url = urlsplit(base_url)
-        if (url.scheme != "https" or not url.hostname or url.username
-                or url.password or url.query or url.fragment or not model):
+        if (
+            url.scheme != "https"
+            or not url.hostname
+            or url.username
+            or url.password
+            or url.query
+            or url.fragment
+            or not model
+        ):
             raise ValueError("Model endpoint requires a credential-free HTTPS URL")
         if not (0 < timeout_seconds <= 180):
             raise ValueError("Invalid timeout")
@@ -39,19 +49,19 @@ class OpenAICompatibleAdapter(ModelAdapter):
         key = os.environ.get(self.api_key_env)
         if not key:
             raise RuntimeError(f"Missing credential environment variable: {self.api_key_env}")
-        body = json.dumps({
-            "model": self.model,
-            "messages": [{"role": "user", "content": prompt}],
-        }).encode()
+        body = json.dumps(
+            {
+                "model": self.model,
+                "messages": [{"role": "user", "content": prompt}],
+            }
+        ).encode()
         request = Request(
             f"{self.base_url}/chat/completions",
             data=body,
             headers={"Authorization": f"Bearer {key}", "Content-Type": "application/json"},
             method="POST",
         )
-        with build_opener(_NoRedirect()).open(
-            request, timeout=self.timeout_seconds
-        ) as response:
+        with build_opener(_NoRedirect()).open(request, timeout=self.timeout_seconds) as response:
             data = response.read(2_000_001)
         if len(data) > 2_000_000:
             raise ValueError("Model response exceeds allowed size")

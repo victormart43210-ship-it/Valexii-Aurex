@@ -4,7 +4,13 @@ import pytest
 from pydantic import ValidationError
 
 from aurex.experiments.admission import VerificationAttestation, decide_admission
-from aurex.experiments.contracts import AblationSpec, ArmSpec, ExperimentManifest, ResultStatus, VerifierSpec
+from aurex.experiments.contracts import (
+    AblationSpec,
+    ArmSpec,
+    ExperimentManifest,
+    ResultStatus,
+    VerifierSpec,
+)
 from aurex.experiments.ledger import EvidenceLedger, LedgerEvent
 from aurex.experiments.runner import ExperimentRunner
 
@@ -130,8 +136,8 @@ class TestRunnerAttacks:
     def test_missing_prompt_results_in_incomplete_run(self) -> None:
         ledger = EvidenceLedger()
         runner = ExperimentRunner(ledger)
-        manifest = make_valid_manifest() # requires q1 and q2
-        prompts = {"q1": "What is 1+1?"} # missing q2
+        manifest = make_valid_manifest()  # requires q1 and q2
+        prompts = {"q1": "What is 1+1?"}  # missing q2
 
         report = runner.run(
             manifest=manifest,

@@ -4,7 +4,6 @@ from aurex.experiments.ledger import EvidenceLedger
 from aurex.experiments.runner import ExperimentRunner
 from aurex.experiments.tracks.synthetic import identity_solver, uppercase_solver
 
-
 HASH = "a" * 64
 
 
@@ -16,11 +15,17 @@ def manifest(*, authorized: bool = True, contamination_checked: bool = True) -> 
         dataset_sha256=HASH,
         protocol_sha256="b" * 64,
         item_ids=("i1", "i2"),
-        baseline=ArmSpec(arm_id="baseline", provider="local", model="identity", config_sha256="c" * 64),
+        baseline=ArmSpec(
+            arm_id="baseline", provider="local", model="identity", config_sha256="c" * 64
+        ),
         experimental=ArmSpec(
             arm_id="experimental", provider="local", model="uppercase", config_sha256="d" * 64
         ),
-        verifier=VerifierSpec(verifier_id="independent-fixture", family="deterministic", reference_access="after-freeze"),
+        verifier=VerifierSpec(
+            verifier_id="independent-fixture",
+            family="deterministic",
+            reference_access="after-freeze",
+        ),
         dataset_authorized=authorized,
         contamination_checked=contamination_checked,
     )
@@ -35,7 +40,9 @@ def test_run_is_not_verified_without_independent_attestation() -> None:
         identity_solver(),
         uppercase_solver(),
     )
-    decision = decide_admission(m, report.manifest_sha256, report.run_sha256, None, ledger.verify(), report.complete)
+    decision = decide_admission(
+        m, report.manifest_sha256, report.run_sha256, None, ledger.verify(), report.complete
+    )
     assert report.complete
     assert ledger.verify()
     assert decision.status is ResultStatus.NOT_VERIFIED
@@ -91,6 +98,14 @@ def test_authorization_and_contamination_are_fail_closed() -> None:
             run_sha256=report.run_sha256,
             passed=True,
         )
-        assert decide_admission(
-            m, report.manifest_sha256, report.run_sha256, attestation, ledger.verify(), report.complete
-        ).status is ResultStatus.HOLD
+        assert (
+            decide_admission(
+                m,
+                report.manifest_sha256,
+                report.run_sha256,
+                attestation,
+                ledger.verify(),
+                report.complete,
+            ).status
+            is ResultStatus.HOLD
+        )

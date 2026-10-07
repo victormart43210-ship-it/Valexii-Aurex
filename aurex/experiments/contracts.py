@@ -17,7 +17,9 @@ class AblationSpec(BaseModel):
     model_config = ConfigDict(extra="forbid", frozen=True)
 
     ablation_id: str = Field(min_length=1)
-    type: str = Field(min_length=1)  # e.g., "no_verifier", "no_4d_lattice", "single_agent", "unremediated"
+    type: str = Field(
+        min_length=1
+    )  # e.g., "no_verifier", "no_4d_lattice", "single_agent", "unremediated"
     description: str = Field(min_length=1)
 
 

@@ -1,6 +1,6 @@
 """Canonical public AUREX protocol models."""
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from enum import StrEnum
 from typing import Any
 
@@ -34,5 +34,5 @@ class ChallengeResult(BaseModel):
     status: ChallengeStatus
     rationale: str
     evidence_used: list[str] = Field(default_factory=list)
-    generated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    generated_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
     authority_granted: bool = False

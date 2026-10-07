@@ -1,4 +1,5 @@
 """Loopback-only Ollama adapter; no remote Ollama hosts or redirects."""
+
 import json
 from typing import Any
 from urllib.parse import urlsplit
@@ -8,7 +9,9 @@ from aurex.adapters.base import ModelAdapter, ModelAnswer
 
 
 class _NoRedirect(HTTPRedirectHandler):
-    def redirect_request(self, req: Any, fp: Any, code: int, msg: str, headers: Any, newurl: str) -> Any:
+    def redirect_request(
+        self, req: Any, fp: Any, code: int, msg: str, headers: Any, newurl: str
+    ) -> Any:
         raise ValueError("Ollama redirects are forbidden")
 
 
@@ -20,9 +23,16 @@ class OllamaAdapter(ModelAdapter):
         timeout_seconds: float = 120.0,
     ) -> None:
         url = urlsplit(base_url)
-        if (url.scheme != "http" or url.hostname not in ("localhost", "127.0.0.1", "::1")
-                or url.username or url.password or url.query or url.fragment
-                or not model or not (0 < timeout_seconds <= 180)):
+        if (
+            url.scheme != "http"
+            or url.hostname not in ("localhost", "127.0.0.1", "::1")
+            or url.username
+            or url.password
+            or url.query
+            or url.fragment
+            or not model
+            or not (0 < timeout_seconds <= 180)
+        ):
             raise ValueError("Ollama requires an HTTP loopback endpoint and valid timeout")
         self.model = model
         self.base_url = base_url.rstrip("/")
@@ -36,9 +46,7 @@ class OllamaAdapter(ModelAdapter):
             headers={"Content-Type": "application/json"},
             method="POST",
         )
-        with build_opener(_NoRedirect()).open(
-            request, timeout=self.timeout_seconds
-        ) as response:
+        with build_opener(_NoRedirect()).open(request, timeout=self.timeout_seconds) as response:
             data = response.read(2_000_001)
         if len(data) > 2_000_000:
             raise ValueError("Ollama response exceeds allowed size")

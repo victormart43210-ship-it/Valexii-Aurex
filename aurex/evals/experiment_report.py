@@ -1,6 +1,6 @@
 """Machine-readable experiment reports with measured/inferred/unverified state attribution."""
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Any, Literal
 
 from pydantic import BaseModel, ConfigDict, Field
@@ -25,7 +25,7 @@ class ExperimentReport(BaseModel):
     model_config = ConfigDict(extra="forbid", frozen=True)
 
     schema_version: str = "1"
-    generated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    generated_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
     manifest: ExperimentManifest
     manifest_sha256: str
     run_report: RunReport | None

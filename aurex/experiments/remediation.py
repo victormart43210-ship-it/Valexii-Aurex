@@ -1,6 +1,6 @@
 """Immutable remediation lineage tracking for FAIL -> remediation -> retest -> replication."""
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Any
 
 from pydantic import BaseModel, ConfigDict, Field
@@ -18,7 +18,7 @@ class RemediationCase(BaseModel):
     original_outcome: ResultStatus = ResultStatus.FAIL
     remediation_reason: str = Field(min_length=1)
     changes_description: str = Field(min_length=1)
-    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    created_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
 
 
 class RetestRecord(BaseModel):
