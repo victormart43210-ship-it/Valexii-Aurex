@@ -1,6 +1,6 @@
 """Evidence normalization and freshness checks."""
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from pydantic import BaseModel, Field
 
@@ -13,10 +13,10 @@ class EvidenceEnvelope(BaseModel):
     claims: list[str] = Field(default_factory=list)
 
     def age_seconds(self, now: datetime | None = None) -> float:
-        reference = now or datetime.now(timezone.utc)
+        reference = now or datetime.now(UTC)
         observed = self.observed_at
         if observed.tzinfo is None:
-            observed = observed.replace(tzinfo=timezone.utc)
+            observed = observed.replace(tzinfo=UTC)
         return max(0.0, (reference - observed).total_seconds())
 
     def is_stale(self, max_age_seconds: int, now: datetime | None = None) -> bool:
