@@ -13,6 +13,16 @@ from .ledger import EvidenceLedger
 Solver = Callable[[str], str]
 
 
+class ExperimentExecutionError(RuntimeError):
+    """Sanitized execution failure tied to one experiment item and arm."""
+
+    def __init__(self, item_id: str, arm_id: str, error_type: str) -> None:
+        super().__init__(f"experiment execution failed for item {item_id!r} arm {arm_id!r}")
+        self.item_id = item_id
+        self.arm_id = arm_id
+        self.error_type = error_type
+
+
 class ItemResult(BaseModel):
     model_config = ConfigDict(extra="forbid", frozen=True)
 
@@ -35,6 +45,33 @@ class ExperimentRunner:
     def __init__(self, ledger: EvidenceLedger) -> None:
         self.ledger = ledger
 
+    def _solve(
+        self,
+        *,
+        item_id: str,
+        arm_id: str,
+        prompt: str,
+        solver: Solver,
+    ) -> str:
+        try:
+            return solver(prompt)
+        except Exception as exc:
+            error_type = type(exc).__name__
+            self.ledger.append(
+                "item_failed",
+                {"item_id": item_id, "arm_id": arm_id, "error_type": error_type},
+            )
+            self.ledger.append(
+                "experiment_failed",
+                {
+                    "item_id": item_id,
+                    "arm_id": arm_id,
+                    "error_type": error_type,
+                    "complete": False,
+                },
+            )
+            raise ExperimentExecutionError(item_id, arm_id, error_type) from exc
+
     def run(
         self,
         manifest: ExperimentManifest,
@@ -52,10 +89,23 @@ class ExperimentRunner:
             if item_id not in prompts:
                 self.ledger.append("item_missing", {"item_id": item_id})
                 continue
+            prompt = prompts[item_id]
+            baseline_output = self._solve(
+                item_id=item_id,
+                arm_id=manifest.baseline.arm_id,
+                prompt=prompt,
+                solver=baseline_solver,
+            )
+            experimental_output = self._solve(
+                item_id=item_id,
+                arm_id=manifest.experimental.arm_id,
+                prompt=prompt,
+                solver=experimental_solver,
+            )
             result = ItemResult(
                 item_id=item_id,
-                baseline_output=baseline_solver(prompts[item_id]),
-                experimental_output=experimental_solver(prompts[item_id]),
+                baseline_output=baseline_output,
+                experimental_output=experimental_output,
             )
             results.append(result)
             self.ledger.append("item_completed", result.model_dump(mode="json"))
