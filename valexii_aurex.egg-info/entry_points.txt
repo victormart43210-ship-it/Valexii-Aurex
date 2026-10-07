@@ -1,0 +1,2 @@
+[console_scripts]
+aurex = aurex.cli:main
