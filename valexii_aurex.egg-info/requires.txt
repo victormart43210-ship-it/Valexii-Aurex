@@ -1,9 +1,0 @@
-pydantic<3,>=2.9
-fastapi<1,>=0.115
-uvicorn<1,>=0.32
-
-[dev]
-pytest<9,>=8
-ruff<1,>=0.8
-mypy<2,>=1.13
-httpx<1,>=0.27

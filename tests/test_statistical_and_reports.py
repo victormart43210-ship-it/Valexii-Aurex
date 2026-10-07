@@ -80,3 +80,40 @@ def test_machine_readable_report_generation() -> None:
     assert report.overall_status == ResultStatus.PASS
     assert report.manifest.experiment_id == "exp-stat-01"
     assert len(report.report_digest) == 64
+
+
+def test_statistical_edge_cases_and_boundary_conditions() -> None:
+    # Edge Case 1: Baseline = 1.0, Experimental = 1.0 (No discordant pairs)
+    all_correct = (
+        PairedItemOutcome(item_id="q1", baseline_correct=True, experimental_correct=True),
+        PairedItemOutcome(item_id="q2", baseline_correct=True, experimental_correct=True),
+    )
+    stat1 = analyze_paired_outcomes(all_correct)
+    assert stat1.baseline_score == 1.0
+    assert stat1.experimental_score == 1.0
+    assert stat1.percentage_point_delta == 0.0
+    assert stat1.relative_uplift == 0.0
+    assert stat1.improved_count == 0
+    assert stat1.regressed_count == 0
+    assert stat1.mcnemar_p_value is None
+
+    # Edge Case 2: All abstentions / empty outcomes
+    stat2 = analyze_paired_outcomes((), total_items=10)
+    assert stat2.total_items == 10
+    assert stat2.evaluated_items == 0
+    assert stat2.abstentions == 10
+    assert stat2.coverage == 0.0
+    assert stat2.relative_uplift is None
+
+    # Edge Case 3: Total regression (1.0 -> 0.0)
+    all_regressed = (
+        PairedItemOutcome(item_id="q1", baseline_correct=True, experimental_correct=False),
+        PairedItemOutcome(item_id="q2", baseline_correct=True, experimental_correct=False),
+    )
+    stat3 = analyze_paired_outcomes(all_regressed)
+    assert stat3.baseline_score == 1.0
+    assert stat3.experimental_score == 0.0
+    assert stat3.percentage_point_delta == -100.0
+    assert stat3.relative_uplift == -1.0
+    assert stat3.regressed_count == 2
+    assert stat3.improved_count == 0

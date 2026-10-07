@@ -1,6 +1,7 @@
 """Deterministic paired experiment execution."""
 
 import logging
+import re
 from collections.abc import Callable
 from typing import Any
 
@@ -14,6 +15,13 @@ from .ledger import EvidenceLedger
 logger = logging.getLogger(__name__)
 
 Solver = Callable[[str], str]
+
+
+def sanitize_error_message(msg: str) -> str:
+    # Scrub URLs, credentials, and obvious tokens from error messages
+    msg = re.sub(r"https?://[^\s]+", "[REDACTED_URL]", msg)
+    msg = re.sub(r"(bearer|key|token|secret)[:=]\s*\S+", "[REDACTED_CREDENTIAL]", msg, flags=re.IGNORECASE)
+    return msg
 
 
 class ItemResult(BaseModel):
@@ -78,9 +86,10 @@ class ExperimentRunner:
                 base_out = baseline_solver(prompt)
                 exp_out = experimental_solver(prompt)
             except Exception as exc:
+                clean_err = sanitize_error_message(str(exc))
                 self.ledger.append(
                     "solver_error",
-                    {"item_id": item_id, "error": str(exc), "type": type(exc).__name__},
+                    {"item_id": item_id, "error": clean_err, "type": type(exc).__name__},
                 )
                 if raise_on_solver_error:
                     raise

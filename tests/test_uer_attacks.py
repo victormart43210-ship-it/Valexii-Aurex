@@ -269,3 +269,28 @@ class TestAblationsAndSecurity:
         )
         assert len(manifest.ablations) == 1
         assert manifest.ablations[0].ablation_id == "abl-no-verifier"
+
+
+class TestChatGPTAdversarialReconciliation:
+    def test_solver_error_payload_sanitized_and_terminal_failed_event(self) -> None:
+        ledger = EvidenceLedger()
+        runner = ExperimentRunner(ledger)
+        manifest = make_valid_manifest()
+        prompts = {"q1": "p1"}
+
+        def sensitive_failing_solver(p: str) -> str:
+            raise RuntimeError("https://secret-api-key:bearer12345@internal.domain/v1")
+
+        report = runner.run_fail_safe(
+            manifest=manifest,
+            prompts=prompts,
+            baseline_solver=lambda p: "ok",
+            experimental_solver=sensitive_failing_solver,
+        )
+
+        assert report.complete is False
+        error_events = [e for e in ledger.events if e.event_type == "solver_error"]
+        assert len(error_events) == 1
+        err_payload = str(error_events[0].payload)
+        assert "bearer12345" not in err_payload
+        assert "secret-api-key" not in err_payload
