@@ -28,7 +28,10 @@ dev = [
 ]
 
 [tool.setuptools.packages.find]
-include = ["aurex*"]
+include = ["aurex*", "training"]
+
+[tool.setuptools.package-data]
+training = ["configs/*.json", "requirements.txt", "README.md"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests", "training/tests"]
