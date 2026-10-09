@@ -12,6 +12,7 @@ import json
 import os
 import subprocess
 import sys
+from model_client import generate
 
 ROOT = Path(__file__).resolve().parents[1]
 LOCAL = Path(os.environ.get("AUREX_LOCAL_ROOT", str(ROOT))).expanduser().resolve()
@@ -25,6 +26,14 @@ def run_check(name):
         if not script.is_file():
             return {"status": "NOT_RUN", "output": "No run_tests.sh found in selected local project."}
         command = ["bash", str(script)]
+    elif name == "hle":
+        folder = ROOT / "workstation" / "hle_practice_data"
+        script = ROOT / "workstation" / "hle_practice.py"
+        dataset = folder / "questions.json"
+        responses = folder / "responses.example.json"
+        if not all(p.is_file() for p in (script, dataset, responses)):
+            return {"status": "NOT_RUN", "output": "Practice files missing."}
+        command = [sys.executable, str(script), "--dataset", str(dataset), "--responses", str(responses)]
     elif name == "gate":
         script = LOCAL / "verify_gate.py"
         if not script.is_file():
@@ -68,10 +77,11 @@ it does not certify HLE performance or grant BCXMET authority.</p>
 <button onclick="check('tests',this)">Run security tests</button><pre id="tests">NOT RUN in this session</pre></section>
 <section class="card"><h2>Evidence gate</h2><p>Inspect the existing adversarial gate. Fail-closed is preserved.</p>
 <button onclick="check('gate',this)">Check evidence gate</button><pre id="gate">NOT RUN in this session</pre></section>
-<section class="card"><h2>Reasoning practice</h2><p>HLE-style practice requires a real model and a separate scored evaluation harness.</p>
-<span class="badge">NOT CONFIGURED</span></section>
-<section class="card"><h2>Model interface</h2><p>Open WebUI is optional. This dashboard does not install Docker or models.</p>
-<a href="http://127.0.0.1:3000" target="_blank" rel="noopener noreferrer">Open local WebUI ↗</a></section>
+<section class="card"><h2>HLE-style practice</h2><p>Score three prepared answers. No AI model or official HLE data.</p>
+<button onclick="check('hle',this)">Run HLE practice</button><pre id="hle">NOT RUN in this session</pre></section>
+<section class="card"><h2>Ask a model</h2><p>Optional OpenAI-compatible endpoint; no model configured by default.</p>
+<textarea id="question" rows="4" maxlength="4000" style="width:100%;box-sizing:border-box;background:#061017;color:#e8f5f7" placeholder="Enter a practice question"></textarea>
+<button onclick="askModel(this)">Generate answer</button><pre id="model-result">NOT CONFIGURED</pre></section>
 </div><p class="foot">Bound to localhost only. No remote execution, public uploads, or changes to product authority.</p>
 <script>
 async function check(name,button){
@@ -79,7 +89,17 @@ async function check(name,button){
  try{
  const response=await fetch('/api/check/'+name,{method:'POST'});
  const result=await response.json();
- output.textContent=result.status+'\n'+(result.output||'');
+ output.textContent=result.status+'\\n'+(result.output||'');
+ }catch(err){output.textContent='ERROR: '+err.message}
+ finally{button.disabled=false}
+}
+async function askModel(button){
+ const output=document.getElementById('model-result');
+ button.disabled=true;output.textContent='Generating…';
+ try{
+ const response=await fetch('/api/model/generate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({question:document.getElementById('question').value})});
+ const result=await response.json();
+ output.textContent=result.status+'\\n'+(result.answer||result.output||'')+'\\nIndependent validation: NOT_VERIFIED';
  }catch(err){output.textContent='ERROR: '+err.message}
  finally{button.disabled=false}
 }
@@ -100,7 +120,7 @@ class Handler(BaseHTTPRequestHandler):
 
     def do_POST(self):
         path = urlsplit(self.path).path
-        if path not in ("/api/check/tests", "/api/check/gate"):
+        if path not in ("/api/check/tests", "/api/check/gate", "/api/check/hle", "/api/model/generate"):
             self.send_error(404)
             return
         # Browser-origin check reduces cross-site requests to the local service.
@@ -108,7 +128,19 @@ class Handler(BaseHTTPRequestHandler):
         if origin and origin not in (f"http://{HOST}:{PORT}", f"http://localhost:{PORT}"):
             self.send_error(403)
             return
-        result = run_check(path.rsplit("/", 1)[-1])
+        if path == "/api/model/generate":
+            try:
+                length = int(self.headers.get("Content-Length", "0"))
+                if length < 1 or length > 8192:
+                    raise ValueError("Invalid request size")
+                payload = json.loads(self.rfile.read(length))
+                if not isinstance(payload, dict):
+                    raise ValueError("Expected JSON object")
+                result = generate(payload.get("question"))
+            except Exception as exc:
+                result = {"status": "ERROR", "output": str(exc), "independent_validation": "NOT_VERIFIED"}
+        else:
+            result = run_check(path.rsplit("/", 1)[-1])
         data = json.dumps(result).encode()
         self.send_response(200)
         self.send_header("Content-Type", "application/json")
