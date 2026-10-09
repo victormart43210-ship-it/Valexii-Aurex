@@ -8,3 +8,9 @@ __pycache__/
 .env.*
 dist/
 build/
+
+*.egg-info/
+training/data/
+training/runs/
+*.gguf
+*.safetensors
