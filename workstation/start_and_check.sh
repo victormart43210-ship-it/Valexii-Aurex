@@ -9,13 +9,29 @@ echo "AUREX source: $ROOT"
 echo "Local test project: $LOCAL"
 python3 -m compileall -q workstation
 if curl -fsS --max-time 2 http://127.0.0.1:8765/ >/dev/null 2>&1; then
-  echo "Port 8765 already serves a dashboard. Restarting only the process listening on that port."
-  if command -v fuser >/dev/null 2>&1; then
-    fuser -k 8765/tcp >/dev/null 2>&1 || true
-    sleep 1
-  else
-    echo "Cannot safely replace the existing server (fuser unavailable)."
-    echo "Close the old AUREX terminal, then rerun this script."
+  echo "Existing dashboard detected. Looking for its Python process..."
+  python3 - <<'PY'
+import os, signal, time
+me = os.getpid()
+stopped = []
+for name in os.listdir("/proc"):
+    if not name.isdigit() or int(name) == me:
+        continue
+    try:
+        argv = open(f"/proc/{name}/cmdline", "rb").read().split(b"\\0")
+        if not argv or b"python" not in argv[0].split(b"/")[-1]:
+            continue
+        if not any(arg.endswith(b"workstation/app.py") for arg in argv[1:]):
+            continue
+        os.kill(int(name), signal.SIGTERM)
+        stopped.append(int(name))
+    except (OSError, PermissionError, ProcessLookupError):
+        pass
+print("Stopped AUREX dashboard processes:", stopped)
+PY
+  sleep 2
+  if curl -fsS --max-time 2 http://127.0.0.1:8765/ >/dev/null 2>&1; then
+    echo "Another service still owns port 8765. Stop that service and retry."
     exit 1
   fi
 fi
