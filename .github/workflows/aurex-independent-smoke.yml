@@ -1,0 +1,41 @@
+name: AUREX independent runner smoke checks
+on:
+  push:
+    branches:
+      - feature/aurex-independent-ci-evidence-v1
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  offline-practice:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Python version
+        run: python3 --version
+      - name: Run scorer unit tests
+        run: python3 -m unittest discover -s workstation/tests -p 'test_hle_practice.py' -v
+      - name: Generate bounded practice report
+        run: |
+          python3 workstation/hle_practice.py --dataset workstation/hle_practice_data/questions.json --responses workstation/hle_practice_data/responses.example.json --output practice-report.json
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          report=json.loads(Path("practice-report.json").read_text())
+          assert report["official_hle"] is False
+          assert report["independent_reference_validation"] == "NOT_VERIFIED"
+          assert report["questions"] == 3
+          assert report["exact_matches"] == 3
+          print("Smoke fixture verified by runner; NOT an official HLE score.")
+          PY
+      - name: Verify Python source syntax
+        run: python3 -m compileall -q workstation
+      - name: Upload test evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: aurex-practice-evidence
+          path: practice-report.json
+          if-no-files-found: warn

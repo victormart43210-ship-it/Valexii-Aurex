@@ -18,7 +18,7 @@ from local_diagnostics import diagnose
 ROOT = Path(__file__).resolve().parents[1]
 LOCAL = Path(os.environ.get("AUREX_LOCAL_ROOT", str(ROOT))).expanduser().resolve()
 HOST = "127.0.0.1"
-PORT = 8765
+PORT = int(os.environ.get("AUREX_PORT", "8765"))
 MAX_OUTPUT = 16000
 
 def run_check(name):
