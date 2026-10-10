@@ -14,6 +14,7 @@ import subprocess
 import sys
 from model_client import generate
 from local_diagnostics import diagnose
+from evidence_ledger import append_observation
 
 ROOT = Path(__file__).resolve().parents[1]
 LOCAL = Path(os.environ.get("AUREX_LOCAL_ROOT", str(ROOT))).expanduser().resolve()
@@ -140,6 +141,13 @@ class Handler(BaseHTTPRequestHandler):
                 if not isinstance(payload, dict):
                     raise ValueError("Expected JSON object")
                 result = generate(payload.get("question"))
+                try:
+                    observation = append_observation(payload.get("question"), result)
+                    result["observation_sha256"] = observation["answer_sha256"]
+                    result["evidence_recorded"] = True
+                except OSError:
+                    result["evidence_recorded"] = False
+                    result["evidence_error"] = "Local evidence journal unavailable"
             except Exception as exc:
                 result = {"status": "ERROR", "output": str(exc), "independent_validation": "NOT_VERIFIED"}
         elif path == "/api/check/local":
