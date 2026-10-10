@@ -13,6 +13,7 @@ import os
 import subprocess
 import sys
 from model_client import generate
+from local_diagnostics import diagnose
 
 ROOT = Path(__file__).resolve().parents[1]
 LOCAL = Path(os.environ.get("AUREX_LOCAL_ROOT", str(ROOT))).expanduser().resolve()
@@ -79,6 +80,8 @@ it does not certify HLE performance or grant BCXMET authority.</p>
 <button onclick="check('gate',this)">Check evidence gate</button><pre id="gate">NOT RUN in this session</pre></section>
 <section class="card"><h2>HLE-style practice</h2><p>Score three prepared answers. No AI model or official HLE data.</p>
 <button onclick="check('hle',this)">Run HLE practice</button><pre id="hle">NOT RUN in this session</pre></section>
+<section class="card"><h2>Local model readiness</h2><p>Check whether llama.cpp and model files are available without running inference.</p>
+<button onclick="check('local',this)">Check local AI</button><pre id="local">NOT RUN in this session</pre></section>
 <section class="card"><h2>Ask a model</h2><p>Optional OpenAI-compatible endpoint; no model configured by default.</p>
 <textarea id="question" rows="4" maxlength="4000" style="width:100%;box-sizing:border-box;background:#061017;color:#e8f5f7" placeholder="Enter a practice question"></textarea>
 <button onclick="askModel(this)">Generate answer</button><pre id="model-result">NOT CONFIGURED</pre></section>
@@ -120,7 +123,7 @@ class Handler(BaseHTTPRequestHandler):
 
     def do_POST(self):
         path = urlsplit(self.path).path
-        if path not in ("/api/check/tests", "/api/check/gate", "/api/check/hle", "/api/model/generate"):
+        if path not in ("/api/check/tests", "/api/check/gate", "/api/check/hle", "/api/check/local", "/api/model/generate"):
             self.send_error(404)
             return
         # Browser-origin check reduces cross-site requests to the local service.
@@ -139,6 +142,8 @@ class Handler(BaseHTTPRequestHandler):
                 result = generate(payload.get("question"))
             except Exception as exc:
                 result = {"status": "ERROR", "output": str(exc), "independent_validation": "NOT_VERIFIED"}
+        elif path == "/api/check/local":
+            result = {"status": "DIAGNOSTIC_ONLY", "output": json.dumps(diagnose(), indent=2)}
         else:
             result = run_check(path.rsplit("/", 1)[-1])
         data = json.dumps(result).encode()
