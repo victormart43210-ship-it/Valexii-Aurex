@@ -16,7 +16,7 @@ OUTPUT_CEILING = 40.0
 MAX_INPUT_BYTES = 4000
 MAX_OUTPUT_TOKENS = 256
 MAX_QUESTIONS = 10
-MAX_AUTHORIZED_USD = 10.0
+MAX_AUTHORIZED_USD = 0.0
 RESERVE_USD = 1.0
 
 def main():
@@ -24,6 +24,7 @@ def main():
     parser.add_argument("--dataset", required=True, help="Local JSONL of public, authorized HLE questions")
     parser.add_argument("--output", default="aurex_hle_api_results.json")
     parser.add_argument("--max-questions", type=int, default=10)
+    parser.add_argument("--authorize-budget-usd", type=float, default=0.0, help="Explicit per-run spending authorization in USD")
     args = parser.parse_args()
     if not 1 <= args.max_questions <= MAX_QUESTIONS:
         parser.error("--max-questions must be between 1 and 10")
@@ -51,7 +52,8 @@ def main():
     # Worst-case preflight deliberately overestimates input tokens as input bytes
     # plus 512 tokens of request overhead, at conservative price ceilings.
     per_call = ((MAX_INPUT_BYTES + 512) * INPUT_CEILING + MAX_OUTPUT_TOKENS * OUTPUT_CEILING) / 1_000_000
-    if per_call * len(rows) > MAX_AUTHORIZED_USD - RESERVE_USD:
+    max_authorized = args.authorize_budget_usd
+    if max_authorized <= 0.0 or per_call * len(rows) > max_authorized - RESERVE_USD:
         parser.error("Conservative worst-case cost exceeds the reserved budget")
     if pathlib.Path(args.output).exists():
         parser.error("Output already exists; refusing to overwrite prior evidence")
@@ -60,7 +62,7 @@ def main():
     results = []
     estimated_usd = 0.0
     for i, row in enumerate(rows):
-        if estimated_usd + per_call > MAX_AUTHORIZED_USD - RESERVE_USD:
+        if estimated_usd + per_call > max_authorized - RESERVE_USD:
             break
         body = json.dumps({
             "model": MODEL,
