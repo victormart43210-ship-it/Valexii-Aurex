@@ -41,6 +41,18 @@ No result is silently promoted to product authority.
 
 Python + typed schemas + JSON Schema interoperability, with a small HTTP API and CLI. Model providers remain adapters so evaluations can compare identical tasks across providers and local models without coupling the protocol to one vendor.
 
+## Independent open-source witness bridges (proposed)
+
+Experimental adapters under `aurex/adapters/oss_witnesses.py` and the
+local-only `python -m aurex.adapters.oss_cli` tool can ingest MobSF reports
+with exact APK SHA-256 qualification, calculate Astronomy Engine lunar context,
+record optional OpenTelemetry spans, and frame local MADLAD output as an
+unverified translation hypothesis. All remain demote-only external witnesses.
+
+See [open-source witness bridge](docs/open-source-witness-bridge.md) for
+execution instructions, licenses, risk controls and CI status. **This work is
+not a BCXMET production integration, release PASS or verified decipherment.**
+
 ## Evaluation doctrine
 
 Benchmark claims remain **WITHHELD** until a reproducible run produces evidence. Projected uplift is never reported as measured performance.
