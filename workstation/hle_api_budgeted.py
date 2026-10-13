@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """AUREX public HLE sample runner. NOT an official HLE submission."""
 import argparse
 import hashlib
@@ -6,7 +5,6 @@ import json
 import os
 import pathlib
 import sys
-import time
 import urllib.error
 import urllib.request
 
