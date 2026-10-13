@@ -30,9 +30,9 @@ def _amount(value: str | int | Decimal) -> Decimal:
 class BudgetGuard:
     """Default-deny paid API calls; reserve before dispatch, settle afterward."""
 
-    limit_usd: Decimal = Decimal("0")
-    spent_usd: Decimal = Decimal("0")
-    reserved_usd: Decimal = Decimal("0")
+    limit_usd: Decimal = Decimal(0)
+    spent_usd: Decimal = Decimal(0)
+    reserved_usd: Decimal = Decimal(0)
     quota_exhausted: bool = False
 
     def __post_init__(self) -> None:
