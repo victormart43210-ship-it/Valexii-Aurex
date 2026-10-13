@@ -4,14 +4,13 @@ Run: python3 workstation/app.py
 Open: http://127.0.0.1:8765
 This UI never asserts product authority or benchmark certification.
 """
-from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
-from pathlib import Path
-from urllib.parse import urlsplit
-import html
 import json
 import os
 import subprocess
 import sys
+from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+from pathlib import Path
+from urllib.parse import urlsplit
 
 ROOT = Path(__file__).resolve().parents[1]
 LOCAL = Path(os.environ.get("AUREX_LOCAL_ROOT", str(ROOT))).expanduser().resolve()
@@ -33,7 +32,7 @@ def run_check(name):
     else:
         return {"status": "NOT_RUN", "output": "Unknown check."}
     try:
-        completed = subprocess.run(command, cwd=LOCAL, capture_output=True,
+        completed = subprocess.run(command, cwd=LOCAL, capture_output=True, check=False,
                                    text=True, timeout=90, stdin=subprocess.DEVNULL,
                                    env={**os.environ, "PYTHONDONTWRITEBYTECODE": "1"})
         output = (completed.stdout + "\n" + completed.stderr)[-MAX_OUTPUT:]
