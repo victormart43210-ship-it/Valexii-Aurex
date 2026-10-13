@@ -1,11 +1,12 @@
 """Offline Model Forge checks. Run: python3 -m unittest discover -s workstation/tests -v"""
+import sys
 import tempfile
 import unittest
 from pathlib import Path
-import sys
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from model_forge import ModelCandidate, tiny_training_demo, write_manifest
+
+from model_forge import ModelCandidate, tiny_training_demo, write_manifest  # noqa: E402
 
 class ModelForgeTests(unittest.TestCase):
     def test_deterministic(self):
