@@ -2,6 +2,8 @@
 
 from datetime import UTC, datetime
 
+from cryptography.exceptions import InvalidSignature
+from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PublicKey
 from pydantic import BaseModel, ConfigDict, Field
 
 from aurex.provenance import fingerprint
@@ -22,6 +24,7 @@ class VerificationAttestation(BaseModel):
     timestamp: datetime = Field(default_factory=lambda: datetime.now(UTC))
     signature_scheme: str = "none"
     signature: str = ""
+    public_key_hex: str = ""
 
     def digest(self) -> str:
         body = {
@@ -35,6 +38,20 @@ class VerificationAttestation(BaseModel):
             "signature_scheme": self.signature_scheme,
         }
         return fingerprint(body)
+
+    def verify_signature(self) -> bool:
+        if self.signature_scheme == "none" or not self.signature:
+            return False
+        if self.signature_scheme == "ed25519":
+            try:
+                sig_bytes = bytes.fromhex(self.signature)
+                pk_bytes = bytes.fromhex(self.public_key_hex)
+                pk = Ed25519PublicKey.from_public_bytes(pk_bytes)
+                pk.verify(sig_bytes, self.digest().encode("utf-8"))
+                return True
+            except (ValueError, InvalidSignature, TypeError):
+                return False
+        return False
 
 
 class AdmissionDecision(BaseModel):
@@ -83,10 +100,15 @@ def decide_admission(
         return AdmissionDecision(
             status=ResultStatus.FAIL, rationale="independent verifier rejected run"
         )
-    if getattr(attestation, "signature_scheme", "none") == "none" or not getattr(attestation, "signature", ""):
+    if attestation.signature_scheme == "none" or not attestation.signature:
         return AdmissionDecision(
             status=ResultStatus.NOT_VERIFIED,
             rationale="Unsigned declarations cannot establish independent verification",
+        )
+    if not attestation.verify_signature():
+        return AdmissionDecision(
+            status=ResultStatus.HOLD,
+            rationale="Attestation signature verification failed or scheme untrusted",
         )
     return AdmissionDecision(
         status=ResultStatus.PASS, rationale="independent verification admitted"
