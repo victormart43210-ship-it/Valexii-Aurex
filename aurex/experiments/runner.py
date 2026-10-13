@@ -71,7 +71,7 @@ class ExperimentRunner:
             if not isinstance(out, str):
                 raise TypeError(f"Solver returned {type(out).__name__} instead of str")
             return out
-        except Exception as exc:
+        except Exception as exc:  # noqa: BLE001
             error_type = type(exc).__name__
             self.ledger.append(
                 "item_failed",
@@ -144,7 +144,7 @@ class ExperimentRunner:
                     exp_out = experimental_solver(prompt)
                     if not isinstance(base_out, str) or not isinstance(exp_out, str):
                         raise TypeError("Solver output must be str")
-                except Exception as exc:
+                except Exception as exc:  # noqa: BLE001
                     clean_err = sanitize_error_message(str(exc))
                     self.ledger.append(
                         "solver_error",

@@ -1,8 +1,9 @@
 """Diagnose a local llama.cpp server without exposing credentials."""
 import json
 from pathlib import Path
-from urllib.error import URLError, HTTPError
+from urllib.error import HTTPError, URLError
 from urllib.request import urlopen
+
 
 def diagnose():
     home = Path.home()

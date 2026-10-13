@@ -4,6 +4,7 @@ import os
 from urllib.parse import urlsplit
 from urllib.request import Request, urlopen
 
+
 def generate(question):
     if not isinstance(question, str) or not question.strip() or len(question) > 4000:
         raise ValueError("Question must be 1–4000 characters")

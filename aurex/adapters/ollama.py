@@ -53,5 +53,5 @@ class OllamaAdapter(ModelAdapter):
         payload = json.loads(data.decode("utf-8"))
         text = payload["response"]
         if not isinstance(text, str):
-            raise ValueError("Unexpected Ollama response")
+            raise TypeError("Unexpected Ollama response")
         return ModelAnswer(provider="ollama", model=self.model, text=text)

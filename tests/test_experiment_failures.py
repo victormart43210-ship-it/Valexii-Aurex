@@ -5,7 +5,6 @@ from aurex.experiments.ledger import EvidenceLedger
 from aurex.experiments.runner import ExperimentExecutionError, ExperimentRunner
 from aurex.experiments.tracks.synthetic import identity_solver
 
-
 HASH = "a" * 64
 
 

@@ -2,22 +2,23 @@
 import hashlib
 import json
 import os
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
+
 
 def digest(value):
     return hashlib.sha256(value.encode("utf-8")).hexdigest()
 
 def append_observation(question, result, path=None):
     if not isinstance(question, str) or not isinstance(result, dict):
-        raise ValueError("Invalid observation")
+        raise TypeError("Invalid observation")
     target = Path(path or os.environ.get("AUREX_LEDGER_PATH", str(Path.home() / "aurex-evidence-ledger.jsonl"))).expanduser()
     if target.is_symlink():
         raise ValueError("Ledger must not be a symlink")
     target.parent.mkdir(parents=True, exist_ok=True)
     entry = {
         "schema": "aurex.observation.v1",
-        "observed_utc": datetime.now(timezone.utc).isoformat(),
+        "observed_utc": datetime.now(UTC).isoformat(),
         "question_sha256": digest(question),
         "answer_sha256": digest(result.get("answer", "")),
         "model": str(result.get("model", "UNKNOWN"))[:500],
@@ -43,7 +44,7 @@ def append_observation(question, result, path=None):
 def score_reference(answer, expected, reference_origin):
     """Exact-match comparison only; caller must separately authenticate reference."""
     if not isinstance(answer, str) or not isinstance(expected, str):
-        raise ValueError("Expected text inputs")
+        raise TypeError("Expected text inputs")
     matched = answer.strip().casefold() == expected.strip().casefold()
     return {
         "exact_match": matched,

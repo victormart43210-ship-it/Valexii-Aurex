@@ -5,6 +5,7 @@ import json
 from datetime import UTC, datetime
 from pathlib import Path
 
+
 def evaluate(dataset, responses):
     """Exact-match practice scoring; never implies independently verified answers."""
     questions = json.loads(Path(dataset).read_text(encoding="utf-8"))

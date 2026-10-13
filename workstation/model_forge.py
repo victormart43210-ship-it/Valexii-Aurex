@@ -12,6 +12,7 @@ from datetime import UTC, datetime
 from itertools import pairwise
 from pathlib import Path
 
+
 @dataclass(frozen=True)
 class ModelCandidate:
     name: str

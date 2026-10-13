@@ -30,7 +30,7 @@ class AurexEngine:
                 if result.status == ChallengeStatus.SUPPORTED and not result.evidence_used:
                     raise ValueError("Support requires an explicit evidence reference.")
                 results.append(result)
-            except Exception:
+            except Exception:  # noqa: BLE001
                 # Never leak provider internals or promote invalid output into truth.
                 results.append(self._hold(request, "Challenger failed validation or execution."))
         return results

@@ -2,7 +2,9 @@ import json
 import tempfile
 import unittest
 from pathlib import Path
+
 from workstation.evidence_ledger import append_observation, score_reference
+
 
 class LedgerTests(unittest.TestCase):
     def test_generation_cannot_promote_authority(self):

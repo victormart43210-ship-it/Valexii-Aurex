@@ -79,9 +79,8 @@ class TestObservatoryAndTelemetry(unittest.TestCase):
             self.assertTrue(True)
 
     def test_trace_operation_rejects_sensitive_strings(self) -> None:
-        with self.assertRaises(ValueError):
-            with optional_trace("private user=secret", enabled=False):
-                pass
+        with self.assertRaises(ValueError), optional_trace("private user=secret", enabled=False):
+            pass
 
 
 if __name__ == "__main__":

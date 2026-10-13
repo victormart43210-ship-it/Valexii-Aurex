@@ -8,10 +8,11 @@ from __future__ import annotations
 import hashlib
 import json
 import re
+from collections.abc import Iterator, Mapping
 from contextlib import contextmanager, nullcontext
 from dataclasses import asdict, dataclass
-from datetime import datetime, timezone
-from typing import Any, Iterator, Mapping
+from datetime import UTC, datetime
+from typing import Any
 
 _HEX64 = re.compile(r"^[0-9a-f]{64}$")
 
@@ -32,7 +33,7 @@ class Witness:
 
 
 def _now() -> str:
-    return datetime.now(timezone.utc).isoformat()
+    return datetime.now(UTC).isoformat()
 
 
 def _digest(data: Mapping[str, Any]) -> str:
@@ -88,7 +89,7 @@ def astronomy_moon_witness(utc_iso: str) -> Witness:
         dt = datetime.fromisoformat(value)
         if dt.tzinfo is None:
             raise ValueError("UTC offset required")
-        dt = dt.astimezone(timezone.utc)
+        dt = dt.astimezone(UTC)
         phase_degrees = float(MoonPhase(Time.Parse(dt.strftime("%Y-%m-%dT%H:%M:%SZ"))))
         if not (0.0 <= phase_degrees < 360.0):
             raise ValueError("phase outside expected range")
@@ -120,7 +121,7 @@ def madlad_text_candidate(
         output = tokenizer.batch_decode(tokens, skip_special_tokens=True)[0]
         if not isinstance(output, str) or not output.strip():
             raise ValueError("empty model output")
-    except Exception as exc:  # untrusted optional model backend must fail closed
+    except Exception as exc:  # noqa: BLE001  # untrusted optional model backend must fail closed
         return Witness("MADLAD-400 candidate", "HOLD", _now(), None, (),
                        f"Local model execution not qualified ({type(exc).__name__})")
     return Witness("MADLAD-400 candidate", "HOLD", _now(),

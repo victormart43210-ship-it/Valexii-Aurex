@@ -6,7 +6,8 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from model_forge import ModelCandidate, tiny_training_demo, write_manifest  # noqa: E402
+from model_forge import ModelCandidate, tiny_training_demo, write_manifest
+
 
 class ModelForgeTests(unittest.TestCase):
     def test_deterministic(self):
