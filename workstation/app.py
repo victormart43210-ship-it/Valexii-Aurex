@@ -4,14 +4,13 @@ Run: python3 workstation/app.py
 Open: http://127.0.0.1:8765
 This UI never asserts product authority or benchmark certification.
 """
-from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
-from pathlib import Path
-from urllib.parse import urlsplit
-import html
 import json
 import os
 import subprocess
 import sys
+from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+from pathlib import Path
+from urllib.parse import urlsplit
 from model_client import generate
 from local_diagnostics import diagnose
 
@@ -43,7 +42,7 @@ def run_check(name):
     else:
         return {"status": "NOT_RUN", "output": "Unknown check."}
     try:
-        completed = subprocess.run(command, cwd=LOCAL, capture_output=True,
+        completed = subprocess.run(command, cwd=LOCAL, capture_output=True, check=False,
                                    text=True, timeout=90, stdin=subprocess.DEVNULL,
                                    env={**os.environ, "PYTHONDONTWRITEBYTECODE": "1"})
         output = (completed.stdout + "\n" + completed.stderr)[-MAX_OUTPUT:]
@@ -138,9 +137,9 @@ class Handler(BaseHTTPRequestHandler):
                     raise ValueError("Invalid request size")
                 payload = json.loads(self.rfile.read(length))
                 if not isinstance(payload, dict):
-                    raise ValueError("Expected JSON object")
+                    raise TypeError("Expected JSON object")
                 result = generate(payload.get("question"))
-            except Exception as exc:
+            except (OSError, ValueError, TypeError, KeyError, IndexError, UnicodeError) as exc:
                 result = {"status": "ERROR", "output": str(exc), "independent_validation": "NOT_VERIFIED"}
         elif path == "/api/check/local":
             result = {"status": "DIAGNOSTIC_ONLY", "output": json.dumps(diagnose(), indent=2)}
