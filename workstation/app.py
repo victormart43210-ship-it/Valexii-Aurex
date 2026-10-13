@@ -4,17 +4,17 @@ Run: python3 workstation/app.py
 Open: http://127.0.0.1:8765
 This UI never asserts product authority or benchmark certification.
 """
-from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
-from pathlib import Path
-from urllib.parse import urlsplit
-import html
 import json
 import os
 import subprocess
 import sys
-from model_client import generate
-from local_diagnostics import diagnose
+from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+from pathlib import Path
+from urllib.parse import urlsplit
+
 from evidence_ledger import append_observation
+from local_diagnostics import diagnose
+from model_client import generate
 
 ROOT = Path(__file__).resolve().parents[1]
 LOCAL = Path(os.environ.get("AUREX_LOCAL_ROOT", str(ROOT))).expanduser().resolve()
@@ -44,7 +44,7 @@ def run_check(name):
     else:
         return {"status": "NOT_RUN", "output": "Unknown check."}
     try:
-        completed = subprocess.run(command, cwd=LOCAL, capture_output=True,
+        completed = subprocess.run(command, cwd=LOCAL, capture_output=True, check=False,
                                    text=True, timeout=90, stdin=subprocess.DEVNULL,
                                    env={**os.environ, "PYTHONDONTWRITEBYTECODE": "1"})
         output = (completed.stdout + "\n" + completed.stderr)[-MAX_OUTPUT:]
@@ -139,7 +139,7 @@ class Handler(BaseHTTPRequestHandler):
                     raise ValueError("Invalid request size")
                 payload = json.loads(self.rfile.read(length))
                 if not isinstance(payload, dict):
-                    raise ValueError("Expected JSON object")
+                    raise TypeError("Expected JSON object")
                 result = generate(payload.get("question"))
                 try:
                     observation = append_observation(payload.get("question"), result)
@@ -148,7 +148,7 @@ class Handler(BaseHTTPRequestHandler):
                 except OSError:
                     result["evidence_recorded"] = False
                     result["evidence_error"] = "Local evidence journal unavailable"
-            except Exception as exc:
+            except (OSError, ValueError, TypeError, KeyError, IndexError, UnicodeError) as exc:
                 result = {"status": "ERROR", "output": str(exc), "independent_validation": "NOT_VERIFIED"}
         elif path == "/api/check/local":
             result = {"status": "DIAGNOSTIC_ONLY", "output": json.dumps(diagnose(), indent=2)}
