@@ -3,13 +3,14 @@
 No model downloads, code execution from model cards, or training of third-party
 weights happens automatically. All candidate entries require license review.
 """
-from dataclasses import asdict, dataclass
-from datetime import datetime, timezone
-from pathlib import Path
 import argparse
 import hashlib
 import json
 import random
+from dataclasses import asdict, dataclass
+from datetime import UTC, datetime
+from itertools import pairwise
+from pathlib import Path
 
 @dataclass(frozen=True)
 class ModelCandidate:
@@ -40,7 +41,7 @@ def write_manifest(candidate, weights, destination):
         "model": asdict(candidate),
         "weights_filename": weights.name,
         "weights_sha256": sha256(weights),
-        "recorded_at": datetime.now(timezone.utc).isoformat(),
+        "recorded_at": datetime.now(UTC).isoformat(),
         "verification": "PROVENANCE_RECORDED_NOT_INDEPENDENTLY_VERIFIED",
     }
     destination = Path(destination)
@@ -61,7 +62,7 @@ def tiny_training_demo(steps=200, seed=42):
     examples = ("ab cab", "abc abc", "cab abc", "bac cab")
     for _ in range(steps):
         sample = rng.choice(examples)
-        for a, b in zip(sample, sample[1:]):
+        for a, b in pairwise(sample):
             transitions[a][b] += 1
     return {
         "experiment": "synthetic_character_bigram_demo",
