@@ -31,11 +31,10 @@ def append_observation(question, result, path=None):
     }
     # Atomic append per process; local journal is not tamper-evident or independently attested.
     fd = os.open(target, os.O_WRONLY | os.O_CREAT | os.O_APPEND | getattr(os, "O_NOFOLLOW", 0), 0o600)
-    try:
-        with os.fdopen(fd, "a", encoding="utf-8") as out:
-            out.write(json.dumps(entry, sort_keys=True) + "\n")
-            out.flush()
-            os.fsync(out.fileno())
+    with os.fdopen(fd, "a", encoding="utf-8") as out:
+        out.write(json.dumps(entry, sort_keys=True) + "\n")
+        out.flush()
+        os.fsync(out.fileno())
     return entry
 
 def score_reference(answer, expected, reference_origin):
