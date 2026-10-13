@@ -1,0 +1,41 @@
+name: Reproducible evaluation report
+description: Report a benchmark or adversarial evaluation with provenance. Do not post secrets or restricted data.
+title: "[Evaluation] "
+labels: []
+body:
+  - type: markdown
+    attributes:
+      value: "AUREX is an external witness. Unverified metrics are withheld. Do not upload private model data, credentials, or proprietary BCXMET code."
+  - type: input
+    id: version
+    attributes:
+      label: Source commit SHA
+      description: Exact AUREX code SHA used
+      placeholder: "40-character commit SHA"
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Reproduction steps
+      description: Include licensed dataset identifier, model/runtime versions, seeds, hardware and exact commands.
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Raw results and independent verification
+      description: Give artifacts/links and explain evaluator independence; use public synthetic data only.
+    validations:
+      required: true
+  - type: dropdown
+    id: status
+    attributes:
+      label: Evidence status
+      options:
+        - NOT RUN
+        - NOT VERIFIED
+        - PASS
+        - FAIL
+    validations:
+      required: true
