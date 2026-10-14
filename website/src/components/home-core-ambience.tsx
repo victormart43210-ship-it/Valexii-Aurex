@@ -30,7 +30,12 @@ export function HomeCoreAmbience() {
             <circle cx="790" cy="510" r="328" />
             <circle cx="790" cy="510" r="218" />
           </g>
-          <g className="home-core-circuitry" fill="none" stroke={`url(#${spectrum})`} strokeWidth="2.1">
+          <g
+            className="home-core-circuitry"
+            fill="none"
+            stroke={`url(#${spectrum})`}
+            strokeWidth="2.1"
+          >
             <circle cx="790" cy="510" r="218" strokeDasharray="310 38 110 24" />
             <circle cx="790" cy="510" r="238" strokeDasharray="1 18" />
             <circle cx="790" cy="510" r="328" strokeDasharray="490 80 220 42" />
@@ -38,7 +43,12 @@ export function HomeCoreAmbience() {
             <path d="M0 210H280L390 320H520 M1440 790H1240L1110 660H1078 M0 840H260L390 710H530 M1440 150H1210L1070 290H1025" />
             <path d="M0 225H272L382 335H500 M1440 775H1248L1120 647H1100 M220 0V130L420 330 M1360 1000V855L1150 645" />
           </g>
-          <g className="home-core-filaments" fill="none" stroke={`url(#${energy})`} strokeWidth="2.8">
+          <g
+            className="home-core-filaments"
+            fill="none"
+            stroke={`url(#${energy})`}
+            strokeWidth="2.8"
+          >
             <path d="M-80 600C190 600 290 440 475 440S790 610 1030 530 1260 370 1520 400" />
             <path d="M-80 618C180 618 300 458 475 458S795 628 1040 548 1270 388 1520 418" />
             <path d="M0 110C290 110 320 220 540 270S960 260 1130 180 1360 95 1480 120" />
@@ -57,7 +67,12 @@ export function HomeCoreAmbience() {
           </g>
           <g className="home-core-particles">
             {Array.from({ length: 24 }, (_, i) => (
-              <circle key={i} cx={100 + ((i * 193) % 1260)} cy={80 + ((i * 137) % 860)} r={i % 4 === 0 ? 2.4 : 1.3} />
+              <circle
+                key={i}
+                cx={100 + ((i * 193) % 1260)}
+                cy={80 + ((i * 137) % 860)}
+                r={i % 4 === 0 ? 2.4 : 1.3}
+              />
             ))}
           </g>
         </svg>

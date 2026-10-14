@@ -45,8 +45,12 @@ export function displayState(run: AurexRunRecord | null | undefined) {
   return {
     verification: verified ? "INDEPENDENTLY VERIFIED" : "NOT VERIFIED",
     authority: verified && run!.authority === "AUTHORIZED" ? "AUTHORIZED" : "HOLD",
-    effect: verified && run!.effect === "BOUNDED_EFFECT_RECORDED" ? "BOUNDED EFFECT RECORDED" : "NONE",
-    scope: verified && run!.scope === "INDEPENDENTLY_VERIFIED" ? "INDEPENDENTLY_VERIFIED" : "LOCAL_PRACTICE_ONLY",
+    effect:
+      verified && run!.effect === "BOUNDED_EFFECT_RECORDED" ? "BOUNDED EFFECT RECORDED" : "NONE",
+    scope:
+      verified && run!.scope === "INDEPENDENTLY_VERIFIED"
+        ? "INDEPENDENTLY_VERIFIED"
+        : "LOCAL_PRACTICE_ONLY",
   } as const;
 }
 

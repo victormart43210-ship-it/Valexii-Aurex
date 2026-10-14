@@ -23,7 +23,11 @@ describe("homepage-only decorative core", () => {
     expect(css).toContain('.home-core-field[data-motion="paused"]');
   });
   it("keeps mobile and reduced-motion ambience static", () => {
-    expect(css).toMatch(/@media \(max-width: 767px\), \(pointer: coarse\), \(prefers-reduced-motion: reduce\)\s*\{\s*\.home-core-field/);
-    expect(css).toMatch(/\.home-core-field::before,\s*\.home-core-field g\s*\{\s*animation: none !important;/);
+    expect(css).toMatch(
+      /@media \(max-width: 767px\), \(pointer: coarse\), \(prefers-reduced-motion: reduce\)\s*\{\s*\.home-core-field/,
+    );
+    expect(css).toMatch(
+      /\.home-core-field::before,\s*\.home-core-field g\s*\{\s*animation: none !important;/,
+    );
   });
 });

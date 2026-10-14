@@ -15,7 +15,8 @@ export const SECURITY_HEADERS: Readonly<Record<string, string>> = {
 export function withSecurityHeaders(res: Response): Response {
   let out = res;
   try {
-    for (const [k, v] of Object.entries(SECURITY_HEADERS)) if (!out.headers.has(k)) out.headers.set(k, v);
+    for (const [k, v] of Object.entries(SECURITY_HEADERS))
+      if (!out.headers.has(k)) out.headers.set(k, v);
   } catch {
     // Immutable headers: copy into a new response.
     const h = new Headers(res.headers);

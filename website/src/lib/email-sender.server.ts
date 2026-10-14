@@ -10,7 +10,9 @@ export const TEAM_INBOX = "developer@valexii.com";
 export type SendResult = { sent: boolean; reason?: "disabled" | "error" };
 
 export function emailConfigured(env: Record<string, string | undefined> = process.env): boolean {
-  return env["EMAIL_SENDING_ENABLED"] === "true" && !!env["LOVABLE_API_KEY"] && !!env["RESEND_API_KEY"];
+  return (
+    env["EMAIL_SENDING_ENABLED"] === "true" && !!env["LOVABLE_API_KEY"] && !!env["RESEND_API_KEY"]
+  );
 }
 
 export async function sendEmail(

@@ -63,8 +63,12 @@ describe("human-first public editorial contract", () => {
       } else if (route === "index") {
         // Homepage uses a 1200x630 crop of the same comet artwork shipped in public/.
         expect(readFileSync("public/og-valexii.jpg").length).toBeLessThan(400_000);
-        expect(source).toContain('property: "og:image", content: "https://valexii.com/og-valexii.jpg"');
-        expect(source).toContain('name: "twitter:image", content: "https://valexii.com/og-valexii.jpg"');
+        expect(source).toContain(
+          'property: "og:image", content: "https://valexii.com/og-valexii.jpg"',
+        );
+        expect(source).toContain(
+          'name: "twitter:image", content: "https://valexii.com/og-valexii.jpg"',
+        );
       } else {
         expect(source).not.toContain('property: "og:image"');
         expect(source).not.toContain('name: "twitter:image"');

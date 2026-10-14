@@ -36,7 +36,11 @@ export const submitInquiry = createServerFn({ method: "POST" })
     // Bots that fill too fast get a neutral response and nothing is stored.
     if (tooFast(data.startedAt)) return silentOk;
     if (ipLimited(`inq:${clientKey()}`))
-      return { ok: false, reason: "rate", message: "Too many submissions. Please try again later." };
+      return {
+        ok: false,
+        reason: "rate",
+        message: "Too many submissions. Please try again later.",
+      };
 
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { sendEmail, sha256Hex, TEAM_INBOX } = await import("./email-sender.server");
@@ -50,12 +54,22 @@ export const submitInquiry = createServerFn({ method: "POST" })
       .gte("created_at", since);
     if (countErr) {
       console.error("inquiry count failed", countErr.message);
-      return { ok: false, reason: "server", message: "We could not save your message. Please try again." };
+      return {
+        ok: false,
+        reason: "server",
+        message: "We could not save your message. Please try again.",
+      };
     }
     if ((count ?? 0) >= 3)
-      return { ok: false, reason: "rate", message: "You have sent several messages recently. Please wait an hour." };
+      return {
+        ok: false,
+        reason: "rate",
+        message: "You have sent several messages recently. Please wait an hour.",
+      };
 
-    const dedupe = await sha256Hex(`${data.kind}|${data.email}|${data.message.toLowerCase().replace(/\s+/g, " ")}`);
+    const dedupe = await sha256Hex(
+      `${data.kind}|${data.email}|${data.message.toLowerCase().replace(/\s+/g, " ")}`,
+    );
     const { data: row, error } = await supabaseAdmin
       .from("inquiries")
       .insert({
@@ -70,17 +84,35 @@ export const submitInquiry = createServerFn({ method: "POST" })
       .select("id")
       .single();
     if (error) {
-      if (error.code === "23505") return { ok: true, stored: true, emailed: false, duplicate: true };
+      if (error.code === "23505")
+        return { ok: true, stored: true, emailed: false, duplicate: true };
       console.error("inquiry insert failed", error.message);
-      return { ok: false, reason: "server", message: "We could not save your message. Please try again." };
+      return {
+        ok: false,
+        reason: "server",
+        message: "We could not save your message. Please try again.",
+      };
     }
 
     const note = renderInquiryNotification({ ...data, id: row.id });
-    const team = await sendEmail({ to: TEAM_INBOX, ...note, replyTo: data.email, idempotencyKey: `inq-team-${row.id}` });
+    const team = await sendEmail({
+      to: TEAM_INBOX,
+      ...note,
+      replyTo: data.email,
+      idempotencyKey: `inq-team-${row.id}`,
+    });
     let emailed = false;
     if (team.sent) {
-      await supabaseAdmin.from("inquiries").update({ notified_at: new Date().toISOString() }).eq("id", row.id);
-      const receipt = await sendEmail({ to: data.email, ...renderInquiryReceipt(data.name), replyTo: TEAM_INBOX, idempotencyKey: `inq-receipt-${row.id}` });
+      await supabaseAdmin
+        .from("inquiries")
+        .update({ notified_at: new Date().toISOString() })
+        .eq("id", row.id);
+      const receipt = await sendEmail({
+        to: data.email,
+        ...renderInquiryReceipt(data.name),
+        replyTo: TEAM_INBOX,
+        idempotencyKey: `inq-receipt-${row.id}`,
+      });
       emailed = receipt.sent;
     }
     return { ok: true, stored: true, emailed };
@@ -104,31 +136,53 @@ export const requestEarlyAccess = createServerFn({ method: "POST" })
       .maybeSingle();
     if (readErr) {
       console.error("lead read failed", readErr.message);
-      return { ok: false, reason: "server", message: "We could not record your request. Please try again." };
+      return {
+        ok: false,
+        reason: "server",
+        message: "We could not record your request. Please try again.",
+      };
     }
     // Same neutral answer for confirmed/recent duplicates: no account enumeration, no repeat emails.
-    if (existing?.status === "confirmed") return { ok: true, stored: true, emailed: false, duplicate: true };
+    if (existing?.status === "confirmed")
+      return { ok: true, stored: true, emailed: false, duplicate: true };
     if (existing && Date.now() - new Date(existing.last_requested_at).getTime() < 15 * 60_000)
       return { ok: true, stored: true, emailed: false, duplicate: true };
 
-    const token = [...crypto.getRandomValues(new Uint8Array(32))].map((b) => b.toString(16).padStart(2, "0")).join("");
+    const token = [...crypto.getRandomValues(new Uint8Array(32))]
+      .map((b) => b.toString(16).padStart(2, "0"))
+      .join("");
     const tokenHash = await sha256Hex(token);
     const now = new Date().toISOString();
     const { data: lead, error } = await supabaseAdmin
       .from("early_access_leads")
       .upsert(
-        { email: data.email, device: data.device || null, status: "pending", confirm_token_hash: tokenHash, consent_at: now, last_requested_at: now },
+        {
+          email: data.email,
+          device: data.device || null,
+          status: "pending",
+          confirm_token_hash: tokenHash,
+          consent_at: now,
+          last_requested_at: now,
+        },
         { onConflict: "email" },
       )
       .select("id")
       .single();
     if (error) {
       console.error("lead upsert failed", error.message);
-      return { ok: false, reason: "server", message: "We could not record your request. Please try again." };
+      return {
+        ok: false,
+        reason: "server",
+        message: "We could not record your request. Please try again.",
+      };
     }
 
     const confirmUrl = `https://valexii.com/early-access/confirm?token=${token}`;
-    const sent = await sendEmail({ to: data.email, ...renderEarlyAccessConfirm(confirmUrl), idempotencyKey: `ea-confirm-${lead.id}-${tokenHash.slice(0, 12)}` });
+    const sent = await sendEmail({
+      to: data.email,
+      ...renderEarlyAccessConfirm(confirmUrl),
+      idempotencyKey: `ea-confirm-${lead.id}-${tokenHash.slice(0, 12)}`,
+    });
     return { ok: true, stored: true, emailed: sent.sent };
   });
 

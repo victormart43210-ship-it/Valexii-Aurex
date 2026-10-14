@@ -11,7 +11,11 @@ export const Route = createFileRoute("/early-access/confirm")({
   head: () => ({
     meta: [
       { title: "Confirm BCXMET early-access interest — VALEXII.AI" },
-      { name: "description", content: "Confirm your BCXMET early-access email request. Interest is not a beta invitation or download." },
+      {
+        name: "description",
+        content:
+          "Confirm your BCXMET early-access email request. Interest is not a beta invitation or download.",
+      },
       { name: "robots", content: "noindex, nofollow" },
       { property: "og:title", content: "Confirm BCXMET early-access interest — VALEXII.AI" },
       { property: "og:description", content: "Confirm your BCXMET early-access email request." },
@@ -39,15 +43,23 @@ function Confirm() {
       setState("fail");
     }
   }
-  useEffect(() => { if (!valid) setState("fail"); }, [valid]);
+  useEffect(() => {
+    if (!valid) setState("fail");
+  }, [valid]);
 
   return (
     <PageShell>
       <PageHero eyebrow="BCXMET early access" title="Confirm your interest.">
         {state === "ok" ? (
-          <p role="status">Confirmed. You will receive occasional early-access updates. This is not a beta invitation, download or device protection.</p>
+          <p role="status">
+            Confirmed. You will receive occasional early-access updates. This is not a beta
+            invitation, download or device protection.
+          </p>
         ) : state === "fail" ? (
-          <p role="alert">This link is invalid, expired or already used. You can request a new one on the BCXMET page.</p>
+          <p role="alert">
+            This link is invalid, expired or already used. You can request a new one on the BCXMET
+            page.
+          </p>
         ) : (
           <p>Press the button to confirm you asked for BCXMET early-access emails.</p>
         )}
@@ -57,7 +69,9 @@ function Confirm() {
               {state === "busy" ? "Confirming…" : "Confirm early-access interest"}
             </Button>
           )}
-          <Button asChild variant="glass" className="min-h-11"><Link to="/bcxmet">Back to BCXMET</Link></Button>
+          <Button asChild variant="glass" className="min-h-11">
+            <Link to="/bcxmet">Back to BCXMET</Link>
+          </Button>
         </div>
       </PageHero>
     </PageShell>

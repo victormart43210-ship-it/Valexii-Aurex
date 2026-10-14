@@ -11,11 +11,23 @@ describe("public redaction", () => {
   it("public capabilities expose only allowlisted fields and no live status", () => {
     for (const c of toPublicCapabilities()) {
       expect(Object.keys(c).sort()).toEqual(["id", "name", "status", "summary", "visibility"]);
-      if (c.status === "REAL_CONNECTED") expect(["private-command-center", "website-claims-auditor", "repo-metadata", "cost-governor"]).toContain(c.id);
+      if (c.status === "REAL_CONNECTED")
+        expect([
+          "private-command-center",
+          "website-claims-auditor",
+          "repo-metadata",
+          "cost-governor",
+        ]).toContain(c.id);
     }
   });
   it("redactForPublic strips sensitive keys recursively", () => {
-    const r = redactForPublic({ name: "x", token: "t", nested: [{ endpointUrl: "https://a", budgetUsd: 5, ok: 1 }], AUREX_SERVICE_URL: "u", ownerEmail: "e" });
+    const r = redactForPublic({
+      name: "x",
+      token: "t",
+      nested: [{ endpointUrl: "https://a", budgetUsd: 5, ok: 1 }],
+      AUREX_SERVICE_URL: "u",
+      ownerEmail: "e",
+    });
     expect(JSON.stringify(r)).not.toMatch(/https:\/\/a|"t"|"u"|"e"|budget|token/);
     expect(r).toMatchObject({ name: "x", nested: [{ ok: 1 }] });
   });
@@ -24,7 +36,8 @@ describe("public redaction", () => {
 describe("blurred placeholders contain no sensitive payload", () => {
   const text = JSON.stringify(PRIVATE_PLACEHOLDERS);
   it("contain only placeholder text", () => {
-    for (const c of PRIVATE_PLACEHOLDERS) for (const l of c.lines) expect(l).toMatch(/^Placeholder( line)?[ █]+$/);
+    for (const c of PRIVATE_PLACEHOLDERS)
+      for (const l of c.lines) expect(l).toMatch(/^Placeholder( line)?[ █]+$/);
     expect(text).not.toMatch(/https?:|@|sb_|Bearer|AUREX_|\d{2,}|[0-9a-f]{8}-/i);
   });
   it("placeholder component never imports server functions or private data", () => {
@@ -40,7 +53,9 @@ describe("access bypass guards", () => {
     expect((fns.match(/\.middleware\(\[requireSupabaseAuth\]\)/g) ?? []).length).toBe(count);
   });
   it("every privileged handler checks the owner", () => {
-    expect((fns.match(/assertOwner\(context\.userId/g) ?? []).length).toBe((fns.match(/createServerFn\(/g) ?? []).length - 1);
+    expect((fns.match(/assertOwner\(context\.userId/g) ?? []).length).toBe(
+      (fns.match(/createServerFn\(/g) ?? []).length - 1,
+    );
   });
   it("admin route is client-only and noindex", () => {
     const route = readFileSync("src/routes/admin.aurex-control.tsx", "utf8");
@@ -58,7 +73,9 @@ describe("approval gates and abuse limits", () => {
     expect(approvalValid({ proposerId: other, approverId: other, ownerId: owner })).toBe(false);
     expect(approvalValid({ proposerId: other, approverId: owner, ownerId: owner })).toBe(true);
     expect(approvalValid({ proposerId: other, approverId: owner, ownerId: undefined })).toBe(false);
-    expect(applyGate({ proposalId: "p", ownerApproved: true, selfApproved: true }).reason).toMatch(/Self-approval/);
+    expect(applyGate({ proposalId: "p", ownerApproved: true, selfApproved: true }).reason).toMatch(
+      /Self-approval/,
+    );
   });
   it("rate limiter blocks after the limit and resets after the window", () => {
     const lim = createRateLimiter(2, 1000);
@@ -74,7 +91,9 @@ describe("approval gates and abuse limits", () => {
 
 describe("security headers", () => {
   it("adds baseline headers without overwriting existing ones", () => {
-    const r = withSecurityHeaders(new Response("x", { headers: { "Referrer-Policy": "no-referrer" } }));
+    const r = withSecurityHeaders(
+      new Response("x", { headers: { "Referrer-Policy": "no-referrer" } }),
+    );
     expect(r.headers.get("X-Content-Type-Options")).toBe("nosniff");
     expect(r.headers.get("Referrer-Policy")).toBe("no-referrer");
     expect(r.headers.get("Content-Security-Policy")).toContain("object-src 'none'");

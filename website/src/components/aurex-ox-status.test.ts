@@ -9,7 +9,9 @@ describe("AUREX OX status", () => {
     for (const s of AUREX_OX_STATUS) expect(s.state).toMatch(/^NOT /);
   });
   it("contains no local addresses, ports, paths, tokens or network calls", () => {
-    expect(src).not.toMatch(/localhost|127\.0\.0\.1|:\d{4}|\/home\/|bearer|fetch\(|useServerFn|process\.env/i);
+    expect(src).not.toMatch(
+      /localhost|127\.0\.0\.1|:\d{4}|\/home\/|bearer|fetch\(|useServerFn|process\.env/i,
+    );
   });
   it("public /aurex shows the panel without calling owner functions", () => {
     const route = readFileSync("src/routes/aurex.tsx", "utf8");

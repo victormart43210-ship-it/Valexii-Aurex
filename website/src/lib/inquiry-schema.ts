@@ -24,28 +24,34 @@ const antiSpam = {
   startedAt: z.number().int().positive(),
 };
 
-export const inquirySchema = z.object({
-  kind: z.enum(["contact", "partnership"]),
-  name: z.string().trim().min(1, "Enter your name.").max(100),
-  email,
-  organization: z.string().trim().max(150).optional().default(""),
-  category: z.string().trim().min(1).max(80),
-  message: z
-    .string()
-    .trim()
-    .min(10, "Message must be at least 10 characters.")
-    .max(4000, "Message must be under 4,000 characters."),
-  consent: z.literal(true, { errorMap: () => ({ message: "Consent is required to submit." }) }),
-  ...antiSpam,
-}).superRefine((v, ctx) => {
-  const allowed: readonly string[] = v.kind === "contact" ? CONTACT_CATEGORIES : PARTNERSHIP_CATEGORIES;
-  if (!allowed.includes(v.category)) ctx.addIssue({ code: "custom", path: ["category"], message: "Choose a category." });
-});
+export const inquirySchema = z
+  .object({
+    kind: z.enum(["contact", "partnership"]),
+    name: z.string().trim().min(1, "Enter your name.").max(100),
+    email,
+    organization: z.string().trim().max(150).optional().default(""),
+    category: z.string().trim().min(1).max(80),
+    message: z
+      .string()
+      .trim()
+      .min(10, "Message must be at least 10 characters.")
+      .max(4000, "Message must be under 4,000 characters."),
+    consent: z.literal(true, { errorMap: () => ({ message: "Consent is required to submit." }) }),
+    ...antiSpam,
+  })
+  .superRefine((v, ctx) => {
+    const allowed: readonly string[] =
+      v.kind === "contact" ? CONTACT_CATEGORIES : PARTNERSHIP_CATEGORIES;
+    if (!allowed.includes(v.category))
+      ctx.addIssue({ code: "custom", path: ["category"], message: "Choose a category." });
+  });
 
 export const earlyAccessSchema = z.object({
   email,
   device: z.string().trim().max(80).optional().default(""),
-  consent: z.literal(true, { errorMap: () => ({ message: "Consent is required to request early access." }) }),
+  consent: z.literal(true, {
+    errorMap: () => ({ message: "Consent is required to request early access." }),
+  }),
   ...antiSpam,
 });
 

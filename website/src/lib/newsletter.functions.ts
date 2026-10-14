@@ -34,7 +34,10 @@ const input = z.object({
   startedAt: z.number().int(),
 });
 
-export type SubscribeResult = { ok: boolean; reason?: "inactive" | "rate" | "invalid" | "upstream" };
+export type SubscribeResult = {
+  ok: boolean;
+  reason?: "inactive" | "rate" | "invalid" | "upstream";
+};
 
 export const subscribeNewsletter = createServerFn({ method: "POST" })
   .inputValidator((d: unknown) => input.parse(d))

@@ -16,9 +16,17 @@ describe("AUREX control authorization", () => {
 
 describe("OBSERVE SSRF allowlist", () => {
   it.each([
-    "http://valexii.com/", "https://evil.com/", "https://valexii.com.evil.com/",
-    "https://www.valexii.com/", "https://localhost/", "https://127.0.0.1/", "https://169.254.169.254/",
-    "https://user:pw@valexii.com/", "https://valexii.com:8080/", "file:///etc/passwd", "not a url",
+    "http://valexii.com/",
+    "https://evil.com/",
+    "https://valexii.com.evil.com/",
+    "https://www.valexii.com/",
+    "https://localhost/",
+    "https://127.0.0.1/",
+    "https://169.254.169.254/",
+    "https://user:pw@valexii.com/",
+    "https://valexii.com:8080/",
+    "file:///etc/passwd",
+    "not a url",
   ])("blocks %s", (u) => expect(isAllowedUrl(u)).toBe(false));
   it("allows only fixed valexii.com paths", () => {
     for (const p of OBSERVE_PATHS) expect(isAllowedUrl(`https://valexii.com${p}`)).toBe(true);

@@ -1,6 +1,9 @@
 /** Pure, dependency-free branded email bodies. All dynamic values are HTML-escaped. */
 export function esc(value: string): string {
-  return value.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]!);
+  return value.replace(
+    /[&<>"']/g,
+    (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]!,
+  );
 }
 
 function shell(title: string, body: string): string {
@@ -19,37 +22,70 @@ function shell(title: string, body: string): string {
 const p = (t: string) => `<p style="font-size:14px;line-height:22px;margin:0 0 12px">${t}</p>`;
 
 export function renderInquiryNotification(i: {
-  kind: string; name: string; email: string; organization?: string; category: string; message: string; id: string;
+  kind: string;
+  name: string;
+  email: string;
+  organization?: string;
+  category: string;
+  message: string;
+  id: string;
 }) {
-  const subject = `[${i.kind === "partnership" ? "Partnership" : "Contact"}] ${i.category} — ${i.name}`.slice(0, 160);
-  const html = shell("New website inquiry", [
-    p(`<strong>Type:</strong> ${esc(i.kind)} · <strong>Category:</strong> ${esc(i.category)}`),
-    p(`<strong>Name:</strong> ${esc(i.name)}<br><strong>Email:</strong> ${esc(i.email)}${i.organization ? `<br><strong>Organization:</strong> ${esc(i.organization)}` : ""}`),
-    `<div style="white-space:pre-wrap;font-size:14px;line-height:22px;background:#f5f7fa;padding:12px;border-left:3px solid #5fe3e0">${esc(i.message)}</div>`,
-    p(`<span style="font-size:12px;color:#5b6675">Reference ${esc(i.id)}. Reply goes directly to the sender.</span>`),
-  ].join(""));
+  const subject =
+    `[${i.kind === "partnership" ? "Partnership" : "Contact"}] ${i.category} — ${i.name}`.slice(
+      0,
+      160,
+    );
+  const html = shell(
+    "New website inquiry",
+    [
+      p(`<strong>Type:</strong> ${esc(i.kind)} · <strong>Category:</strong> ${esc(i.category)}`),
+      p(
+        `<strong>Name:</strong> ${esc(i.name)}<br><strong>Email:</strong> ${esc(i.email)}${i.organization ? `<br><strong>Organization:</strong> ${esc(i.organization)}` : ""}`,
+      ),
+      `<div style="white-space:pre-wrap;font-size:14px;line-height:22px;background:#f5f7fa;padding:12px;border-left:3px solid #5fe3e0">${esc(i.message)}</div>`,
+      p(
+        `<span style="font-size:12px;color:#5b6675">Reference ${esc(i.id)}. Reply goes directly to the sender.</span>`,
+      ),
+    ].join(""),
+  );
   return { subject, html };
 }
 
 export function renderInquiryReceipt(name: string) {
   return {
     subject: "We received your message — VALEXII.AI",
-    html: shell(`Thank you, ${name}`, [
-      p("Your message reached VALEXII.AI and was stored securely. A person reads every inquiry; there is no guaranteed response time."),
-      p("Please keep follow-ups non-confidential: do not send credentials, private repository contents or unpublished patentable details."),
-      p("No partnership, investment offering, funding or product access is implied by this acknowledgement."),
-    ].join("")),
+    html: shell(
+      `Thank you, ${name}`,
+      [
+        p(
+          "Your message reached VALEXII.AI and was stored securely. A person reads every inquiry; there is no guaranteed response time.",
+        ),
+        p(
+          "Please keep follow-ups non-confidential: do not send credentials, private repository contents or unpublished patentable details.",
+        ),
+        p(
+          "No partnership, investment offering, funding or product access is implied by this acknowledgement.",
+        ),
+      ].join(""),
+    ),
   };
 }
 
 export function renderEarlyAccessConfirm(confirmUrl: string) {
   return {
     subject: "Confirm your BCXMET early-access interest",
-    html: shell("Confirm your early-access interest", [
-      p("Someone (hopefully you) asked to hear about BCXMET early-access opportunities. Confirm to be added:"),
-      `<p style="margin:20px 0"><a href="${esc(confirmUrl)}" style="background:#5fe3e0;color:#07111f;padding:12px 20px;text-decoration:none;font-weight:bold;border-radius:4px">Confirm interest</a></p>`,
-      p("If you did not request this, ignore this email and nothing further happens."),
-      p("Interest is not a beta invitation, download, subscription or protection. BCXMET has no active public beta today."),
-    ].join("")),
+    html: shell(
+      "Confirm your early-access interest",
+      [
+        p(
+          "Someone (hopefully you) asked to hear about BCXMET early-access opportunities. Confirm to be added:",
+        ),
+        `<p style="margin:20px 0"><a href="${esc(confirmUrl)}" style="background:#5fe3e0;color:#07111f;padding:12px 20px;text-decoration:none;font-weight:bold;border-radius:4px">Confirm interest</a></p>`,
+        p("If you did not request this, ignore this email and nothing further happens."),
+        p(
+          "Interest is not a beta invitation, download, subscription or protection. BCXMET has no active public beta today.",
+        ),
+      ].join(""),
+    ),
   };
 }

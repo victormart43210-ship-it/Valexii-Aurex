@@ -72,7 +72,10 @@ export function isInternalTest() {
 const attributionKey = "valexii-attribution";
 const clean = (v: string | null) => {
   if (!v) return undefined;
-  const s = v.toLowerCase().replace(/[^a-z0-9_.-]/g, "").slice(0, 40);
+  const s = v
+    .toLowerCase()
+    .replace(/[^a-z0-9_.-]/g, "")
+    .slice(0, 40);
   // Reject anything resembling an email/phone/long number to avoid PII in campaign tags.
   return s && !/\d{6,}/.test(s) ? s : undefined;
 };
@@ -96,7 +99,9 @@ export function captureAttribution() {
       const host = new URL(document.referrer).hostname;
       if (host === window.location.hostname) referrer = "internal";
       else if (/(google|bing|duckduckgo|yahoo|ecosia|brave)\./.test(host)) referrer = "search";
-      else if (/(facebook|instagram|linkedin|x\.com|twitter|t\.co|reddit|youtube|tiktok)/.test(host))
+      else if (
+        /(facebook|instagram|linkedin|x\.com|twitter|t\.co|reddit|youtube|tiktok)/.test(host)
+      )
         referrer = "social";
       else referrer = "other";
     }
