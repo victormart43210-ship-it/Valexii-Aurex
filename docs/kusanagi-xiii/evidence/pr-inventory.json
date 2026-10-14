@@ -1,0 +1,146 @@
+[
+  {
+    "number": 19,
+    "title": "feat: AUREX Operation MAINLINE CONVERGENCE",
+    "state": "closed",
+    "merged_at": "2026-10-13T23:27:20Z",
+    "head": "ad6821195e9e9339c73d155a2aa038cb467a151c",
+    "branch": "aurex-mainline-convergence-5126581965977077235",
+    "url": "https://github.com/victormart43210-ship-it/Valexii-Aurex/pull/19"
+  },
+  {
+    "number": 18,
+    "title": "AUREX ARO: fail-closed budget guard and adversarial tests",
+    "state": "closed",
+    "merged_at": "2026-10-13T03:51:23Z",
+    "head": "c4b83d272f5b98914826dcf0cd270cfd8ba8dadc",
+    "branch": "feature/aro-budget-guard-v1",
+    "url": "https://github.com/victormart43210-ship-it/Valexii-Aurex/pull/18"
+  },
+  {
+    "number": 17,
+    "title": "docs: contributor onboarding, CUSTOS test gates, and Apache-2.0 license",
+    "state": "closed",
+    "merged_at": "2026-10-13T03:49:37Z",
+    "head": "5612f225c4b4bea22027a5198b3b9cf73c1f192f",
+    "branch": "work/community-verification-v5-20261011",
+    "url": "https://github.com/victormart43210-ship-it/Valexii-Aurex/pull/17"
+  },
+  {
+    "number": 16,
+    "title": "AUREX: budgeted OpenAI API runner for public HLE sample",
+    "state": "closed",
+    "merged_at": "2026-10-13T03:52:21Z",
+    "head": "a454253dbde446b56b03756e18b5ac3d918ea116",
+    "branch": "feature/aurex-hle-api-budgeted",
+    "url": "https://github.com/victormart43210-ship-it/Valexii-Aurex/pull/16"
+  },
+  {
+    "number": 15,
+    "title": "AUREX V4: fail-closed inference evidence ledger",
+    "state": "open",
+    "merged_at": null,
+    "head": "e7dbf85403f405208324f51e20d8cb2f7d81680b",
+    "branch": "feature/aurex-v4-evidence-ledger",
+    "url": "https://github.com/victormart43210-ship-it/Valexii-Aurex/pull/15"
+  },
+  {
+    "number": 14,
+    "title": "AUREX: hosted CI smoke evidence for practice evaluator",
+    "state": "open",
+    "merged_at": null,
+    "head": "be897ece63874442cfd2d3201db7616ddfe1bccc",
+    "branch": "feature/aurex-independent-ci-evidence-v1",
+    "url": "https://github.com/victormart43210-ship-it/Valexii-Aurex/pull/14"
+  },
+  {
+    "number": 13,
+    "title": "AUREX: local model readiness diagnostics",
+    "state": "open",
+    "merged_at": null,
+    "head": "3aa3eda146b799026071cac2e77f06edfd24898c",
+    "branch": "feature/aurex-local-inference-hardening-v1",
+    "url": "https://github.com/victormart43210-ship-it/Valexii-Aurex/pull/13"
+  },
+  {
+    "number": 12,
+    "title": "AUREX: offline HLE-style practice scoring scaffold",
+    "state": "open",
+    "merged_at": null,
+    "head": "c6100d522958fa3bdc69398f24cf39dbfe09a84b",
+    "branch": "feature/hle-practice-lab-v1",
+    "url": "https://github.com/victormart43210-ship-it/Valexii-Aurex/pull/12"
+  },
+  {
+    "number": 11,
+    "title": "Model Forge v1: offline training demo and model provenance controls",
+    "state": "open",
+    "merged_at": null,
+    "head": "60cc266a48d80b3df0c72b8fb97786f9a7649781",
+    "branch": "feature/model-forge-v1",
+    "url": "https://github.com/victormart43210-ship-it/Valexii-Aurex/pull/11"
+  },
+  {
+    "number": 10,
+    "title": "Amaterasu: fail-closed evaluation, model execution records and LoRA smoke pipeline",
+    "state": "open",
+    "merged_at": null,
+    "head": "0c9480950afa37217bfdd2ae628342310a2596ad",
+    "branch": "work/amaterasu-execution-20261008",
+    "url": "https://github.com/victormart43210-ship-it/Valexii-Aurex/pull/10"
+  },
+  {
+    "number": 9,
+    "title": "AUREX Workstation v1: lightweight local dashboard",
+    "state": "closed",
+    "merged_at": "2026-10-13T03:52:47Z",
+    "head": "324b1dc34600c644dee3632f281245391d4d666f",
+    "branch": "feature/aurex-workstation-ui-v1",
+    "url": "https://github.com/victormart43210-ship-it/Valexii-Aurex/pull/9"
+  },
+  {
+    "number": 8,
+    "title": "AUREX Wave 1: international model stack and verification gates",
+    "state": "open",
+    "merged_at": null,
+    "head": "5765b22a9e8f4dacc9f5df1c6e57a7416b0a0822",
+    "branch": "feature/international-model-adapters-wave1",
+    "url": "https://github.com/victormart43210-ship-it/Valexii-Aurex/pull/8"
+  },
+  {
+    "number": 6,
+    "title": "Verification and status query for aurex-hle-readiness",
+    "state": "closed",
+    "merged_at": "2026-10-08T00:54:55Z",
+    "head": "26bd9a48a2a0d201c2c4fba38ad67dc4ebf16252",
+    "branch": "aurex-hle-readiness-8769476974681877556",
+    "url": "https://github.com/victormart43210-ship-it/Valexii-Aurex/pull/6"
+  },
+  {
+    "number": 5,
+    "title": "feat(uer): fail-closed challenger validation, remediation lineage, and statistical evaluation",
+    "state": "open",
+    "merged_at": null,
+    "head": "9bafcd94424907af7e93282fba8e4e733d5dcb5a",
+    "branch": "aurex-hle-readiness-10590616655241930841",
+    "url": "https://github.com/victormart43210-ship-it/Valexii-Aurex/pull/5"
+  },
+  {
+    "number": 4,
+    "title": "Add independent MobSF, Astronomy Engine, OpenTelemetry and MADLAD witness adapters",
+    "state": "open",
+    "merged_at": null,
+    "head": "92a847630f6e54de2c44c808b57dc483cd59bc5a",
+    "branch": "integration/oss-independent-witnesses-20261007",
+    "url": "https://github.com/victormart43210-ship-it/Valexii-Aurex/pull/4"
+  },
+  {
+    "number": 3,
+    "title": "AUREX: fail-closed challenger validation and HLE readiness gate",
+    "state": "open",
+    "merged_at": null,
+    "head": "bd5814e9a8d442bad69b78c84ee34cff6b234d13",
+    "branch": "aurex-hle-readiness",
+    "url": "https://github.com/victormart43210-ship-it/Valexii-Aurex/pull/3"
+  }
+]
