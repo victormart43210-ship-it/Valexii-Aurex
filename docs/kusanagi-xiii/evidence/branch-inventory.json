@@ -1,0 +1,122 @@
+[
+  {
+    "ref": "origin",
+    "sha": "f8df262ce39be2ba3b25046d94632e86179e15dd",
+    "tree": "8a6a99ea5ff3e8b377c9cdbbc59965321fb29a5a",
+    "ancestor_of_main": true
+  },
+  {
+    "ref": "origin/aurex-hle-readiness",
+    "sha": "bd5814e9a8d442bad69b78c84ee34cff6b234d13",
+    "tree": "f41940ea5cbe1d7b6235d936fe9a508639c6887f",
+    "ancestor_of_main": false
+  },
+  {
+    "ref": "origin/aurex-hle-readiness-10590616655241930841",
+    "sha": "9bafcd94424907af7e93282fba8e4e733d5dcb5a",
+    "tree": "5897e3f482fc3bba9382e1c330d21daf8756acb0",
+    "ancestor_of_main": false
+  },
+  {
+    "ref": "origin/aurex-hle-readiness-8769476974681877556",
+    "sha": "26bd9a48a2a0d201c2c4fba38ad67dc4ebf16252",
+    "tree": "b0ae9d589445d363b3549baf912cd3b25015050d",
+    "ancestor_of_main": true
+  },
+  {
+    "ref": "origin/aurex-mainline-convergence-5126581965977077235",
+    "sha": "1f80aa75f67b73e06697d3d37a30e20c468c3345",
+    "tree": "8a6a99ea5ff3e8b377c9cdbbc59965321fb29a5a",
+    "ancestor_of_main": false
+  },
+  {
+    "ref": "origin/chatgpt/aurex-adversarial-wave",
+    "sha": "dc52ce5a749d65d3d7b8f7add37b573d66f2b883",
+    "tree": "f60f477f383a09535fc79388da55d11c9e4de157",
+    "ancestor_of_main": false
+  },
+  {
+    "ref": "origin/copilot/kusanagi-xi-sovereign-activation",
+    "sha": "f8df262ce39be2ba3b25046d94632e86179e15dd",
+    "tree": "8a6a99ea5ff3e8b377c9cdbbc59965321fb29a5a",
+    "ancestor_of_main": true
+  },
+  {
+    "ref": "origin/feature/aro-budget-guard-v1",
+    "sha": "c4b83d272f5b98914826dcf0cd270cfd8ba8dadc",
+    "tree": "cfcb2a53f434b227d55b514fa789895b65811163",
+    "ancestor_of_main": false
+  },
+  {
+    "ref": "origin/feature/aurex-hle-api-budgeted",
+    "sha": "a454253dbde446b56b03756e18b5ac3d918ea116",
+    "tree": "a289e46ad6dec81bf2e678ceb0a0df37b8fc26fb",
+    "ancestor_of_main": false
+  },
+  {
+    "ref": "origin/feature/aurex-independent-ci-evidence-v1",
+    "sha": "be897ece63874442cfd2d3201db7616ddfe1bccc",
+    "tree": "592501aaa91520a267fd8a2082fcf7331cbb1c56",
+    "ancestor_of_main": false
+  },
+  {
+    "ref": "origin/feature/aurex-local-inference-hardening-v1",
+    "sha": "3aa3eda146b799026071cac2e77f06edfd24898c",
+    "tree": "b13456684c98b71e23a2d254034b205f470f2b30",
+    "ancestor_of_main": false
+  },
+  {
+    "ref": "origin/feature/aurex-v4-evidence-ledger",
+    "sha": "e7dbf85403f405208324f51e20d8cb2f7d81680b",
+    "tree": "c271d841b459294f6da5f9f427fc8dab622ebaf5",
+    "ancestor_of_main": false
+  },
+  {
+    "ref": "origin/feature/aurex-workstation-ui-v1",
+    "sha": "324b1dc34600c644dee3632f281245391d4d666f",
+    "tree": "46c8fa2abfe03467430a8213771a2677cac62114",
+    "ancestor_of_main": false
+  },
+  {
+    "ref": "origin/feature/hle-practice-lab-v1",
+    "sha": "c6100d522958fa3bdc69398f24cf39dbfe09a84b",
+    "tree": "5a7b7e9fc17e833c9415441ea0bd5c96e8e16209",
+    "ancestor_of_main": false
+  },
+  {
+    "ref": "origin/feature/international-model-adapters-wave1",
+    "sha": "5765b22a9e8f4dacc9f5df1c6e57a7416b0a0822",
+    "tree": "ac6d6a00f5f215ee847966c6eda8577c902666fd",
+    "ancestor_of_main": false
+  },
+  {
+    "ref": "origin/feature/model-forge-v1",
+    "sha": "60cc266a48d80b3df0c72b8fb97786f9a7649781",
+    "tree": "91051f2ab0982ad3cc39a769ed76d51549d5266d",
+    "ancestor_of_main": false
+  },
+  {
+    "ref": "origin/integration/oss-independent-witnesses-20261007",
+    "sha": "92a847630f6e54de2c44c808b57dc483cd59bc5a",
+    "tree": "7fca3669f1206a20182d192d55ca4024f1380e2c",
+    "ancestor_of_main": false
+  },
+  {
+    "ref": "origin/main",
+    "sha": "f8df262ce39be2ba3b25046d94632e86179e15dd",
+    "tree": "8a6a99ea5ff3e8b377c9cdbbc59965321fb29a5a",
+    "ancestor_of_main": true
+  },
+  {
+    "ref": "origin/work/amaterasu-execution-20261008",
+    "sha": "0c9480950afa37217bfdd2ae628342310a2596ad",
+    "tree": "ab5bfc873866213db3a8d5bf720f97e1f56a8fb8",
+    "ancestor_of_main": false
+  },
+  {
+    "ref": "origin/work/community-verification-v5-20261011",
+    "sha": "5612f225c4b4bea22027a5198b3b9cf73c1f192f",
+    "tree": "dd57f71c30ca850b32d09b32db13da2891cbf469",
+    "ancestor_of_main": false
+  }
+]

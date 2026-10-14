@@ -100,14 +100,27 @@ def update_job_state(
     state: str,
     result: dict[str, Any] | None = None,
 ) -> dict[str, Any] | None:
+    transitions = {
+        "queued": {"running", "cancelled", "failed"},
+        "running": {"succeeded", "failed", "cancelled"},
+        "succeeded": set(), "failed": set(), "cancelled": set(),
+    }
     conn = get_db(db_path)
-    now = datetime.now(UTC).isoformat()
-    res_json = json.dumps(result) if result else None
-    with conn:
-        conn.execute(
-            "UPDATE jobs SET state = ?, updated_at = ?, result_json = ? WHERE id = ?",
-            (state, now, res_json, job_id),
-        )
+    try:
+        with conn:
+            conn.execute("BEGIN IMMEDIATE")
+            row = conn.execute("SELECT state FROM jobs WHERE id = ?", (job_id,)).fetchone()
+            if row is None:
+                return None
+            if state not in transitions.get(row["state"], set()):
+                raise ValueError("Invalid job state transition")
+            conn.execute(
+                "UPDATE jobs SET state = ?, updated_at = ?, result_json = ? WHERE id = ? AND state = ?",
+                (state, datetime.now(UTC).isoformat(), json.dumps(result) if result is not None else None,
+                 job_id, row["state"]),
+            )
+    finally:
+        conn.close()
     return get_job(db_path, job_id)
 
 

@@ -1,0 +1,3 @@
+COMMAND: ['/workspace/scratch/9b8b721f1090/aurex-venv/bin/mypy', 'aurex', '--strict']
+EXIT: 0
+Success: no issues found in 40 source files

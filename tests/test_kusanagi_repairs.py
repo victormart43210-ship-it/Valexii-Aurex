@@ -84,6 +84,7 @@ def test_valid_ed25519_signature_admits() -> None:
         manifest_sha256=m_sha,
         run_sha256=r_sha,
         attestation=att_signed,
+        trusted_public_keys={att_signed.verifier_id: pub_bytes.hex()},
         ledger_valid=True,
         run_complete=True,
     )

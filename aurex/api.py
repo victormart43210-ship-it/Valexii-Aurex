@@ -1,25 +1,24 @@
 """Operational AUREX HTTP API conforming to VALEXII Website contracts."""
 
 import hmac
+import math
 import os
-import secrets
+import re
 from datetime import UTC, datetime
 from decimal import Decimal
 from typing import Any
 
 from fastapi import Depends, FastAPI, Header, HTTPException, status
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 from aurex.database import (
     DEFAULT_DB_PATH,
-    create_job,
     get_job,
     list_evidence,
     list_jobs,
-    record_evidence,
     update_job_state,
 )
-from aurex.provenance import fingerprint
+from aurex.request_limits import RequestLimits
 from aurex.workflows.budget import BudgetGuard
 
 app = FastAPI(
@@ -27,6 +26,8 @@ app = FastAPI(
     version="0.1.0a1",
     description="External evidence and challenge engine. AUREX never grants product authority.",
 )
+
+app.add_middleware(RequestLimits)
 
 budget_guard = BudgetGuard(limit_usd=Decimal("0.00"))
 
@@ -58,7 +59,7 @@ def authenticate(authorization: str | None = Header(default=None)) -> str:
             detail="Missing or malformed Authorization header",
         )
     supplied = authorization[7:].strip()
-    if not hmac.compare_digest(supplied, expected):
+    if not hmac.compare_digest(supplied.encode("utf-8"), expected.encode("utf-8")):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid authorization credentials",
@@ -71,7 +72,23 @@ class JobCreateRequest(BaseModel):
 
     kind: str = Field(pattern=r"^(regression_scan|benchmark|hypothesis_test)$")
     params: dict[str, Any] = Field(default_factory=dict)
-    maxCostUsd: float = Field(default=0.0, ge=0.0, le=100.0)
+    maxCostUsd: float = Field(default=0.0, ge=0.0, le=100.0, allow_inf_nan=False)
+
+    @field_validator("params", mode="before")
+    @classmethod
+    def bounded_params(cls, value: Any) -> dict[str, Any]:
+        if not isinstance(value, dict) or len(value) > 16:
+            raise ValueError("params must contain at most 16 scalar values")
+        for key, item in value.items():
+            if not isinstance(key, str) or not re.fullmatch(r"[a-z_]{1,32}", key):
+                raise ValueError("invalid parameter name")
+            if type(item) not in (str, int, float, bool):
+                raise ValueError("parameter values must be scalar")
+            if isinstance(item, str) and len(item) > 256:
+                raise ValueError("parameter string too long")
+            if isinstance(item, float) and not math.isfinite(item):
+                raise ValueError("parameter must be finite")
+        return value
 
 
 class JobResponse(BaseModel):
@@ -121,7 +138,7 @@ class BudgetResponse(BaseModel):
 
 @app.get("/v1/health")
 @app.get("/health")
-def health() -> dict[str, str]:
+def health(_: str = Depends(authenticate)) -> dict[str, str]:
     return {
         "status": "ok",
         "version": "0.1.0a1",
@@ -131,19 +148,16 @@ def health() -> dict[str, str]:
 
 @app.get("/v1/capabilities", response_model=CapabilitiesResponse)
 def capabilities(_: str = Depends(authenticate)) -> CapabilitiesResponse:
-    ev_records = list_evidence(DEFAULT_DB_PATH)
-    latest_ev = ev_records[0] if ev_records else None
-
     return CapabilitiesResponse(
         capabilities=[
             CapabilityItem(
-                id="regression_scan",
-                available=True,
-                evidenceId=latest_ev["id"] if latest_ev else None,
-                verifiedAt=latest_ev["collected_at"] if latest_ev else None,
+                id="regression-scan",
+                available=False,
+                evidenceId=None,
+                verifiedAt=None,
             ),
             CapabilityItem(
-                id="remote_inference",
+                id="remote-inference",
                 available=False,
                 evidenceId=None,
                 verifiedAt=None,
@@ -184,49 +198,13 @@ def create_job_endpoint(
     if req.maxCostUsd > 0.0:
         raise HTTPException(
             status_code=status.HTTP_402_PAYMENT_REQUIRED,
-            detail="Paid execution disabled; budget limit is -bash.00",
+            detail="Paid execution disabled; budget limit is $0.00",
         )
 
-    job_id = f"job-{secrets.token_hex(8)}"
-    try:
-        j = create_job(
-            db_path=DEFAULT_DB_PATH,
-            job_id=job_id,
-            kind=req.kind,
-            params=req.params,
-            idempotency_key=idempotency_key,
-            reservation_usd=req.maxCostUsd,
-        )
-    except ValueError as exc:
-        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(exc)) from exc
-
-    # Execute bounded offline worker for allowlisted regression scan
-    update_job_state(DEFAULT_DB_PATH, j["id"], "running")
-
-    # Record real execution evidence
-    ev_sha256 = fingerprint({"job_id": j["id"], "params": req.params, "outcome": "PASS"})
-    ev = record_evidence(
-        db_path=DEFAULT_DB_PATH,
-        evidence_id=f"ev-{secrets.token_hex(8)}",
-        capability_id="regression_scan",
-        kind="test_run",
-        sha256=ev_sha256,
-        summary=f"Regression scan for job {j['id']} completed successfully",
-    )
-
-    final_job = update_job_state(
-        DEFAULT_DB_PATH, j["id"], "succeeded", result={"evidence_id": ev["id"]}
-    )
-    if not final_job:
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Job update failed")
-
-    return JobResponse(
-        id=final_job["id"],
-        kind=final_job["kind"],
-        state=final_job["state"],
-        createdAt=final_job["created_at"],
-        updatedAt=final_job["updated_at"],
-        reservationUsd=final_job["reservation_usd"],
+    # No regression worker is connected. A hash of an asserted PASS is not evidence.
+    raise HTTPException(
+        status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+        detail="Regression worker unavailable; no execution or evidence produced",
     )
 
 
@@ -250,7 +228,10 @@ def cancel_job_endpoint(job_id: str, _: str = Depends(authenticate)) -> JobRespo
     j = get_job(DEFAULT_DB_PATH, job_id)
     if not j:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Job not found")
-    updated = update_job_state(DEFAULT_DB_PATH, job_id, "cancelled")
+    try:
+        updated = update_job_state(DEFAULT_DB_PATH, job_id, "cancelled")
+    except ValueError as exc:
+        raise HTTPException(status_code=409, detail="Job is already terminal") from exc
     if not updated:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Job not found")
     return JobResponse(
