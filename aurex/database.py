@@ -98,25 +98,16 @@ def create_job(
             conn.execute(
                 """
                 INSERT INTO jobs (
-                id, kind, state, idempotency_key, params_json, reservation_usd,
-                created_at, updated_at, request_id, trace_id, worker_id
+                    id, kind, state, idempotency_key, params_json, reservation_usd,
+                    created_at, updated_at, request_id, trace_id, worker_id
+                )
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                """,
+                (
+                    job_id, kind, "queued", idempotency_key, json.dumps(params),
+                    reservation_usd, now, now, request_id, trace_id, worker_id,
+                ),
             )
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-            """,
-            (
-                job_id,
-                kind,
-                "queued",
-                idempotency_key,
-                json.dumps(params),
-                reservation_usd,
-                now,
-                now,
-                request_id,
-                trace_id,
-                worker_id,
-            ),
-        )
     except sqlite3.IntegrityError:
         if not idempotency_key:
             raise
