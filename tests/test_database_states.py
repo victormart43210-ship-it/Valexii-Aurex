@@ -1,10 +1,6 @@
-import os
-import tempfile
 from pathlib import Path
 
-import pytest
-
-from aurex.database import create_job, get_job, update_job_state, record_evidence
+from aurex.database import create_job, record_evidence, update_job_state
 
 
 def make_db(tmp_path: Path) -> str:
