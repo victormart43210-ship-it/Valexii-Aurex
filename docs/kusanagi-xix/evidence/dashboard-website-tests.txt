@@ -1,0 +1,12 @@
+
+ RUN  v5.0.4 /workspace/scratch/9b8b721f1090/repos/aurex-xiv/website
+
+
+ Test Files  23 passed (23)
+      Tests  153 passed (153)
+   Start at  15:33:44
+   Duration  883ms (transform 39%, tests 34%, import 22%, worker 4%)
+
+    Isolate  23 workers spawned · ~138ms startup each (spawn + environment, per file)
+             at least ~316ms faster with isolate: false — reuses workers across files instead of one per file
+

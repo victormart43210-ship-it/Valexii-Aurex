@@ -1,0 +1,221 @@
+........F.F.....F.....F.......................FF...FF.F................. [ 53%]
+.............................F.................................          [100%]
+=================================== FAILURES ===================================
+_____________________________ test_health_endpoint _____________________________
+
+    def test_health_endpoint() -> None:
+        res = client.get("/health")
+>       assert res.status_code == 200
+E       assert 401 == 200
+E        +  where 401 = <Response [401 Unauthorized]>.status_code
+
+tests/test_api.py:23: AssertionError
+________________________ test_jobs_submission_endpoint _________________________
+
+    def test_jobs_submission_endpoint() -> None:
+        res = client.post(
+            "/v1/jobs",
+            json={"kind": "regression_scan", "params": {}, "maxCostUsd": 0.0},
+            headers={"Authorization": f"Bearer {VALID_TOKEN}"},
+        )
+>       assert res.status_code == 200
+E       assert 503 == 200
+E        +  where 503 = <Response [503 Service Unavailable]>.status_code
+
+tests/test_api.py:40: AssertionError
+____________________ test_unsigned_attestation_never_admits ____________________
+
+    def test_unsigned_attestation_never_admits():
+        m = runpy.run_path("tests/test_experiment_runner.py")["manifest"]()
+        ledger = EvidenceLedger()
+        r = ExperimentRunner(ledger).run(m, {"i1": "a", "i2": "b"}, str, str)
+        att = VerificationAttestation(
+            verifier_id=m.verifier.verifier_id,
+            manifest_sha256=r.manifest_sha256,
+            run_sha256=r.run_sha256,
+            passed=True,
+        )
+>       assert (
+            str(decide_admission(m, r.manifest_sha256, r.run_sha256, att, True, True).status)
+            == "NOT VERIFIED"
+        )
+E       AssertionError: assert 'HOLD' == 'NOT VERIFIED'
+E         
+E         - NOT VERIFIED
+E         + HOLD
+
+tests/test_execution_readiness.py:21: AssertionError
+__________ test_unsigned_attestation_cannot_admit_exact_complete_run ___________
+
+    def test_unsigned_attestation_cannot_admit_exact_complete_run() -> None:
+        m = manifest()
+        ledger = EvidenceLedger()
+        report = ExperimentRunner(ledger).run(
+            m,
+            {"i1": "one", "i2": "two"},
+            identity_solver(),
+            uppercase_solver(),
+        )
+        attestation = VerificationAttestation(
+            verifier_id=m.verifier.verifier_id,
+            manifest_sha256=report.manifest_sha256,
+            run_sha256=report.run_sha256,
+            passed=True,
+        )
+        decision = decide_admission(
+            m, report.manifest_sha256, report.run_sha256, attestation, ledger.verify(), report.complete
+        )
+>       assert decision.status is ResultStatus.NOT_VERIFIED
+E       AssertionError: assert <ResultStatus.HOLD: 'HOLD'> is <ResultStatus.NOT_VERIFIED: 'NOT VERIFIED'>
+E        +  where <ResultStatus.HOLD: 'HOLD'> = AdmissionDecision(status=<ResultStatus.HOLD: 'HOLD'>, rationale='attestation experiment ID mismatch').status
+E        +  and   <ResultStatus.NOT_VERIFIED: 'NOT VERIFIED'> = ResultStatus.NOT_VERIFIED
+
+tests/test_experiment_runner.py:69: AssertionError
+_____________________ test_valid_ed25519_signature_admits ______________________
+
+    def test_valid_ed25519_signature_admits() -> None:
+        manifest = make_manifest()
+        m_sha = "a" * 64
+        r_sha = "b" * 64
+        priv_key = Ed25519PrivateKey.generate()
+        pub_bytes = priv_key.public_key().public_bytes_raw()
+    
+        att = VerificationAttestation(
+            experiment_id=manifest.experiment_id,
+            verifier_id=manifest.verifier.verifier_id,
+            verifier_family=manifest.verifier.family,
+            manifest_sha256=m_sha,
+            run_sha256=r_sha,
+            passed=True,
+            signature_scheme="ed25519",
+            signature="",
+            public_key_hex=pub_bytes.hex(),
+        )
+        sig = priv_key.sign(att.digest().encode("utf-8")).hex()
+        att_signed = att.model_copy(update={"signature": sig})
+    
+        decision = decide_admission(
+            manifest=manifest,
+            manifest_sha256=m_sha,
+            run_sha256=r_sha,
+            attestation=att_signed,
+            ledger_valid=True,
+            run_complete=True,
+        )
+>       assert decision.status.value == "PASS"
+E       AssertionError: assert 'HOLD' == 'PASS'
+E         
+E         - PASS
+E         + HOLD
+
+tests/test_kusanagi_repairs.py:90: AssertionError
+______________________________ test_health_public ______________________________
+
+    def test_health_public():
+        from aurex.api import app
+        client = TestClient(app)
+        res = client.get("/v1/health")
+>       assert res.status_code == 200
+E       assert 401 == 200
+E        +  where 401 = <Response [401 Unauthorized]>.status_code
+
+tests/test_kusanagi_workflow.py:22: AssertionError
+__________ test_durable_job_submission_executes_and_records_evidence ___________
+
+    def test_durable_job_submission_executes_and_records_evidence():
+        from aurex.api import app
+        client = TestClient(app)
+        auth_header = {"Authorization": f"Bearer {VALID_TOKEN}"}
+    
+        # Submit job
+        res = client.post(
+            "/v1/jobs",
+            json={"kind": "regression_scan", "params": {"suite": "quick"}, "maxCostUsd": 0.0},
+            headers=auth_header,
+        )
+>       assert res.status_code == 200
+E       assert 503 == 200
+E        +  where 503 = <Response [503 Service Unavailable]>.status_code
+
+tests/test_kusanagi_workflow.py:59: AssertionError
+______________________ test_idempotency_key_deduplication ______________________
+
+    def test_idempotency_key_deduplication():
+        from aurex.api import app
+        client = TestClient(app)
+        auth_header = {
+            "Authorization": f"Bearer {VALID_TOKEN}",
+            "Idempotency-Key": "idem-key-101",
+        }
+    
+        res1 = client.post(
+            "/v1/jobs",
+            json={"kind": "regression_scan", "params": {"suite": "quick"}, "maxCostUsd": 0.0},
+            headers=auth_header,
+        )
+>       assert res1.status_code == 200
+E       assert 503 == 200
+E        +  where 503 = <Response [503 Service Unavailable]>.status_code
+
+tests/test_kusanagi_workflow.py:91: AssertionError
+____________________________ test_job_cancellation _____________________________
+
+    def test_job_cancellation():
+        from aurex.api import app
+        client = TestClient(app)
+        auth_header = {"Authorization": f"Bearer {VALID_TOKEN}"}
+    
+        res = client.post(
+            "/v1/jobs",
+            json={"kind": "regression_scan", "params": {}, "maxCostUsd": 0.0},
+            headers=auth_header,
+        )
+>       job_id = res.json()["id"]
+                 ^^^^^^^^^^^^^^^^
+E       KeyError: 'id'
+
+tests/test_kusanagi_workflow.py:125: KeyError
+_______ TestAdmissionAttacks.test_verifier_identity_mismatch_yields_hold _______
+
+self = <test_uer_attacks.TestAdmissionAttacks object at 0x7f883f7dbfe0>
+
+    def test_verifier_identity_mismatch_yields_hold(self) -> None:
+        manifest = make_valid_manifest()
+        attestation = VerificationAttestation(
+            verifier_id="imposter-verifier",
+            manifest_sha256="a" * 64,
+            run_sha256="b" * 64,
+            passed=True,
+        )
+        decision = decide_admission(
+            manifest=manifest,
+            manifest_sha256="a" * 64,
+            run_sha256="b" * 64,
+            attestation=attestation,
+            ledger_valid=True,
+            run_complete=True,
+        )
+        assert decision.status == ResultStatus.HOLD
+>       assert "verifier identity mismatch" in decision.rationale
+E       AssertionError: assert 'verifier identity mismatch' in 'attestation experiment ID mismatch'
+E        +  where 'attestation experiment ID mismatch' = AdmissionDecision(status=<ResultStatus.HOLD: 'HOLD'>, rationale='attestation experiment ID mismatch').rationale
+
+tests/test_uer_attacks.py:203: AssertionError
+=============================== warnings summary ===============================
+../../aurex-venv/lib/python3.12/site-packages/fastapi/testclient.py:1
+  /workspace/scratch/9b8b721f1090/aurex-venv/lib/python3.12/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/test_api.py::test_health_endpoint - assert 401 == 200
+FAILED tests/test_api.py::test_jobs_submission_endpoint - assert 503 == 200
+FAILED tests/test_execution_readiness.py::test_unsigned_attestation_never_admits
+FAILED tests/test_experiment_runner.py::test_unsigned_attestation_cannot_admit_exact_complete_run
+FAILED tests/test_kusanagi_repairs.py::test_valid_ed25519_signature_admits - ...
+FAILED tests/test_kusanagi_workflow.py::test_health_public - assert 401 == 200
+FAILED tests/test_kusanagi_workflow.py::test_durable_job_submission_executes_and_records_evidence
+FAILED tests/test_kusanagi_workflow.py::test_idempotency_key_deduplication - ...
+FAILED tests/test_kusanagi_workflow.py::test_job_cancellation - KeyError: 'id'
+FAILED tests/test_uer_attacks.py::TestAdmissionAttacks::test_verifier_identity_mismatch_yields_hold
+10 failed, 125 passed, 1 skipped, 1 warning in 0.93s

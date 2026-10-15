@@ -1,3 +1,4 @@
+import { AurexCommand } from "@/components/aurex-command";
 import { AurexWorkspaceEntry } from "@/components/aurex-workspace-entry";
 import { ReasoningSpine } from "@/components/reasoning-spine";
 import { AurexDemo } from "@/components/aurex-demo";
@@ -51,6 +52,7 @@ function Aurex() {
           here; the public demo is synthetic.
         </p>
       </PageHero>
+      <AurexCommand />
       <AurexWorkspaceEntry />
       <ReasoningSpine context="aurex" />
       <AurexDemo />

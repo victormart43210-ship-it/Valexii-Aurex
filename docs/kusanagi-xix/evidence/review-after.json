@@ -1,0 +1,33 @@
+{
+  "single_worker_acquisition": true,
+  "stale_worker_fenced": true,
+  "cross_owner_http": 404,
+  "invalid_auth_http": 401,
+  "tampered_evidence_http": {
+    "evidence": [
+      {
+        "id": "61c031ad-9eb3-40e7-8173-c6e65b62349b",
+        "capabilityId": "local_inference",
+        "kind": "model_response",
+        "collectedAt": "2026-10-15T14:09:33.426061+00:00",
+        "sha256": "3281c1db61ab3074708dfecdf79665b36e58f3db1e7d426bc68fcb6c55daf627",
+        "summary": "Advisory model response; factual correctness not independently verified.",
+        "verification": "NOT VERIFIED",
+        "integrity": "FAIL",
+        "authorityGranted": false
+      }
+    ]
+  },
+  "tampered_result_http": {
+    "status": 409,
+    "body": {
+      "detail": "Stored result integrity check failed"
+    }
+  },
+  "readiness_invalid_auth_config": {
+    "ready": 503,
+    "actual_auth": 503
+  },
+  "unicode_worker_return": true,
+  "unicode_worker_state": "succeeded"
+}
