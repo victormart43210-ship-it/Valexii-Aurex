@@ -22,7 +22,8 @@ def _now_iso() -> str:
 
 
 def get_db(db_path: str = DEFAULT_DB_PATH) -> sqlite3.Connection:
-    conn = sqlite3.connect(db_path)
+    conn = sqlite3.connect(db_path, timeout=10)
+    conn.execute("PRAGMA busy_timeout=10000")
     conn.row_factory = sqlite3.Row
     with conn:
         conn.execute(
@@ -31,7 +32,7 @@ def get_db(db_path: str = DEFAULT_DB_PATH) -> sqlite3.Connection:
                 id TEXT PRIMARY KEY,
                 kind TEXT NOT NULL,
                 state TEXT NOT NULL,
-                idempotency_key TEXT,
+                idempotency_key TEXT UNIQUE,
                 params_json TEXT NOT NULL,
                 reservation_usd REAL NOT NULL DEFAULT 0.0,
                 created_at TEXT NOT NULL,
@@ -91,9 +92,12 @@ def create_job(
             return dict(row)
 
     with conn:
-        conn.execute(
-            """
-            INSERT INTO jobs (
+        conn.execute("CREATE UNIQUE INDEX IF NOT EXISTS ux_jobs_idempotency_key ON jobs(idempotency_key)")
+    try:
+        with conn:
+            conn.execute(
+                """
+                INSERT INTO jobs (
                 id, kind, state, idempotency_key, params_json, reservation_usd,
                 created_at, updated_at, request_id, trace_id, worker_id
             )
@@ -113,6 +117,15 @@ def create_job(
                 worker_id,
             ),
         )
+    except sqlite3.IntegrityError:
+        if not idempotency_key:
+            raise
+        row = conn.execute("SELECT * FROM jobs WHERE idempotency_key = ?", (idempotency_key,)).fetchone()
+        if row is None:
+            raise
+        if row["kind"] != kind or json.loads(row["params_json"]) != params:
+            raise ValueError("Idempotency key collision with different parameters") from None
+        return dict(row)
     return get_job(db_path, job_id)  # type: ignore[return-value]
 
 
