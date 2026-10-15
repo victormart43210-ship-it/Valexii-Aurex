@@ -4,9 +4,9 @@ from __future__ import annotations
 import hashlib
 import json
 import re
-from dataclasses import asdict
-from datetime import datetime, timezone
-from typing import Any, Mapping
+from collections.abc import Mapping
+from datetime import UTC, datetime
+from typing import Any
 
 
 _HEX64 = re.compile(r"^[0-9a-f]{64}$")
@@ -23,7 +23,7 @@ class Witness:
 
 
 def _now() -> str:
-    return datetime.now(timezone.utc).isoformat()
+    return datetime.now(UTC).isoformat()
 
 
 def _digest(data: Mapping[str, Any]) -> str:
@@ -79,7 +79,7 @@ def astronomy_moon_witness(utc_iso: str) -> Witness:
         dt = datetime.fromisoformat(value)
         if dt.tzinfo is None:
             raise ValueError("UTC offset required")
-        dt = dt.astimezone(timezone.utc)
+        dt = dt.astimezone(UTC)
         phase_degrees = float(MoonPhase(Time.Parse(dt.strftime("%Y-%m-%dT%H:%M:%SZ"))))
         if not (0.0 <= phase_degrees < 360.0):
             raise ValueError("phase outside expected range")
