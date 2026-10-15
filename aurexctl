@@ -1,0 +1,174 @@
+#!/usr/bin/env python3
+import hashlib
+import json
+import subprocess
+import sys
+import zipfile
+from datetime import datetime, timezone
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parent
+
+def run(command):
+    print("+", " ".join(command), flush=True)
+    return subprocess.run(command, cwd=ROOT).returncode == 0
+
+def verify():
+    checks = [
+        ("TESTS", [sys.executable, "-m", "pytest", "-q"]),
+        ("RUFF", [sys.executable, "-m", "ruff", "check", "."]),
+        ("MYPY", [sys.executable, "-m", "mypy", "aurex"]),
+        ("WHITESPACE", ["git", "diff", "--check"]),
+    ]
+
+    results = {}
+
+    for name, command in checks:
+        print("\n===", name, "===", flush=True)
+        results[name] = run(command)
+
+    print("\n=== RESULTS ===")
+
+    for name, passed in results.items():
+        print(name, "PASS" if passed else "FAIL")
+
+    return all(results.values())
+
+def status():
+    return run(["git", "status", "--short", "--branch"])
+
+def package():
+    if not verify():
+        print("PACKAGE BLOCKED: Verification failed")
+        return False
+
+    result = subprocess.run(
+        ["git", "ls-files", "-z"],
+        cwd=ROOT,
+        capture_output=True,
+        check=True,
+    )
+
+    excluded = {
+        ".git", ".venv", "__pycache__",
+        ".pytest_cache", ".mypy_cache",
+        ".ruff_cache", "node_modules",
+        "releases",
+    }
+
+    files = []
+
+    for raw in result.stdout.split(b"\0"):
+        if not raw:
+            continue
+
+        relative = Path(raw.decode("utf-8"))
+        path = ROOT / relative
+
+        if any(part in excluded for part in relative.parts):
+            continue
+
+        if not path.is_file() or path.is_symlink():
+            continue
+
+        if relative.name == ".env" or relative.name.startswith(".env."):
+            continue
+
+        if relative.suffix in {
+            ".bak", ".pyc", ".pyo", ".db",
+            ".sqlite", ".sqlite3", ".pem", ".key",
+        }:
+            continue
+
+        if path.stat().st_size > 25 * 1024 * 1024:
+            print("PACKAGE BLOCKED: Oversized file:", relative)
+            return False
+
+        files.append((relative, path.read_bytes()))
+
+    if not files:
+        print("PACKAGE BLOCKED: No source files")
+        return False
+
+    releases = ROOT / "releases"
+    releases.mkdir(exist_ok=True)
+
+    timestamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+    destination = releases / f"AUREX_KUSANAGI_XXIX_{timestamp}.zip"
+
+    head = subprocess.run(
+        ["git", "rev-parse", "HEAD"],
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+        check=True,
+    ).stdout.strip()
+
+    manifest = {
+        "system": "AUREX",
+        "git_head": head,
+        "classification": "locally_verified_source_package",
+        "production_deployed": False,
+        "files": {
+            str(name): hashlib.sha256(data).hexdigest()
+            for name, data in files
+        },
+    }
+
+    with zipfile.ZipFile(
+        destination,
+        "x",
+        compression=zipfile.ZIP_DEFLATED,
+    ) as archive:
+        for name, data in files:
+            archive.writestr(str(name), data)
+
+        archive.writestr(
+            "AUREX_RELEASE_MANIFEST.json",
+            json.dumps(manifest, indent=2),
+        )
+
+    with zipfile.ZipFile(destination) as archive:
+        if archive.testzip() is not None:
+            print("PACKAGE BLOCKED: ZIP corruption")
+            destination.unlink()
+            return False
+
+        for name, expected in manifest["files"].items():
+            actual = hashlib.sha256(archive.read(name)).hexdigest()
+            if actual != expected:
+                print("PACKAGE BLOCKED: Hash mismatch:", name)
+                destination.unlink()
+                return False
+
+    digest = hashlib.sha256(destination.read_bytes()).hexdigest()
+
+    destination.with_suffix(".sha256").write_text(
+        f"{digest}  {destination.name}\n"
+    )
+
+    print("\nPACKAGE CREATED:", destination)
+    print("SHA-256:", digest)
+    print("SOURCE FILES:", len(files))
+    print("PRODUCTION DEPLOYMENT: NOT PERFORMED")
+    return True
+
+def main():
+    commands = {
+        "verify": verify,
+        "status": status,
+        "package": package,
+    }
+
+    if len(sys.argv) != 2 or sys.argv[1] not in commands:
+        print("AUREX SOVEREIGN ENGINEERING CONTROL")
+        print("Usage:")
+        print("  ./aurexctl verify")
+        print("  ./aurexctl status")
+        print("  ./aurexctl package")
+        return 2
+
+    return 0 if commands[sys.argv[1]]() else 1
+
+if __name__ == "__main__":
+    raise SystemExit(main())

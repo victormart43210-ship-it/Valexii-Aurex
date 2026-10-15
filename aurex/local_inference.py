@@ -15,7 +15,7 @@ class LocalInferenceError(RuntimeError):
     pass
 
 class _NoRedirect(HTTPRedirectHandler):
-    def http_error_302(self, req, fp, code, msg, headers):
+    def http_error_302(self, req: object, fp: object, code: int, msg: str, headers: object) -> None:
         raise LocalInferenceError('redirect refused')
     http_error_301 = http_error_302
     http_error_303 = http_error_302

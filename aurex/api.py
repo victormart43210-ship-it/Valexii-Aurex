@@ -11,10 +11,10 @@ from pydantic import BaseModel, ConfigDict, Field
 
 from aurex.database import (
     DEFAULT_DB_PATH,
-    create_job,
     get_job,
     list_evidence,
     list_jobs,
+    update_job_state,
 )
 from aurex.workflows.budget import BudgetGuard
 

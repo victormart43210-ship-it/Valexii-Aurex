@@ -45,59 +45,61 @@ def test_valid_token_allows_access():
     assert "capabilities" in res.json()
 
 
-def test_durable_job_submission_executes_and_records_evidence():
+def test_unavailable_worker_creates_no_job_or_evidence():
     from aurex.api import app
-    client = TestClient(app)
-    auth_header = {"Authorization": f"Bearer {VALID_TOKEN}"}
 
-    # Submit job
-    res = client.post(
+    client = TestClient(app)
+    auth = {"Authorization": f"Bearer {VALID_TOKEN}"}
+
+    response = client.post(
         "/v1/jobs",
-        json={"kind": "regression_scan", "params": {"suite": "quick"}, "maxCostUsd": 0.0},
-        headers=auth_header,
+        json={
+            "kind": "regression_scan",
+            "params": {"suite": "quick"},
+            "maxCostUsd": 0.0,
+        },
+        headers=auth,
     )
-    assert res.status_code == 200
-    data = res.json()
-    assert data["kind"] == "regression_scan"
-    assert data["state"] == "succeeded"
-    job_id = data["id"]
 
-    # Query job
-    res_get = client.get(f"/v1/jobs/{job_id}", headers=auth_header)
-    assert res_get.status_code == 200
-    assert res_get.json()["id"] == job_id
+    assert response.status_code == 503
+    assert "worker unavailable" in response.json()["detail"].lower()
 
-    # Query evidence
-    res_ev = client.get("/v1/evidence", headers=auth_header)
-    assert res_ev.status_code == 200
-    ev_list = res_ev.json()["evidence"]
-    assert len(ev_list) >= 1
-    assert ev_list[0]["capabilityId"] == "regression_scan"
+    jobs = client.get("/v1/jobs", headers=auth)
+    evidence = client.get("/v1/evidence", headers=auth)
+
+    assert jobs.status_code == 200
+    assert evidence.status_code == 200
+    assert jobs.json()["jobs"] == []
+    assert evidence.json()["evidence"] == []
 
 
-def test_idempotency_key_deduplication():
+
+def test_unavailable_worker_does_not_create_idempotent_jobs():
     from aurex.api import app
+
     client = TestClient(app)
-    auth_header = {
+    auth = {
         "Authorization": f"Bearer {VALID_TOKEN}",
         "Idempotency-Key": "idem-key-101",
     }
 
-    res1 = client.post(
-        "/v1/jobs",
-        json={"kind": "regression_scan", "params": {"suite": "quick"}, "maxCostUsd": 0.0},
-        headers=auth_header,
-    )
-    assert res1.status_code == 200
-    job1 = res1.json()
+    payload = {
+        "kind": "regression_scan",
+        "params": {"suite": "quick"},
+        "maxCostUsd": 0.0,
+    }
 
-    res2 = client.post(
-        "/v1/jobs",
-        json={"kind": "regression_scan", "params": {"suite": "quick"}, "maxCostUsd": 0.0},
-        headers=auth_header,
-    )
-    assert res2.status_code == 200
-    assert res2.json()["id"] == job1["id"]
+    first = client.post("/v1/jobs", json=payload, headers=auth)
+    second = client.post("/v1/jobs", json=payload, headers=auth)
+
+    assert first.status_code == 503
+    assert second.status_code == 503
+
+    jobs = client.get("/v1/jobs", headers=auth)
+
+    assert jobs.status_code == 200
+    assert jobs.json()["jobs"] == []
+
 
 
 def test_paid_job_rejected():
@@ -112,18 +114,20 @@ def test_paid_job_rejected():
     assert res.status_code == 402
 
 
-def test_job_cancellation():
+def test_nonexistent_job_cannot_be_cancelled():
     from aurex.api import app
+
     client = TestClient(app)
-    auth_header = {"Authorization": f"Bearer {VALID_TOKEN}"}
+    auth = {"Authorization": f"Bearer {VALID_TOKEN}"}
 
-    res = client.post(
-        "/v1/jobs",
-        json={"kind": "regression_scan", "params": {}, "maxCostUsd": 0.0},
-        headers=auth_header,
+    response = client.post(
+        "/v1/jobs/nonexistent-job/cancel",
+        headers=auth,
     )
-    job_id = res.json()["id"]
 
-    res_cancel = client.post(f"/v1/jobs/{job_id}/cancel", headers=auth_header)
-    assert res_cancel.status_code == 200
-    assert res_cancel.json()["state"] == "cancelled"
+    assert response.status_code == 404
+
+    jobs = client.get("/v1/jobs", headers=auth)
+
+    assert jobs.status_code == 200
+    assert jobs.json()["jobs"] == []

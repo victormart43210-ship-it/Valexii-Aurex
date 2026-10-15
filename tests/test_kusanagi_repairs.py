@@ -58,12 +58,13 @@ def test_forged_signature_rejected(scheme: str, sig: str) -> None:
     assert decision.status.value in ("HOLD", "NOT VERIFIED")
 
 
-def test_valid_ed25519_signature_admits() -> None:
+def test_valid_ed25519_signature_admits(monkeypatch: pytest.MonkeyPatch) -> None:
     manifest = make_manifest()
     m_sha = "a" * 64
     r_sha = "b" * 64
     priv_key = Ed25519PrivateKey.generate()
     pub_bytes = priv_key.public_key().public_bytes_raw()
+    monkeypatch.setenv("AUREX_TRUSTED_VERIFIER_VERIFIER_01", pub_bytes.hex())
 
     att = VerificationAttestation(
         experiment_id=manifest.experiment_id,

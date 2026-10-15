@@ -22,7 +22,7 @@ class TraceContext:
     job_id: str | None = None
 
     @classmethod
-    def new(cls, *, request_id: str | None = None, job_id: str | None = None) -> "TraceContext":
+    def new(cls, *, request_id: str | None = None, job_id: str | None = None) -> TraceContext:
         return cls(
             trace_id=uuid.uuid4().hex,
             span_id=secrets.token_hex(8),
