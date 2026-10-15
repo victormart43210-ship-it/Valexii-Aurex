@@ -94,13 +94,33 @@ def list_jobs(db_path: str) -> list[dict[str, Any]]:
     return jobs
 
 
+# Terminal job states that should not be overwritten
+_TERMINAL_STATES = {"succeeded", "failed", "cancelled"}
+
+
 def update_job_state(
     db_path: str,
     job_id: str,
     state: str,
     result: dict[str, Any] | None = None,
 ) -> dict[str, Any] | None:
+    """Update a job's state atomically but avoid rewriting terminal states.
+
+    If the job is already in a terminal state different from the requested state,
+    the function will return the existing job without applying the update. This
+    prevents accidental resurrection or overwriting of completed jobs.
+    """
     conn = get_db(db_path)
+    # Load current state first to enforce terminal-state protection.
+    cursor = conn.execute("SELECT state FROM jobs WHERE id = ?", (job_id,))
+    row = cursor.fetchone()
+    if not row:
+        return None
+    current_state = row[0]
+    if current_state in _TERMINAL_STATES and current_state != state:
+        # Do not overwrite terminal states.
+        return get_job(db_path, job_id)
+
     now = datetime.now(timezone.utc).isoformat()
     res_json = json.dumps(result) if result else None
     with conn:
@@ -130,7 +150,10 @@ def record_evidence(
             (evidence_id, capability_id, kind, now, sha256, summary),
         )
     cursor = conn.execute("SELECT * FROM evidence_records WHERE id = ?", (evidence_id,))
-    return dict(cursor.fetchone())
+    row = cursor.fetchone()
+    if not row:
+        raise RuntimeError("Failed to record evidence")
+    return dict(row)
 
 
 def list_evidence(db_path: str) -> list[dict[str, Any]]:

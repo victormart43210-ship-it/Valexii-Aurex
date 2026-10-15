@@ -3,12 +3,13 @@ from __future__ import annotations
 
 import hashlib
 import json
+import re
 from dataclasses import asdict
 from datetime import datetime, timezone
 from typing import Any, Mapping
 
 
-_HEX64 = None
+_HEX64 = re.compile(r"^[0-9a-f]{64}$")
 
 
 class Witness:
