@@ -4,9 +4,9 @@ from __future__ import annotations
 import hashlib
 import json
 import re
-from collections.abc import Mapping
 from datetime import UTC, datetime
 from typing import Any
+from collections.abc import Mapping
 
 
 _HEX64 = re.compile(r"^[0-9a-f]{64}$")
