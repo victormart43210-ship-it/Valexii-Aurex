@@ -18,6 +18,8 @@ def run_offline_probe(db_path: str, idempotency_key: str | None = None) -> dict:
     job = create_job(db_path, job_id, "regression_scan", params, idempotency_key=idempotency_key)
     if job["state"] != "queued":
         return job
+    # A repeated idempotency key may resolve to an already-queued job.
+    # Never claim that such a job was executed by this invocation.
     running = update_job_state(db_path, job["id"], "running", worker_id="offline_lab_v1")
     if running is None:
         raise RuntimeError("Job claim failed")
