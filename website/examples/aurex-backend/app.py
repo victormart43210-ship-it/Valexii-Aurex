@@ -6,7 +6,7 @@ until real evidence exists. Run locally: AUREX_SERVICE_TOKEN=... uvicorn app:app
 """
 import hmac
 import os
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from fastapi import Depends, FastAPI, Header, HTTPException
 
@@ -29,7 +29,7 @@ def health(_: None = Depends(require_token)):
     return {
         "status": "ok",
         "version": "1.0.0-draft",
-        "time": datetime.now(timezone.utc).isoformat(),
+        "time": datetime.now(UTC).isoformat(),
     }
 
 
