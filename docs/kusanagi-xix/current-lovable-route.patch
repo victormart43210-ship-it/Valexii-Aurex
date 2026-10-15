@@ -1,0 +1,24 @@
+--- a/website/src/routes/aurex.tsx
++++ b/website/src/routes/aurex.tsx
+@@ -1,3 +1,4 @@
++import { AurexCommand } from "@/components/aurex-command";
+ import { ReasoningSpine } from "@/components/reasoning-spine";
+ import { AurexDemo } from "@/components/aurex-demo";
+ import { AurexRepoPanel } from "@/components/aurex-repo-panel";
+@@ -40,6 +41,7 @@
+ function Aurex() {
+   return (
+     <PageShell>
++      <AurexCommand />
+       <section aria-labelledby="aurex-title" className="border-b border-border bg-card/25 motion-safe:animate-in motion-safe:fade-in motion-safe:duration-500">
+         <div className="site-grid py-6 sm:py-8">
+           <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 border-b border-border pb-3">
+@@ -91,7 +93,7 @@
+             does not establish a verified website/backend integration, production readiness or native AI inference.
+           </p>
+           </details>
+-          <p className="mt-1 text-xs leading-6 text-muted-foreground">Live intelligence: <strong className="text-amber">NOT VERIFIED</strong> · No live task execution on this page · UNKNOWN ≠ SAFE.</p>
++          <p className="mt-1 text-xs leading-6 text-muted-foreground">Live intelligence: <strong className="text-amber">NOT VERIFIED</strong> · Public content does not execute tasks; owner access is separately authenticated · UNKNOWN ≠ SAFE.</p>
+         </div>
+       </section>
+       <div className="site-grid grid min-w-0 gap-6 py-6 lg:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)] lg:gap-8">

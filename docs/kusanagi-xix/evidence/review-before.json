@@ -1,0 +1,38 @@
+{
+  "single_worker_acquisition": true,
+  "stale_worker_fenced": true,
+  "cross_owner_http": 404,
+  "invalid_auth_http": 401,
+  "tampered_evidence_http": {
+    "evidence": [
+      {
+        "id": "531ae9c1-ce1e-406a-b821-c381d54d69a9",
+        "capabilityId": "local_inference",
+        "kind": "model_response",
+        "collectedAt": "2026-10-15T03:39:20.138262+00:00",
+        "sha256": "3281c1db61ab3074708dfecdf79665b36e58f3db1e7d426bc68fcb6c55daf627",
+        "summary": "Advisory model response; factual correctness not independently verified.",
+        "verification": "NOT VERIFIED",
+        "integrity": "FAIL",
+        "authorityGranted": false
+      }
+    ]
+  },
+  "tampered_result_http": {
+    "status": 200,
+    "body": {
+      "jobId": "race",
+      "state": "succeeded",
+      "result": {
+        "text": "tampered"
+      },
+      "verification": "NOT VERIFIED"
+    }
+  },
+  "readiness_invalid_auth_config": {
+    "ready": 200,
+    "actual_auth": 503
+  },
+  "unicode_worker_exception": "ValueError: Job result too large",
+  "unicode_worker_state": "running"
+}

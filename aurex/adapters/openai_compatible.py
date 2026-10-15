@@ -8,6 +8,9 @@ from urllib.request import HTTPRedirectHandler, ProxyHandler, Request, build_ope
 
 from aurex.adapters.base import GenerationSettings, ModelAdapter, ModelAnswer
 
+MAX_REQUEST_BYTES = 131_072
+MAX_RESPONSE_BYTES = 2_000_000
+
 
 class _NoRedirect(HTTPRedirectHandler):
     def redirect_request(
@@ -63,6 +66,8 @@ class OpenAICompatibleAdapter(ModelAdapter):
                 "messages": [{"role": "user", "content": prompt}],
             }
         ).encode()
+        if len(body) > MAX_REQUEST_BYTES:
+            raise ValueError("Model request exceeds allowed size")
         request = Request(
             f"{self.base_url}/chat/completions",
             data=body,
@@ -75,13 +80,17 @@ class OpenAICompatibleAdapter(ModelAdapter):
         with build_opener(_NoRedirect(), ProxyHandler({})).open(
             request, timeout=self.timeout_seconds
         ) as response:
-            data = response.read(2_000_001)
-        if len(data) > 2_000_000:
+            data = response.read(MAX_RESPONSE_BYTES + 1)
+        if len(data) > MAX_RESPONSE_BYTES:
             raise ValueError("Model response exceeds allowed size")
         payload = json.loads(data.decode("utf-8"))
+        if "model" in payload and payload["model"] != self.model:
+            raise ValueError("Unexpected response model identity")
         content = payload["choices"][0]["message"]["content"]
         if not isinstance(content, str):
             raise TypeError("Unexpected model content")
+        if not content.strip():
+            raise ValueError("Empty model content")
         usage = payload.get("usage") or {}
         return ModelAnswer(
             provider=self.provider,

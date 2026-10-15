@@ -1,0 +1,163 @@
+FFFFFFFFFFF                                                              [100%]
+=================================== FAILURES ===================================
+_____________________ test_health_requires_authentication ______________________
+
+client = <starlette.testclient.TestClient object at 0x7ff2f2ef4e60>
+
+    def test_health_requires_authentication(client):
+>       assert client.get("/v1/health").status_code == 401
+E       AssertionError: assert 200 == 401
+E        +  where 200 = <Response [200 OK]>.status_code
+E        +    where <Response [200 OK]> = get('/v1/health')
+E        +      where get = <starlette.testclient.TestClient object at 0x7ff2f2ef4e60>.get
+
+tests/test_kusanagi_xiii.py:27: AssertionError
+_____________ test_missing_worker_cannot_generate_success_evidence _____________
+
+client = <starlette.testclient.TestClient object at 0x7ff2f2f37e90>
+
+    def test_missing_worker_cannot_generate_success_evidence(client):
+        response = client.post("/v1/jobs", headers=AUTH, json={
+            "kind": "regression_scan", "params": {}, "maxCostUsd": 0,
+        })
+>       assert response.status_code == 503
+E       assert 200 == 503
+E        +  where 200 = <Response [200 OK]>.status_code
+
+tests/test_kusanagi_xiii.py:35: AssertionError
+__________ test_job_params_reject_unbounded_or_nested_values[params0] __________
+
+client = <starlette.testclient.TestClient object at 0x7ff2f2f378f0>
+params = {'nested': {'shell': 'anything'}}
+
+    @pytest.mark.parametrize("params", [{"nested": {"shell": "anything"}}, {"long": "x" * 257}, {"a" * 33: 1}, {"a" + chr(97+i): 1 for i in range(17)}])
+    def test_job_params_reject_unbounded_or_nested_values(client, params):
+>       assert client.post("/v1/jobs", headers=AUTH, json={"kind": "regression_scan", "params": params, "maxCostUsd": 0}).status_code == 422
+E       AssertionError: assert 200 == 422
+E        +  where 200 = <Response [200 OK]>.status_code
+E        +    where <Response [200 OK]> = post('/v1/jobs', headers={'Authorization': 'Bearer xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'}, json={'kind': 'regression_scan', 'maxCostUsd': 0, 'params': {'nested': {'shell': 'anything'}}})
+E        +      where post = <starlette.testclient.TestClient object at 0x7ff2f2f378f0>.post
+
+tests/test_kusanagi_xiii.py:42: AssertionError
+__________ test_job_params_reject_unbounded_or_nested_values[params1] __________
+
+client = <starlette.testclient.TestClient object at 0x7ff2f1d863f0>
+params = {'long': 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx...xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'}
+
+    @pytest.mark.parametrize("params", [{"nested": {"shell": "anything"}}, {"long": "x" * 257}, {"a" * 33: 1}, {"a" + chr(97+i): 1 for i in range(17)}])
+    def test_job_params_reject_unbounded_or_nested_values(client, params):
+>       assert client.post("/v1/jobs", headers=AUTH, json={"kind": "regression_scan", "params": params, "maxCostUsd": 0}).status_code == 422
+E       AssertionError: assert 200 == 422
+E        +  where 200 = <Response [200 OK]>.status_code
+E        +    where <Response [200 OK]> = post('/v1/jobs', headers={'Authorization': 'Bearer xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'}, json={'kind': 'regression_scan', 'maxCostUsd': 0, 'params': {'long': 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx...xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'}})
+E        +      where post = <starlette.testclient.TestClient object at 0x7ff2f1d863f0>.post
+
+tests/test_kusanagi_xiii.py:42: AssertionError
+__________ test_job_params_reject_unbounded_or_nested_values[params2] __________
+
+client = <starlette.testclient.TestClient object at 0x7ff2f1d87da0>
+params = {'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa': 1}
+
+    @pytest.mark.parametrize("params", [{"nested": {"shell": "anything"}}, {"long": "x" * 257}, {"a" * 33: 1}, {"a" + chr(97+i): 1 for i in range(17)}])
+    def test_job_params_reject_unbounded_or_nested_values(client, params):
+>       assert client.post("/v1/jobs", headers=AUTH, json={"kind": "regression_scan", "params": params, "maxCostUsd": 0}).status_code == 422
+E       AssertionError: assert 200 == 422
+E        +  where 200 = <Response [200 OK]>.status_code
+E        +    where <Response [200 OK]> = post('/v1/jobs', headers={'Authorization': 'Bearer xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'}, json={'kind': 'regression_scan', 'maxCostUsd': 0, 'params': {'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa': 1}})
+E        +      where post = <starlette.testclient.TestClient object at 0x7ff2f1d87da0>.post
+
+tests/test_kusanagi_xiii.py:42: AssertionError
+__________ test_job_params_reject_unbounded_or_nested_values[params3] __________
+
+client = <starlette.testclient.TestClient object at 0x7ff2f1d876e0>
+params = {'aa': 1, 'ab': 1, 'ac': 1, 'ad': 1, ...}
+
+    @pytest.mark.parametrize("params", [{"nested": {"shell": "anything"}}, {"long": "x" * 257}, {"a" * 33: 1}, {"a" + chr(97+i): 1 for i in range(17)}])
+    def test_job_params_reject_unbounded_or_nested_values(client, params):
+>       assert client.post("/v1/jobs", headers=AUTH, json={"kind": "regression_scan", "params": params, "maxCostUsd": 0}).status_code == 422
+E       AssertionError: assert 200 == 422
+E        +  where 200 = <Response [200 OK]>.status_code
+E        +    where <Response [200 OK]> = post('/v1/jobs', headers={'Authorization': 'Bearer xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'}, json={'kind': 'regression_scan', 'maxCostUsd': 0, 'params': {'aa': 1, 'ab': 1, 'ac': 1, 'ad': 1, ...}})
+E        +      where post = <starlette.testclient.TestClient object at 0x7ff2f1d876e0>.post
+
+tests/test_kusanagi_xiii.py:42: AssertionError
+_____________ test_oversized_body_is_rejected_before_job_execution _____________
+
+client = <starlette.testclient.TestClient object at 0x7ff2f1d85640>
+
+    def test_oversized_body_is_rejected_before_job_execution(client):
+>       assert client.post("/v1/jobs", headers={**AUTH, "Content-Type": "application/json"}, content='{"padding":"' + "x" * 20000 + '"}').status_code == 413
+E       assert 422 == 413
+E        +  where 422 = <Response [422 Unprocessable Entity]>.status_code
+E        +    where <Response [422 Unprocessable Entity]> = post('/v1/jobs', headers={'Authorization': 'Bearer xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx', 'Content-Type': 'application/json'}, content=(('{"padding":"' + ('x' * 20000)) + '"}'))
+E        +      where post = <starlette.testclient.TestClient object at 0x7ff2f1d85640>.post
+
+tests/test_kusanagi_xiii.py:46: AssertionError
+_______________ test_terminal_job_cannot_restart_or_lose_result ________________
+
+tmp_path = PosixPath('/tmp/pytest-of-root/pytest-1/test_terminal_job_cannot_resta0')
+
+    def test_terminal_job_cannot_restart_or_lose_result(tmp_path):
+        db = str(tmp_path / "jobs.db")
+        create_job(db, "one", "regression_scan", {})
+        update_job_state(db, "one", "running")
+        update_job_state(db, "one", "succeeded", {"evidence_id": "ev-one"})
+>       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 'ValueError'>
+
+tests/test_kusanagi_xiii.py:54: Failed
+_____________________ test_unknown_transition_is_rejected ______________________
+
+tmp_path = PosixPath('/tmp/pytest-of-root/pytest-1/test_unknown_transition_is_rej0')
+
+    def test_unknown_transition_is_rejected(tmp_path):
+        db = str(tmp_path / "jobs.db")
+        create_job(db, "one", "regression_scan", {})
+>       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 'ValueError'>
+
+tests/test_kusanagi_xiii.py:62: Failed
+_________ test_self_supplied_signing_key_cannot_establish_independence _________
+
+    def test_self_supplied_signing_key_cannot_establish_independence():
+        manifest, att = signed_attestation()
+>       assert decide_admission(manifest, "a" * 64, "b" * 64, att, True, True).status.value != "PASS"
+E       AssertionError: assert 'PASS' != 'PASS'
+E        +  where 'PASS' = <ResultStatus.PASS: 'PASS'>.value
+E        +    where <ResultStatus.PASS: 'PASS'> = AdmissionDecision(status=<ResultStatus.PASS: 'PASS'>, rationale='independent verification admitted').status
+E        +      where AdmissionDecision(status=<ResultStatus.PASS: 'PASS'>, rationale='independent verification admitted') = decide_admission(ExperimentManifest(schema_version='1', experiment_id='exp-kusanagi-01', track='synthetic', dataset_revision='v1', data...er-01', family='ed25519', reference_access='blind'), ablations=(), dataset_authorized=True, contamination_checked=True), ('a' * 64), ('b' * 64), VerificationAttestation(verifier_id='verifier-01', manifest_sha256='aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa...4fd1ac517816e3e474176a79aa5d60cd0e', public_key_hex='e27071ccaa8e044a44c5a63c149c468fb7286ce207a5f43345dc2bf3c21815a5'), True, True)
+
+tests/test_kusanagi_xiii.py:79: AssertionError
+_____________________ test_timestamp_is_bound_to_signature _____________________
+
+    def test_timestamp_is_bound_to_signature():
+        _, att = signed_attestation()
+>       assert not att.model_copy(update={"timestamp": att.timestamp + timedelta(days=1)}).verify_signature()
+E       AssertionError: assert not True
+E        +  where True = verify_signature()
+E        +    where verify_signature = VerificationAttestation(verifier_id='verifier-01', manifest_sha256='aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa...653c85bec7cac0d3e53a15add55cee020a', public_key_hex='a5e6c06bb3e5d6a8a712487ee6dc6ec8cf8a130abc6edd5bb99febc3e7076396').verify_signature
+E        +      where VerificationAttestation(verifier_id='verifier-01', manifest_sha256='aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa...653c85bec7cac0d3e53a15add55cee020a', public_key_hex='a5e6c06bb3e5d6a8a712487ee6dc6ec8cf8a130abc6edd5bb99febc3e7076396') = model_copy(update={'timestamp': datetime.datetime(2026, 10, 15, 5, 1, 14, 459968, tzinfo=datetime.timezone.utc)})
+E        +        where model_copy = VerificationAttestation(verifier_id='verifier-01', manifest_sha256='aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa...653c85bec7cac0d3e53a15add55cee020a', public_key_hex='a5e6c06bb3e5d6a8a712487ee6dc6ec8cf8a130abc6edd5bb99febc3e7076396').model_copy
+
+tests/test_kusanagi_xiii.py:84: AssertionError
+=============================== warnings summary ===============================
+../../aurex-venv/lib/python3.12/site-packages/fastapi/testclient.py:1
+  /workspace/scratch/9b8b721f1090/aurex-venv/lib/python3.12/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/test_kusanagi_xiii.py::test_health_requires_authentication - Ass...
+FAILED tests/test_kusanagi_xiii.py::test_missing_worker_cannot_generate_success_evidence
+FAILED tests/test_kusanagi_xiii.py::test_job_params_reject_unbounded_or_nested_values[params0]
+FAILED tests/test_kusanagi_xiii.py::test_job_params_reject_unbounded_or_nested_values[params1]
+FAILED tests/test_kusanagi_xiii.py::test_job_params_reject_unbounded_or_nested_values[params2]
+FAILED tests/test_kusanagi_xiii.py::test_job_params_reject_unbounded_or_nested_values[params3]
+FAILED tests/test_kusanagi_xiii.py::test_oversized_body_is_rejected_before_job_execution
+FAILED tests/test_kusanagi_xiii.py::test_terminal_job_cannot_restart_or_lose_result
+FAILED tests/test_kusanagi_xiii.py::test_unknown_transition_is_rejected - Fai...
+FAILED tests/test_kusanagi_xiii.py::test_self_supplied_signing_key_cannot_establish_independence
+FAILED tests/test_kusanagi_xiii.py::test_timestamp_is_bound_to_signature - As...
+11 failed, 1 warning in 0.38s

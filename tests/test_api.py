@@ -19,7 +19,7 @@ def setup_token(monkeypatch, tmp_path):
 
 
 def test_health_endpoint() -> None:
-    res = client.get("/health")
+    res = client.get("/health", headers={"Authorization": f"Bearer {VALID_TOKEN}"})
     assert res.status_code == 200
     assert res.json()["status"] == "ok"
 
@@ -37,8 +37,7 @@ def test_jobs_submission_endpoint() -> None:
         json={"kind": "regression_scan", "params": {}, "maxCostUsd": 0.0},
         headers={"Authorization": f"Bearer {VALID_TOKEN}"},
     )
-    assert res.status_code == 200
-    assert res.json()["state"] in ("queued", "succeeded")
+    assert res.status_code == 503
 
 
 def test_evidence_summary_endpoint() -> None:

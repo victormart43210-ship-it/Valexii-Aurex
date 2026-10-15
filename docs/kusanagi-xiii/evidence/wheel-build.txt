@@ -1,0 +1,18 @@
+COMMAND: ['/workspace/scratch/9b8b721f1090/aurex-venv/bin/pip', 'wheel', '--no-deps', '--wheel-dir', '/workspace/scratch/9b8b721f1090/wheels', '.']
+EXIT: 0
+Processing /workspace/scratch/9b8b721f1090/repos/Valexii-Aurex
+  Installing build dependencies: started
+  Installing build dependencies: finished with status 'done'
+  Getting requirements to build wheel: started
+  Getting requirements to build wheel: finished with status 'done'
+  Preparing metadata (pyproject.toml): started
+  Preparing metadata (pyproject.toml): finished with status 'done'
+Building wheels for collected packages: valexii-aurex
+  Building wheel for valexii-aurex (pyproject.toml): started
+  Building wheel for valexii-aurex (pyproject.toml): finished with status 'done'
+  Created wheel for valexii-aurex: filename=valexii_aurex-0.1.0a1-py3-none-any.whl size=69481 sha256=074d047ad67a57cb17e97ff4df27c86e5ca6e93fb93d9f060fa544e91cb0c977
+  Stored in directory: /root/.cache/pip/wheels/62/65/9c/739aeba783249a7f66e95401e07e222b6e39ee151b557aa4ca
+Successfully built valexii-aurex
+
+[notice] A new release of pip is available: 25.0.1 -> 26.2.1
+[notice] To update, run: python3 -m pip install --upgrade pip

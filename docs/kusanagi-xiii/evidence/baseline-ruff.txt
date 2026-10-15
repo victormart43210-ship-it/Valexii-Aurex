@@ -1,0 +1,3 @@
+COMMAND: ['/workspace/scratch/9b8b721f1090/aurex-venv/bin/ruff', 'check', '.']
+EXIT: 0
+All checks passed!
