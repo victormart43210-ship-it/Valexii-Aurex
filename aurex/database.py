@@ -158,7 +158,7 @@ def update_job_state(
     res_json = json.dumps(result) if result else None
     error_json = json.dumps(error) if error else None
     with conn:
-        conn.execute(
+        cursor = conn.execute(
             """
             UPDATE jobs
             SET state = ?,
@@ -169,10 +169,14 @@ def update_job_state(
                 worker_id = COALESCE(?, worker_id),
                 evidence_id = COALESCE(?, evidence_id),
                 error_json = COALESCE(?, error_json)
-            WHERE id = ?
+            WHERE id = ? AND state NOT IN ('succeeded', 'failed', 'cancelled')
+              AND ((state = 'queued' AND ? IN ('running', 'failed', 'cancelled'))
+                OR (state = 'running' AND ? IN ('succeeded', 'failed', 'cancelled')))
             """,
-            (state, now, res_json, lease_token, lease_expires_at, worker_id, evidence_id, error_json, job_id),
+            (state, now, res_json, lease_token, lease_expires_at, worker_id, evidence_id, error_json, job_id, state, state),
         )
+        if cursor.rowcount != 1:
+            return None
     return get_job(db_path, job_id)
 
 
@@ -193,7 +197,7 @@ def record_evidence(
     with conn:
         conn.execute(
             """
-            INSERT OR REPLACE INTO evidence_records (
+            INSERT INTO evidence_records (
                 id, capability_id, kind, collected_at, sha256, summary,
                 source_ref, integrity_status, verification_status
             )
