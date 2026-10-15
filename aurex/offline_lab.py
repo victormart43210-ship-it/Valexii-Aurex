@@ -4,9 +4,10 @@ from __future__ import annotations
 import hashlib
 import json
 import os
+from datetime import UTC, datetime, timedelta
 from uuid import uuid4
 
-from aurex.database import create_job, get_job, record_evidence, update_job_state
+from aurex.database import claim_queued_job, create_job, finish_claimed_job, get_job, record_evidence
 
 
 def run_offline_probe(db_path: str, idempotency_key: str | None = None) -> dict:
@@ -20,7 +21,9 @@ def run_offline_probe(db_path: str, idempotency_key: str | None = None) -> dict:
         return job
     # A repeated idempotency key may resolve to an already-queued job.
     # Never claim that such a job was executed by this invocation.
-    running = update_job_state(db_path, job["id"], "running", worker_id="offline_lab_v1")
+    lease = str(uuid4())
+    expiry = (datetime.now(UTC) + timedelta(seconds=30)).isoformat()
+    running = claim_queued_job(db_path, job["id"], "offline_lab_v1", lease, expiry)
     if running is None:
         raise RuntimeError("Job claim failed")
     observed = get_job(db_path, job["id"])
@@ -33,8 +36,7 @@ def run_offline_probe(db_path: str, idempotency_key: str | None = None) -> dict:
                     "Local SQLite roundtrip observed; NOT independently verified",
                     source_ref=job["id"], integrity_status="HASHED",
                     verification_status="UNVERIFIED")
-    finished = update_job_state(db_path, job["id"], "succeeded", result=payload,
-                                worker_id="offline_lab_v1", evidence_id=evidence_id)
+    finished = finish_claimed_job(db_path, job["id"], lease, payload)
     if finished is None:
         raise RuntimeError("Job completion failed")
     return finished
