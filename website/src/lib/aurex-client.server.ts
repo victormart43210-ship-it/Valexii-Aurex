@@ -10,6 +10,7 @@ import {
   HealthSchema,
   JobCreateSchema,
   JobListSchema,
+  JobResultSchema,
   JobSchema,
   MAX_RESPONSE_BYTES,
   type JobCreate,
@@ -37,7 +38,7 @@ export interface ClientConfig {
 
 export function createAurexClient(cfg: ClientConfig) {
   const base = validServiceUrl(cfg.url);
-  const configured = !!base && !!cfg.token && cfg.token.length >= 16;
+  const configured = !!base && !!cfg.token && cfg.token.length >= 32;
   const fetcher = cfg.fetcher ?? fetch;
   const timeoutMs = Math.min(Math.max(cfg.timeoutMs ?? 5000, 500), 10_000);
 
@@ -72,18 +73,54 @@ export function createAurexClient(cfg: ClientConfig) {
             : "network",
       };
     }
-    if (res.status === 401 || res.status === 403)
+    const discard = async () => {
+      try {
+        await res.body?.cancel();
+      } catch {
+        /* already closed */
+      }
+    };
+    if (res.status === 401 || res.status === 403) {
+      await discard();
       return { ok: false, error: "unauthorized", status: res.status };
-    if (!res.ok) return { ok: false, error: "http_error", status: res.status };
-    const len = Number(res.headers.get("content-length") ?? "0");
-    if (len > MAX_RESPONSE_BYTES) return { ok: false, error: "too_large" };
-    let text: string;
-    try {
-      text = await res.text();
-    } catch {
-      return { ok: false, error: "network" };
     }
-    if (text.length > MAX_RESPONSE_BYTES) return { ok: false, error: "too_large" };
+    if (!res.ok) {
+      await discard();
+      return { ok: false, error: "http_error", status: res.status };
+    }
+    const len = Number(res.headers.get("content-length") ?? "0");
+    if (len > MAX_RESPONSE_BYTES) {
+      await discard();
+      return { ok: false, error: "too_large" };
+    }
+    if (!res.body) return { ok: false, error: "malformed" };
+    const reader = res.body.getReader();
+    const decoder = new TextDecoder();
+    let text = "";
+    let bytes = 0;
+    try {
+      while (true) {
+        const chunk = await reader.read();
+        if (chunk.done) break;
+        bytes += chunk.value.byteLength;
+        if (bytes > MAX_RESPONSE_BYTES) {
+          await reader.cancel();
+          return { ok: false, error: "too_large" };
+        }
+        text += decoder.decode(chunk.value, { stream: true });
+      }
+      text += decoder.decode();
+    } catch (e) {
+      return {
+        ok: false,
+        error:
+          (e as Error)?.name === "TimeoutError" || (e as Error)?.name === "AbortError"
+            ? "timeout"
+            : "network",
+      };
+    } finally {
+      reader.releaseLock();
+    }
     let json: unknown;
     try {
       json = JSON.parse(text);
@@ -114,6 +151,14 @@ export function createAurexClient(cfg: ClientConfig) {
     cancelJob: async (jobId: string, idempotencyKey: string) =>
       idOk(jobId) && keyOk(idempotencyKey)
         ? call("POST", `/jobs/${jobId}/cancel`, JobSchema, { idempotencyKey })
+        : { ok: false as const, error: "invalid_input" as const },
+    jobResult: async (jobId: string) =>
+      idOk(jobId)
+        ? call("GET", `/jobs/${jobId}/result`, JobResultSchema)
+        : { ok: false as const, error: "invalid_input" as const },
+    jobEvidence: async (jobId: string) =>
+      idOk(jobId)
+        ? call("GET", `/jobs/${jobId}/evidence`, EvidenceListSchema)
         : { ok: false as const, error: "invalid_input" as const },
     evidence: () => call("GET", "/evidence", EvidenceListSchema),
     budget: () => call("GET", "/budgets", BudgetSchema),

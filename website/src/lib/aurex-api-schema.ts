@@ -25,11 +25,18 @@ export const CapabilitiesSchema = z
   .object({ capabilities: z.array(CapabilitySchema).max(100) })
   .strict();
 
-export const JobStateSchema = z.enum(["queued", "running", "succeeded", "failed", "cancelled"]);
+export const JobStateSchema = z.enum([
+  "queued",
+  "running",
+  "succeeded",
+  "failed",
+  "cancelled",
+  "expired",
+]);
 export const JobSchema = z
   .object({
     id,
-    kind: z.enum(["benchmark", "hypothesis_test", "regression_scan"]),
+    kind: z.enum(["benchmark", "hypothesis_test", "regression_scan", "local_inference"]),
     state: JobStateSchema,
     createdAt: iso,
     updatedAt: iso,
@@ -40,9 +47,24 @@ export const JobListSchema = z
   .object({ jobs: z.array(JobSchema).max(200), nextCursor: z.string().max(128).nullable() })
   .strict();
 /** Job creation accepts only a named kind and bounded params; never code, shell or URLs. */
-export const JobCreateSchema = z
+export const PromptSchema = z
+  .string()
+  .min(1)
+  .max(8192)
+  .refine(
+    (s) => s.trim().length > 0 && new TextEncoder().encode(s).byteLength <= 8192,
+    "Prompt must contain 1–8192 UTF-8 bytes",
+  );
+export const LocalInferenceSchema = z
   .object({
-    kind: JobSchema.shape.kind,
+    kind: z.literal("local_inference"),
+    params: z.object({ prompt: PromptSchema }).strict(),
+    maxCostUsd: z.literal(0),
+  })
+  .strict();
+const LegacyJobCreateSchema = z
+  .object({
+    kind: z.enum(["benchmark", "hypothesis_test", "regression_scan"]),
     params: z
       .record(
         z.string().regex(/^[a-z_]{1,32}$/),
@@ -53,14 +75,36 @@ export const JobCreateSchema = z
   })
   .strict();
 
+export const JobCreateSchema = z.union([LocalInferenceSchema, LegacyJobCreateSchema]);
+export const JobResultSchema = z
+  .object({
+    jobId: id,
+    state: JobStateSchema,
+    verification: z.literal("NOT VERIFIED"),
+    result: z
+      .object({
+        text: z.string().max(65536),
+        model: z.string().max(256),
+        provider: z.string().max(128),
+        verification: z.literal("NOT VERIFIED"),
+        authorityGranted: z.literal(false),
+      })
+      .strict()
+      .nullable(),
+  })
+  .strict();
+
 export const EvidenceSchema = z
   .object({
     id,
     capabilityId: z.string().regex(/^[a-z-]{1,64}$/),
-    kind: z.enum(["test_run", "health_probe", "benchmark_record"]),
+    kind: z.enum(["test_run", "health_probe", "benchmark_record", "model_response"]),
     collectedAt: iso,
     sha256: z.string().regex(/^[0-9a-f]{64}$/),
     summary: z.string().max(500),
+    verification: z.literal("NOT VERIFIED").optional(),
+    integrity: z.enum(["PASS", "FAIL"]).optional(),
+    authorityGranted: z.literal(false).optional(),
   })
   .strict();
 export const EvidenceListSchema = z.object({ evidence: z.array(EvidenceSchema).max(200) }).strict();

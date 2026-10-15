@@ -1,0 +1,18 @@
+{
+  "test": "real-process API/worker unavailable-model path",
+  "startup": 200,
+  "unauthenticated": 401,
+  "ready_without_worker": 503,
+  "job_id": "job-e5f0572c071a4266b8a02d416988eb10",
+  "job_state": "failed",
+  "result": {
+    "jobId": "job-e5f0572c071a4266b8a02d416988eb10",
+    "state": "failed",
+    "result": null,
+    "verification": "NOT VERIFIED"
+  },
+  "evidence": {
+    "evidence": []
+  },
+  "native_qwen": "NOT VERIFIED"
+}

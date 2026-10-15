@@ -3,8 +3,8 @@ info:
   title: AUREX Service API
   version: 1.0.0-draft
   description: >
-    Contract for an external, separately hosted AUREX service. DRAFT — no hosted
-    implementation exists. Mirrors src/lib/aurex-api-schema.ts. Jobs accept only named
+    Contract for the AUREX service. Repository implementation exists; hosted execution
+    remains NOT VERIFIED. Mirrors src/lib/aurex-api-schema.ts. Jobs accept only named
     kinds with bounded params; no code, shell or URL execution.
 servers:
   - url: https://aurex.example.invalid
@@ -16,19 +16,32 @@ paths:
     get:
       summary: Service health
       responses:
-        "200": { description: OK, content: { application/json: { schema: { $ref: "#/components/schemas/Health" } } } }
+        "200":
+          {
+            description: OK,
+            content: { application/json: { schema: { $ref: "#/components/schemas/Health" } } },
+          }
         default: { $ref: "#/components/responses/Error" }
   /v1/capabilities:
     get:
       summary: Capabilities with evidence links
       responses:
-        "200": { description: OK, content: { application/json: { schema: { $ref: "#/components/schemas/Capabilities" } } } }
+        "200":
+          {
+            description: OK,
+            content:
+              { application/json: { schema: { $ref: "#/components/schemas/Capabilities" } } },
+          }
         default: { $ref: "#/components/responses/Error" }
   /v1/jobs:
     get:
       summary: List jobs
       responses:
-        "200": { description: OK, content: { application/json: { schema: { $ref: "#/components/schemas/JobList" } } } }
+        "200":
+          {
+            description: OK,
+            content: { application/json: { schema: { $ref: "#/components/schemas/JobList" } } },
+          }
         default: { $ref: "#/components/responses/Error" }
     post:
       summary: Create job (reserves budget first)
@@ -37,7 +50,11 @@ paths:
         required: true
         content: { application/json: { schema: { $ref: "#/components/schemas/JobCreate" } } }
       responses:
-        "201": { description: Created, content: { application/json: { schema: { $ref: "#/components/schemas/Job" } } } }
+        "201":
+          {
+            description: Created,
+            content: { application/json: { schema: { $ref: "#/components/schemas/Job" } } },
+          }
         "402": { $ref: "#/components/responses/Error" }
         default: { $ref: "#/components/responses/Error" }
   /v1/jobs/{jobId}:
@@ -45,33 +62,89 @@ paths:
       summary: Job status
       parameters: [{ $ref: "#/components/parameters/JobId" }]
       responses:
-        "200": { description: OK, content: { application/json: { schema: { $ref: "#/components/schemas/Job" } } } }
+        "200":
+          {
+            description: OK,
+            content: { application/json: { schema: { $ref: "#/components/schemas/Job" } } },
+          }
         default: { $ref: "#/components/responses/Error" }
   /v1/jobs/{jobId}/cancel:
     post:
       summary: Cancel job (releases unspent reservation)
-      parameters: [{ $ref: "#/components/parameters/JobId" }, { $ref: "#/components/parameters/IdempotencyKey" }]
+      parameters:
+        [
+          { $ref: "#/components/parameters/JobId" },
+          { $ref: "#/components/parameters/IdempotencyKey" },
+        ]
       responses:
-        "200": { description: OK, content: { application/json: { schema: { $ref: "#/components/schemas/Job" } } } }
+        "200":
+          {
+            description: OK,
+            content: { application/json: { schema: { $ref: "#/components/schemas/Job" } } },
+          }
+        default: { $ref: "#/components/responses/Error" }
+  /v1/jobs/{jobId}/result:
+    get:
+      summary: Owner-scoped job result
+      parameters: [{ $ref: "#/components/parameters/JobId" }]
+      responses:
+        "200":
+          {
+            description: OK,
+            content: { application/json: { schema: { $ref: "#/components/schemas/JobResult" } } },
+          }
+        default: { $ref: "#/components/responses/Error" }
+  /v1/jobs/{jobId}/evidence:
+    get:
+      summary: Owner-scoped job evidence
+      parameters: [{ $ref: "#/components/parameters/JobId" }]
+      responses:
+        "200":
+          {
+            description: OK,
+            content:
+              { application/json: { schema: { $ref: "#/components/schemas/EvidenceList" } } },
+          }
         default: { $ref: "#/components/responses/Error" }
   /v1/evidence:
     get:
       summary: Evidence records (read-only)
       responses:
-        "200": { description: OK, content: { application/json: { schema: { $ref: "#/components/schemas/EvidenceList" } } } }
+        "200":
+          {
+            description: OK,
+            content:
+              { application/json: { schema: { $ref: "#/components/schemas/EvidenceList" } } },
+          }
         default: { $ref: "#/components/responses/Error" }
   /v1/budgets:
     get:
       summary: Budget (read-only)
       responses:
-        "200": { description: OK, content: { application/json: { schema: { $ref: "#/components/schemas/Budget" } } } }
+        "200":
+          {
+            description: OK,
+            content: { application/json: { schema: { $ref: "#/components/schemas/Budget" } } },
+          }
         default: { $ref: "#/components/responses/Error" }
 components:
   securitySchemes:
     bearer: { type: http, scheme: bearer }
   parameters:
-    JobId: { name: jobId, in: path, required: true, schema: { type: string, pattern: "^[a-z0-9][a-z0-9_-]{0,63}$" } }
-    IdempotencyKey: { name: Idempotency-Key, in: header, required: true, schema: { type: string, pattern: "^[A-Za-z0-9_-]{16,128}$" } }
+    JobId:
+      {
+        name: jobId,
+        in: path,
+        required: true,
+        schema: { type: string, pattern: "^[a-z0-9][a-z0-9_-]{0,63}$" },
+      }
+    IdempotencyKey:
+      {
+        name: Idempotency-Key,
+        in: header,
+        required: true,
+        schema: { type: string, pattern: "^[A-Za-z0-9_-]{16,128}$" },
+      }
   responses:
     Error:
       description: Error
@@ -84,7 +157,12 @@ components:
       type: object
       additionalProperties: false
       required: [status, version, time]
-      properties: { status: { const: ok }, version: { type: string, maxLength: 32 }, time: { $ref: "#/components/schemas/Time" } }
+      properties:
+        {
+          status: { const: ok },
+          version: { type: string, maxLength: 32 },
+          time: { $ref: "#/components/schemas/Time" },
+        }
     Capability:
       type: object
       additionalProperties: false
@@ -98,15 +176,19 @@ components:
       type: object
       additionalProperties: false
       required: [capabilities]
-      properties: { capabilities: { type: array, maxItems: 100, items: { $ref: "#/components/schemas/Capability" } } }
+      properties:
+        {
+          capabilities:
+            { type: array, maxItems: 100, items: { $ref: "#/components/schemas/Capability" } },
+        }
     Job:
       type: object
       additionalProperties: false
       required: [id, kind, state, createdAt, updatedAt, reservationUsd]
       properties:
         id: { $ref: "#/components/schemas/Id" }
-        kind: { enum: [benchmark, hypothesis_test, regression_scan] }
-        state: { enum: [queued, running, succeeded, failed, cancelled] }
+        kind: { enum: [benchmark, hypothesis_test, regression_scan, local_inference] }
+        state: { enum: [queued, running, succeeded, failed, cancelled, expired] }
         createdAt: { $ref: "#/components/schemas/Time" }
         updatedAt: { $ref: "#/components/schemas/Time" }
         reservationUsd: { type: number, minimum: 0, maximum: 10000 }
@@ -117,7 +199,7 @@ components:
       properties:
         jobs: { type: array, maxItems: 200, items: { $ref: "#/components/schemas/Job" } }
         nextCursor: { type: [string, "null"], maxLength: 128 }
-    JobCreate:
+    LegacyJobCreate:
       type: object
       additionalProperties: false
       required: [kind, params, maxCostUsd]
@@ -127,8 +209,50 @@ components:
           type: object
           maxProperties: 16
           propertyNames: { pattern: "^[a-z_]{1,32}$" }
-          additionalProperties: { oneOf: [{ type: string, maxLength: 256 }, { type: number }, { type: boolean }] }
+          additionalProperties:
+            { oneOf: [{ type: string, maxLength: 256 }, { type: number }, { type: boolean }] }
         maxCostUsd: { type: number, minimum: 0, maximum: 100 }
+    JobCreate:
+      oneOf:
+        - $ref: "#/components/schemas/LegacyJobCreate"
+        - type: object
+          additionalProperties: false
+          required: [kind, params, maxCostUsd]
+          properties:
+            kind: { const: local_inference }
+            maxCostUsd: { const: 0 }
+            params:
+              type: object
+              additionalProperties: false
+              required: [prompt]
+              properties:
+                prompt:
+                  {
+                    type: string,
+                    minLength: 1,
+                    maxLength: 8192,
+                    description: "Nonblank, at most 8192 UTF-8 bytes; application enforces byte bound.",
+                  }
+    JobResult:
+      type: object
+      additionalProperties: false
+      required: [jobId, state, result, verification]
+      properties:
+        jobId: { $ref: "#/components/schemas/Id" }
+        state: { enum: [queued, running, succeeded, failed, cancelled, expired] }
+        verification: { const: "NOT VERIFIED" }
+        result:
+          oneOf:
+            - type: "null"
+            - type: object
+              additionalProperties: false
+              required: [text, model, provider, verification, authorityGranted]
+              properties:
+                text: { type: string, maxLength: 65536 }
+                model: { type: string, maxLength: 256 }
+                provider: { type: string, maxLength: 128 }
+                verification: { const: "NOT VERIFIED" }
+                authorityGranted: { const: false }
     Evidence:
       type: object
       additionalProperties: false
@@ -136,15 +260,22 @@ components:
       properties:
         id: { $ref: "#/components/schemas/Id" }
         capabilityId: { $ref: "#/components/schemas/CapId" }
-        kind: { enum: [test_run, health_probe, benchmark_record] }
+        kind: { enum: [test_run, health_probe, benchmark_record, model_response] }
         collectedAt: { $ref: "#/components/schemas/Time" }
         sha256: { type: string, pattern: "^[0-9a-f]{64}$" }
         summary: { type: string, maxLength: 500 }
+        verification: { const: "NOT VERIFIED" }
+        integrity: { enum: [PASS, FAIL] }
+        authorityGranted: { const: false }
     EvidenceList:
       type: object
       additionalProperties: false
       required: [evidence]
-      properties: { evidence: { type: array, maxItems: 200, items: { $ref: "#/components/schemas/Evidence" } } }
+      properties:
+        {
+          evidence:
+            { type: array, maxItems: 200, items: { $ref: "#/components/schemas/Evidence" } },
+        }
     Budget:
       type: object
       additionalProperties: false
@@ -163,4 +294,5 @@ components:
           type: object
           additionalProperties: false
           required: [code, message]
-          properties: { code: { type: string, maxLength: 64 }, message: { type: string, maxLength: 300 } }
+          properties:
+            { code: { type: string, maxLength: 64 }, message: { type: string, maxLength: 300 } }

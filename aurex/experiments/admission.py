@@ -35,6 +35,7 @@ class VerificationAttestation(BaseModel):
             "run_sha256": self.run_sha256,
             "verification_protocol_version": self.verification_protocol_version,
             "passed": self.passed,
+            "timestamp": self.timestamp.isoformat(),
             "signature_scheme": self.signature_scheme,
         }
         return fingerprint(body)
@@ -68,6 +69,7 @@ def decide_admission(
     attestation: VerificationAttestation | None,
     ledger_valid: bool,
     run_complete: bool,
+    trusted_public_keys: dict[str, str] | None = None,
 ) -> AdmissionDecision:
     if not ledger_valid:
         return AdmissionDecision(status=ResultStatus.HOLD, rationale="ledger integrity failed")
@@ -86,13 +88,18 @@ def decide_admission(
             status=ResultStatus.NOT_VERIFIED,
             rationale="independent verification is missing",
         )
-    if attestation.experiment_id and attestation.experiment_id != manifest.experiment_id:
-        return AdmissionDecision(
-            status=ResultStatus.HOLD, rationale="attestation experiment ID mismatch"
-        )
     if attestation.verifier_id != manifest.verifier.verifier_id:
         return AdmissionDecision(status=ResultStatus.HOLD, rationale="verifier identity mismatch")
     if attestation.verifier_family and attestation.verifier_family != manifest.verifier.family:
+        return AdmissionDecision(status=ResultStatus.HOLD, rationale="verifier family mismatch")
+    if attestation.signature_scheme == "none" or not attestation.signature:
+        return AdmissionDecision(
+            status=ResultStatus.NOT_VERIFIED,
+            rationale="Unsigned declarations cannot establish independent verification",
+        )
+    if attestation.experiment_id != manifest.experiment_id:
+        return AdmissionDecision(status=ResultStatus.HOLD, rationale="attestation experiment ID mismatch")
+    if attestation.verifier_family != manifest.verifier.family:
         return AdmissionDecision(status=ResultStatus.HOLD, rationale="verifier family mismatch")
     if attestation.manifest_sha256 != manifest_sha256 or attestation.run_sha256 != run_sha256:
         return AdmissionDecision(status=ResultStatus.HOLD, rationale="attestation target mismatch")
@@ -100,11 +107,13 @@ def decide_admission(
         return AdmissionDecision(
             status=ResultStatus.FAIL, rationale="independent verifier rejected run"
         )
-    if attestation.signature_scheme == "none" or not attestation.signature:
-        return AdmissionDecision(
-            status=ResultStatus.NOT_VERIFIED,
-            rationale="Unsigned declarations cannot establish independent verification",
-        )
+    # Trust is supplied by operator-controlled policy, never by the attestation itself.
+    trusted_key = (trusted_public_keys or {}).get(attestation.verifier_id)
+    if not trusted_key or trusted_key != attestation.public_key_hex:
+        return AdmissionDecision(status=ResultStatus.HOLD, rationale="Verifier key not trusted or revoked")
+    now = datetime.now(UTC)
+    if attestation.timestamp.tzinfo is None or not 0 <= (now - attestation.timestamp).total_seconds() <= 300:
+        return AdmissionDecision(status=ResultStatus.HOLD, rationale="Attestation stale or future-dated")
     if not attestation.verify_signature():
         return AdmissionDecision(
             status=ResultStatus.HOLD,

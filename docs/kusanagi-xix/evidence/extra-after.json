@@ -1,0 +1,14 @@
+{
+  "disabled_execution_readiness": {
+    "status": 503,
+    "submission": 503
+  },
+  "unconfigured_model_readiness": 503,
+  "head": "e980eb5fa9182d048d867abf1f00f3649f41bee8",
+  "reviewed_sha256": {
+    "aurex/api.py": "496df86179a9f9e8625f80aa9e01332c1945d9af4dd6b29e2e63d4a1bc2fb204",
+    "aurex/database.py": "87d6b820dd1e45648403e3fd169e7ec021f81180a9f2f32f0230de2f95045d49",
+    "aurex/worker.py": "429f18ef60141ac3248bb4be48d171b5d956f3ade6a0c4fcd89c14e2cee40579",
+    "aurex/http_controls.py": "7492ec350fd297a6eb328bba6b733299a90f7beb7920c49346c8792cad74a4fd"
+  }
+}

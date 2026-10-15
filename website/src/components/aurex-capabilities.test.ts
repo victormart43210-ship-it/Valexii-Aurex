@@ -77,10 +77,21 @@ describe("AUREX service adapter fails closed", () => {
     expect((await checkAurexService(env, ok({}, 503))).state).toBe("OFFLINE");
     expect((await checkAurexService(env, ok({ status: "ok" }))).state).toBe("OFFLINE");
   });
-  it("is HEALTHY only with valid body, filtering bad capability ids", async () => {
+  it("is HEALTHY only with separate valid health and capability bodies", async () => {
     const r = await checkAurexService(
       { url: "https://aurex.example.com", token },
-      ok({ status: "ok", capabilities: ["memory-graph", "<x>", 3] }),
+      (async (input) =>
+        new Response(
+          JSON.stringify(
+            new URL(String(input)).pathname.endsWith("/health")
+              ? { status: "ok", version: "test", time: new Date().toISOString() }
+              : {
+                  capabilities: [
+                    { id: "memory-graph", available: true, evidenceId: null, verifiedAt: null },
+                  ],
+                },
+          ),
+        )) as typeof fetch,
     );
     expect(r.state).toBe("HEALTHY");
     expect(r.checks.serviceCapabilities).toEqual(["memory-graph"]);

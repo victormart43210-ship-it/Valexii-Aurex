@@ -4,6 +4,7 @@ import hashlib
 import time
 from datetime import UTC, datetime
 from typing import Literal
+from urllib.error import URLError
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -55,7 +56,10 @@ def _answer(adapter: ModelAdapter, prompt: str, spec: ModelSpec) -> ModelAnswer:
         return answer
     except Exception as exc:
         # Do not serialize exception text, cause, headers, URLs, or traceback.
-        code = "TIMEOUT" if isinstance(exc, TimeoutError) else "PROVIDER_OR_SCHEMA_FAILURE"
+        timed_out = isinstance(exc, TimeoutError) or (
+            isinstance(exc, URLError) and isinstance(exc.reason, TimeoutError)
+        )
+        code = "TIMEOUT" if timed_out else "PROVIDER_OR_SCHEMA_FAILURE"
         raise ExecutionFailure(code) from exc
 
 

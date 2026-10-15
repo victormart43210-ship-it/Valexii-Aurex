@@ -1,0 +1,24 @@
+COMMAND: ['/workspace/scratch/9b8b721f1090/aurex-xiv-venv/bin/ruff', 'check', '.']
+EXIT: 1
+UP017 [*] Use `datetime.UTC` alias
+  --> website/examples/aurex-backend/app.py:28:76
+   |
+26 | @app.get("/v1/health")
+27 | def health(_: None = Depends(require_token)):
+28 |     return {"status": "ok", "version": "1.0.0-draft", "time": datetime.now(timezone.utc).isoformat()}
+   |                                                                            ^^^^^^^^^^^^
+help: Convert to `datetime.UTC` alias
+   |
+8  | import os
+   - from datetime import datetime, timezone
+9  + from datetime import datetime, timezone, UTC
+10 |
+--------------------------------------------------------------------------------
+27 | def health(_: None = Depends(require_token)):
+   -     return {"status": "ok", "version": "1.0.0-draft", "time": datetime.now(timezone.utc).isoformat()}
+28 +     return {"status": "ok", "version": "1.0.0-draft", "time": datetime.now(UTC).isoformat()}
+29 |
+   |
+
+Found 1 error.
+[*] 1 fixable with `--fix`.
