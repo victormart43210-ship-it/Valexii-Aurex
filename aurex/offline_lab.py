@@ -7,7 +7,7 @@ import os
 from datetime import UTC, datetime, timedelta
 from uuid import uuid4
 
-from aurex.database import claim_queued_job, create_job, finish_claimed_job, get_job, record_evidence
+from aurex.database import claim_queued_job, create_job, finalize_probe, get_job
 
 
 def run_offline_probe(db_path: str, idempotency_key: str | None = None) -> dict:
@@ -32,11 +32,10 @@ def run_offline_probe(db_path: str, idempotency_key: str | None = None) -> dict:
     payload = {"probe": "sqlite_roundtrip_v1", "job_id": job["id"], "result": "local_roundtrip_observed"}
     digest = hashlib.sha256(json.dumps(payload, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
     evidence_id = str(uuid4())
-    record_evidence(db_path, evidence_id, "offline_lab", "deterministic_probe", digest,
-                    "Local SQLite roundtrip observed; NOT independently verified",
-                    source_ref=job["id"], integrity_status="HASHED",
-                    verification_status="UNVERIFIED")
-    finished = finish_claimed_job(db_path, job["id"], lease, payload)
+    finished = finalize_probe(
+        db_path, job["id"], lease, payload, evidence_id, digest,
+        "Local SQLite roundtrip observed; NOT independently verified",
+    )
     if finished is None:
         raise RuntimeError("Job completion failed")
     return finished
