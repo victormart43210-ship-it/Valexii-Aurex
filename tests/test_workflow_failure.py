@@ -40,7 +40,7 @@ class WorkflowFailureTests(unittest.TestCase):
 
             self.assertEqual(
                 events,
-                ["SUBMITTED", "HUMAN_APPROVED", "FAILED"],
+                ["SUBMITTED", "HUMAN_APPROVED", "STARTED", "FAILED"],
             )
 
             with self.assertRaises(PermissionError):

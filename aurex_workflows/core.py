@@ -63,30 +63,50 @@ class WorkflowEngine:
             self._event(conn, job_id, 'HUMAN_APPROVED', {})
 
     def execute(self, job_id: str) -> dict[str, Any]:
+        # Claim the job atomically before invoking any external model.
         with self._db() as conn:
-            row = conn.execute('SELECT kind,payload_json,state FROM jobs WHERE id=?', (job_id,)).fetchone()
-            if not row or row[2] != 'APPROVED':
-                raise PermissionError('job not approved')
-            changed = conn.execute("UPDATE jobs SET state='RUNNING',updated_at=? WHERE id=? AND state='APPROVED'",
-                                   (time.time(), job_id)).rowcount
+            changed = conn.execute(
+                "UPDATE jobs SET state='RUNNING',updated_at=? WHERE id=? AND state='APPROVED'",
+                (time.time(), job_id),
+            ).rowcount
             if changed != 1:
-                raise RuntimeError('state changed')
-            kind, raw, _ = row
+                raise PermissionError('job not approved or already claimed')
+            row = conn.execute(
+                'SELECT kind,payload_json FROM jobs WHERE id=?', (job_id,)
+            ).fetchone()
+            kind, raw = row
+            self._event(conn, job_id, 'STARTED', {})
+
+        # No SQLite write transaction remains open during inference.
+        try:
             payload = json.loads(raw)
-            try:
+            if kind == 'llm_eval':
+                from aurex_workflows.local_executor import execute_local_model
+                result = execute_local_model(payload=payload, approved=True)
+            else:
                 result = self._local_evaluation(kind, payload)
-            except Exception as exc:
-                conn.execute(
+        except Exception as exc:
+            with self._db() as conn:
+                changed = conn.execute(
                     "UPDATE jobs SET state='FAILED',updated_at=? WHERE id=? AND state='RUNNING'",
                     (time.time(), job_id),
-                )
+                ).rowcount
+                if changed != 1:
+                    raise RuntimeError('failed job state transition') from exc
                 self._event(conn, job_id, 'FAILED', {'error_type': type(exc).__name__})
-                conn.commit()
-                raise
-            conn.execute("UPDATE jobs SET state='COMPLETED',result_json=?,updated_at=? WHERE id=? AND state='RUNNING'",
-                         (json.dumps(result, sort_keys=True), time.time(), job_id))
-            self._event(conn, job_id, 'COMPLETED', {'result_sha256': hashlib.sha256(json.dumps(result, sort_keys=True).encode()).hexdigest()})
-            return result
+            raise
+
+        serialized = json.dumps(result, sort_keys=True, allow_nan=False)
+        digest = hashlib.sha256(serialized.encode()).hexdigest()
+        with self._db() as conn:
+            changed = conn.execute(
+                "UPDATE jobs SET state='COMPLETED',result_json=?,updated_at=? WHERE id=? AND state='RUNNING'",
+                (serialized, time.time(), job_id),
+            ).rowcount
+            if changed != 1:
+                raise RuntimeError('completed job state transition failed')
+            self._event(conn, job_id, 'COMPLETED', {'result_sha256': digest})
+        return result
 
     @staticmethod
     def _local_evaluation(kind: str, payload: dict[str, Any]) -> dict[str, Any]:

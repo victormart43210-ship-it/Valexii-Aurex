@@ -5,7 +5,7 @@ import ipaddress
 import json
 import socket
 from dataclasses import dataclass
-from urllib.request import Request, build_opener, HTTPHandler
+from urllib.request import Request, build_opener, HTTPRedirectHandler
 from urllib.error import HTTPError, URLError
 from urllib.parse import urlsplit
 
@@ -15,7 +15,7 @@ MAX_RESPONSE_BYTES = 131072
 class LocalInferenceError(RuntimeError):
     pass
 
-class _NoRedirect(HTTPHandler):
+class _NoRedirect(HTTPRedirectHandler):
     def http_error_302(self, req, fp, code, msg, headers):
         raise LocalInferenceError('redirect refused')
     http_error_301 = http_error_302
