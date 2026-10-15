@@ -37,8 +37,14 @@ def test_jobs_submission_endpoint() -> None:
         json={"kind": "regression_scan", "params": {}, "maxCostUsd": 0.0},
         headers={"Authorization": f"Bearer {VALID_TOKEN}"},
     )
-    assert res.status_code == 200
-    assert res.json()["state"] in ("queued", "succeeded")
+    assert res.status_code == 503
+    assert "worker unavailable" in res.json()["detail"].lower()
+    jobs = client.get("/v1/jobs", headers={"Authorization": f"Bearer {VALID_TOKEN}"})
+    assert jobs.status_code == 200
+    assert jobs.json()["jobs"] == []
+    evidence = client.get("/v1/evidence", headers={"Authorization": f"Bearer {VALID_TOKEN}"})
+    assert evidence.status_code == 200
+    assert evidence.json()["evidence"] == []
 
 
 def test_evidence_summary_endpoint() -> None:

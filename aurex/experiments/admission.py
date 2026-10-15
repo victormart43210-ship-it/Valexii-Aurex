@@ -1,6 +1,8 @@
 """Fail-closed admission rules for experiment results."""
 
-from datetime import UTC, datetime
+import hmac
+import os
+from datetime import UTC, datetime, timedelta
 
 from cryptography.exceptions import InvalidSignature
 from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PublicKey
@@ -36,16 +38,17 @@ class VerificationAttestation(BaseModel):
             "verification_protocol_version": self.verification_protocol_version,
             "passed": self.passed,
             "signature_scheme": self.signature_scheme,
+            "timestamp": self.timestamp.isoformat(),
         }
         return fingerprint(body)
 
-    def verify_signature(self) -> bool:
-        if self.signature_scheme == "none" or not self.signature:
+    def verify_signature(self, trusted_public_key_hex: str | None = None) -> bool:
+        if self.signature_scheme == "none" or not self.signature or not trusted_public_key_hex:
             return False
         if self.signature_scheme == "ed25519":
             try:
                 sig_bytes = bytes.fromhex(self.signature)
-                pk_bytes = bytes.fromhex(self.public_key_hex)
+                pk_bytes = bytes.fromhex(trusted_public_key_hex)
                 pk = Ed25519PublicKey.from_public_bytes(pk_bytes)
                 pk.verify(sig_bytes, self.digest().encode("utf-8"))
                 return True
@@ -105,7 +108,18 @@ def decide_admission(
             status=ResultStatus.NOT_VERIFIED,
             rationale="Unsigned declarations cannot establish independent verification",
         )
-    if not attestation.verify_signature():
+    # Trust anchors are operator-controlled, never supplied by an attestation.
+    # A missing pin fails closed. Keys are 32-byte Ed25519 public keys in hex.
+    verifier_key = os.environ.get("AUREX_TRUSTED_VERIFIER_" + attestation.verifier_id.upper().replace("-", "_"), "")
+    if len(verifier_key) != 64 or not hmac.compare_digest(attestation.public_key_hex.lower(), verifier_key.lower()):
+        return AdmissionDecision(status=ResultStatus.HOLD, rationale="verifier key not operator-trusted")
+    now = datetime.now(UTC)
+    signed_at = attestation.timestamp
+    if signed_at.tzinfo is None:
+        return AdmissionDecision(status=ResultStatus.HOLD, rationale="attestation timestamp lacks timezone")
+    if not now - timedelta(minutes=5) <= signed_at <= now + timedelta(minutes=1):
+        return AdmissionDecision(status=ResultStatus.HOLD, rationale="attestation timestamp is stale or in future")
+    if not attestation.verify_signature(verifier_key):
         return AdmissionDecision(
             status=ResultStatus.HOLD,
             rationale="Attestation signature verification failed or scheme untrusted",
