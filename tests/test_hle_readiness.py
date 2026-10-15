@@ -1,4 +1,5 @@
 """Adversarial regression tests for AUREX admission and evaluation."""
+
 import json
 
 import pytest
@@ -26,9 +27,15 @@ class ForgedChallenger(Challenger):
         return result
 
 
-@pytest.mark.parametrize("kwargs", [
-    {"forged_id": True}, {"authority": True}, {"unknown_evidence": True}, {},
-])
+@pytest.mark.parametrize(
+    "kwargs",
+    [
+        {"forged_id": True},
+        {"authority": True},
+        {"unknown_evidence": True},
+        {},
+    ],
+)
 def test_untrusted_challenger_fails_closed(kwargs):
     result = AurexEngine([ForgedChallenger(**kwargs)]).evaluate(
         ChallengeRequest(request_id="test", claim="claim")
@@ -40,27 +47,31 @@ def test_untrusted_challenger_fails_closed(kwargs):
 def test_hle_gate_requires_complete_independent_pairs(tmp_path):
     manifest = tmp_path / "manifest.json"
     results = tmp_path / "outcomes.jsonl"
-    manifest.write_text(json.dumps({
-        "dataset_sha256": "a" * 64,
-        "dataset_revision": "frozen",
-        "item_ids": ["a", "b"],
-        "baseline_model": "base",
-        "aurex_model": "governed",
-        "judge_id": "independent-reviewer",
-        "evaluation_protocol_sha256": "b" * 64,
-        "judge_independent": True,
-        "contamination_checked": True,
-        "dataset_authorized": True,
-    }))
-    results.write_text(json.dumps({
-        "item_id": "a", "base_correct": False, "governed_correct": True
-    }) + "\n")
+    manifest.write_text(
+        json.dumps(
+            {
+                "dataset_sha256": "a" * 64,
+                "dataset_revision": "frozen",
+                "item_ids": ["a", "b"],
+                "baseline_model": "base",
+                "aurex_model": "governed",
+                "judge_id": "independent-reviewer",
+                "evaluation_protocol_sha256": "b" * 64,
+                "judge_independent": True,
+                "contamination_checked": True,
+                "dataset_authorized": True,
+            }
+        )
+    )
+    results.write_text(
+        json.dumps({"item_id": "a", "base_correct": False, "governed_correct": True}) + "\n"
+    )
     with pytest.raises(BenchmarkHold):
         assess_pair(manifest, results)
     with results.open("a") as stream:
-        stream.write(json.dumps({
-            "item_id": "b", "base_correct": True, "governed_correct": True
-        }) + "\n")
+        stream.write(
+            json.dumps({"item_id": "b", "base_correct": True, "governed_correct": True}) + "\n"
+        )
     report = assess_pair(manifest, results)
     assert report["n"] == 2
     assert report["improved_pairs"] == 1

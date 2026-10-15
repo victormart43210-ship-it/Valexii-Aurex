@@ -34,9 +34,13 @@ def decide_admission(
     if not run_complete:
         return AdmissionDecision(status=ResultStatus.HOLD, rationale="run is incomplete")
     if not manifest.dataset_authorized:
-        return AdmissionDecision(status=ResultStatus.HOLD, rationale="dataset authorization not established")
+        return AdmissionDecision(
+            status=ResultStatus.HOLD, rationale="dataset authorization not established"
+        )
     if not manifest.contamination_checked:
-        return AdmissionDecision(status=ResultStatus.HOLD, rationale="contamination check not established")
+        return AdmissionDecision(
+            status=ResultStatus.HOLD, rationale="contamination check not established"
+        )
     if attestation is None:
         return AdmissionDecision(
             status=ResultStatus.NOT_VERIFIED,
@@ -47,5 +51,10 @@ def decide_admission(
     if attestation.manifest_sha256 != manifest_sha256 or attestation.run_sha256 != run_sha256:
         return AdmissionDecision(status=ResultStatus.HOLD, rationale="attestation target mismatch")
     if not attestation.passed:
-        return AdmissionDecision(status=ResultStatus.FAIL, rationale="independent verifier rejected run")
-    return AdmissionDecision(status=ResultStatus.PASS, rationale="independent verification admitted")
+        return AdmissionDecision(
+            status=ResultStatus.FAIL, rationale="independent verifier rejected run"
+        )
+    return AdmissionDecision(
+        status=ResultStatus.NOT_VERIFIED,
+        rationale="Unsigned declarations cannot establish independent verification",
+    )

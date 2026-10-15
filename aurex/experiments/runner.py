@@ -52,11 +52,13 @@ class ExperimentRunner:
             if item_id not in prompts:
                 self.ledger.append("item_missing", {"item_id": item_id})
                 continue
-            result = ItemResult(
-                item_id=item_id,
-                baseline_output=baseline_solver(prompts[item_id]),
-                experimental_output=experimental_solver(prompts[item_id]),
-            )
+            try:
+                result = _solve_pair(
+                    item_id, prompts[item_id], baseline_solver, experimental_solver
+                )
+            except SolverFailure:
+                self.ledger.append("solver_error", {"item_id": item_id, "code": "SOLVER_FAILURE"})
+                continue
             results.append(result)
             self.ledger.append("item_completed", result.model_dump(mode="json"))
 
@@ -73,3 +75,18 @@ class ExperimentRunner:
             {"run_sha256": run_sha256, "complete": complete},
         )
         return RunReport(**run_body, run_sha256=run_sha256)
+
+
+class SolverFailure(RuntimeError):
+    """Sanitized provider or output validation failure."""
+
+
+def _solve_pair(item_id: str, prompt: str, baseline: Solver, experimental: Solver) -> ItemResult:
+    try:
+        return ItemResult(
+            item_id=item_id,
+            baseline_output=baseline(prompt),
+            experimental_output=experimental(prompt),
+        )
+    except Exception as exc:
+        raise SolverFailure("SOLVER_FAILURE") from exc

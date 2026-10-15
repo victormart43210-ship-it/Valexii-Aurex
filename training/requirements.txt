@@ -1,0 +1,6 @@
+# Tested API stack; CPU smoke uses torch 2.6.0+cpu from the PyTorch CPU index.
+# Install torch appropriate to the authorized host before this file.
+torch==2.6.0
+transformers==4.51.3
+peft==0.15.2
+accelerate==1.6.0
