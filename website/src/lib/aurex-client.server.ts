@@ -4,6 +4,7 @@
  */
 import type { z } from "zod";
 import {
+  AnalyticsSchema,
   BudgetSchema,
   CapabilitiesSchema,
   EvidenceListSchema,
@@ -161,6 +162,7 @@ export function createAurexClient(cfg: ClientConfig) {
         ? call("GET", `/jobs/${jobId}/evidence`, EvidenceListSchema)
         : { ok: false as const, error: "invalid_input" as const },
     evidence: () => call("GET", "/evidence", EvidenceListSchema),
+    analytics: () => call("GET", "/analytics", AnalyticsSchema),
     budget: () => call("GET", "/budgets", BudgetSchema),
   };
 }

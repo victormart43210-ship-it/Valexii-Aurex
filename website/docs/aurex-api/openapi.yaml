@@ -12,6 +12,43 @@ servers:
 security:
   - bearer: []
 paths:
+  /v1/analytics:
+    get:
+      summary: Owner-only recorded event counts and durable job states
+      description: Unique visitors are not measured. No prompts or credentials included.
+      responses:
+        "200":
+          description: Recorded counts, including empty objects when no records exist
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                required: [counts, jobsByState, measurement, uniqueVisitors]
+                properties:
+                  measurement: { const: event_counts }
+                  uniqueVisitors: { type: "null" }
+                  counts:
+                    type: object
+                    propertyNames:
+                      {
+                        enum:
+                          [
+                            page_view,
+                            navigation,
+                            job_submitted,
+                            job_completed,
+                            job_failed,
+                            job_cancelled,
+                          ],
+                      }
+                    additionalProperties: { type: integer, minimum: 0, maximum: 9007199254740991 }
+                  jobsByState:
+                    type: object
+                    propertyNames:
+                      { enum: [queued, running, succeeded, failed, cancelled, expired] }
+                    additionalProperties: { type: integer, minimum: 0, maximum: 9007199254740991 }
+        default: { $ref: "#/components/responses/Error" }
   /v1/health:
     get:
       summary: Service health

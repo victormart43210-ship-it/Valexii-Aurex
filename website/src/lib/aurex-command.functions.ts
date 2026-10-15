@@ -55,3 +55,7 @@ export const cancelAurexCommand = createServerFn({ method: "POST" })
   .handler(async ({ context, data }) =>
     (await client(context.userId)).cancelJob(data.jobId, data.idempotencyKey),
   );
+
+export const readAurexAnalytics = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => (await client(context.userId)).analytics());

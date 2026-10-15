@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { PromptSchema } from "@/lib/aurex-api-schema";
 import { checkAurexOwner } from "@/lib/aurex-control.functions";
 import {
+  readAurexAnalytics,
   commandConnection,
   submitAurexCommand,
   readAurexCommand,
@@ -251,9 +252,82 @@ function Command() {
           )}
         </div>
       )}
+      <OwnerAnalytics />
       <Button type="button" onClick={() => connection.refetch()} disabled={connection.isFetching}>
         Check connection
       </Button>
     </div>
+  );
+}
+
+function OwnerAnalytics() {
+  const read = useServerFn(readAurexAnalytics);
+  const query = useQuery({
+    queryKey: ["aurex-owner-analytics"],
+    queryFn: () => read(),
+    retry: false,
+    gcTime: 0,
+  });
+  const report = !query.isError && query.data?.ok ? query.data.value : null;
+  const labels: Record<string, string> = {
+    page_view: "Recorded page views",
+    navigation: "Recorded navigation events",
+    queued: "Queued",
+    running: "Running",
+    succeeded: "Completed executions",
+    failed: "Failed",
+    cancelled: "Cancelled",
+    expired: "Expired",
+  };
+  return (
+    <section
+      aria-labelledby="aurex-analytics-heading"
+      className="space-y-3 rounded border border-border p-4"
+    >
+      <h3 id="aurex-analytics-heading" className="font-display text-lg">
+        Owner analytics
+      </h3>
+      <p className="text-sm text-muted-foreground">
+        Recorded events and durable job states. Unique visitors and retention are not measured.
+        Completed execution does not establish factual verification.
+      </p>
+      {query.isPending ? (
+        <p role="status">Loading recorded counts…</p>
+      ) : report ? (
+        <>
+          <h4>Website events · retained 30 days</h4>
+          {Object.keys(report.counts).length ? (
+            <dl className="grid grid-cols-2 gap-2">
+              {Object.entries(report.counts).map(([key, value]) => (
+                <div key={key}>
+                  <dt>{labels[key] ?? key}</dt>
+                  <dd>{value}</dd>
+                </div>
+              ))}
+            </dl>
+          ) : (
+            <p>No events recorded. This does not mean there were no visitors.</p>
+          )}
+          <h4>Jobs · stored history</h4>
+          {Object.keys(report.jobsByState).length ? (
+            <dl className="grid grid-cols-2 gap-2">
+              {Object.entries(report.jobsByState).map(([key, value]) => (
+                <div key={key}>
+                  <dt>{labels[key] ?? key}</dt>
+                  <dd>{value}</dd>
+                </div>
+              ))}
+            </dl>
+          ) : (
+            <p>No jobs recorded.</p>
+          )}
+        </>
+      ) : (
+        <p role="alert">Analytics unavailable. Counts are NOT VERIFIED.</p>
+      )}
+      <Button type="button" onClick={() => query.refetch()} disabled={query.isFetching}>
+        Refresh analytics
+      </Button>
+    </section>
   );
 }

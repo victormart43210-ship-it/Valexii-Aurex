@@ -150,3 +150,31 @@ export function capabilityBacked(
   const e = evidence.find((x) => x.id === cap.evidenceId);
   return !!e && e.capabilityId === cap.id && evidenceFresh(e, now);
 }
+
+const count = z.number().int().nonnegative().max(Number.MAX_SAFE_INTEGER);
+export const AnalyticsSchema = z
+  .object({
+    measurement: z.literal("event_counts"),
+    uniqueVisitors: z.null(),
+    counts: z
+      .object({
+        page_view: count.optional(),
+        navigation: count.optional(),
+        job_submitted: count.optional(),
+        job_completed: count.optional(),
+        job_failed: count.optional(),
+        job_cancelled: count.optional(),
+      })
+      .strict(),
+    jobsByState: z
+      .object({
+        queued: count.optional(),
+        running: count.optional(),
+        succeeded: count.optional(),
+        failed: count.optional(),
+        cancelled: count.optional(),
+        expired: count.optional(),
+      })
+      .strict(),
+  })
+  .strict();
