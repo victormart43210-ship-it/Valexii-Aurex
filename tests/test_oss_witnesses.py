@@ -1,6 +1,6 @@
 import pytest
 
-from aurex.adapters.oss_witnesses import mobsf_json_witness, Witness
+from aurex.adapters.oss_witnesses import Witness, mobsf_json_witness
 
 
 def test_mobsf_invalid_expected_sha():
