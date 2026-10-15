@@ -215,6 +215,28 @@ def create_job_endpoint(
             detail="Paid execution disabled; budget limit is $0.00",
         )
 
+    # Explicit local-only integration probe; never confuse it with a real regression worker.
+    # The caller cannot choose the probe: this exact allowlisted shape is required.
+    if (
+        os.environ.get("AUREX_ENABLE_OFFLINE_LAB") == "1"
+        and req.params == {"probe": "sqlite_roundtrip_v1"}
+        and req.maxCostUsd == 0.0
+    ):
+        from aurex.offline_lab import run_offline_probe
+
+        try:
+            probe = run_offline_probe(DEFAULT_DB_PATH, idempotency_key=idempotency_key)
+        except (ValueError, RuntimeError) as exc:
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail="Offline probe could not complete",
+            ) from exc
+        return JobResponse(
+            id=probe["id"], kind=probe["kind"], state=probe["state"],
+            createdAt=probe["created_at"], updatedAt=probe["updated_at"],
+            reservationUsd=probe["reservation_usd"],
+        )
+
     # Fail closed: no worker is registered to execute this job kind.
     # Do not create a job, record evidence, or claim success until an actual
     # authorized worker has completed the execution and persisted its output.
