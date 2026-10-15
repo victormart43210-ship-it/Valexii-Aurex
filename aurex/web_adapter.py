@@ -19,7 +19,7 @@ from urllib.parse import urlparse
 
 import httpx
 
-_ALLOWED_JOB_FIELDS = frozenset({"id", "state", "kind", "createdAt", "updatedAt"})
+_JOB_FIELDS = ("id", "state", "kind", "createdAt", "updatedAt")
 
 
 class WebsiteAdapter:
@@ -49,7 +49,7 @@ class WebsiteAdapter:
         if not isinstance(payload, Mapping):
             raise ValueError("job payload must be a mapping")
         sanitized: dict[str, Any] = {}
-        for key in _ALLOWED_JOB_FIELDS:
+        for key in _JOB_FIELDS:
             if key in payload:
                 sanitized[key] = payload[key]
         return sanitized
