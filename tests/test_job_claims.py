@@ -32,3 +32,41 @@ def test_idempotency_collision(tmp_path):
     import pytest
     with pytest.raises(ValueError):
         create_job(db, "job5", "regression_scan", {"x": 2}, idempotency_key="key")
+
+
+def test_atomic_evidence_finalization(tmp_path):
+    import hashlib
+    import sqlite3
+    from aurex.database import finalize_probe, list_evidence
+    db = str(tmp_path / "atomic.db")
+    create_job(db, "job-atomic", "regression_scan", {})
+    expiry = (datetime.now(UTC) + timedelta(minutes=1)).isoformat()
+    assert claim_queued_job(db, "job-atomic", "worker", "lease-good", expiry)
+    digest = hashlib.sha256(b"local-proof").hexdigest()
+    assert finalize_probe(db, "job-atomic", "wrong-lease", {"ok": True},
+                          "evidence-wrong", digest, "not verified") is None
+    assert list_evidence(db) == []
+    finished = finalize_probe(db, "job-atomic", "lease-good", {"ok": True},
+                              "evidence-good", digest, "not verified")
+    assert finished is not None
+    assert finished["state"] == "succeeded"
+    assert finished["evidence_id"] == "evidence-good"
+    evidence = list_evidence(db)
+    assert len(evidence) == 1
+    assert evidence[0]["verification_status"] == "UNVERIFIED"
+    assert finalize_probe(db, "job-atomic", "lease-good", {"ok": True},
+                          "evidence-repeat", digest, "not verified") is None
+    assert len(list_evidence(db)) == 1
+
+
+def test_expired_claim_cannot_create_evidence(tmp_path):
+    import hashlib
+    from aurex.database import finalize_probe, list_evidence
+    db = str(tmp_path / "expired-atomic.db")
+    create_job(db, "expired-job", "regression_scan", {})
+    past = (datetime.now(UTC) - timedelta(minutes=1)).isoformat()
+    assert claim_queued_job(db, "expired-job", "worker", "expired-token", past)
+    assert finalize_probe(db, "expired-job", "expired-token", {},
+                          "expired-evidence", hashlib.sha256(b"x").hexdigest(),
+                          "unverified") is None
+    assert list_evidence(db) == []
