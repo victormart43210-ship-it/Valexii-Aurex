@@ -2,7 +2,7 @@
 import hashlib
 import json
 import os
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 
@@ -18,7 +18,7 @@ def append_observation(question, result, path=None):
     target.parent.mkdir(parents=True, exist_ok=True)
     entry = {
         "schema": "aurex.observation.v1",
-        "observed_utc": datetime.now(timezone.utc).isoformat(),
+        "observed_utc": datetime.now(UTC).isoformat(),
         "question_sha256": digest(question),
         "answer_sha256": digest(result.get("answer", "")),
         "model": str(result.get("model", "UNKNOWN"))[:500],
