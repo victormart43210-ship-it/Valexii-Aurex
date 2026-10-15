@@ -40,6 +40,16 @@ def package():
         print("PACKAGE BLOCKED: Verification failed")
         return False
 
+    integrity = subprocess.run(
+        ["git", "diff", "--quiet", "HEAD", "--"],
+        cwd=ROOT,
+        check=False,
+    )
+
+    if integrity.returncode != 0:
+        print("PACKAGE BLOCKED: Tracked source differs from HEAD")
+        return False
+
     result = subprocess.run(
         ["git", "ls-files", "-z"],
         cwd=ROOT,
