@@ -1,6 +1,6 @@
 """Append-only, tamper-evident experiment evidence ledger."""
 
-from datetime import UTC, datetime
+from datetime import datetime, timezone
 from typing import Any
 
 from pydantic import BaseModel, ConfigDict, Field
@@ -30,7 +30,7 @@ class EvidenceLedger:
     def append(self, event_type: str, payload: dict[str, Any]) -> LedgerEvent:
         sequence = len(self._events)
         parent_hash = self._events[-1].event_hash if self._events else None
-        recorded_at = datetime.now(UTC)
+        recorded_at = datetime.now(timezone.utc)
         body = {
             "sequence": sequence,
             "event_type": event_type,

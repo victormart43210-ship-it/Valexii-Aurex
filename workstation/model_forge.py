@@ -8,7 +8,7 @@ import hashlib
 import json
 import random
 from dataclasses import asdict, dataclass
-from datetime import UTC, datetime
+from datetime import datetime, timezone
 from itertools import pairwise
 from pathlib import Path
 
@@ -24,12 +24,14 @@ class ModelCandidate:
     def eligible(self):
         return bool(self.revision and self.license and self.permission_reviewed)
 
+
 def sha256(path):
     digest = hashlib.sha256()
     with Path(path).open("rb") as stream:
         for chunk in iter(lambda: stream.read(1024 * 1024), b""):
             digest.update(chunk)
     return digest.hexdigest()
+
 
 def write_manifest(candidate, weights, destination):
     if not candidate.eligible():
@@ -42,7 +44,7 @@ def write_manifest(candidate, weights, destination):
         "model": asdict(candidate),
         "weights_filename": weights.name,
         "weights_sha256": sha256(weights),
-        "recorded_at": datetime.now(UTC).isoformat(),
+        "recorded_at": datetime.now(timezone.utc).isoformat(),
         "verification": "PROVENANCE_RECORDED_NOT_INDEPENDENTLY_VERIFIED",
     }
     destination = Path(destination)
@@ -86,11 +88,4 @@ def main():
     manifest.add_argument("--permission-reviewed", action="store_true")
     args = parser.parse_args()
     if args.command == "demo":
-        print(json.dumps(tiny_training_demo(args.steps, args.seed), indent=2))
-    else:
-        model = ModelCandidate(args.name, args.source, args.revision, args.license,
-                               args.permission_reviewed)
-        print(json.dumps(write_manifest(model, args.weights, args.output), indent=2))
-
-if __name__ == "__main__":
-    main()
+        pass

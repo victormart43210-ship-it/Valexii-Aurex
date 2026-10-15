@@ -2,7 +2,7 @@
 import argparse
 import hashlib
 import json
-from datetime import UTC, datetime
+from datetime import datetime, timezone
 from pathlib import Path
 
 
@@ -35,7 +35,7 @@ def evaluate(dataset, responses):
         "results": results,
         "dataset_sha256": hashlib.sha256(Path(dataset).read_bytes()).hexdigest(),
         "responses_sha256": hashlib.sha256(Path(responses).read_bytes()).hexdigest(),
-        "timestamp_utc": datetime.now(UTC).isoformat()
+        "timestamp_utc": datetime.now(timezone.utc).isoformat()
     }
 
 def main():

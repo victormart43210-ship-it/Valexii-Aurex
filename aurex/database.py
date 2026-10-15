@@ -3,7 +3,7 @@
 import json
 import os
 import sqlite3
-from datetime import UTC, datetime
+from datetime import datetime, timezone
 from typing import Any
 
 DEFAULT_DB_PATH = os.environ.get("AUREX_DB_PATH", "/tmp/aurex_jobs.db")
@@ -48,7 +48,7 @@ def create_job(
     reservation_usd: float = 0.0,
 ) -> dict[str, Any]:
     conn = get_db(db_path)
-    now = datetime.now(UTC).isoformat()
+    now = datetime.now(timezone.utc).isoformat()
     if idempotency_key:
         cursor = conn.execute("SELECT * FROM jobs WHERE idempotency_key = ?", (idempotency_key,))
         row = cursor.fetchone()
@@ -101,7 +101,7 @@ def update_job_state(
     result: dict[str, Any] | None = None,
 ) -> dict[str, Any] | None:
     conn = get_db(db_path)
-    now = datetime.now(UTC).isoformat()
+    now = datetime.now(timezone.utc).isoformat()
     res_json = json.dumps(result) if result else None
     with conn:
         conn.execute(
@@ -120,7 +120,7 @@ def record_evidence(
     summary: str,
 ) -> dict[str, Any]:
     conn = get_db(db_path)
-    now = datetime.now(UTC).isoformat()
+    now = datetime.now(timezone.utc).isoformat()
     with conn:
         conn.execute(
             """

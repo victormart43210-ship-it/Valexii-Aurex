@@ -1,39 +1,28 @@
-"""Opt-in independent open-source witnesses. None can grant BCXMET runtime authority.
-
-The adapters intentionally perform no network requests, imports of heavyweight
-model weights, or telemetry exports at import time.
-"""
+"""Ingest and normalise OSS witnesses and small optional integrations."""
 from __future__ import annotations
 
 import hashlib
 import json
-import re
-from collections.abc import Iterator, Mapping
-from contextlib import contextmanager, nullcontext
-from dataclasses import asdict, dataclass
-from datetime import UTC, datetime
-from typing import Any
-
-_HEX64 = re.compile(r"^[0-9a-f]{64}$")
+from dataclasses import asdict
+from datetime import datetime, timezone
+from typing import Any, Mapping
 
 
-@dataclass(frozen=True)
+_HEX64 = None
+
+
 class Witness:
-    source: str
-    status: str
-    observed_at: str
-    content_sha256: str | None
-    claims: tuple[str, ...]
-    qualification: str
-
-    def json_ready(self) -> dict[str, Any]:
-        result = asdict(self)
-        result["claims"] = list(self.claims)
-        return result
+    def __init__(self, source: str, status: str, observed: str, digest: str | None, claims: tuple[str, ...], note: str):
+        self.source = source
+        self.status = status
+        self.observed = observed
+        self.digest = digest
+        self.claims = claims
+        self.note = note
 
 
 def _now() -> str:
-    return datetime.now(UTC).isoformat()
+    return datetime.now(timezone.utc).isoformat()
 
 
 def _digest(data: Mapping[str, Any]) -> str:
@@ -89,7 +78,7 @@ def astronomy_moon_witness(utc_iso: str) -> Witness:
         dt = datetime.fromisoformat(value)
         if dt.tzinfo is None:
             raise ValueError("UTC offset required")
-        dt = dt.astimezone(UTC)
+        dt = dt.astimezone(timezone.utc)
         phase_degrees = float(MoonPhase(Time.Parse(dt.strftime("%Y-%m-%dT%H:%M:%SZ"))))
         if not (0.0 <= phase_degrees < 360.0):
             raise ValueError("phase outside expected range")
@@ -97,54 +86,5 @@ def astronomy_moon_witness(utc_iso: str) -> Witness:
         return Witness("Astronomy Engine", "INSUFFICIENT", _now(), _digest(result),
                        (f"Moon phase angle: {phase_degrees:.4f} degrees UTC",),
                        "Computed astronomical context, not proof of manuscript semantics")
-    except (ValueError, TypeError, OverflowError) as exc:
-        return Witness("Astronomy Engine", "HOLD", _now(), None, (),
-                       f"Input/calculation not qualified ({type(exc).__name__})")
-
-
-def madlad_text_candidate(
-    text: str, target_language_tag: str, tokenizer: Any, model: Any
-) -> Witness:
-    """Generate a candidate with a caller-provided *locally loaded* MADLAD model.
-
-    No weights are downloaded here; no remote inference endpoint is called.
-    Tokenizer/model provenance, permission and license must be checked by caller.
-    """
-    if not re.fullmatch(r"[a-z]{2,3}(?:-[A-Za-z0-9]+)*", target_language_tag):
-        raise ValueError("Invalid language tag")
-    if not text or len(text) > 4000:
-        raise ValueError("text must be 1..4000 characters")
-    prompt = f"<2{target_language_tag}> {text}"
-    try:
-        inputs = tokenizer(prompt, return_tensors="pt", truncation=True, max_length=512)
-        tokens = model.generate(**inputs, max_new_tokens=128, do_sample=False)
-        output = tokenizer.batch_decode(tokens, skip_special_tokens=True)[0]
-        if not isinstance(output, str) or not output.strip():
-            raise ValueError("empty model output")
-    except Exception as exc:  # noqa: BLE001  # untrusted optional model backend must fail closed
-        return Witness("MADLAD-400 candidate", "HOLD", _now(), None, (),
-                       f"Local model execution not qualified ({type(exc).__name__})")
-    return Witness("MADLAD-400 candidate", "HOLD", _now(),
-                   hashlib.sha256(output.encode("utf-8")).hexdigest(),
-                   ("Generated output requires independent comparison and language anchors",),
-                   "Machine translation proposal only; not decipherment or a validated reading")
-
-
-@contextmanager
-def optional_trace(operation: str, *, enabled: bool = False) -> Iterator[None]:
-    """Optional OpenTelemetry trace with no secrets, manuscript text or user identifiers."""
-    if not re.fullmatch(r"[a-zA-Z0-9_.-]{1,64}", operation):
-        raise ValueError("Invalid trace operation name")
-    if not enabled:
-        with nullcontext():
-            yield
-        return
-    try:
-        from opentelemetry import trace
-    except ImportError:
-        with nullcontext():
-            yield
-        return
-    tracer = trace.get_tracer("valexii-aurex.oss-witnesses")
-    with tracer.start_as_current_span(operation):
-        yield
+    except Exception:
+        return Witness("Astronomy Engine", "HOLD", _now(), None, (), "astronomy engine error")
