@@ -4,7 +4,11 @@ import copy
 import pytest
 
 from aurex.scientific_evidence import (
-    EvaluationCase, evaluate_exact, execution_manifest, unsigned_statement, verify_manifest,
+    EvaluationCase,
+    evaluate_exact,
+    execution_manifest,
+    unsigned_statement,
+    verify_manifest,
 )
 
 SOURCE = "a" * 40
