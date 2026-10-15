@@ -2,7 +2,6 @@
 
 import hmac
 import os
-import secrets
 from datetime import UTC, datetime
 from decimal import Decimal
 from typing import Any
@@ -12,14 +11,11 @@ from pydantic import BaseModel, ConfigDict, Field
 
 from aurex.database import (
     DEFAULT_DB_PATH,
-    create_job,
     get_job,
     list_evidence,
     list_jobs,
-    record_evidence,
     update_job_state,
 )
-from aurex.provenance import fingerprint
 from aurex.workflows.budget import BudgetGuard
 
 app = FastAPI(
@@ -131,16 +127,13 @@ def health() -> dict[str, str]:
 
 @app.get("/v1/capabilities", response_model=CapabilitiesResponse)
 def capabilities(_: str = Depends(authenticate)) -> CapabilitiesResponse:
-    ev_records = list_evidence(DEFAULT_DB_PATH)
-    latest_ev = ev_records[0] if ev_records else None
-
     return CapabilitiesResponse(
         capabilities=[
             CapabilityItem(
                 id="regression_scan",
-                available=True,
-                evidenceId=latest_ev["id"] if latest_ev else None,
-                verifiedAt=latest_ev["collected_at"] if latest_ev else None,
+                available=False,
+                evidenceId=None,
+                verifiedAt=None,
             ),
             CapabilityItem(
                 id="remote_inference",
@@ -187,48 +180,10 @@ def create_job_endpoint(
             detail="Paid execution disabled; budget limit is -bash.00",
         )
 
-    job_id = f"job-{secrets.token_hex(8)}"
-    try:
-        j = create_job(
-            db_path=DEFAULT_DB_PATH,
-            job_id=job_id,
-            kind=req.kind,
-            params=req.params,
-            idempotency_key=idempotency_key,
-            reservation_usd=req.maxCostUsd,
-        )
-    except ValueError as exc:
-        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(exc)) from exc
-
-    # Execute bounded offline worker for allowlisted regression scan
-    update_job_state(DEFAULT_DB_PATH, j["id"], "running")
-
-    # Record real execution evidence
-    ev_sha256 = fingerprint({"job_id": j["id"], "params": req.params, "outcome": "PASS"})
-    ev = record_evidence(
-        db_path=DEFAULT_DB_PATH,
-        evidence_id=f"ev-{secrets.token_hex(8)}",
-        capability_id="regression_scan",
-        kind="test_run",
-        sha256=ev_sha256,
-        summary=f"Regression scan for job {j['id']} completed successfully",
+    raise HTTPException(
+        status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+        detail="Real regression worker is not configured; execution is unavailable",
     )
-
-    final_job = update_job_state(
-        DEFAULT_DB_PATH, j["id"], "succeeded", result={"evidence_id": ev["id"]}
-    )
-    if not final_job:
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Job update failed")
-
-    return JobResponse(
-        id=final_job["id"],
-        kind=final_job["kind"],
-        state=final_job["state"],
-        createdAt=final_job["created_at"],
-        updatedAt=final_job["updated_at"],
-        reservationUsd=final_job["reservation_usd"],
-    )
-
 
 @app.get("/v1/jobs/{job_id}", response_model=JobResponse)
 def get_job_endpoint(job_id: str, _: str = Depends(authenticate)) -> JobResponse:
