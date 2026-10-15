@@ -1,0 +1,38 @@
+{
+  "python_version": "3.12",
+  "ci_runner_os": "ubuntu-latest",
+  "dev_install": "pip install -e \".[dev]\"",
+  "required_env_vars": [
+    "AUREX_SERVICE_TOKEN",
+    "AUREX_DB_PATH",
+    "AUREX_LEDGER_PATH"
+  ],
+  "default_db_path": "/tmp/aurex_jobs.db",
+  "ledger_default": "${HOME}/aurex-evidence-ledger.jsonl",
+  "api_routes": [
+    "/v1/health",
+    "/v1/capabilities",
+    "/v1/jobs",
+    "/v1/evidence",
+    "/v1/budgets",
+    "/v1/jobs/{jobId}/cancel"
+  ],
+  "local_inference_policy": {
+    "allowed_hosts": ["127.0.0.1", "localhost", "::1"],
+    "explicit_port_required": true,
+    "redirects_disallowed": true,
+    "approved_flag_required": true
+  },
+  "database_schema": {
+    "jobs": ["id","kind","state","idempotency_key","params_json","reservation_usd","created_at","updated_at","result_json"],
+    "evidence_records": ["id","capability_id","kind","collected_at","sha256","summary"]
+  },
+  "test_commands": {
+    "python_dev_install": "pip install -e \".[dev]\"",
+    "lint": "ruff check .",
+    "types": "mypy aurex",
+    "tests": "pytest -q"
+  },
+  "website_build": "See website/ README or package config in repo; default toolchain not forced in CI",
+  "notes": "This manifest was generated from repository analysis. Do not include secrets. Update after integrating Chromebook ZIP."
+}
