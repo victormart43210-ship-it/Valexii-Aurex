@@ -54,8 +54,36 @@ def execution_manifest(*, source_sha: str, environment_digest: str,
         raise ValueError("Full lowercase git commit SHA required")
     if len(environment_digest) != 64 or any(c not in "0123456789abcdef" for c in environment_digest):
         raise ValueError("SHA-256 environment digest required")
-    if not isinstance(evaluation.get("passed"), bool):
-        raise ValueError("Explicit evaluation result required")
+    # A bare {"passed": true} is not evaluation evidence. Require the
+    # scorer's complete denominator and a self-consistent verdict.
+    counts = evaluation.get("counts")
+    if not isinstance(counts, dict) or set(counts) != {"PASS", "FAIL", "UNKNOWN"}:
+        raise ValueError("Complete evaluation counts required")
+    if any(type(counts[key]) is not int or counts[key] < 0 for key in counts):
+        raise ValueError("Invalid evaluation counts")
+    total = sum(counts.values())
+    if total == 0 or total > 1000:
+        raise ValueError("Evaluation denominator must be 1..1000")
+    expected_complete = counts["UNKNOWN"] == 0
+    expected_passed = expected_complete and counts["FAIL"] == 0
+    if (type(evaluation.get("complete")) is not bool
+            or type(evaluation.get("passed")) is not bool
+            or evaluation["complete"] != expected_complete
+            or evaluation["passed"] != expected_passed):
+        raise ValueError("Evaluation verdict contradicts counts")
+    results = evaluation.get("results")
+    if not isinstance(results, list) or len(results) != total:
+        raise ValueError("Evaluation results must match denominator")
+    if (any(not isinstance(item, dict)
+            or set(item) != {"case_id", "outcome"}
+            or not isinstance(item["case_id"], str)
+            or not item["case_id"]
+            or item["outcome"] not in counts for item in results)
+            or len({item["case_id"] for item in results}) != total
+            or any(sum(item["outcome"] == key for item in results) != counts[key]
+                   for key in counts)
+            or evaluation.get("digest_sha256") != digest(results)):
+        raise ValueError("Evaluation results or digest inconsistent")
     return {"schema": "aurex.reproducibility.v1", "source_sha": source_sha,
             "environment_sha256": environment_digest,
             "inputs_sha256": digest(inputs), "outputs_sha256": digest(outputs),
