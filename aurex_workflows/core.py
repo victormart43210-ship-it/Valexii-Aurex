@@ -73,7 +73,16 @@ class WorkflowEngine:
                 raise RuntimeError('state changed')
             kind, raw, _ = row
             payload = json.loads(raw)
-            result = self._local_evaluation(kind, payload)
+            try:
+                result = self._local_evaluation(kind, payload)
+            except Exception as exc:
+                conn.execute(
+                    "UPDATE jobs SET state='FAILED',updated_at=? WHERE id=? AND state='RUNNING'",
+                    (time.time(), job_id),
+                )
+                self._event(conn, job_id, 'FAILED', {'error_type': type(exc).__name__})
+                conn.commit()
+                raise
             conn.execute("UPDATE jobs SET state='COMPLETED',result_json=?,updated_at=? WHERE id=? AND state='RUNNING'",
                          (json.dumps(result, sort_keys=True), time.time(), job_id))
             self._event(conn, job_id, 'COMPLETED', {'result_sha256': hashlib.sha256(json.dumps(result, sort_keys=True).encode()).hexdigest()})
