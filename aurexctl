@@ -15,9 +15,7 @@ def run(command):
 
 def verify():
     checks = [
-        ("TESTS", [sys.executable, "-m", "pytest", "-q"]),
-        ("RUFF", [sys.executable, "-m", "ruff", "check", "."]),
-        ("MYPY", [sys.executable, "-m", "mypy", "aurex"]),
+        ("FULL VERIFICATION", ["bash", "scripts/verify.sh"]),
         ("WHITESPACE", ["git", "diff", "--check"]),
     ]
 
