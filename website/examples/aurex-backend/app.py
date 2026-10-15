@@ -25,9 +25,19 @@ def require_token(authorization: str = Header(default="")) -> None:
 
 @app.get("/v1/health")
 def health(_: None = Depends(require_token)):
-    return {"status": "ok", "version": "1.0.0-draft", "time": datetime.now(timezone.utc).isoformat()}
+    # break long mapping into multiple lines to satisfy linters
+    return {
+        "status": "ok",
+        "version": "1.0.0-draft",
+        "time": datetime.now(timezone.utc).isoformat(),
+    }
 
 
 @app.get("/v1/capabilities")
 def capabilities(_: None = Depends(require_token)):
-    return {"capabilities": [{"id": c, "available": False, "evidenceId": None, "verifiedAt": None} for c in KNOWN_CAPABILITIES]}
+    return {
+        "capabilities": [
+            {"id": c, "available": False, "evidenceId": None, "verifiedAt": None}
+            for c in KNOWN_CAPABILITIES
+        ]
+    }
