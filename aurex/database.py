@@ -22,7 +22,8 @@ def _now_iso() -> str:
 
 
 def get_db(db_path: str = DEFAULT_DB_PATH) -> sqlite3.Connection:
-    conn = sqlite3.connect(db_path)
+    conn = sqlite3.connect(db_path, timeout=10)
+    conn.execute("PRAGMA busy_timeout=10000")
     conn.row_factory = sqlite3.Row
     with conn:
         conn.execute(
@@ -31,7 +32,7 @@ def get_db(db_path: str = DEFAULT_DB_PATH) -> sqlite3.Connection:
                 id TEXT PRIMARY KEY,
                 kind TEXT NOT NULL,
                 state TEXT NOT NULL,
-                idempotency_key TEXT,
+                idempotency_key TEXT UNIQUE,
                 params_json TEXT NOT NULL,
                 reservation_usd REAL NOT NULL DEFAULT 0.0,
                 created_at TEXT NOT NULL,
@@ -91,28 +92,31 @@ def create_job(
             return dict(row)
 
     with conn:
-        conn.execute(
-            """
-            INSERT INTO jobs (
-                id, kind, state, idempotency_key, params_json, reservation_usd,
-                created_at, updated_at, request_id, trace_id, worker_id
+        conn.execute("CREATE UNIQUE INDEX IF NOT EXISTS ux_jobs_idempotency_key ON jobs(idempotency_key)")
+    try:
+        with conn:
+            conn.execute(
+                """
+                INSERT INTO jobs (
+                    id, kind, state, idempotency_key, params_json, reservation_usd,
+                    created_at, updated_at, request_id, trace_id, worker_id
+                )
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                """,
+                (
+                    job_id, kind, "queued", idempotency_key, json.dumps(params),
+                    reservation_usd, now, now, request_id, trace_id, worker_id,
+                ),
             )
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-            """,
-            (
-                job_id,
-                kind,
-                "queued",
-                idempotency_key,
-                json.dumps(params),
-                reservation_usd,
-                now,
-                now,
-                request_id,
-                trace_id,
-                worker_id,
-            ),
-        )
+    except sqlite3.IntegrityError:
+        if not idempotency_key:
+            raise
+        row = conn.execute("SELECT * FROM jobs WHERE idempotency_key = ?", (idempotency_key,)).fetchone()
+        if row is None:
+            raise
+        if row["kind"] != kind or json.loads(row["params_json"]) != params:
+            raise ValueError("Idempotency key collision with different parameters") from None
+        return dict(row)
     return get_job(db_path, job_id)  # type: ignore[return-value]
 
 
@@ -177,6 +181,84 @@ def update_job_state(
         )
         if cursor.rowcount != 1:
             return None
+    return get_job(db_path, job_id)
+
+
+
+def claim_queued_job(
+    db_path: str, job_id: str, worker_id: str, lease_token: str, lease_expires_at: str
+) -> dict[str, Any] | None:
+    """Atomically claim a queued job once; never take over a running lease."""
+    if not worker_id or not lease_token or not lease_expires_at:
+        raise ValueError("Claim requires worker identity, lease token and expiry")
+    conn = get_db(db_path)
+    with conn:
+        changed = conn.execute(
+            """
+            UPDATE jobs SET state='running', updated_at=?, worker_id=?,
+                lease_token=?, lease_expires_at=?
+            WHERE id=? AND state='queued'
+            """,
+            (_now_iso(), worker_id, lease_token, lease_expires_at, job_id),
+        )
+        if changed.rowcount != 1:
+            return None
+    return get_job(db_path, job_id)
+
+
+def finish_claimed_job(
+    db_path: str, job_id: str, lease_token: str, result: dict[str, Any]
+) -> dict[str, Any] | None:
+    """Only the active, unexpired lease holder can finish a claimed job."""
+    conn = get_db(db_path)
+    now = _now_iso()
+    with conn:
+        changed = conn.execute(
+            """
+            UPDATE jobs SET state='succeeded', updated_at=?, result_json=?
+            WHERE id=? AND state='running' AND lease_token=?
+              AND lease_expires_at > ?
+            """,
+            (now, json.dumps(result), job_id, lease_token, now),
+        )
+        if changed.rowcount != 1:
+            return None
+    return get_job(db_path, job_id)
+
+
+
+def finalize_probe(db_path: str, job_id: str, lease_token: str,
+                   result: dict[str, Any], evidence_id: str,
+                   digest: str, summary: str) -> dict[str, Any] | None:
+    """Atomically finalize a lease-fenced job and its unverified evidence."""
+    if len(digest) != 64 or not lease_token:
+        raise ValueError("Invalid evidence digest or lease")
+    conn = get_db(db_path)
+    now = _now_iso()
+    with conn:
+        conn.execute("UPDATE jobs SET updated_at=updated_at WHERE id=?", (job_id,))
+        eligible = conn.execute(
+            "SELECT id FROM jobs WHERE id=? AND state='running' AND lease_token=? AND lease_expires_at>?",
+            (job_id, lease_token, now),
+        ).fetchone()
+        if eligible is None:
+            return None
+        conn.execute(
+            """INSERT INTO evidence_records
+               (id, capability_id, kind, collected_at, sha256, summary,
+                source_ref, integrity_status, verification_status)
+               VALUES (?, 'offline_lab', 'deterministic_probe', ?, ?, ?, ?,
+                       'HASHED', 'UNVERIFIED')""",
+            (evidence_id, now, digest, summary, job_id),
+        )
+        changed = conn.execute(
+            """UPDATE jobs SET state='succeeded', updated_at=?,
+                      result_json=?, evidence_id=?
+               WHERE id=? AND state='running' AND lease_token=? AND lease_expires_at>?""",
+            (now, json.dumps(result), evidence_id, job_id, lease_token, now),
+        )
+        if changed.rowcount != 1:
+            raise RuntimeError("Lease lost during finalization")
     return get_job(db_path, job_id)
 
 
