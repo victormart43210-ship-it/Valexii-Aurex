@@ -8,7 +8,7 @@ import hashlib
 import json
 import random
 from dataclasses import asdict, dataclass
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from itertools import pairwise
 from pathlib import Path
 
@@ -44,7 +44,7 @@ def write_manifest(candidate, weights, destination):
         "model": asdict(candidate),
         "weights_filename": weights.name,
         "weights_sha256": sha256(weights),
-        "recorded_at": datetime.now(timezone.utc).isoformat(),
+        "recorded_at": datetime.now(UTC).isoformat(),
         "verification": "PROVENANCE_RECORDED_NOT_INDEPENDENTLY_VERIFIED",
     }
     destination = Path(destination)
