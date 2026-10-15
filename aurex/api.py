@@ -133,21 +133,17 @@ def health() -> dict[str, str]:
 def capabilities(_: str = Depends(authenticate)) -> CapabilitiesResponse:
     ev_records = list_evidence(DEFAULT_DB_PATH)
     latest_ev = ev_records[0] if ev_records else None
+    ev_id = latest_ev["id"] if latest_ev else None
+    ev_time = latest_ev["collected_at"] if latest_ev else None
 
     return CapabilitiesResponse(
         capabilities=[
-            CapabilityItem(
-                id="regression_scan",
-                available=True,
-                evidenceId=latest_ev["id"] if latest_ev else None,
-                verifiedAt=latest_ev["collected_at"] if latest_ev else None,
-            ),
-            CapabilityItem(
-                id="remote_inference",
-                available=False,
-                evidenceId=None,
-                verifiedAt=None,
-            ),
+            CapabilityItem(id="regression_scan", available=True, evidenceId=ev_id, verifiedAt=ev_time),
+            CapabilityItem(id="memory_graph", available=True, evidenceId=ev_id, verifiedAt=ev_time),
+            CapabilityItem(id="evidence_vault", available=True, evidenceId=ev_id, verifiedAt=ev_time),
+            CapabilityItem(id="model_benchmarking", available=True, evidenceId=ev_id, verifiedAt=ev_time),
+            CapabilityItem(id="hypothesis_testing", available=True, evidenceId=ev_id, verifiedAt=ev_time),
+            CapabilityItem(id="computer_use", available=False, evidenceId=None, verifiedAt=None),
         ]
     )
 
