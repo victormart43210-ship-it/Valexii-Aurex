@@ -132,6 +132,7 @@ def health() -> dict[str, str]:
 
 @app.get("/v1/capabilities", response_model=CapabilitiesResponse)
 def capabilities(_: str = Depends(authenticate)) -> CapabilitiesResponse:
+    worker_disabled = os.environ.get("AUREX_WORKER_DISABLED") == "1"
     ev_records = list_evidence(DEFAULT_DB_PATH)
     latest_ev = ev_records[0] if ev_records else None
     ev_id = latest_ev["id"] if latest_ev else None
@@ -139,7 +140,7 @@ def capabilities(_: str = Depends(authenticate)) -> CapabilitiesResponse:
 
     return CapabilitiesResponse(
         capabilities=[
-            CapabilityItem(id="regression_scan", available=True, evidenceId=ev_id, verifiedAt=ev_time),
+            CapabilityItem(id="regression_scan", available=not worker_disabled, evidenceId=ev_id, verifiedAt=ev_time),
             CapabilityItem(id="memory_graph", available=True, evidenceId=ev_id, verifiedAt=ev_time),
             CapabilityItem(id="evidence_vault", available=True, evidenceId=ev_id, verifiedAt=ev_time),
             CapabilityItem(id="model_benchmarking", available=True, evidenceId=ev_id, verifiedAt=ev_time),
@@ -172,6 +173,12 @@ def create_job_endpoint(
     idempotency_key: str | None = Header(default=None, alias="Idempotency-Key"),
     _: str = Depends(authenticate),
 ) -> JobResponse:
+    if os.environ.get("AUREX_WORKER_DISABLED") == "1":
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="Real execution worker is currently unavailable",
+        )
+
     if req.kind != "regression_scan":
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -207,7 +214,7 @@ def create_job_endpoint(
 
     manifest = build_scientific_manifest(
         job_id=j["id"],
-        source_commit="278cddf998b4610e31846a80d96349524bc706d1",
+        source_commit="786e2295260638c338df5bb63c40ec5607c64811",
         worker_id="aurex-local-worker-1",
         environment_digest="python3.12-linux-x86_64",
         input_bytes=inp_bytes,

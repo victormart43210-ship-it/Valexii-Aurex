@@ -41,6 +41,17 @@ def test_jobs_submission_endpoint() -> None:
     assert res.json()["state"] in ("queued", "succeeded")
 
 
+def test_worker_disabled_returns_503(monkeypatch) -> None:
+    monkeypatch.setenv("AUREX_WORKER_DISABLED", "1")
+    res = client.post(
+        "/v1/jobs",
+        json={"kind": "regression_scan", "params": {}, "maxCostUsd": 0.0},
+        headers={"Authorization": f"Bearer {VALID_TOKEN}"},
+    )
+    assert res.status_code == 503
+    assert "unavailable" in res.json()["detail"].lower()
+
+
 def test_evidence_summary_endpoint() -> None:
     res = client.get("/v1/evidence", headers={"Authorization": f"Bearer {VALID_TOKEN}"})
     assert res.status_code == 200
