@@ -16,7 +16,7 @@ jobs:
       - name: Python version
         run: python3 --version
       - name: Run scorer unit tests
-        run: python3 -m unittest discover -s workstation/tests -p 'test_hle_practice.py' -v
+        run: python3 -m unittest discover -s workstation/tests -p 'test_*.py' -v
       - name: Generate bounded practice report
         run: |
           python3 workstation/hle_practice.py --dataset workstation/hle_practice_data/questions.json --responses workstation/hle_practice_data/responses.example.json --output practice-report.json

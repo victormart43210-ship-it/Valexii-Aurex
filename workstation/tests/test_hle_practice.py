@@ -1,10 +1,12 @@
 import json
+import sys
 import tempfile
 import unittest
 from pathlib import Path
-import sys
+
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from hle_practice import evaluate
+
+from hle_practice import evaluate  # noqa: E402
 
 class PracticeTests(unittest.TestCase):
     def test_scores_and_does_not_claim_official(self):

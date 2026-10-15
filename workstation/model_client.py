@@ -33,5 +33,5 @@ def generate(question):
     obj = json.loads(raw)
     answer = obj["choices"][0]["message"]["content"]
     if not isinstance(answer, str):
-        raise ValueError("Model returned non-text answer")
+        raise TypeError("Model returned non-text answer")
     return {"status": "GENERATED_NOT_VERIFIED", "model": model, "answer": answer[:12000], "official_hle": False, "independent_validation": "NOT_VERIFIED"}

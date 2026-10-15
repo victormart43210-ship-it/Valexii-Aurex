@@ -2,7 +2,7 @@
 import argparse
 import hashlib
 import json
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 def evaluate(dataset, responses):
@@ -10,9 +10,9 @@ def evaluate(dataset, responses):
     questions = json.loads(Path(dataset).read_text(encoding="utf-8"))
     answers = json.loads(Path(responses).read_text(encoding="utf-8"))
     if not isinstance(questions, list) or not questions:
-        raise ValueError("Dataset must be a nonempty JSON array")
+        raise TypeError("Dataset must be a nonempty JSON array")
     if not isinstance(answers, dict):
-        raise ValueError("Responses must be a JSON object keyed by question ID")
+        raise TypeError("Responses must be a JSON object keyed by question ID")
     ids = [q["id"] for q in questions]
     if len(set(ids)) != len(ids):
         raise ValueError("Duplicate question IDs")
@@ -34,7 +34,7 @@ def evaluate(dataset, responses):
         "results": results,
         "dataset_sha256": hashlib.sha256(Path(dataset).read_bytes()).hexdigest(),
         "responses_sha256": hashlib.sha256(Path(responses).read_bytes()).hexdigest(),
-        "timestamp_utc": datetime.now(timezone.utc).isoformat()
+        "timestamp_utc": datetime.now(UTC).isoformat()
     }
 
 def main():
