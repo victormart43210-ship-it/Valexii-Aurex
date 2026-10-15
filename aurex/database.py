@@ -226,6 +226,42 @@ def finish_claimed_job(
     return get_job(db_path, job_id)
 
 
+
+def finalize_probe(db_path: str, job_id: str, lease_token: str,
+                   result: dict[str, Any], evidence_id: str,
+                   digest: str, summary: str) -> dict[str, Any] | None:
+    """Atomically finalize a lease-fenced job and its unverified evidence."""
+    if len(digest) != 64 or not lease_token:
+        raise ValueError("Invalid evidence digest or lease")
+    conn = get_db(db_path)
+    now = _now_iso()
+    with conn:
+        conn.execute("UPDATE jobs SET updated_at=updated_at WHERE id=?", (job_id,))
+        eligible = conn.execute(
+            "SELECT id FROM jobs WHERE id=? AND state='running' AND lease_token=? AND lease_expires_at>?",
+            (job_id, lease_token, now),
+        ).fetchone()
+        if eligible is None:
+            return None
+        conn.execute(
+            """INSERT INTO evidence_records
+               (id, capability_id, kind, collected_at, sha256, summary,
+                source_ref, integrity_status, verification_status)
+               VALUES (?, 'offline_lab', 'deterministic_probe', ?, ?, ?, ?,
+                       'HASHED', 'UNVERIFIED')""",
+            (evidence_id, now, digest, summary, job_id),
+        )
+        changed = conn.execute(
+            """UPDATE jobs SET state='succeeded', updated_at=?,
+                      result_json=?, evidence_id=?
+               WHERE id=? AND state='running' AND lease_token=? AND lease_expires_at>?""",
+            (now, json.dumps(result), evidence_id, job_id, lease_token, now),
+        )
+        if changed.rowcount != 1:
+            raise RuntimeError("Lease lost during finalization")
+    return get_job(db_path, job_id)
+
+
 def record_evidence(
     db_path: str,
     evidence_id: str,
