@@ -44,6 +44,18 @@ Worker leases are 30 seconds, renewed about every 5 seconds, with a monotonicall
 
 SQLite is supported on ONE host with API and workers sharing one local durable filesystem. Do not mount a SQLite file across independent Railway hosts or network filesystems. No measured need for PostgreSQL has been established. Schema 0/1 to 2 migration is atomic and additive; ambiguous legacy idempotency duplicates fail closed and require explicit reconciliation. It was tested only on temporary fixtures. No live data was migrated.
 
+### Tested backup command
+
+In a trusted owner-controlled directory on Linux, create a new snapshot:
+
+```sh
+python -m aurex.backup /absolute/path/jobs.db /absolute/path/backups/jobs-new.db
+```
+
+The destination parent must already exist. The command uses SQLite online backup (including committed WAL data), validates the current schema version, integrity and foreign keys, and publishes with atomic no-overwrite semantics and mode 0600. It refuses missing sources, occupied destinations and unsupported schema versions. It never restores over a live database. Keep both directories protected; backups contain sensitive prompts and results. Filesystem access controls do not encrypt backups. The 30-second progress deadline bounds SQLite backup retries; filesystem operations and integrity checking are not a hard real-time guarantee. If publication succeeds but a later filesystem sync fails, an intact destination may remain; inspect it instead of overwriting it.
+
+Local verification: 212 backend tests passed, 1 skipped, with the existing Starlette/httpx deprecation warning; see `evidence/backup-backend-tests.txt`. Four new real-SQLite tests cover WAL restoration with owner preservation, overwrite refusal, missing-source refusal and unsupported-schema cleanup. Ruff and strict Mypy passed (44 source files). This does not establish production RPO/RTO, evidence truth, or a live disaster-recovery exercise. Independent review of the new backup command: NOT RUN.
+
 Before any approved live migration, stop admission, drain or fence workers, take a SQLite online backup using the standard `sqlite3.Connection.backup` API, and run `PRAGMA integrity_check` on the backup. Restore-test a copy to an isolated path; compare job/evidence IDs and digests before starting test workers. Never restore over a live database. Backups contain prompts/results and require the same access controls as the source. Actual production RPO/RTO and backup scheduling are NOT VERIFIED.
 
 Analytics stores allowlisted event/route/device dimensions only, with 30-day default retention applied on analytics read/write. No visitor identifiers, prompts or credentials are stored there. Unique visitors and retention cohorts are not measured. Job-state counts are derived from durable job rows rather than browser assertions. API request logs contain server-generated request ID, route template, status and elapsed time, no content. Full distributed tracing and request-to-worker lineage IDs remain unimplemented. Ingress rate limiting is per process/peer (120/min, max1024 peers), not a multi-host quota; verify reverse-proxy addressing and tune before production.
