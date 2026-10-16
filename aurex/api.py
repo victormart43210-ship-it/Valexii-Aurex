@@ -230,6 +230,7 @@ def create_job_endpoint(
     except ValueError as exc:
         raise HTTPException(status_code=409, detail=str(exc)) from exc
     job_id = str(job["id"])
+    resolved_job: dict[str, Any] | None = job
     if job["state"] == "queued":
         worker_id = "aurex-local-worker-1"
         claimed = claim_job(DEFAULT_DB_PATH, job_id, worker_id)
@@ -239,7 +240,7 @@ def create_job_endpoint(
                 digest = hashlib.sha256(
                     json.dumps(observation, sort_keys=True).encode()
                 ).hexdigest()
-                job = finalize_job(
+                resolved_job = finalize_job(
                     DEFAULT_DB_PATH, job_id, worker_id,
                     str(claimed["lease_token"]), int(claimed["lease_generation"]),
                     observation, digest, f"ev-{secrets.token_hex(12)}",
@@ -248,15 +249,15 @@ def create_job_endpoint(
                 # Do not rewrite a cancelled or superseded worker's terminal state.
                 raise HTTPException(status_code=503, detail="Probe not finalized; execution not verified") from None
         else:
-            job = get_job(DEFAULT_DB_PATH, job_id)
+            resolved_job = get_job(DEFAULT_DB_PATH, job_id)
     else:
-        job = get_job(DEFAULT_DB_PATH, job_id)
-    if job is None:
+        resolved_job = get_job(DEFAULT_DB_PATH, job_id)
+    if resolved_job is None:
         raise HTTPException(status_code=500, detail="Job state unavailable")
     return JobResponse(
-        id=job["id"], kind=job["kind"], state=job["state"],
-        createdAt=job["created_at"], updatedAt=job["updated_at"],
-        reservationUsd=job["reservation_usd"],
+        id=resolved_job["id"], kind=resolved_job["kind"], state=resolved_job["state"],
+        createdAt=resolved_job["created_at"], updatedAt=resolved_job["updated_at"],
+        reservationUsd=resolved_job["reservation_usd"],
     )
 
 @app.get("/v1/jobs/{job_id}", response_model=JobResponse)
