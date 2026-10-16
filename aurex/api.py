@@ -215,7 +215,9 @@ def create_job_endpoint(
             detail=f"Job kind '{req.kind}' is currently unsupported or disabled",
         )
 
-    if req.max    if os.environ.get("AUREX_ENABLE_OFFLINE_LAB") != "1":
+    if req.maxCostUsd > 0:
+        raise HTTPException(status_code=402, detail="Paid execution disabled")
+    if os.environ.get("AUREX_ENABLE_OFFLINE_LAB") != "1":
         raise HTTPException(status_code=503, detail="Offline worker disabled")
     if req.params != {"probe": "sqlite_roundtrip_v1"}:
         raise HTTPException(status_code=422, detail="Unsupported probe")
@@ -256,11 +258,6 @@ def create_job_endpoint(
         id=job["id"], kind=job["kind"], state=job["state"],
         createdAt=job["created_at"], updatedAt=job["updated_at"],
         reservationUsd=job["reservation_usd"],
-    )
-isted its output.
-    raise HTTPException(
-        status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-        detail="Regression worker unavailable; no job or evidence created",
     )
 
 @app.get("/v1/jobs/{job_id}", response_model=JobResponse)
