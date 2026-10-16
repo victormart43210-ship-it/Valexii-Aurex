@@ -127,6 +127,22 @@ def test_stale_future_and_missing_snapshots_are_held() -> None:
     assert assess_railway(snapshot(observed_at=None), now=NOW).status == "HOLD"
 
 
+def test_truthy_strings_cannot_masquerade_as_active_railway_controls() -> None:
+    result = assess_railway(
+        snapshot(
+            source_branch="main", staged_change_count=0, volume_state="live",
+            healthcheck_path="/health", tracing_enabled="true",
+            legacy_config_as_code="false",
+            storage_separation_reviewed="yes",
+            backup_restore_tested="yes",
+        ),
+        now=NOW,
+    )
+    assert result.status == "HOLD"
+    assert "INVALID_RAILWAY_STATE_FLAG_TYPES" in result.findings
+    assert "DISTRIBUTED_TRACING_NOT_ENABLED" in result.findings
+
+
 def test_legacy_config_and_tracing_contradictions_demote() -> None:
     result = assess_railway(
         snapshot(legacy_config_as_code=True, auto_instrumentation_enabled=True), now=NOW
