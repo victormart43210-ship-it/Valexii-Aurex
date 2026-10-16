@@ -13,7 +13,7 @@ import math
 import re
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Sequence
+from collections.abc import Sequence
 
 _SHA = re.compile(r"^[0-9a-f]{64}$")
 
