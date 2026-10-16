@@ -103,6 +103,7 @@ Upstream references:
 
 ### New code contracts and verification
 
+0. `aurex/tracing.py::scoped_trace_context`: new scoped request/job correlation context that restores the prior context even after exceptions. No OpenTelemetry exporter, networking, traces or production enablement. Prefer it over manually setting an unscoped context in future owner-only backend adapters.
 1. `aurex/railway_readiness.py`: typed snapshot; missing/stale/staged deployment, old branch, absent tracing/healthcheck, backup and stateful volume risk reported as **HOLD**. Even a complete snapshot returns **INDEPENDENT_RELEASE_REVIEW_REQUIRED**, not automatic release.
 2. `aurex/railway_webhook.py`: constant-time bearer-header validation, 16-KiB bound, project/environment scoping, age check and body digest. Returns only **RECONCILE_WITH_RAILWAY_API**, never signed/trusted witness. No HTTP handler or incoming webhook created.
 3. `aurex/llm_telemetry.py`: allowlisted numerical observations for real backend/test/training/eval/inference events. Strict event ordering, SHA identity, clock freshness, no prompts/PII or secrets. Empty = `NOT_INSTRUMENTED`; any nonempty summary = `OBSERVED_NOT_VERIFIED` at best. No model/GPU inference or automatic animation.
