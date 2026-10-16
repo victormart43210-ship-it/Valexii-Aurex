@@ -18,10 +18,9 @@ from aurex.database import (
     get_job,
     list_evidence,
     list_jobs,
-    update_job_state,
 )
+from aurex.fenced_worker import cancel_job, claim_job, finalize_job
 from aurex.real_offline_probe import execute_sqlite_roundtrip
-from aurex.fenced_worker import claim_job, finalize_job, cancel_job
 from aurex.workflows.budget import BudgetGuard
 
 app = FastAPI(
