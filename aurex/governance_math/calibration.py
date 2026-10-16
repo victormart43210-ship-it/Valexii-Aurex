@@ -7,9 +7,9 @@ calling these pure functions. These scores never confer security authority.
 from __future__ import annotations
 
 import math
+from collections.abc import Sequence
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Sequence
 
 MAX_ROWS = 10_000
 EPSILON = 1e-12
