@@ -10,14 +10,10 @@ from aurex.scientific_evidence import build_scientific_manifest, verify_scientif
 
 
 def claim_job_for_worker(db_path: str, worker_id: str) -> dict[str, Any] | None:
-    conn = get_db(db_path)
-    cursor = conn.execute("SELECT id FROM jobs WHERE state = 'queued' ORDER BY created_at ASC LIMIT 1")
-    row = cursor.fetchone()
-    if not row:
-        return None
-    job_id = str(row["id"])
-    updated = update_job_state(db_path, job_id, "running")
-    return updated
+    """Use the canonical transactionally atomic claim primitive."""
+    from aurex.atomic_claims import claim_queued_job
+
+    return claim_queued_job(db_path, worker_id)
 
 
 def finalize_probe(
