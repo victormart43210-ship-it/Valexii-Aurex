@@ -4,6 +4,7 @@ An execution observation is NOT independent verification.
 """
 from __future__ import annotations
 
+import hashlib
 import json
 import secrets
 import sqlite3
@@ -54,6 +55,9 @@ def finalize_job(
     db_path: str, job_id: str, worker_id: str, token: str, generation: int,
     observation: dict[str, Any], digest: str, evidence_id: str,
 ) -> dict[str, Any]:
+    canonical = json.dumps(observation, sort_keys=True).encode()
+    if hashlib.sha256(canonical).hexdigest() != digest:
+        raise ValueError("Observation digest mismatch")
     conn = get_db(db_path)
     try:
         conn.execute("BEGIN IMMEDIATE")
