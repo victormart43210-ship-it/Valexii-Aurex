@@ -74,7 +74,11 @@ def review_recipe(spec: CandidateRecipe) -> TrainingReview:
     if not isinstance(spec, CandidateRecipe):
         raise ValueError("candidate required")
     issues: list[str] = []
-    if spec.method not in _METHODS or not spec.recipe_id or not spec.base_model:
+    if (
+        not isinstance(spec.method, str) or spec.method not in _METHODS
+        or not isinstance(spec.recipe_id, str) or not 0 < len(spec.recipe_id) <= 128
+        or not isinstance(spec.base_model, str) or not 0 < len(spec.base_model) <= 256
+    ):
         issues.append("INVALID_METHOD_OR_MODEL_ID")
     if not isinstance(spec.revision, str) or _REV40.fullmatch(spec.revision) is None:
         issues.append("EXACT_BASE_MODEL_REVISION_REQUIRED")
@@ -102,9 +106,17 @@ def review_recipe(spec: CandidateRecipe) -> TrainingReview:
         or spec.estimated_cost_usd != Decimal("0")
     ):
         issues.append("ZERO_COST_CEILING_NOT_ESTABLISHED")
-    if not (spec.model_license_reviewed and spec.data_license_reviewed):
+    if any(
+        type(flag) is not bool
+        for flag in (
+            spec.model_license_reviewed, spec.data_license_reviewed,
+            spec.contamination_reviewed, spec.independent_holdout_reserved,
+        )
+    ):
+        issues.append("INVALID_DECLARATION_TYPES")
+    if spec.model_license_reviewed is not True or spec.data_license_reviewed is not True:
         issues.append("COMMERCIAL_LICENSING_REVIEW_MISSING")
-    if not spec.contamination_reviewed or not spec.independent_holdout_reserved:
+    if spec.contamination_reviewed is not True or spec.independent_holdout_reserved is not True:
         issues.append("INDEPENDENT_EVAL_OR_CONTAMINATION_REVIEW_MISSING")
     if spec.python_version != "3.12":
         # New Python 3.15 cannot be claimed compatible with old GPU libs or
