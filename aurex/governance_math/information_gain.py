@@ -7,9 +7,9 @@ cryptographic evidence and NEVER grants permission for a test or a paid call.
 from __future__ import annotations
 
 import math
+from collections.abc import Sequence
 from dataclasses import dataclass
 from decimal import Decimal
-from typing import Sequence
 
 
 @dataclass(frozen=True, slots=True)
