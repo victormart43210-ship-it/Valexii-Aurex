@@ -61,6 +61,7 @@ def assess_railway(
     if (
         not isinstance(now, datetime) or now.tzinfo is None or now.utcoffset() is None
         or not isinstance(snapshot, RailwaySnapshot)
+        or not isinstance(snapshot.observed_at, datetime)
         or snapshot.observed_at.tzinfo is None
         or snapshot.observed_at.utcoffset() is None
         or not now - _MAX_AGE <= snapshot.observed_at <= now + timedelta(seconds=30)
@@ -68,7 +69,7 @@ def assess_railway(
         return RailwayAssessment("HOLD", ("SNAPSHOT_MISSING_STALE_OR_FUTURE",), actions)
     if snapshot.source_repo != canonical_repo or snapshot.source_branch != expected_release_branch:
         findings.append("NON_CANONICAL_RELEASE_SOURCE")
-    if not _SHA40.fullmatch(snapshot.commit_sha):
+    if not isinstance(snapshot.commit_sha, str) or not _SHA40.fullmatch(snapshot.commit_sha):
         findings.append("EXACT_COMMIT_NOT_ESTABLISHED")
     if snapshot.deployment_status != "SUCCESS":
         findings.append("LIVE_DEPLOYMENT_NOT_SUCCESSFUL")
@@ -82,7 +83,10 @@ def assess_railway(
         findings.append("PENDING_INFRASTRUCTURE_CHANGES_NOT_LIVE")
     if snapshot.volume_state != "live":
         findings.append("PERSISTENT_VOLUME_NOT_LIVE_OR_UNVERIFIED")
-    if snapshot.healthcheck_path is None or not snapshot.healthcheck_path.startswith("/"):
+    if (
+        not isinstance(snapshot.healthcheck_path, str)
+        or not snapshot.healthcheck_path.startswith("/")
+    ):
         findings.append("HEALTHCHECK_NOT_CONFIGURED")
     if not snapshot.tracing_enabled:
         findings.append("DISTRIBUTED_TRACING_NOT_ENABLED")
