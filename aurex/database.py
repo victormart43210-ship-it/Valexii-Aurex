@@ -80,12 +80,15 @@ def create_job(
     conn = get_db(db_path)
     now = _now_iso()
     try:
-        conn.execute('BEGIN IMMEDIATE')
+        conn.execute("BEGIN IMMEDIATE")
+        if idempotency_key is not None:
             row = conn.execute(
                 "SELECT * FROM jobs WHERE idempotency_key = ?", (idempotency_key,)
             ).fetchone()
             if row is not None:
-                if json.loads(row["params_json"]) != params or row["kind"] != kind or row["reservation_usd"] != reservation_usd:
+                if (json.loads(row["params_json"]) != params
+                        or row["kind"] != kind
+                        or row["reservation_usd"] != reservation_usd):
                     raise ValueError("Idempotency key collision with different request")
                 conn.commit()
                 return dict(row)
