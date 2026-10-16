@@ -6,7 +6,7 @@
 
 `Evidence → Qualification → Reality → Authority → Effect`
 
-`aurex/governance_math/` is a **non-executing research/advice layer** of the existing canonical AUREX backend. No new database, frontend, model provider, worker, auth route, or autonomous agent is introduced. Existing `aurex/evals/statistical.py`, `aurex/evals/four_arm.py`, `aurex/evals/governance.py`, `aurex/experiments/admission.py`, and `aurex/experiments/remediation.py` remain authoritative for their own jobs, signed admission and immutable experiment lineage. The research layer does not compete with them or grant authority.
+`aurex/governance_math/` is a **non-executing research/advice layer** of the existing canonical AUREX backend. No new database, frontend, model provider, worker, or autonomous agent is introduced. An **opt-in, bearer-authenticated read-only HTTP advisory route** is added, disabled by default. Existing `aurex/evals/statistical.py`, `aurex/evals/four_arm.py`, `aurex/evals/governance.py`, `aurex/experiments/admission.py`, and `aurex/experiments/remediation.py` remain authoritative for their own jobs, signed admission and immutable experiment lineage. The research layer does not compete with them or grant authority.
 
 | Original VALEXII component | Implemented module | Complementary mathematical technique |
 | --- | --- | --- |
@@ -74,7 +74,7 @@ Output proposes the best eligible *known* fix immediately next to its observed p
 7. **Analytics**: real heldout and prior-only scores with counts, calibration and abstentions when data available.
 8. **Nexus**: explicit lineage and integration evidence only.
 
-Proposed owner-only API contract (FUTURE, NOT IMPLEMENTED): `GET /v1/research/advice/{incident_id}` and `GET /v1/research/evaluations/{report_id}`. Require server-side authorization, bounded records, no raw private incident texts to public clients, provenance fields, known schemas, and independent release verification. Do **not** add to Lovable until the lagging Ouroboros P0 performance repair is complete and its five-credit cap is respected. UI animation has **ORB MOTION AUTHORITY = NONE**.
+**Implemented but disabled-by-default service route:** `POST /v1/research/advice` (computational read-only operation). Requires the existing server-side AUREX bearer authentication **and** `AUREX_ENABLE_RESEARCH_ADVICE=1`, which is not set by this PR. All lists and strings are strictly bounded; no API route writes jobs, runs models, accepts self-asserted calibrated-probe flags, or grants authority. The bearer is *service authentication*, not a new owner identity system; Lovable must continue its own server-side owner check before any owner access. The route must NOT be exposed on the public page and deployment must remain HOLD pending independent auth/contract review. Future owner-only versioned retrieval of stored advice/evaluation artifacts remains NOT IMPLEMENTED. Do **not** add to Lovable until the lagging Ouroboros P0 performance repair is complete and its five-credit cap is respected. UI animation has **ORB MOTION AUTHORITY = NONE**.
 
 ## Research/education source and IP boundaries
 
@@ -94,4 +94,4 @@ Proposed owner-only API contract (FUTURE, NOT IMPLEMENTED): `GET /v1/research/ad
 2. Qualified, signed incident/admission adapter built separately (never accept booleans as trust).
 3. Holdout dataset authorization, contamination checks, calibration, false-remediation rate, baseline comparison.
 4. Agent/worker permissions, idempotency, lease fencing and rollback if an executor is ever proposed.
-5. Production deployment, exact SHA and live owner-only browser contract verification: **HOLD**.
+5. Authenticated `/v1/research/advice` contract review, independent API smoke, production deployment/exact SHA and live owner-only browser integration: **HOLD**.
