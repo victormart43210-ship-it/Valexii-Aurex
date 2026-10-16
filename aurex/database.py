@@ -62,6 +62,7 @@ def get_db(db_path: str = DEFAULT_DB_PATH) -> sqlite3.Connection:
             )
             """
         )
+    conn.execute('CREATE UNIQUE INDEX IF NOT EXISTS idx_jobs_idempotency ON jobs(idempotency_key) WHERE idempotency_key IS NOT NULL')
     return conn
 
 
@@ -78,42 +79,37 @@ def create_job(
 ) -> dict[str, Any]:
     conn = get_db(db_path)
     now = _now_iso()
-    if idempotency_key:
-        cursor = conn.execute(
-            "SELECT * FROM jobs WHERE idempotency_key = ?",
-            (idempotency_key,),
-        )
-        row = cursor.fetchone()
-        if row:
-            row_params = json.loads(row["params_json"])
-            if row_params != params or row["kind"] != kind:
-                raise ValueError("Idempotency key collision with different parameters")
-            return dict(row)
-
-    with conn:
+    try:
+        conn.execute("BEGIN IMMEDIATE")
+        if idempotency_key is not None:
+            row = conn.execute(
+                "SELECT * FROM jobs WHERE idempotency_key = ?", (idempotency_key,)
+            ).fetchone()
+            if row is not None:
+                if (json.loads(row["params_json"]) != params
+                        or row["kind"] != kind
+                        or row["reservation_usd"] != reservation_usd):
+                    raise ValueError("Idempotency key collision with different request")
+                conn.commit()
+                return dict(row)
         conn.execute(
-            """
-            INSERT INTO jobs (
+            """INSERT INTO jobs (
                 id, kind, state, idempotency_key, params_json, reservation_usd,
                 created_at, updated_at, request_id, trace_id, worker_id
-            )
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-            """,
-            (
-                job_id,
-                kind,
-                "queued",
-                idempotency_key,
-                json.dumps(params),
-                reservation_usd,
-                now,
-                now,
-                request_id,
-                trace_id,
-                worker_id,
-            ),
+            ) VALUES (?, ?, 'queued', ?, ?, ?, ?, ?, ?, ?, ?)""",
+            (job_id, kind, idempotency_key, json.dumps(params), reservation_usd,
+             now, now, request_id, trace_id, worker_id),
         )
-    return get_job(db_path, job_id)  # type: ignore[return-value]
+        conn.commit()
+    except BaseException:
+        conn.rollback()
+        raise
+    finally:
+        conn.close()
+    created = get_job(db_path, job_id)
+    if created is None:
+        raise RuntimeError("Job not persisted")
+    return created
 
 
 def get_job(db_path: str, job_id: str) -> dict[str, Any] | None:

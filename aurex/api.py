@@ -1,6 +1,9 @@
 """Operational AUREX HTTP API conforming to VALEXII Website contracts."""
 
 import hmac
+import hashlib
+import json
+import secrets
 import os
 from datetime import UTC, datetime
 from decimal import Decimal
@@ -11,11 +14,14 @@ from pydantic import BaseModel, ConfigDict, Field
 
 from aurex.database import (
     DEFAULT_DB_PATH,
+    create_job,
+    record_evidence,
     get_job,
     list_evidence,
     list_jobs,
     update_job_state,
 )
+from aurex.real_offline_probe import execute_sqlite_roundtrip
 from aurex.workflows.budget import BudgetGuard
 
 app = FastAPI(
@@ -136,9 +142,9 @@ def capabilities(_: str = Depends(authenticate)) -> CapabilitiesResponse:
         capabilities=[
             CapabilityItem(
                 id="regression_scan",
-                available=False,
+                available=os.environ.get('AUREX_ENABLE_OFFLINE_LAB') == '1',
                 evidenceId=ev_id,
-                verifiedAt=ev_time,
+                verifiedAt=None,
             ),
             CapabilityItem(
                 id="memory_graph",
@@ -209,15 +215,49 @@ def create_job_endpoint(
             detail=f"Job kind '{req.kind}' is currently unsupported or disabled",
         )
 
-    if req.maxCostUsd > 0.0:
-        raise HTTPException(
-            status_code=status.HTTP_402_PAYMENT_REQUIRED,
-            detail="Paid execution disabled; budget limit is $0.00",
+    if req.max    if os.environ.get("AUREX_ENABLE_OFFLINE_LAB") != "1":
+        raise HTTPException(status_code=503, detail="Offline worker disabled")
+    if req.params != {"probe": "sqlite_roundtrip_v1"}:
+        raise HTTPException(status_code=422, detail="Unsupported probe")
+    if not idempotency_key or len(idempotency_key) > 128:
+        raise HTTPException(status_code=422, detail="Idempotency-Key required")
+    try:
+        job = create_job(
+            DEFAULT_DB_PATH, f"job-{secrets.token_hex(12)}", req.kind,
+            req.params, idempotency_key=idempotency_key, reservation_usd=0.0,
         )
-
-    # Fail closed: no worker is registered to execute this job kind.
-    # Do not create a job, record evidence, or claim success until an actual
-    # authorized worker has completed the execution and persisted its output.
+    except ValueError as exc:
+        raise HTTPException(status_code=409, detail=str(exc)) from exc
+    job_id = str(job["id"])
+    claimed = None
+    if job["state"] == "queued":
+        claimed = update_job_state(DEFAULT_DB_PATH, job_id, "running")
+    if claimed is not None:
+        try:
+            observation = execute_sqlite_roundtrip(req.params)
+            digest = hashlib.sha256(json.dumps(observation, sort_keys=True).encode()).hexdigest()
+            ev_id = f"ev-{secrets.token_hex(12)}"
+            record_evidence(
+                DEFAULT_DB_PATH, ev_id, "regression_scan", "offline_probe", digest,
+                f"Executed real SQLite probe for {job_id}; independently NOT VERIFIED",
+            )
+            job = update_job_state(
+                DEFAULT_DB_PATH, job_id, "succeeded",
+                result={"evidence_id": ev_id, "observation": observation},
+            )
+        except Exception:
+            update_job_state(DEFAULT_DB_PATH, job_id, "failed")
+            raise HTTPException(status_code=500, detail="Offline probe failed") from None
+    else:
+        job = get_job(DEFAULT_DB_PATH, job_id)
+    if job is None:
+        raise HTTPException(status_code=500, detail="Job state unavailable")
+    return JobResponse(
+        id=job["id"], kind=job["kind"], state=job["state"],
+        createdAt=job["created_at"], updatedAt=job["updated_at"],
+        reservationUsd=job["reservation_usd"],
+    )
+isted its output.
     raise HTTPException(
         status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
         detail="Regression worker unavailable; no job or evidence created",
