@@ -48,12 +48,16 @@ def review_railway_webhook(
         not isinstance(now, datetime) or now.tzinfo is None or now.utcoffset() is None
         or not isinstance(bearer_header, str)
         or not isinstance(expected_secret, str)
+        or len(bearer_header) > 4096
+        or not bearer_header.isascii() or not expected_secret.isascii()
         or len(expected_secret) < 32 or len(expected_secret) > 4096
         or not isinstance(raw_body, bytes) or not 0 < len(raw_body) <= _MAX_BYTES
         or not expected_project_id or not expected_environment_id
     ):
         return hold
-    if not hmac.compare_digest(bearer_header, "Bearer " + expected_secret):
+    if not hmac.compare_digest(
+        bearer_header.encode("ascii"), ("Bearer " + expected_secret).encode("ascii")
+    ):
         return hold
     try:
         body = json.loads(raw_body)
