@@ -10,8 +10,8 @@ from __future__ import annotations
 
 import math
 import re
-from dataclasses import dataclass
 from collections.abc import Sequence
+from dataclasses import dataclass
 
 _SHA = re.compile(r"^[0-9a-f]{64}$")
 # The metrics use explicit units, avoiding misleading averaging of values.
