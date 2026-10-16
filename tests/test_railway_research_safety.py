@@ -57,6 +57,7 @@ def test_webhook_denies_wrong_or_short_secret() -> None:
     assert webhook(bearer_header="Bearer wrong").status == "HOLD"
     assert webhook(expected_secret="weak").status == "HOLD"
     assert webhook(bearer_header="").status == "HOLD"
+    assert webhook(bearer_header="Bearer ☃").status == "HOLD"
 
 
 def test_webhook_denies_foreign_project_environment_and_unknown_events() -> None:
@@ -123,6 +124,7 @@ def test_stale_future_and_missing_snapshots_are_held() -> None:
     assert assess_railway(None, now=NOW).status == "HOLD"
     assert assess_railway(snapshot(observed_at=NOW - timedelta(hours=1)), now=NOW).status == "HOLD"
     assert assess_railway(snapshot(observed_at=NOW + timedelta(minutes=1)), now=NOW).status == "HOLD"
+    assert assess_railway(snapshot(observed_at=None), now=NOW).status == "HOLD"
 
 
 def test_legacy_config_and_tracing_contradictions_demote() -> None:
