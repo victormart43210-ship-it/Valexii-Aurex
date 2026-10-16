@@ -96,6 +96,12 @@ def test_latest_python_not_assumed_safe_for_pinned_gpu_stack() -> None:
     assert "RUNTIME_DEPENDENCY_COMPATIBILITY_NOT_VERIFIED" in report.blockers
 
 
+def test_truthy_strings_cannot_self_certify_license_or_eval_review() -> None:
+    report = review_recipe(recipe(model_license_reviewed="true", contamination_reviewed="yes"))
+    assert report.status == "HOLD"
+    assert "INVALID_DECLARATION_TYPES" in report.blockers
+
+
 def test_train_eval_overlap_and_unpinned_checkpoint_hold() -> None:
     report = review_recipe(recipe(heldout_data_sha256=SHA, revision="main"))
     assert "TRAIN_AND_HOLDOUT_CANNOT_SHARE_DATASET_DIGEST" in report.blockers
