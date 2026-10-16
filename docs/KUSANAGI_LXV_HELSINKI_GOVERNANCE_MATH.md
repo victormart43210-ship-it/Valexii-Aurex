@@ -25,7 +25,7 @@
 - Even a perfectly-ranked algorithm may fail; optimization is exact only over the **bounded supplied candidates and stated heuristic**, never all possible fixes.
 - Empty, unsafe, costly, cyclic, unreversible or out-of-scope fixes do not execute; unknown outcome means HOLD.
 - Bayesian Beta(1,1) conservative ranking is explicitly a *heuristic lower estimate*, not a frequentist confidence interval or a validated success probability.
-- Prior-only baseline is fitted to **past records only**; Brier improvements on held-out future labeled events remain *diagnostics*, not independent verification or model superiority.
+- Prior-only baseline is fitted to **past records with labels observed by the cutoff only**; future-resolved labels are rejected as hindsight leakage. Every Prediction needs timezone-aware predicted_at and outcome_observed_at timestamps. Brier improvements on held-out future labeled events remain *diagnostics*, not independent verification or model superiority.
 - Information gain only works when sensitivity/specificity are externally calibrated and an actual test exists; do not manufacture loss curves, GPU usage or model training percentages.
 - No auto-merge, auto-code editing, production remediation, token costs, budget increase, deployment or website changes.
 
