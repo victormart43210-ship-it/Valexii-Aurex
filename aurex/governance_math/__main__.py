@@ -89,6 +89,7 @@ def _interpret(body: dict[str, Any]) -> dict[str, Any]:
             Prediction(
                 row["case_id"], row["lineage_group"],
                 datetime.fromisoformat(row["predicted_at"].replace("Z", "+00:00")),
+                datetime.fromisoformat(row["outcome_observed_at"].replace("Z", "+00:00")),
                 row["probability"], row["actual"],
             )
             for row in _objects(body["predictions"])
