@@ -40,7 +40,8 @@ def prediction(
     identifier: str, days: int, probability: float, actual: int, group: str | None = None
 ) -> Prediction:
     return Prediction(
-        identifier, group or identifier, NOW + timedelta(days=days), probability, actual
+        identifier, group or identifier, NOW + timedelta(days=days),
+        NOW + timedelta(days=days, hours=1), probability, actual,
     )
 
 
@@ -138,6 +139,19 @@ def test_group_safe_temporal_holdout_uses_train_prior_only() -> None:
     assert report.prior_only.brier == pytest.approx(0.25)
     assert report.brier_improvement == pytest.approx(0.24)
     assert report.authority == "ANALYSIS_ONLY_NOT_VERIFIED"
+
+
+
+def test_train_label_must_exist_at_the_split_cutoff() -> None:
+    rows = (
+        Prediction(
+            "a", "train-a", NOW - timedelta(days=2),
+            NOW + timedelta(days=1), 0.6, 1,
+        ),
+        prediction("b", 1, 0.9, 1),
+    )
+    with pytest.raises(ValueError, match="training outcome"):
+        temporal_holdout(rows, NOW)
 
 
 def test_temporal_holdout_blocks_duplicate_lineage_leakage() -> None:
