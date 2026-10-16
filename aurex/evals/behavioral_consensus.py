@@ -9,10 +9,9 @@ frozen test-suite identity; correlated origins and shared bugs remain risks.
 
 from __future__ import annotations
 
-import json
 import re
 from dataclasses import dataclass
-from typing import Sequence
+from collections.abc import Sequence
 
 from aurex.provenance import fingerprint
 
