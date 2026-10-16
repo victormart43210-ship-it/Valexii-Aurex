@@ -88,17 +88,30 @@ def assess_railway(
         or not snapshot.healthcheck_path.startswith("/")
     ):
         findings.append("HEALTHCHECK_NOT_CONFIGURED")
-    if not snapshot.tracing_enabled:
+    if any(
+        type(flag) is not bool
+        for flag in (
+            snapshot.tracing_enabled,
+            snapshot.auto_instrumentation_enabled,
+            snapshot.storage_separation_reviewed,
+            snapshot.backup_restore_tested,
+        )
+    ) or (
+        snapshot.legacy_config_as_code is not None
+        and type(snapshot.legacy_config_as_code) is not bool
+    ):
+        findings.append("INVALID_RAILWAY_STATE_FLAG_TYPES")
+    if snapshot.tracing_enabled is not True:
         findings.append("DISTRIBUTED_TRACING_NOT_ENABLED")
-    if snapshot.auto_instrumentation_enabled and not snapshot.tracing_enabled:
+    if snapshot.auto_instrumentation_enabled is True and snapshot.tracing_enabled is not True:
         findings.append("INSTRUMENTATION_WITHOUT_TRACING")
     if snapshot.legacy_config_as_code is True:
         findings.append("CONFIG_AS_CODE_DEPRECATED_2026_12_01")
     elif snapshot.legacy_config_as_code is None:
         findings.append("CONFIG_AS_CODE_USAGE_UNVERIFIED")
-    if not snapshot.storage_separation_reviewed:
+    if snapshot.storage_separation_reviewed is not True:
         findings.append("STATEFUL_SERVICE_DOWNTIME_RISK_UNREVIEWED")
-    if not snapshot.backup_restore_tested:
+    if snapshot.backup_restore_tested is not True:
         findings.append("BACKUP_RESTORE_NOT_VERIFIED")
     if not snapshot.project_name or not snapshot.service_name:
         findings.append("SERVICE_IDENTITY_MISSING")
