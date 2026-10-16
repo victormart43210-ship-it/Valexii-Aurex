@@ -9,9 +9,9 @@ from __future__ import annotations
 
 import itertools
 import math
+from collections.abc import Sequence
 from dataclasses import dataclass
 from decimal import Decimal
-from typing import Sequence
 
 MAX_ACTIONS = 12
 MAX_STEPS = 4
