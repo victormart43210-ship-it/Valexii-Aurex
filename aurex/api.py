@@ -18,10 +18,10 @@ from aurex.database import (
     get_job,
     list_evidence,
     list_jobs,
-    record_evidence,
     update_job_state,
 )
 from aurex.real_offline_probe import execute_sqlite_roundtrip
+from aurex.fenced_worker import claim_job, finalize_job, cancel_job
 from aurex.workflows.budget import BudgetGuard
 
 app = FastAPI(
@@ -71,7 +71,7 @@ def authenticate(authorization: str | None = Header(default=None)) -> str:
 class JobCreateRequest(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
-    kind: str = Field(pattern=r"^(regression_scan|benchmark|hypothesis_test)$")
+    kind: str = Field(pattern=r"^(regression_scan|regression-scan|benchmark|hypothesis_test)$")
     params: dict[str, Any] = Field(default_factory=dict)
     maxCostUsd: float = Field(default=0.0, ge=0.0, le=100.0)
 
@@ -208,7 +208,8 @@ def create_job_endpoint(
     idempotency_key: str | None = Header(default=None, alias="Idempotency-Key"),
     _: str = Depends(authenticate),
 ) -> JobResponse:
-    if req.kind != "regression_scan":
+    canonical_kind = "regression_scan" if req.kind == "regression-scan" else req.kind
+    if canonical_kind != "regression_scan":
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=f"Job kind '{req.kind}' is currently unsupported or disabled",
@@ -224,31 +225,31 @@ def create_job_endpoint(
         raise HTTPException(status_code=422, detail="Idempotency-Key required")
     try:
         job = create_job(
-            DEFAULT_DB_PATH, f"job-{secrets.token_hex(12)}", req.kind,
+            DEFAULT_DB_PATH, f"job-{secrets.token_hex(12)}", canonical_kind,
             req.params, idempotency_key=idempotency_key, reservation_usd=0.0,
         )
     except ValueError as exc:
         raise HTTPException(status_code=409, detail=str(exc)) from exc
     job_id = str(job["id"])
-    claimed = None
     if job["state"] == "queued":
-        claimed = update_job_state(DEFAULT_DB_PATH, job_id, "running")
-    if claimed is not None:
-        try:
-            observation = execute_sqlite_roundtrip(req.params)
-            digest = hashlib.sha256(json.dumps(observation, sort_keys=True).encode()).hexdigest()
-            ev_id = f"ev-{secrets.token_hex(12)}"
-            record_evidence(
-                DEFAULT_DB_PATH, ev_id, "regression_scan", "offline_probe", digest,
-                f"Executed real SQLite probe for {job_id}; independently NOT VERIFIED",
-            )
-            job = update_job_state(
-                DEFAULT_DB_PATH, job_id, "succeeded",
-                result={"evidence_id": ev_id, "observation": observation},
-            )
-        except Exception:
-            update_job_state(DEFAULT_DB_PATH, job_id, "failed")
-            raise HTTPException(status_code=500, detail="Offline probe failed") from None
+        worker_id = "aurex-local-worker-1"
+        claimed = claim_job(DEFAULT_DB_PATH, job_id, worker_id)
+        if claimed is not None:
+            try:
+                observation = execute_sqlite_roundtrip(req.params)
+                digest = hashlib.sha256(
+                    json.dumps(observation, sort_keys=True).encode()
+                ).hexdigest()
+                job = finalize_job(
+                    DEFAULT_DB_PATH, job_id, worker_id,
+                    str(claimed["lease_token"]), int(claimed["lease_generation"]),
+                    observation, digest, f"ev-{secrets.token_hex(12)}",
+                )
+            except Exception:
+                # Do not rewrite a cancelled or superseded worker's terminal state.
+                raise HTTPException(status_code=503, detail="Probe not finalized; execution not verified") from None
+        else:
+            job = get_job(DEFAULT_DB_PATH, job_id)
     else:
         job = get_job(DEFAULT_DB_PATH, job_id)
     if job is None:
@@ -279,7 +280,7 @@ def cancel_job_endpoint(job_id: str, _: str = Depends(authenticate)) -> JobRespo
     j = get_job(DEFAULT_DB_PATH, job_id)
     if not j:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Job not found")
-    updated = update_job_state(DEFAULT_DB_PATH, job_id, "cancelled")
+    updated = cancel_job(DEFAULT_DB_PATH, job_id)
     if not updated:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Job not found")
     return JobResponse(
