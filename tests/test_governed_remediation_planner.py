@@ -7,9 +7,9 @@ from decimal import Decimal
 import pytest
 
 from aurex.remediation import (
-    ActionOutcome,
     CATALOG,
     FOLLOW_UPS,
+    ActionOutcome,
     Outcome,
     beta_lower_bound,
     main,
