@@ -9,7 +9,7 @@ import time
 from contextlib import closing
 from pathlib import Path
 
-from aurex.database import SCHEMA_VERSION
+from aurex.database import SCHEMA_VERSION, get_db
 
 
 def backup_database(source: Path, destination: Path) -> None:
@@ -32,6 +32,14 @@ def backup_database(source: Path, destination: Path) -> None:
                 original.backup(snapshot, pages=128, progress=bounded_progress, sleep=0.05)
                 if snapshot.execute('PRAGMA user_version').fetchone()[0] != SCHEMA_VERSION:
                     raise ValueError("Unsupported schema")
+                # Build expectations from the canonical initializer, never migrate the source.
+                with closing(get_db(":memory:")) as expected:
+                    for table in ("jobs", "evidence_records", "workers", "job_evidence_links"):
+                        sql = f'PRAGMA table_info("{table}")'
+                        required = {tuple(row) for row in expected.execute(sql)}
+                        actual = {tuple(row) for row in snapshot.execute(sql)}
+                        if not required.issubset(actual):
+                            raise ValueError("Missing or incompatible core table columns")
                 if snapshot.execute('PRAGMA integrity_check').fetchall() != [('ok',)]:
                     raise ValueError("Integrity check failed")
                 if snapshot.execute('PRAGMA foreign_key_check').fetchall():

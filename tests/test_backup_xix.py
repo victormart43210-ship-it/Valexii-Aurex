@@ -57,3 +57,13 @@ def test_unsupported_schema_not_published(tmp_path):
     assert "Backup refused" in result.stderr
     assert not dest.exists()
     assert set(tmp_path.iterdir()) == {source}
+
+
+def test_version_marker_without_aurex_tables_is_rejected(tmp_path):
+    source, dest = tmp_path / 'empty.db', tmp_path / 'backup.db'
+    with sqlite3.connect(source) as conn:
+        conn.execute('PRAGMA user_version=2')
+    result = run_backup(source, dest)
+    assert result.returncode != 0
+    assert 'Backup refused' in result.stderr
+    assert not dest.exists()
