@@ -9,8 +9,8 @@ significance, and no assertion that a model is safe when the warning is quiet.
 from __future__ import annotations
 
 import math
+from collections.abc import Mapping
 from dataclasses import dataclass
-from typing import Mapping
 
 
 @dataclass(frozen=True, slots=True)
