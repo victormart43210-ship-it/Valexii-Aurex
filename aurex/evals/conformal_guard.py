@@ -13,7 +13,8 @@ import math
 import re
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Literal, Sequence
+from collections.abc import Sequence
+from typing import Literal
 
 _MAX = 10_000
 _SHA = re.compile(r"^[0-9a-f]{64}$")
