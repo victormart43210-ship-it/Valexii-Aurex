@@ -9,8 +9,9 @@ import hashlib
 import json
 import statistics
 import time
+from collections.abc import Callable, Iterable
 from dataclasses import asdict, dataclass
-from typing import Callable, Iterable
+from typing import Any
 
 
 @dataclass(frozen=True)
@@ -91,10 +92,10 @@ def run_cases(
 def compare_models(
     cases: Iterable[Case],
     responders: dict[str, Callable[[str], str]],
-) -> dict[str, dict]:
+) -> dict[str, dict[str, Any]]:
     """Identical cases, explicit failures; scores are not verification authority."""
     frozen = tuple(cases)
-    result = {}
+    result: dict[str, dict[str, Any]] = {}
     for name, responder in responders.items():
         observations = run_cases(frozen, responder)
         times = [o.latency_ms for o in observations]
@@ -110,7 +111,7 @@ def compare_models(
     return result
 
 
-def regression_signals(history: Iterable[dict]) -> dict[str, dict]:
+def regression_signals(history: Iterable[dict[str, Any]]) -> dict[str, dict[str, Any]]:
     """Simple interpretable failure rates; no predictive model without data."""
     groups: dict[str, list[bool]] = {}
     for row in history:
