@@ -144,7 +144,7 @@ def capabilities(_: str = Depends(authenticate)) -> CapabilitiesResponse:
                 id="regression_scan",
                 available=os.environ.get("AUREX_ENABLE_OFFLINE_LAB") == "1",
                 evidenceId=ev_id,
-                verifiedAt=ev_time,
+                verifiedAt=None,
             ),
             CapabilityItem(
                 id="memory_graph",
@@ -239,7 +239,15 @@ def create_job_endpoint(
         raise HTTPException(status_code=409, detail=str(exc)) from exc
     job_id = str(job["id"])
     if job["state"] == "queued":
-        update_job_state(DEFAULT_DB_PATH, job_id, "running")
+        claimed = update_job_state(DEFAULT_DB_PATH, job_id, "running")
+        if claimed is None:
+            current = get_job(DEFAULT_DB_PATH, job_id)
+            if current is None:
+                raise HTTPException(status_code=500, detail="Job disappeared")
+            job = current
+        else:
+            job = claimed
+    if job["state"] == "running" and job.get("result_json") is None:
         try:
             observation = execute_sqlite_roundtrip(req.params)
             digest = hashlib.sha256(
