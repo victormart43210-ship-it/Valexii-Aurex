@@ -11,8 +11,8 @@ from __future__ import annotations
 import math
 import re
 from collections import Counter
+from collections.abc import Sequence
 from dataclasses import dataclass
-from typing import Sequence
 
 _WORD = re.compile(r"[^\W_]{2,}", re.UNICODE)
 MAX_CASES = 1000
