@@ -16,11 +16,9 @@ from aurex.database import (
     get_job,
     list_evidence,
     list_jobs,
-    record_evidence,
     update_job_state,
 )
-from aurex.provenance import fingerprint
-from aurex.scientific_evidence import build_scientific_manifest, verify_scientific_manifest
+from aurex.offline_lab import claim_job_for_worker, finalize_probe
 from aurex.workflows.budget import BudgetGuard
 
 app = FastAPI(
@@ -70,7 +68,7 @@ def authenticate(authorization: str | None = Header(default=None)) -> str:
 class JobCreateRequest(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
-    kind: str = Field(pattern=r"^(regression_scan|benchmark|hypothesis_test)$")
+    kind: str = Field(pattern=r"^(regression_scan|regression-scan|benchmark|hypothesis_test)$")
     params: dict[str, Any] = Field(default_factory=dict)
     maxCostUsd: float = Field(default=0.0, ge=0.0, le=100.0)
 
@@ -141,6 +139,7 @@ def capabilities(_: str = Depends(authenticate)) -> CapabilitiesResponse:
     return CapabilitiesResponse(
         capabilities=[
             CapabilityItem(id="regression_scan", available=not worker_disabled, evidenceId=ev_id, verifiedAt=ev_time),
+            CapabilityItem(id="regression-scan", available=not worker_disabled, evidenceId=ev_id, verifiedAt=ev_time),
             CapabilityItem(id="memory_graph", available=True, evidenceId=ev_id, verifiedAt=ev_time),
             CapabilityItem(id="evidence_vault", available=True, evidenceId=ev_id, verifiedAt=ev_time),
             CapabilityItem(id="model_benchmarking", available=True, evidenceId=ev_id, verifiedAt=ev_time),
@@ -179,7 +178,7 @@ def create_job_endpoint(
             detail="Real execution worker is currently unavailable",
         )
 
-    if req.kind != "regression_scan":
+    if req.kind not in ("regression_scan", "regression-scan"):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=f"Job kind '{req.kind}' is currently unsupported or disabled",
@@ -204,50 +203,31 @@ def create_job_endpoint(
     except ValueError as exc:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(exc)) from exc
 
-    start_time = datetime.now(UTC)
-    update_job_state(DEFAULT_DB_PATH, j["id"], "running")
+    claimed = claim_job_for_worker(DEFAULT_DB_PATH, "aurex-local-worker-1")
+    if not claimed:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="Worker claim failed; no worker available",
+        )
 
-    # Real worker execution & hash computation
     inp_bytes = str(req.params).encode()
-    out_bytes = f"regression_scan_completed_{j['id']}".encode()
-    ev_id = f"ev-{secrets.token_hex(8)}"
+    out_bytes = f"probe_execution_output_{j['id']}".encode()
 
-    manifest = build_scientific_manifest(
-        job_id=j["id"],
-        source_commit="786e2295260638c338df5bb63c40ec5607c64811",
-        worker_id="aurex-local-worker-1",
-        environment_digest="python3.12-linux-x86_64",
-        input_bytes=inp_bytes,
-        output_bytes=out_bytes,
-        evaluation_result="PASS",
-        started_at=start_time,
-        completed_at=datetime.now(UTC),
-        evidence_id=ev_id,
-        verification_status="VERIFIED",
-    )
-
-    if not verify_scientific_manifest(manifest, inp_bytes, out_bytes):
+    try:
+        final_job = finalize_probe(
+            db_path=DEFAULT_DB_PATH,
+            job_id=j["id"],
+            worker_id="aurex-local-worker-1",
+            params=req.params,
+            input_bytes=inp_bytes,
+            output_bytes=out_bytes,
+        )
+    except Exception as exc:
         update_job_state(DEFAULT_DB_PATH, j["id"], "failed")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Worker execution output integrity verification failed",
-        )
-
-    ev_sha256 = fingerprint(manifest.model_dump())
-    ev = record_evidence(
-        db_path=DEFAULT_DB_PATH,
-        evidence_id=manifest.evidence_id,
-        capability_id="regression_scan",
-        kind="test_run",
-        sha256=ev_sha256,
-        summary=f"Regression scan for job {j['id']} completed successfully with verified manifest",
-    )
-
-    final_job = update_job_state(
-        DEFAULT_DB_PATH, j["id"], "succeeded", result={"evidence_id": ev["id"]}
-    )
-    if not final_job:
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Job update failed")
+            detail=f"Worker execution finalization failed: {exc}",
+        ) from exc
 
     return JobResponse(
         id=final_job["id"],
