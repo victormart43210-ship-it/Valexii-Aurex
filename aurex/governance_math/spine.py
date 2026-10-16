@@ -7,9 +7,9 @@ existing signed-witness/experiment-admission pipeline.
 
 from __future__ import annotations
 
+from collections.abc import Sequence
 from dataclasses import dataclass
 from decimal import Decimal
-from typing import Sequence
 
 from .information_gain import Probe, TestChoice, rank_next_tests
 from .optimization import FixStep, SearchResult, choose_remediation
