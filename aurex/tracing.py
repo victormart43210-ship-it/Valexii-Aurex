@@ -9,6 +9,8 @@ from __future__ import annotations
 
 import contextvars
 import secrets
+from collections.abc import Iterator
+from contextlib import contextmanager
 import uuid
 from dataclasses import dataclass
 from datetime import UTC, datetime
@@ -45,6 +47,23 @@ def trace_context(*, request_id: str | None = None, job_id: str | None = None) -
     context = TraceContext.new(request_id=request_id, job_id=job_id)
     _current_trace.set(context)
     return context
+
+
+@contextmanager
+def scoped_trace_context(
+    *, request_id: str | None = None, job_id: str | None = None
+) -> Iterator[TraceContext]:
+    """Bound correlation IDs to a scope and restore the previous context.
+
+    A scope is NOT an OpenTelemetry exporter, authentication, or independent
+    attestation. Avoid using raw tokens or sensitive data as context IDs.
+    """
+    context = TraceContext.new(request_id=request_id, job_id=job_id)
+    token = _current_trace.set(context)
+    try:
+        yield context
+    finally:
+        _current_trace.reset(token)
 
 
 def utc_now_iso() -> str:
