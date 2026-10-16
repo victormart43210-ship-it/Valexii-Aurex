@@ -70,11 +70,13 @@ def _valid_sha(sha: str | None) -> bool:
 def _validate(event: ObservedEvent, now: datetime) -> None:
     if (
         not isinstance(event, ObservedEvent)
+        or not isinstance(event.run_id, str)
         or not _ID.fullmatch(event.run_id)
         or isinstance(event.event_index, bool)
         or not isinstance(event.event_index, int)
         or event.event_index < 0
-        or event.kind not in _KIND or event.phase not in _PHASE
+        or not isinstance(event.kind, str) or event.kind not in _KIND
+        or not isinstance(event.phase, str) or event.phase not in _PHASE
         or not isinstance(event.observed_at, datetime)
         or event.observed_at.tzinfo is None
         or event.observed_at.utcoffset() is None
@@ -100,8 +102,8 @@ def _validate(event: ObservedEvent, now: datetime) -> None:
         raise ValueError("invalid training step")
     if event.training_step is not None and event.kind != "model_training":
         raise ValueError("training step on non-training event")
-    if len(event.metrics) > len(_METRIC_RANGES):
-        raise ValueError("too many metrics")
+    if not isinstance(event.metrics, dict) or len(event.metrics) > len(_METRIC_RANGES):
+        raise ValueError("invalid or oversized metrics object")
     for key, value in event.metrics.items():
         bounds = _METRIC_RANGES.get(key)
         if (
