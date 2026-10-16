@@ -217,7 +217,7 @@ def create_job_endpoint(
     if req.maxCostUsd > 0:
         raise HTTPException(status_code=402, detail="Paid execution disabled")
     if os.environ.get("AUREX_ENABLE_OFFLINE_LAB") != "1":
-        raise HTTPException(status_code=503, detail="Offline worker disabled")
+        raise HTTPException(status_code=503, detail="Worker unavailable: offline worker disabled")
     if req.params != {"probe": "sqlite_roundtrip_v1"}:
         raise HTTPException(status_code=422, detail="Unsupported probe")
     if not idempotency_key or len(idempotency_key) > 128:
