@@ -1,10 +1,10 @@
 """Operational AUREX HTTP API conforming to VALEXII Website contracts."""
 
-import hmac
 import hashlib
+import hmac
 import json
-import secrets
 import os
+import secrets
 from datetime import UTC, datetime
 from decimal import Decimal
 from typing import Any
@@ -15,10 +15,10 @@ from pydantic import BaseModel, ConfigDict, Field
 from aurex.database import (
     DEFAULT_DB_PATH,
     create_job,
-    record_evidence,
     get_job,
     list_evidence,
     list_jobs,
+    record_evidence,
     update_job_state,
 )
 from aurex.real_offline_probe import execute_sqlite_roundtrip
@@ -136,13 +136,12 @@ def capabilities(_: str = Depends(authenticate)) -> CapabilitiesResponse:
     ev_records = list_evidence(DEFAULT_DB_PATH)
     latest_ev = ev_records[0] if ev_records else None
     ev_id = latest_ev["id"] if latest_ev else None
-    ev_time = latest_ev["collected_at"] if latest_ev else None
 
     return CapabilitiesResponse(
         capabilities=[
             CapabilityItem(
                 id="regression_scan",
-                available=os.environ.get('AUREX_ENABLE_OFFLINE_LAB') == '1',
+                available=os.environ.get("AUREX_ENABLE_OFFLINE_LAB") == "1",
                 evidenceId=ev_id,
                 verifiedAt=None,
             ),
