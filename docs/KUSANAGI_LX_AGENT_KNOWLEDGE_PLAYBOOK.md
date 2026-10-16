@@ -33,6 +33,32 @@ Status: ADOPTED AS GUIDANCE; not a claim of production verification. Applies to 
 
 For each agent/model/tool, record: capability ID; owner; exact code/model version; allowed inputs/actions; benchmark fixtures; adversarial fixtures; evaluator independent from implementer; measured correctness/false-positive rate/latency/cost; failure handling; admission status (PASS/FAIL/NOT RUN/NOT VERIFIED); SHA and timestamp. LLM-judge outputs are advisory, not sole authority. No model may promote its own capability.
 
+
+## Python acceleration candidates (Firecrawl research, 2026-10-16)
+
+Prioritize measured improvements to the existing Python 3.12 FastAPI / pytest / Ruff / Mypy toolchain. No blanket dependency upgrades or changes to production entrypoints.
+
+| Candidate | Practical use | Adoption gate |
+| --- | --- | --- |
+| Astral **uv** | Faster, reproducible local and CI dependency installation | Benchmark against existing pip installs; pin uv version and lockfile, preserve Python 3.12 and Docker reproducibility. |
+| **pytest-xdist** | Parallelize independent CPU-bound test groups | Measure wall time; exclude shared SQLite state, port-binding, lease races and order-dependent suites unless isolated. |
+| **Hypothesis** | Generate adversarial lease, idempotency, timestamp and authorization edge cases | Deterministic seeds/reproducers, bounded runtime, no external calls. |
+| **Schemathesis** | Fuzz local OpenAPI schemas, invalid payloads and multi-step API contracts | Local-only test server, disposable DB, synthetic credentials; no production fuzzing. |
+| **OpenTelemetry Python** | Correlate frontend proxy → API → worker → evidence traces | Scrub bearer tokens, prompts, PII and payloads; benchmark overhead and retention. |
+| **pip-audit** | Detect known vulnerabilities in locked Python dependencies | CI report and triage with reproducible lockfile; never blindly auto-upgrade cryptography/auth packages. |
+| **Testcontainers Python** | Disposable integration tests for future external services | Only if a real container dependency exists; SQLite local file tests remain cheaper. |
+
+Recommended sequence: (1) add bounded local OpenAPI property tests; (2) measure uv installation and pytest-xdist test-time improvements in CI; (3) add adversarial Hypothesis fixtures; (4) introduce redacted OpenTelemetry spans. Do not replace Mypy with experimental alternatives without comparative proof. Capture baseline duration, failure rate, resource use, SHA and CI run for each change.
+
+Official references:
+- https://docs.astral.sh/uv/
+- https://pytest-xdist.readthedocs.io/
+- https://hypothesis.readthedocs.io/
+- https://schemathesis.readthedocs.io/
+- https://opentelemetry.io/docs/languages/python/
+- https://pypi.org/project/pip-audit/
+- https://github.com/testcontainers/testcontainers-python
+
 ## Immediate priority and exclusions
 
 P0: complete canonical Railway deployment evidence and real Lovable → API → SQLite → evidence round trip. P1: traces, evaluation registry, repository hygiene, threat-model tests. P2: multilingual model comparisons. Do not integrate Ghostfolio's finance domain, automatically scrape external links, run arbitrary security commands, or replace the established AUREX architecture for novelty.
