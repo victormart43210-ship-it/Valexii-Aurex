@@ -104,6 +104,20 @@ def test_untrusted_metrics_cannot_be_serialized(metrics: dict[str, float]) -> No
         summarize_events((event(0, metrics=metrics),), now=NOW)
 
 
+def test_malformed_event_id_and_metric_container_fail_closed() -> None:
+    malformed = ObservedEvent(
+        None, 0, "model_training", "PROGRESS", NOW, EVIDENCE, MODEL, DATA, 0, {}
+    )
+    with pytest.raises(ValueError):
+        summarize_events((malformed,), now=NOW)
+    bad_metrics = ObservedEvent(
+        "run-example", 0, "model_training", "PROGRESS", NOW,
+        EVIDENCE, MODEL, DATA, 0, None,
+    )
+    with pytest.raises(ValueError):
+        summarize_events((bad_metrics,), now=NOW)
+
+
 def test_model_events_require_pinned_model_and_dataset() -> None:
     candidate = ObservedEvent(
         "run-example", 0, "model_training", "PROGRESS", NOW,
