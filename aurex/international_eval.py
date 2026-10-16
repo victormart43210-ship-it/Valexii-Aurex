@@ -9,8 +9,8 @@ import hashlib
 import json
 import statistics
 import time
+from collections.abc import Callable, Iterable
 from dataclasses import asdict, dataclass
-from typing import Callable, Iterable
 
 
 @dataclass(frozen=True)

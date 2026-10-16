@@ -7,8 +7,8 @@ from __future__ import annotations
 
 import hashlib
 import json
+from collections.abc import Callable
 from dataclasses import asdict
-from typing import Callable
 from uuid import uuid4
 
 from aurex.database import create_job, record_evidence, update_job_state
