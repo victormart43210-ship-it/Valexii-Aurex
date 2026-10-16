@@ -238,6 +238,7 @@ def create_job_endpoint(
     except ValueError as exc:
         raise HTTPException(status_code=409, detail=str(exc)) from exc
     job_id = str(job["id"])
+    claimed = None
     if job["state"] == "queued":
         claimed = update_job_state(DEFAULT_DB_PATH, job_id, "running")
         if claimed is None:
@@ -247,7 +248,7 @@ def create_job_endpoint(
             job = current
         else:
             job = claimed
-    if job["state"] == "running" and job.get("result_json") is None:
+    if claimed is not None:
         try:
             observation = execute_sqlite_roundtrip(req.params)
             digest = hashlib.sha256(
