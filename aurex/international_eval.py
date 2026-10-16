@@ -11,6 +11,7 @@ import statistics
 import time
 from collections.abc import Callable, Iterable
 from dataclasses import asdict, dataclass
+from typing import Any
 
 
 @dataclass(frozen=True)
@@ -110,7 +111,7 @@ def compare_models(
     return result
 
 
-def regression_signals(history: Iterable[dict[str, Any]]) -> dict[str, dict]:
+def regression_signals(history: Iterable[dict[str, Any]]) -> dict[str, dict[str, Any]]:
     """Simple interpretable failure rates; no predictive model without data."""
     groups: dict[str, list[bool]] = {}
     for row in history:
