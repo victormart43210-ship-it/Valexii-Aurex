@@ -20,6 +20,7 @@ class Prediction:
     case_id: str
     lineage_group: str
     predicted_at: datetime
+    outcome_observed_at: datetime
     probability: float
     actual: int
 
@@ -63,6 +64,10 @@ def _validate(rows: Sequence[Prediction]) -> None:
             or not isinstance(row.predicted_at, datetime)
             or row.predicted_at.tzinfo is None
             or row.predicted_at.utcoffset() is None
+            or not isinstance(row.outcome_observed_at, datetime)
+            or row.outcome_observed_at.tzinfo is None
+            or row.outcome_observed_at.utcoffset() is None
+            or row.outcome_observed_at < row.predicted_at
             or not isinstance(row.probability, (int, float))
             or isinstance(row.probability, bool)
             or not math.isfinite(row.probability)
@@ -118,11 +123,16 @@ def temporal_holdout(
     test = [x for x in rows if x.predicted_at >= cutoff]
     if not train or not test:
         raise ValueError("both historical training and later holdout required")
+    if any(x.outcome_observed_at > cutoff for x in train):
+        raise ValueError("temporal leakage: training outcome was unavailable at cutoff")
     if {x.lineage_group for x in train} & {x.lineage_group for x in test}:
         raise ValueError("lineage leakage across temporal holdout")
     prior = math.fsum(x.actual for x in train) / len(train)
     baseline = [
-        Prediction(x.case_id, x.lineage_group, x.predicted_at, prior, x.actual)
+        Prediction(
+            x.case_id, x.lineage_group, x.predicted_at,
+            x.outcome_observed_at, prior, x.actual,
+        )
         for x in test
     ]
     model_report = calibration_report(test, bins=bins)
