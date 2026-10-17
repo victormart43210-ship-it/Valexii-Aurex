@@ -23,7 +23,7 @@ def test_known_ascii_token_remains_accepted() -> None:
     assert get_token() == TOKEN
     assert authenticate("Bearer " + TOKEN) == "authenticated"
     response = TestClient(app).get(
-        "/v1/capabilities", headers={"Authorization": "Bearer " + TOKEN}
+        "/v1/budgets", headers={"Authorization": "Bearer " + TOKEN}
     )
     assert response.status_code == 200
 
