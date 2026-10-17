@@ -10,14 +10,9 @@ on:
       - training/**
       - workstation/**
       - .github/workflows/railway-image.yml
+  # Always report this required check on PRs; a path filter would leave
+  # documentation-only PRs blocked waiting for a skipped status context.
   pull_request:
-    paths:
-      - Dockerfile
-      - pyproject.toml
-      - aurex/**
-      - training/**
-      - workstation/**
-      - .github/workflows/railway-image.yml
   workflow_dispatch:
 jobs:
   docker-build-and-smoke:
