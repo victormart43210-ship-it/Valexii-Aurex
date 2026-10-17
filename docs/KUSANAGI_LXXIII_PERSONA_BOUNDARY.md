@@ -67,7 +67,7 @@ percent improvement or measured reduction in harmful outputs is established.
 ## Verification performed / still required
 
 An isolated local source mirror on Python 3.13.5 ran targeted
-`PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 pytest -q` tests: **47 passed**,
+`PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 pytest -q` tests: **48 passed**,
 using exact Git blob contents for the submitted persona module and challenge
 schema. This is **targeted local source validation**, not the repository's full
 Python 3.12 CI, independent external replication or staging verification.

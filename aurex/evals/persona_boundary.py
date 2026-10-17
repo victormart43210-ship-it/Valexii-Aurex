@@ -88,7 +88,13 @@ def assess_turn(turn: UntrustedTurn) -> PersonaFinding:
         raise ValueError("invalid turn ID")
     if turn.source not in ("model_output", "retrieved_document", "tool_output"):
         raise ValueError("source must be explicitly untrusted")
-    if not isinstance(turn.text, str) or not 1 <= len(turn.text.encode("utf-8")) <= 4096:
+    if not isinstance(turn.text, str):
+        raise ValueError("text must be a string")
+    try:
+        encoded = turn.text.encode("utf-8")
+    except UnicodeError as exc:
+        raise ValueError("text must be valid UTF-8") from exc
+    if not 1 <= len(encoded) <= 4096:
         raise ValueError("text must be 1..4096 UTF-8 bytes")
     flags: list[str] = []
     lower = turn.text.casefold()
@@ -107,7 +113,7 @@ def assess_turn(turn: UntrustedTurn) -> PersonaFinding:
     return PersonaFinding(
         turn_id=turn.turn_id,
         source=turn.source,
-        text_sha256=hashlib.sha256(turn.text.encode("utf-8")).hexdigest(),
+        text_sha256=hashlib.sha256(encoded).hexdigest(),
         flags=tuple(flags),
         persona_references=referenced,
         diagnostic="REVIEW_REQUIRED" if risk_flags.intersection(flags) else "NO_PRIVILEGE_SIGNAL_NOT_PROOF",
@@ -125,10 +131,10 @@ def assess_transcript(turns: Sequence[UntrustedTurn]) -> TranscriptAssessment:
     results: list[PersonaFinding] = []
     total_bytes = 0
     for turn in turns:
-        if not isinstance(turn, UntrustedTurn) or turn.turn_id in seen:
-            raise ValueError("duplicate or malformed turn")
-        seen.add(turn.turn_id)
         found = assess_turn(turn)
+        if found.turn_id in seen:
+            raise ValueError("duplicate turn ID")
+        seen.add(found.turn_id)
         total_bytes += len(turn.text.encode("utf-8"))
         if total_bytes > 65536:
             raise ValueError("transcript exceeds 65536 UTF-8 bytes")

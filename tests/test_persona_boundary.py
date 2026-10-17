@@ -131,3 +131,10 @@ def test_arbitrary_json_can_never_set_report_authority():
     assert result.authority == "NONE"
     assert result.execution == "NO_ACTION"
     assert result.independent_verification == "NOT VERIFIED"
+
+
+def test_unhashable_turn_id_and_invalid_unicode_fail_closed():
+    with pytest.raises(ValueError, match="turn ID"):
+        assess_transcript([turn("hello", turn_id=[])])
+    with pytest.raises(ValueError, match="valid UTF-8"):
+        assess_turn(turn("\ud800"))
