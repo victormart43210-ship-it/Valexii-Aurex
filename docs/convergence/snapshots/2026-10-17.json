@@ -1,0 +1,56 @@
+{
+  "schema_version": 1,
+  "snapshot_date_utc": "2026-10-17",
+  "classification": "REVIEW_ONLY",
+  "production_authority": "HOLD",
+  "repository": "victormart43210-ship-it/Valexii-Aurex",
+  "main_sha": "df0654390049118a142ec3b3356f0f40b4789fe4",
+  "main_reachable_commits_by_utc_day": {
+    "2026-10-14": 8,
+    "2026-10-15": 31,
+    "2026-10-16": 86,
+    "2026-10-17": 0
+  },
+  "merge_pr_subjects_by_utc_day": {
+    "2026-10-14": 1,
+    "2026-10-15": 1,
+    "2026-10-16": 9,
+    "2026-10-17": 0
+  },
+  "open_draft_pr_heads": {
+    "66": "4550359ff623fac359a0a6ac468c90dea50c54b2",
+    "67": "df7ff0911b80fef4767ddadafa9cd284b06c7a1f",
+    "70": "e17aaccc801060993fe1b1082a9d4deacc97b9da",
+    "72": "a490cbe820de7577b1767924998f81b3193d70a7",
+    "73": "aa95564e07ad9feb7edf4ea6d84acf298328c34d"
+  },
+  "railway": {
+    "service": "aurex-api",
+    "live_sha": "57a079f93b947594f1a6f854aa46a6f606f86f76",
+    "deployment_kind": "READ_ONLY_BRIDGE",
+    "state": "SUCCESS",
+    "staged_patch": "814e3b02-7f90-4812-b107-32e3e7aad529",
+    "staged_changes": 4,
+    "staged_not_live": true
+  },
+  "lovable": {
+    "project_id": "811ffc43-2c8b-4c88-ab4c-4de668d089cb",
+    "latest_source_sha": "94ecb8d82f97bc5f1abfc4489eee1c2a2e970358",
+    "published": true,
+    "prepared_patches_published": false,
+    "github_website_repo_access": "NOT_VERIFIED_404"
+  },
+  "gates": {
+    "workflow_capture": "RECORDED",
+    "mainline_activity_count": "PASS",
+    "pr72_ci_job_conclusions": "FAILURE",
+    "pr72_test_execution": "NOT_VERIFIED",
+    "published_owner_five_get": "NOT_VERIFIED",
+    "ouroboros_mobile_performance": "NOT_VERIFIED",
+    "canonical_worker_db_evidence": "NOT_VERIFIED",
+    "independent_financial_accuracy": "NOT_VERIFIED",
+    "release": "HOLD"
+  },
+  "user_local_health_report": "OPERATOR_REPORTED_NOT_EXTERNALLY_VERIFIED",
+  "default_paid_budget_usd": 0
+}
