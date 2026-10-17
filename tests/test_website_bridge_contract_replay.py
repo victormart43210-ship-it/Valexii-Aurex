@@ -9,12 +9,10 @@ from __future__ import annotations
 
 import importlib.util
 import math
-import os
 import re
 from datetime import datetime
 from pathlib import Path
 from typing import Any
-from unittest.mock import patch
 
 import pytest
 from fastapi.testclient import TestClient
@@ -216,7 +214,7 @@ def test_offline_probe_is_an_admissible_record_type_not_proof() -> None:
          "sha256": "a" * 64, "summary": "Unverified synthetic observation"}
     ]}
     assert valid_json_contract("/v1/evidence", payload)
-    assert "UNVERIFIED" not in payload["evidence"][0].keys()
+    assert payload["evidence"][0]["summary"].startswith("Unverified")
 
 
 def test_checked_in_openapi_uses_real_offline_probe_and_capability_id_pattern() -> None:
