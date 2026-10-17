@@ -49,8 +49,8 @@ HOLD — HUMAN REVIEW REQUIRED
 
 **Current status: design approved; implementation and real-data validation NOT VERIFIED.** No automatic invoice approval, bank connection, payment execution, or paid inference is authorized.
 
-- [Proposed proof-gated review design (draft PR #77)](../../pull/77)
-- [Ongoing integration and evidence tracking (Issue #75)](../../issues/75)
+- [Proposed proof-gated review design (draft PR #77)](https://github.com/victormart43210-ship-it/Valexii-Aurex/pull/77)
+- [Ongoing integration and evidence tracking (Issue #75)](https://github.com/victormart43210-ship-it/Valexii-Aurex/issues/75)
 
 A SHA-256 digest helps detect changes **only to the data actually bound into the digest**; it cannot, by itself, establish document authenticity or independent custody.
 
