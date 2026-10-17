@@ -62,8 +62,8 @@ If `git fetch` cannot access the PR branch, download the exact script directly f
 | Evidence gate | Status at intake creation |
 | --- | --- |
 | Local source bytes accessible to this PR | NOT VERIFIED |
-| Local synthetic preflight tool created | YES — awaits offline tests |
-| Step 79 controlled 100-PDF results | USER-THREAD REPORTED |
+| Local synthetic preflight tool created | YES — exact script Git blob dba4852048091178927ded7f7f85a4fb5a857885 |
+| Preflight regression tests | 13/13 PASS on independently matched local code/test bytes; Python 3.13, pytest 9.0.2 |\n| Ruff / Mypy / full repository CI | NOT RUN locally; may be unavailable in runner |\n| Step 79 controlled 100-PDF results | USER-THREAD REPORTED |
 | USB originals | MUST REMAIN UNCHANGED |
 | Financial source code merged into canonical main | NO |
 | Financial engine published to Railway or Lovable | NO |
