@@ -160,7 +160,7 @@ def test_five_endpoint_shapes(client: tuple[str, TestClient], path: str) -> None
     assert valid_json_contract(path, response.json()), f"SCHEMA INVALID: {path}"
 
 
-@pytest.mark.parametrize("path", PATHS[1:])
+@pytest.mark.parametrize("path", PATHS)
 def test_private_gets_reject_missing_and_wrong_bearer(
     client: tuple[str, TestClient], path: str
 ) -> None:
