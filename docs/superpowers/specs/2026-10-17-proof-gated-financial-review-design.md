@@ -1,6 +1,6 @@
 # KUSANAGI OMEGA — Proof-Gated Financial Review Pilot
 
-**Status:** DESIGN FOR OWNER REVIEW; NOT IMPLEMENTED; PRODUCTION HOLD  
+**Status:** OWNER-APPROVED DESIGN DIRECTION (2026-10-17); NOT IMPLEMENTED; PRODUCTION HOLD  
 **Date:** 2026-10-17  
 **Canonical repository:** `victormart43210-ship-it/Valexii-Aurex`  
 **Selection:** Hypothesis C, explicitly selected by owner: narrow human-reviewed financial discrepancy checking before any generalized evidence platform.  
@@ -114,4 +114,4 @@ Real financial source quality, independence attestation availability, patent nov
 
 Scoped owner: new `aurex/financial_review/` modules + new tests only; no database schema, unrelated `aurex/api.py`, Lovable UI or BCXMET files in Stage 1. Rollback: discard scoped development branch/draft PR; `main` and production remain unchanged. Any later release requires separate owner approval.
 
-**Owner design-review question:** Approve this **offline, synthetic-first, advisory-only Stage 1** as the implementation target, or request changes before any product code is written.
+**Owner design decision:** Owner selected Hypothesis C, then instructed “Lock all this in then input this into loveable.” Treat this as approval of the offline, synthetic-first, advisory-only Stage 1 design direction and authorization to preserve it in Lovable's **project-specific knowledge**. Before writing Stage 1 product code, complete the Superpowers implementation plan and obtain plan/execution-method review. Lovable may display **DESIGN / RESEARCH / NOT LIVE**, but must not present an untested financial product as operational or publish without explicit approval.
