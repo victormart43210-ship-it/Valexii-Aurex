@@ -41,3 +41,8 @@ Each Jules / Cursor / Lovable / agent task includes repository and base SHA, iso
 **Current starting point:** [2026-10-17 measured capture](2026-10-17.md). The [copyable daily template](TEMPLATE.md) must be filled with observed facts and honest gaps.
 
 This documentation does **not** merge protected branches, edit Lovable source, accept a Railway staged patch, execute owner jobs, change secrets, spend money or approve production release.
+
+## Latest locked manual engineering addendum
+
+- [KUSANAGI LXXXV — Expert-Depth Iron Connection, 2026-10-17](2026-10-17-LXXXV-IRON-CONNECTION.md): owner-locked Speed/Altitude/Depth/Range protocol, bounded raw-UTF-8 transport repair, Wrangler preflight, artifact checksum, locally re-run offline tests **including the standalone-ZIP fixture limitation**, and **NO DEPLOY / RELEASE HOLD**. This is a dated record, not a claim of source integration.
+- Owner declined recurring automatic daily reports. Continue to capture manually as meaningful work occurs; do not schedule tasks without a new request.
