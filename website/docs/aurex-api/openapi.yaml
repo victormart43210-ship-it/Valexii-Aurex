@@ -3,12 +3,13 @@ info:
   title: AUREX Service API
   version: 1.0.0-draft
   description: >
-    Contract for an external, separately hosted AUREX service. DRAFT — no hosted
-    implementation exists. Mirrors src/lib/aurex-api-schema.ts. Jobs accept only named
-    kinds with bounded params; no code, shell or URL execution.
+    Contract for an external AUREX service. Current Railway production serves an
+    authenticated read-only bridge; canonical AUREX worker and durable storage
+    are not yet deployed. Mirrors the website v1 Zod contract shape. Jobs, where
+    independently enabled, accept only named bounded inputs, never shell or URLs.
 servers:
   - url: https://aurex.example.invalid
-    description: Placeholder; no server is deployed.
+    description: Illustrative placeholder; real deployment address is supplied server-side.
 security:
   - bearer: []
 paths:
@@ -78,7 +79,7 @@ components:
       content: { application/json: { schema: { $ref: "#/components/schemas/Error" } } }
   schemas:
     Id: { type: string, pattern: "^[a-z0-9][a-z0-9_-]{0,63}$" }
-    CapId: { type: string, pattern: "^[a-z-]{1,64}$" }
+    CapId: { type: string, pattern: "^[a-z_-]{1,64}$" }
     Time: { type: string, format: date-time }
     Health:
       type: object
@@ -136,7 +137,7 @@ components:
       properties:
         id: { $ref: "#/components/schemas/Id" }
         capabilityId: { $ref: "#/components/schemas/CapId" }
-        kind: { enum: [test_run, health_probe, benchmark_record] }
+        kind: { enum: [test_run, health_probe, benchmark_record, offline_probe] }
         collectedAt: { $ref: "#/components/schemas/Time" }
         sha256: { type: string, pattern: "^[0-9a-f]{64}$" }
         summary: { type: string, maxLength: 500 }
