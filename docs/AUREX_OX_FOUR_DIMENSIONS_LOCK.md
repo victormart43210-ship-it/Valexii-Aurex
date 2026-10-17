@@ -74,7 +74,33 @@ Create a short record (PR body, issue or release evidence entry) with these fiel
 
 **Scoring discipline:** Do not manufacture percentages, test counts, commercial numbers, claimed speed improvements or "green" integration gates. If source, deployment and end-to-end observations conflict, the less favorable current authority wins.
 
-## IV. Unchanged security constitution
+## IV. Expert-Depth / Outside-Judge Protocol — Owner-Approved Lock (2026-10-17)
+
+**Go deeper, not bigger.** This is the operating method for the **DEPTH** dimension and should be applied before rewriting or expanding any consequential engineering, scientific, security, financial, or commercial task. It does **not** authorize additional spending, access, deployments, claims, financial actions or execution.
+
+**The four required questions (before scope expansion):**
+
+1. **Expert blind spot —** What would a leading professional in this field investigate that the original task overlooked? Identify likely hidden causes, confounders, adversarial cases and relevant failure modes, not merely more features.
+2. **Raw primary material —** Which underlying code, runtime traces, original documents, ground truth, measurements, API contracts or primary research should be examined **instead of summaries**? Respect consent, least privilege, confidentiality and sensitive data boundaries; do not copy finance records to the website or public GitHub.
+3. **Methods and instruments —** Which precise domain-standard tools, procedures, tests, statistical methods, threat models and reproducible experiments would a competent practitioner use? Specify how the test can fail and what change it isolates.
+4. **Outside judge —** What independent **non-model** measurement or external observation can confirm or falsify the result? Name the witness and acceptance threshold **before** running the experiment. An assistant's judgment, generated confidence score, unverified claim, or model consensus does not independently validate it.
+
+**Execution sequence:** State the original outcome → answer all four questions → narrow the task into a bounded, falsifiable procedure → collect direct evidence → have an independent reviewer/instrument check it → report PASS/FAIL/NOT RUN/NOT VERIFIED for every claim, including negative results → revise the plan or leave the gate at **HOLD**.
+
+**Application to the four existing outcome lanes:**
+
+| Lane | Raw material and method | Outside judge / falsification |
+| --- | --- | --- |
+| **OX Ouroboros responsiveness** | Browser performance trace, exact SVG/React source, 4× CPU throttling and low-end mobile; controlled before/after paired measurements. | Measured long-task count/duration, responsiveness, motion/a11y checks and independent device reproduction; no anecdotal "feels faster" pass. |
+| **Website → Railway connection** | Exact deployed SHAs, HTTPS route/status traces, authenticated server-only 5-GET contract and owner-role access tests. | Independently attributed published-website request, schema conformity, token secrecy and negative auth/redirect tests; Railway 2xx counters alone cannot identify the website caller. |
+| **Governed AUREX worker + SQLite** | Real isolated job records, durable DB before/after snapshots, lease transitions, evidence hashes, restart/cancel tests. | Independent verifier checks durability, revocation, zero unauthorized spend and correctness after process restart; the generated evidence record is *not* its own witness. |
+| **Financial evidence and monetization** | Consent-controlled original documents, human-labeled records, recorded receipts/costs and representative error sample. | Independent labels and reconciled transactions, blinded false-positive/miss review, matched time study and actually collected pilot revenue; no synthetic data passed off as customers. |
+
+**Mandatory reporting attachment:** Every substantial task should have `Expert blind spot | Primary evidence | Method | Independent judge | Acceptance threshold | Actual observation | Remaining uncertainty`. If any essential witness is missing, label **NOT VERIFIED**, never upgrade to ADMIT. Better model capability, extra agents or more tokens cannot substitute for missing external verification.
+
+This protocol is subordinate to the unchanged constitutional chain **Evidence → Qualification → Reality → Authority → Effect** and the rule that **the system may never be its own sole witness**.
+
+## V. Unchanged security constitution
 
 **Evidence → Qualification → Reality → Authority → Effect.**
 
@@ -85,7 +111,7 @@ Create a short record (PR body, issue or release evidence entry) with these fiel
 - Research/finance/security evidence stays privacy-minimized; no unsupported production, AGI, patent, security, revenue, partner, benchmark or certification claims.
 - **No merge to protected main, live Railway patch acceptance, Lovable publication, purchase, enabled worker, or private document upload** by merely adopting this framework. Such operations require separate documented authorization and evidence.
 
-## V. What "locked" means
+## VI. What "locked" means
 
 These four dimensions are now the **default engineering prioritization and review framework** for work on VALEXII-AUREX/OX.
 
