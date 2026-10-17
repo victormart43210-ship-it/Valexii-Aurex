@@ -6,8 +6,8 @@ import json
 import sys
 from pathlib import Path
 
-import pytest
 from fastapi.testclient import TestClient
+import pytest
 
 ROOT = Path(__file__).resolve().parents[1]
 TOKEN = "z" * 32
