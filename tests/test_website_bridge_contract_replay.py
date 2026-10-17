@@ -88,6 +88,7 @@ def valid_json_contract(path: str, value: Any) -> bool:
                 exact(e, {"id", "capabilityId", "kind", "collectedAt", "sha256", "summary"})
                 and isinstance(e["id"], str) and bool(ID.fullmatch(e["id"]))
                 and isinstance(e["capabilityId"], str) and bool(CAP_ID.fullmatch(e["capabilityId"]))
+                and isinstance(e["kind"], str)
                 and e["kind"] in {"test_run", "health_probe", "benchmark_record", "offline_probe"}
                 and iso(e["collectedAt"])
                 and isinstance(e["sha256"], str) and bool(SHA256.fullmatch(e["sha256"]))
@@ -99,6 +100,7 @@ def valid_json_contract(path: str, value: Any) -> bool:
         return (
             exact(value, {"limitUsd", "reservedUsd", "spentUsd", "period"})
             and all(money(value[k]) for k in ("limitUsd", "reservedUsd", "spentUsd"))
+            and isinstance(value["period"], str)
             and value["period"] in {"day", "month"}
         )
     if path == "/v1/jobs":
@@ -113,7 +115,9 @@ def valid_json_contract(path: str, value: Any) -> bool:
             and all(
                 exact(j, {"id", "kind", "state", "createdAt", "updatedAt", "reservationUsd"})
                 and isinstance(j["id"], str) and bool(ID.fullmatch(j["id"]))
+                and isinstance(j["kind"], str)
                 and j["kind"] in {"regression_scan", "benchmark", "hypothesis_test"}
+                and isinstance(j["state"], str)
                 and j["state"] in {"queued", "running", "succeeded", "failed", "cancelled"}
                 and iso(j["createdAt"]) and iso(j["updatedAt"])
                 and money(j["reservationUsd"])
@@ -201,6 +205,8 @@ def test_empty_object_does_not_satisfy_any_contract(path: str) -> None:
         ("/v1/budgets", {"limitUsd": float("nan"), "reservedUsd": 0, "spentUsd": 0, "period": "month"}),
         ("/v1/jobs", {"jobs": [{"state": "succeeded"}], "nextCursor": None}),
         ("/v1/jobs", {"jobs": [], "nextCursor": "a" * 129}),
+        ("/v1/budgets", {"limitUsd": 0, "reservedUsd": 0, "spentUsd": 0, "period": []}),
+        ("/v1/evidence", {"evidence": [{"id": "ev-a", "capabilityId": "regression_scan", "kind": [], "collectedAt": "2026-10-17T12:00:00Z", "sha256": "a" * 64, "summary": "unverified"}]}),
     ],
 )
 def test_invalid_payloads_fail_closed(path: str, payload: Any) -> None:
