@@ -40,3 +40,11 @@ This is not a merge or a Railway change.
 | Lovable backend E2E | NOT VERIFIED |
 
 No model weights downloaded, no paid services used, no GitHub merges, no Railway patch accepted, no Lovable credits spent.
+
+## LXIX numerical-integrity follow-up
+
+A previous implementation capped raw log odds at ±700 before the logistic transform. A valid subnormal prior of `5e-324` without evidence was reported as approximately `9.86e-305`, **a false confidence increase of roughly 2×10¹⁹**. The branch now uses an overflow-safe, two-sided logistic without the arbitrary clamp, and saturates only unavoidable machine representational extremes to the nearest interior floating-point value. Added exact prior-only, correlated, forged-independence and order-invariance tests.
+
+`qualification_provenance=CALLER_ASSERTED_NOT_VERIFIED` and `authority=NONE` are immutable report annotations. A user-supplied lineage name or PASS claim is NOT independent qualification. No signed calibration adapter or deployment is implemented. This stays advisory regardless of posterior, including saturated values.
+
+Local arithmetic reproduction established the prior-inflation defect, but **full GitHub CI/Docker remains NOT RUN on this new head until GitHub runner allocation recovers**; do not claim code passes because the algorithm was reviewed.

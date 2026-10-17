@@ -28,6 +28,8 @@ class FusionResult:
     independent_clusters: int
     rejected: tuple[str, ...]
     status: str = "ANALYSIS_ONLY_NOT_AUTHORITY"
+    qualification_provenance: str = "CALLER_ASSERTED_NOT_VERIFIED"
+    authority: str = "NONE"
 
 
 def _probability(value: Any, name: str) -> float:
@@ -117,12 +119,24 @@ def fuse(payload: dict[str, Any], *, now: datetime | None = None) -> FusionResul
         log_lr = max(-math.log(10), min(math.log(10), math.log(p_h) - math.log(p_not_h)))
         clusters.setdefault(cluster, []).append(log_lr)
         qualified += 1
-    log_odds = math.log(prior / (1 - prior))
+    # Difference of logs avoids division instability for tiny valid priors.
+    log_odds = math.log(prior) - math.log1p(-prior)
     for values in clusters.values():
         # A cluster is one witness. Choose weakest support (or strongest
         # contradiction) to prevent evidence multiplication.
         log_odds += min(values)
-    posterior = 1 / (1 + math.exp(-max(-700, min(700, log_odds))))
+    # Stable logistic without an artificial ±700 clamp. With no evidence, a
+    # subnormal prior must remain subnormal rather than inflate by 10^19.
+    if log_odds >= 0:
+        posterior = 1.0 / (1.0 + math.exp(-log_odds))
+    else:
+        odds = math.exp(log_odds)
+        posterior = odds / (1.0 + odds)
+    # Rounded float 0/1 must never be presented as absolute certainty.
+    if posterior == 0.0:
+        posterior = math.nextafter(0.0, 1.0)
+    elif posterior == 1.0:
+        posterior = math.nextafter(1.0, 0.0)
     return FusionResult(
         hypothesis=hypothesis,
         prior=prior,

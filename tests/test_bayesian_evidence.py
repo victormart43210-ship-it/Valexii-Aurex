@@ -1,4 +1,5 @@
 """Adversarial Bayesian evidence fusion tests."""
+import math
 from datetime import UTC, datetime, timedelta
 
 import pytest
@@ -130,3 +131,39 @@ def test_declarations_are_not_signed_admission() -> None:
     assert result.qualified_witnesses == 1
     assert result.status == "ANALYSIS_ONLY_NOT_AUTHORITY"
     assert not hasattr(result, "authorization")
+
+
+def test_smallest_subnormal_prior_is_not_artificially_inflated() -> None:
+    tiny = math.nextafter(0.0, 1.0)
+    result = run([], prior=tiny)
+    assert result.posterior == tiny
+    assert result.log_odds < -700
+    assert result.authority == "NONE"
+
+
+def test_small_prior_with_correlated_witness_remains_bounded() -> None:
+    tiny = math.nextafter(0.0, 1.0)
+    a = run([observation()], prior=tiny)
+    b = run([observation(), observation("b")], prior=tiny)
+    assert a.posterior == b.posterior
+    assert a.posterior <= tiny * 10
+    assert a.authority == "NONE"
+
+
+def test_distinct_forged_independence_claims_never_create_authority() -> None:
+    items = [observation(f"id-{i}", f"claimed-cluster-{i}") for i in range(60)]
+    result = run(items)
+    assert result.posterior < 1.0
+    assert result.qualification_provenance == "CALLER_ASSERTED_NOT_VERIFIED"
+    assert result.status == "ANALYSIS_ONLY_NOT_AUTHORITY"
+    assert result.authority == "NONE"
+
+
+def test_correlated_order_is_irrelevant_and_negative_witness_wins() -> None:
+    positive = observation("p", "shared")
+    negative = observation("n", "shared", p_given_h=0.1, p_given_not_h=0.9)
+    forward = run([positive, negative])
+    reversed_result = run([negative, positive])
+    assert forward.posterior == reversed_result.posterior
+    assert forward.posterior < 0.5
+    assert forward.independent_clusters == 1
