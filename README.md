@@ -1,54 +1,93 @@
 # VALEXII-AUREX
 
-**External evidence, challenge, and evaluation engine for governed AI systems.**
+**An evidence-first research and engineering engine for governed AI systems.**
 
-AUREX is an open-source project for independently challenging claims, normalizing evidence, running reproducible evaluations, and returning machine-readable verification reports.
+AUREX is the **external evidence, challenge, and evaluation** component of the VALEXII.AI ecosystem. Its purpose is to produce reproducible claims, challenge unsupported conclusions, and keep AI-assisted recommendations separate from human or system authority. It is not a general-purpose autonomous financial system, a production-certified security platform, or proof that connected apps have completed end-to-end deployment.
 
-> **Core law:** the system may never be its own sole witness.
+> **Governing rule:** The system may never be its own sole witness.
+>
+> **Pipeline:** Evidence → Qualification → Reality → Authority → Effect.
 
-## Boundary
+## What lives here
 
-AUREX is a **witness, not an authority**. It may challenge, score, reproduce, or dispute a claim, but it does not grant security authority or control BCXMET/VALEXII runtime decisions.
+- **Typed service contracts:** Python and FastAPI interfaces for read-only service health, capabilities, evidence, budget information, and jobs.
+- **Adversarial review:** Repeatable tests and challenger interfaces that attempt to falsify results.
+- **Provenance and governance:** Versioned evidence, fingerprints, freshness checks, explicit unknowns, and policy boundaries.
+- **Evaluation harnesses:** Reproducible local or budgeted tests; internal practice is **not** an official external benchmark.
+- **Local development:** Workstation, CLI, and model adapters; paid model calls are not enabled by the repository itself.
+- **Experimental financial evidence review:** A separate **design and test plan**, not a shipped financial service.
 
-This public repository intentionally excludes proprietary BCXMET detection logic, private orchestration, credentials, production telemetry, and patent-sensitive implementation details.
+Architecture and capabilities must be judged from the **exact tested source version**, not a feature name, demo, or pull-request count.
 
-## Initial architecture
+## AUREX/OX and related projects
 
-- `protocol/` — public request/result contracts
-- `evidence/` — evidence envelopes and provenance
-- `challengers/` — independent challenge interfaces
-- `adapters/` — model/tool adapters
-- `evals/` — reproducible evaluation harnesses
-- `benchmarks/` — benchmark manifests and runners
-- `api/` — external challenge API
-- `cli/` — local command-line client
-- `tests/` — contract and adversarial tests
-- `docs/` — threat model, governance, integration guidance
+| Component | Role | Boundary |
+| --- | --- | --- |
+| **AUREX** (this repository) | External evidence, evaluation, research and review engine | Evidence/advice is **not** security or payment authority |
+| **AUREX/OX** at VALEXII.COM | Website presentation and owner review of evidence/status | Site health alone does **not** prove authenticated, canonical backend execution |
+| **BCXMET** | Android cybersecurity product (legacy repository name `CoreGuard-Android`) | Android security actions retain their own governing authority |
+| **DISPATER.AI** | Industrial / oilfield product direction | Proposed integrations require independent verification |
+| **XAITA.AI** | Financial/market product direction | Not evidence of deployed trading or automated finance |
 
-## Canonical challenge result
+A separate public website may discuss these products, but repository links and product demonstrations do **not** establish that the systems are deployed together.
 
-AUREX reports one of:
+## KUSANAGI OMEGA — Proof-gated financial review
 
-- `SUPPORTED`
-- `CONTESTED`
-- `INSUFFICIENT`
-- `STALE`
-- `HOLD`
+The selected **Hypothesis C** aims to test a narrow, human-reviewed financial discrepancy workflow:
 
-No result is silently promoted to product authority.
+```text
+Synthetic invoice + synthetic purchase order / field ticket
+        ↓
+Typed, exact-value comparison
+        ↓
+Complete, versioned evidence receipt
+        ↓
+DISCREPANCY / NO_DISCREPANCY_DETECTED / INDETERMINATE
+        ↓
+HOLD — HUMAN REVIEW REQUIRED
+```
 
-## Planned stack
+**Current status: design approved; implementation and real-data validation NOT VERIFIED.** No automatic invoice approval, bank connection, payment execution, or paid inference is authorized.
 
-Python + typed schemas + JSON Schema interoperability, with a small HTTP API and CLI. Model providers remain adapters so evaluations can compare identical tasks across providers and local models without coupling the protocol to one vendor.
+- [Proposed proof-gated review design (draft PR #77)](../../pull/77)
+- [Ongoing integration and evidence tracking (Issue #75)](../../issues/75)
 
-## Evaluation doctrine
+A SHA-256 digest helps detect changes **only to the data actually bound into the digest**; it cannot, by itself, establish document authenticity or independent custody.
 
-Benchmark claims remain **WITHHELD** until a reproducible run produces evidence. Projected uplift is never reported as measured performance.
+## Engineering method: Speed · Altitude · Depth · Range
 
-## Status
+| Dimension | What we actually optimize |
+| --- | --- |
+| **Speed** | Measured cycle time, latency, rendering and operating cost—not untested speedup claims |
+| **Altitude** | Useful, verifiable user outcomes rather than the number of features or commits |
+| **Depth** | Primary evidence, negative tests, precise failure analysis and independent outside judgment |
+| **Range** | Cross-disciplinary learning without crossing privacy, scope or authority boundaries |
 
-Bootstrap / pre-alpha. Interfaces are expected to change until the v0 protocol is frozen.
+A successful engineering report records **exact commit SHA**, test command and output, independent checker, limitations, and whether the result was **coded, locally tested, CI verified, merged, deployed or proven end to end**. These states are not interchangeable.
 
-## Security
+## Development
 
-Do not submit secrets, private user data, production credentials, or proprietary BCXMET internals to public fixtures or issues. See `SECURITY.md`.
+**Requirements:** Python 3.12+ and the dependency constraints in [pyproject.toml](pyproject.toml).
+
+```bash
+python -m venv .venv
+source .venv/bin/activate
+python -m pip install -e ".[dev]"
+PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 python -m pytest -q
+python -m ruff check .
+python -m mypy --strict aurex
+```
+
+The commands above are **instructions**, not a claim that CI passes on every branch. Review [SECURITY.md](SECURITY.md) before reporting vulnerabilities or sharing evidence.
+
+## Honest project status
+
+- **Source:** Ongoing open-source, pre-release engineering.
+- **Website integration:** AUREX/OX frontend and read-only service contracts exist, but full authenticated published-site → canonical backend verification has **not** been established in this README.
+- **Deployment:** An older read-only Railway bridge has been operated. That does **not** prove the canonical worker → durable SQLite → independent evidence → website path.
+- **Financial extraction:** Prototypes and synthetic tests exist on development branches; verified production financial accuracy is **not** claimed.
+- **Security:** Model outputs and static summaries **never** independently confer owner authority or approval.
+
+This public repository intentionally excludes private user records, credentials, protected detection internals and patent-sensitive materials. Financial originals must remain private and read-only unless their owner separately authorizes a secure evaluation.
+
+**Suggested GitHub About description:** `Evidence-first AUREX engine for governed AI evaluation, reproducible challenge, provenance, and human-reviewed decisions (pre-release).`
