@@ -84,7 +84,7 @@ def test_symlinked_module_is_not_read(tmp_path: Path) -> None:
     report = inspect_local_source(root)
     assert report["status"] == "HOLD"
     assert "PRIVATE" not in json.dumps(report)
-    assert report["entries"][0]["reason"] == "Non-source or unsafe symlink/path"
+    assert any(e["path"] == REQUIRED_MODULES[0] and e.get("reason") == "Non-source or unsafe symlink/path" for e in report["entries"])
 
 
 def test_optional_safe_source_and_tests_are_inventoried(tmp_path: Path) -> None:
