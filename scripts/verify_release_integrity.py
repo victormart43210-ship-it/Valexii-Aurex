@@ -6,6 +6,12 @@ import json
 import subprocess
 import sys
 from datetime import UTC, datetime
+from pathlib import Path
+
+# Ensure root repository directory is in sys.path
+root_dir = str(Path(__file__).resolve().parent.parent)
+if root_dir not in sys.path:
+    sys.path.insert(0, root_dir)
 
 
 def run_cmd(cmd: list[str]) -> tuple[int, str]:
@@ -41,6 +47,7 @@ def verify_integrity(target_sha: str | None = None) -> dict[str, object]:
         "repository": "victormart43210-ship-it/Valexii-Aurex",
         "candidate_sha": candidate_sha,
         "verified_at": datetime.now(UTC).isoformat(),
+        "code_checks_pass": passed,
         "ruff_pass": code_ruff == 0,
         "mypy_pass": code_mypy == 0,
         "pytest_pass": code_pytest == 0,
