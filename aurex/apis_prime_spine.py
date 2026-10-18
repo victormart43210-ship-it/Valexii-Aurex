@@ -245,17 +245,46 @@ def unified_research(
     else:
         outcome = "HOLD_INDEPENDENT_EVIDENCE_REQUIRED"
     problem_count = sum(item["status"].startswith("HOLD") for item in analyses)
+    manuscript = analyses[8]["observations"]
+    anomaly = analyses[10]["observations"]
+    token_count = manuscript.get("token_count")
+    entropy = stats["shannon_entropy_bits_per_codepoint"]
+    convergence = {
+        "statistical_and_manuscript": {
+            "contributors": ["AP04", "AP09"],
+            "character_count": stats["characters"],
+            "token_count": token_count,
+            "entropy_bits_per_codepoint": entropy,
+            "interpretation": "DESCRIPTIVE_ONLY",
+        },
+        "manuscript_and_anomaly": {
+            "contributors": ["AP09", "AP11"],
+            "observed_suffix_fraction": anomaly.get("observed_suffix_fraction"),
+            "null_suffix_fraction": anomaly.get("one_shuffled_null_fraction"),
+            "conclusion": "ONE_NULL_SAMPLE_NOT_SIGNIFICANT",
+        },
+        "verification": {
+            "contributors": ["AP12", "AP14"], "external_witness": "NOT_RUN",
+            "authority": "NONE",
+        },
+    }
+    followup = (
+        "Correct or narrow malformed Python before independent review"
+        if analyses[9]["status"] == "HOLD_PARSE_FAILED"
+        else "Collect held-out controls and request independent review of the hypotheses"
+    )
     return {
         "kind": "APIS_PRIME_UNIFIED_RESEARCH", "policy": POLICY,
         "source_sha256": digest, "source_kind": kind, "spine_status": outcome,
         "authority": "NONE", "independent_verification": "NOT_VERIFIED",
         "external_spend_usd": 0, "decipherment": "NOT_ESTABLISHED",
+        "convergence": convergence,
         "one_view": {
             "title": "APIS PRIME · REASONING SPINE", "tabs_added": 0,
-            "now": "Research diagnostics assembled; conclusions remain unverified",
+            "now": f"Observed {stats['characters']} codepoints and {token_count if token_count is not None else 'unknown'} tokens; no scientific conclusion",
             "changed": "NOT_COMPUTED_NO_PRIOR_COMPARISON",
-            "next": "Collect independent controls and review before claiming a finding",
-            "why": "14 bounded roles converge through one evidence-first orchestration call",
+            "next": followup,
+            "why": f"SPECTRA entropy {entropy} bits/codepoint; IACCHCODEX and TEZCATLIPOCA compare text structure without claiming significance",
             "proof": {"source_sha256": digest, "contributors": 14,
                       "modules_requiring_attention": problem_count,
                       "independent_verification": "NOT_VERIFIED"},
