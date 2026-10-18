@@ -89,6 +89,10 @@ def unified_research(
         raise ValueError("plain UTF-8 text up to 64KiB only; binary rejected")
     if kind not in {"document", "python"}:
         raise ValueError("kind must be document or python")
+    if plan_json is not None and (
+        not isinstance(plan_json, str) or len(plan_json.encode("utf-8")) > 8192
+    ):
+        raise ValueError("synthetic plan must be UTF-8 text up to 8192 bytes")
     if type(local_model_approved) is not bool:
         raise ValueError("local model approval must be a boolean")
     if local_model_approved and (
