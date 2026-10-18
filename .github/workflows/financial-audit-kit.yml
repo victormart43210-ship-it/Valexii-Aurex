@@ -1,0 +1,35 @@
+name: Financial Audit Linux Kit (synthetic only)
+
+on:
+  pull_request:
+    paths:
+      - 'artifacts/financial-audit/**'
+      - 'scripts/install_financial_audit_kit.sh'
+      - 'docs/KUSANAGI_XC_FINANCIAL_AUDIT_LINUX.md'
+      - '.github/workflows/financial-audit-kit.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify-bundled-source:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout exact PR head
+        uses: actions/checkout@v4
+      - name: Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Restore checksum-pinned synthetic-only financial audit source
+        run: bash scripts/install_financial_audit_kit.sh
+      - name: Install AUREX development dependencies
+        run: python -m pip install -e '.[dev]'
+      - name: Run synthetic financial audit regression tests
+        env:
+          PYTEST_DISABLE_PLUGIN_AUTOLOAD: '1'
+        run: python -m pytest -q tests/test_audit_engine.py tests/test_source_bytes.py
+      - name: Ruff audit files only
+        run: python -m ruff check aurex/financial_review tests/test_audit_engine.py tests/test_source_bytes.py
