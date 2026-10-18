@@ -9,6 +9,7 @@ RUN pip install --no-cache-dir . \
     && useradd --uid 10001 --create-home --shell /usr/sbin/nologin aurex \
     && mkdir -p /data \
     && chown 10001:10001 /data
+RUN chmod -R a+rX /app/aurex /app/training /app/workstation
 USER 10001:10001
 EXPOSE 8080
 CMD ["sh", "-c", "exec uvicorn aurex.api:app --host 0.0.0.0 --port ${PORT:-8080} --no-access-log"]
