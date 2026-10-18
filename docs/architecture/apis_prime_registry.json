@@ -1,0 +1,191 @@
+{
+  "schema_version": "1.0.0",
+  "identity_status": "OWNER_APPROVED_INTERNAL_NAMING_LOCK",
+  "identity_scope": "names_and_functional_responsibilities_only",
+  "identity_date": "2026-10-18",
+  "organization": "VALEXII.AI",
+  "platform": "AUREX",
+  "research_array": "APIS PRIME",
+  "human_facing_assistant": "XAELI",
+  "unmodified_governance": [
+    "CUSTOS",
+    "SHRIKE",
+    "Evidence -> Qualification -> Reality -> Authority -> Effect"
+  ],
+  "operational_notice": "This identity registry does not assert that a named capability has been implemented, merged, deployed, tested or independently verified. AUREX is a witness, not product authority.",
+  "immutable_id_policy": "AP01-AP14 never reused; names change only via owner-approved versioned amendment. All executable routing must bind to a separately verified capability manifest.",
+  "system_names": [
+    {
+      "id": "AP01",
+      "display_name": "APIS-LEX",
+      "layer": "discovery",
+      "technical_aliases": [
+        "HURUF",
+        "ABJAD"
+      ],
+      "responsibility": "Hurufism; classical eastern Arabic abjad; letter-symbol studies",
+      "limitation": "Historical correspondences are hypotheses, not translations",
+      "authority": "NONE"
+    },
+    {
+      "id": "AP02",
+      "display_name": "KUKULKAN",
+      "layer": "reasoning",
+      "technical_aliases": [
+        "LLULL"
+      ],
+      "responsibility": "Ramon Llull Ars combinatoria; controlled symbolic combinations",
+      "limitation": "Generated combinations are not demonstrated truth",
+      "authority": "NONE"
+    },
+    {
+      "id": "AP03",
+      "display_name": "LYSIPHER",
+      "layer": "analysis",
+      "technical_aliases": [
+        "AL-KINDI"
+      ],
+      "responsibility": "Al-Kindi frequency analysis; bounded cipher candidate generation",
+      "limitation": "Unknown ciphertext is not automatically deciphered",
+      "authority": "NONE"
+    },
+    {
+      "id": "AP04",
+      "display_name": "SPECTRA",
+      "layer": "analysis",
+      "technical_aliases": [
+        "SHANNON"
+      ],
+      "responsibility": "Shannon entropy; signal statistics; redundancy and correlation",
+      "limitation": "Statistics alone do not establish interpretation",
+      "authority": "NONE"
+    },
+    {
+      "id": "AP05",
+      "display_name": "SIFTRA",
+      "layer": "analysis",
+      "technical_aliases": [
+        "OPUSFILTER"
+      ],
+      "responsibility": "OpusFilter; input filtering; data integrity; provenance",
+      "limitation": "Input quality does not grant scientific or security authority",
+      "authority": "NONE"
+    },
+    {
+      "id": "AP06",
+      "display_name": "ITZAMNAAJ",
+      "layer": "reasoning",
+      "technical_aliases": [
+        "LRPLAN"
+      ],
+      "responsibility": "LRPlan-inspired structured planning and constraint checking",
+      "limitation": "Constraint matching is not proof a plan is correct",
+      "authority": "NONE"
+    },
+    {
+      "id": "AP07",
+      "display_name": "ELNOESIS",
+      "layer": "reasoning",
+      "technical_aliases": [
+        "QWEN"
+      ],
+      "responsibility": "Local Qwen model inference and explanation",
+      "limitation": "Model output is unverified evidence, not authority",
+      "authority": "NONE"
+    },
+    {
+      "id": "AP08",
+      "display_name": "COATLICUE",
+      "layer": "discovery",
+      "technical_aliases": [
+        "PREHISTORIC_SYMBOL_STUDIES"
+      ],
+      "responsibility": "Prehistoric visual symbols and ancient art research",
+      "limitation": "Visual similarity cannot establish common origin or meaning",
+      "authority": "NONE"
+    },
+    {
+      "id": "AP09",
+      "display_name": "IACCHCODEX",
+      "layer": "discovery",
+      "technical_aliases": [
+        "MANUSCRIPT_STRUCTURAL_ANALYSIS"
+      ],
+      "responsibility": "Document and manuscript structural comparison; transcription research",
+      "limitation": "No automatic translation of undeciphered scripts",
+      "authority": "NONE"
+    },
+    {
+      "id": "AP10",
+      "display_name": "PROSOPHEX",
+      "layer": "analysis",
+      "technical_aliases": [
+        "PYTHON_STATIC_AST_ANALYSIS"
+      ],
+      "responsibility": "Python AST static inspection; code structure; obfuscation hypotheses",
+      "limitation": "Never execute untrusted code; inspection is not a vulnerability verdict",
+      "authority": "NONE"
+    },
+    {
+      "id": "AP11",
+      "display_name": "TEZCATLIPOCA",
+      "layer": "analysis",
+      "technical_aliases": [
+        "ANOMALY_RESEARCH"
+      ],
+      "responsibility": "Anomaly detection; unfamiliar patterns; outside-model observations",
+      "limitation": "Novelty is not proof of an attack or discovery",
+      "authority": "NONE"
+    },
+    {
+      "id": "AP12",
+      "display_name": "XOLOTL",
+      "layer": "verification",
+      "technical_aliases": [
+        "INDEPENDENT_HYPOTHESIS_TESTING"
+      ],
+      "responsibility": "Independent hypothesis comparison; held-out tests; negative controls",
+      "limitation": "Must remain distinct from claimant and cannot grant authority",
+      "authority": "NONE"
+    },
+    {
+      "id": "AP13",
+      "display_name": "ANTHOFORGE",
+      "layer": "reasoning",
+      "technical_aliases": [
+        "ENGINEERING_RESEARCH"
+      ],
+      "responsibility": "Engineering ideation; prototype proposals; test design",
+      "limitation": "Prototypes need human review and empirical testing",
+      "authority": "NONE"
+    },
+    {
+      "id": "AP14",
+      "display_name": "CRUCIBLE",
+      "layer": "verification",
+      "technical_aliases": [
+        "ADVERSARIAL_CHALLENGE"
+      ],
+      "responsibility": "Controlled adversarial challenge; bounded red-team scenarios",
+      "limitation": "No effect or release authorization; under CUSTOS/SHRIKE governance",
+      "authority": "NONE"
+    }
+  ],
+  "dashboard_policy": {
+    "names_only": true,
+    "display_country_labels": false,
+    "no_flags": true,
+    "status_must_come_from_independent_evidence": true,
+    "no_new_public_routes": true,
+    "single_reasoning_spine": true,
+    "new_research_tabs_allowed": 0,
+    "single_view_contract": "NOW -> CHANGED -> NEXT -> WHY -> PROOF",
+    "internal_research_receipts_expandable": true
+  },
+  "deployment_policy": {
+    "no_automatic_merge": true,
+    "no_automatic_deployment": true,
+    "no_public_model_inference": true,
+    "no_spend_without_owner_approval": true
+  }
+}
