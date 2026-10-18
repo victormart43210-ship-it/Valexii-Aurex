@@ -19,7 +19,7 @@ from aurex.database import (
     list_evidence,
     list_jobs,
 )
-from aurex.fenced_worker import cancel_job, claim_job, finalize_job
+from aurex.fenced_worker import cancel_job, claim_job, fail_job, finalize_job
 from aurex.governance_math.research_api import router as research_advice_router
 from aurex.real_offline_probe import execute_sqlite_roundtrip
 from aurex.workflows.budget import BudgetGuard
@@ -251,7 +251,17 @@ def create_job_endpoint(
                     observation, digest, f"ev-{secrets.token_hex(12)}",
                 )
             except Exception:
-                # Do not rewrite a cancelled or superseded worker's terminal state.
+                # Failure writes require the same live lease as success writes.
+                try:
+                    fail_job(
+                        DEFAULT_DB_PATH, job_id, worker_id,
+                        str(claimed["lease_token"]), int(claimed["lease_generation"]),
+                    )
+                except Exception:
+                    # Storage failure is not proof of a persisted terminal state.
+                    raise HTTPException(
+                        status_code=503, detail="Job persistence unavailable; execution not verified"
+                    ) from None
                 raise HTTPException(status_code=503, detail="Probe not finalized; execution not verified") from None
         else:
             resolved_job = get_job(DEFAULT_DB_PATH, job_id)
