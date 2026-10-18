@@ -172,7 +172,8 @@ def unified_research(
         )
         if model_runner is None:
             from aurex.local_inference import run_local_inference
-            runner = run_local_inference
+
+            runner: Callable[..., Any] = run_local_inference
         else:
             runner = model_runner
         result = runner(
