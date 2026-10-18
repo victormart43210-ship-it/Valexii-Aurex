@@ -28,6 +28,69 @@ export type ClientErrorCode =
 export type Result<T> =
   { ok: true; value: T } | { ok: false; error: ClientErrorCode; status?: number };
 
+/** Minimum service token length; the backend requires >= 32 characters. */
+export const MIN_TOKEN_CHARS = 32;
+
+/**
+ * Reads a response body with a hard RAW-BYTE limit. Counts actual streamed
+ * bytes (not JS UTF-16 length), cancels the body as soon as the limit is
+ * exceeded, and decodes with fatal UTF-8 so invalid bytes never parse.
+ */
+async function readBoundedText(
+  res: Response,
+): Promise<{ ok: true; text: string } | { ok: false; error: "too_large" | "malformed" | "network" }> {
+  const declared = Number(res.headers.get("content-length") ?? "0");
+  if (Number.isFinite(declared) && declared > MAX_RESPONSE_BYTES) {
+    try { await res.body?.cancel(); } catch { /* best effort */ }
+    return { ok: false, error: "too_large" };
+  }
+  const body = res.body;
+  if (!body) {
+    // No stream available (some mocked Responses): fall back to text() but
+    // still enforce the byte limit on the encoded result.
+    let text: string;
+    try {
+      text = await res.text();
+    } catch {
+      return { ok: false, error: "network" };
+    }
+    if (new TextEncoder().encode(text).length > MAX_RESPONSE_BYTES)
+      return { ok: false, error: "too_large" };
+    return { ok: true, text };
+  }
+  const reader = body.getReader();
+  const chunks: Uint8Array[] = [];
+  let total = 0;
+  try {
+    for (;;) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      if (value) {
+        total += value.byteLength;
+        if (total > MAX_RESPONSE_BYTES) {
+          try { await reader.cancel(); } catch { /* best effort */ }
+          return { ok: false, error: "too_large" };
+        }
+        chunks.push(value);
+      }
+    }
+  } catch {
+    try { await reader.cancel(); } catch { /* best effort */ }
+    return { ok: false, error: "network" };
+  }
+  const bytes = new Uint8Array(total);
+  let offset = 0;
+  for (const c of chunks) {
+    bytes.set(c, offset);
+    offset += c.byteLength;
+  }
+  try {
+    return { ok: true, text: new TextDecoder("utf-8", { fatal: true }).decode(bytes) };
+  } catch {
+    return { ok: false, error: "malformed" };
+  }
+}
+
 export interface ClientConfig {
   url?: string | undefined;
   token?: string | undefined;
@@ -37,7 +100,7 @@ export interface ClientConfig {
 
 export function createAurexClient(cfg: ClientConfig) {
   const base = validServiceUrl(cfg.url);
-  const configured = !!base && !!cfg.token && cfg.token.length >= 16;
+  const configured = !!base && !!cfg.token && cfg.token.length >= MIN_TOKEN_CHARS;
   const fetcher = cfg.fetcher ?? fetch;
   const timeoutMs = Math.min(Math.max(cfg.timeoutMs ?? 5000, 500), 10_000);
 
@@ -75,15 +138,9 @@ export function createAurexClient(cfg: ClientConfig) {
     if (res.status === 401 || res.status === 403)
       return { ok: false, error: "unauthorized", status: res.status };
     if (!res.ok) return { ok: false, error: "http_error", status: res.status };
-    const len = Number(res.headers.get("content-length") ?? "0");
-    if (len > MAX_RESPONSE_BYTES) return { ok: false, error: "too_large" };
-    let text: string;
-    try {
-      text = await res.text();
-    } catch {
-      return { ok: false, error: "network" };
-    }
-    if (text.length > MAX_RESPONSE_BYTES) return { ok: false, error: "too_large" };
+    const read = await readBoundedText(res);
+    if (!read.ok) return { ok: false, error: read.error };
+    const text = read.text;
     let json: unknown;
     try {
       json = JSON.parse(text);
@@ -94,7 +151,7 @@ export function createAurexClient(cfg: ClientConfig) {
     return parsed.success ? { ok: true, value: parsed.data } : { ok: false, error: "malformed" };
   }
 
-  const idOk = (s: string) => /^[a-z0-9][a-z0-9_-]{0,63}$/.test(s);
+  const idOk = (s: string) => /^[A-Za-z0-9][A-Za-z0-9_-]{0,63}$/.test(s);
   const keyOk = (s: string) => /^[A-Za-z0-9_-]{16,128}$/.test(s);
 
   return {
