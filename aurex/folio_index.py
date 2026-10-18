@@ -155,11 +155,11 @@ class FolioIndex:
             raise ValueError("derivation must match frozen lineage")
         self._links.append((tenant, link))
 
-    def list_receipts(self, *, tenant: str, public_only: bool = True) -> list[dict[str, str]]:
-        """Return controlled metadata receipts, never raw documents or index internals."""
+    def list_receipts(self, *, tenant: str) -> list[dict[str, str]]:
+        """Only PUBLIC receipts; authenticated private views need a separate API gate."""
         out: list[dict[str, str]] = []
         for (owner, _), folio in self._folio.items():
-            if owner != tenant or (public_only and folio.visibility != "public"):
+            if owner != tenant or folio.visibility != "public":
                 continue
             out.append({
                 "accession": folio.accession, "collection": folio.collection,
