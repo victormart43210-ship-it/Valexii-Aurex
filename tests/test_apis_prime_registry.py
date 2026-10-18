@@ -47,6 +47,13 @@ def test_exact_owner_approved_roster_and_stable_ids() -> None:
     assert len({item["display_name"].casefold() for item in systems}) == 14
 
 
+def test_single_spine_names_match_owner_locked_registry() -> None:
+    from aurex.apis_prime_spine import NAMES
+
+    registry = _load()
+    assert tuple(item["display_name"] for item in registry["system_names"]) == NAMES
+
+
 def test_no_self_authority_and_technical_method_attribution() -> None:
     registry = _load()
     systems = registry["system_names"]
