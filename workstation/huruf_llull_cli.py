@@ -3,6 +3,8 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
+import stat
 from pathlib import Path
 from typing import Any
 
@@ -18,9 +20,20 @@ TEXT_EXTENSIONS = frozenset({
 
 def read_local_text(path: Path) -> str:
     """Never follow symlinks; never parse PDF, DOCX, images or binary data."""
-    if path.suffix.lower() not in TEXT_EXTENSIONS or path.is_symlink() or not path.is_file():
-        raise ValueError("only existing non-symlink plain-text files are supported")
-    with path.open("rb") as handle:
+    if path.suffix.lower() not in TEXT_EXTENSIONS:
+        raise ValueError("only permitted plain-text extensions are supported")
+    # Avoid the check/open symlink race; reject pipes/devices before reading.
+    nofollow = getattr(os, "O_NOFOLLOW", None)
+    if nofollow is None:
+        raise ValueError("secure no-follow file opening is unavailable")
+    flags = os.O_RDONLY | nofollow | getattr(os, "O_NONBLOCK", 0)
+    try:
+        descriptor = os.open(path, flags)
+    except OSError as exc:
+        raise ValueError("file unavailable or symlink refused") from exc
+    with os.fdopen(descriptor, "rb") as handle:
+        if not stat.S_ISREG(os.fstat(handle.fileno()).st_mode):
+            raise ValueError("only regular files are supported")
         raw = handle.read(MAX_TEXT_BYTES + 1)
     if len(raw) > MAX_TEXT_BYTES:
         raise ValueError("file too large (64 KiB)")
