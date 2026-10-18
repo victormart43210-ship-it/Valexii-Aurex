@@ -16,6 +16,7 @@ from pathlib import Path
 from typing import Any
 
 from aurex.folio_index import Folio, FolioIndex, FolioLink, digest_of
+from aurex.audit_challenge import hold_challenges
 
 POLICY = "aurex-synthetic-company-one-spine-v1"
 MAX_FILE_BYTES = 65_536
@@ -278,6 +279,7 @@ def run_packet(root: Path) -> dict[str, Any]:
         "original_manifest_sha256": _hash(manifest_bytes),
         "source_receipts": receipts, "source_count": len(receipts),
         "relations_evaluated": len(relations), "findings": findings,
+        "challenge_results": hold_challenges(findings, receipts),
         "finding_count": len(findings),
         "one_view": {
             "title": "APIS PRIME · FINANCIAL EVIDENCE REVIEW",
