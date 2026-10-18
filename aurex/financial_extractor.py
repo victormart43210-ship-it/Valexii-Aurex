@@ -25,8 +25,10 @@ class FinancialExtractionRecord(BaseModel):
     invoice_number: str | None = None
     invoice_date: str | None = None
     currency: str = Field(default="USD", pattern=r"^[A-Z]{3}$")
-    total_amount: float = Field(default=0.0, ge=0.0)
+    subtotal_amount: float = Field(default=0.0, ge=0.0)
     tax_amount: float = Field(default=0.0, ge=0.0)
+    total_amount: float = Field(default=0.0, ge=0.0)
+    has_missing_totals: bool = False
     line_items: tuple[LineItem, ...] = ()
     extracted_at: str = Field(default_factory=lambda: datetime.now(UTC).isoformat())
 
@@ -35,8 +37,12 @@ class FinancialExtractionRecord(BaseModel):
             "document_id": self.document_id,
             "vendor_name": self.vendor_name,
             "invoice_number": self.invoice_number,
+            "invoice_date": self.invoice_date,
+            "subtotal_amount": self.subtotal_amount,
+            "tax_amount": self.tax_amount,
             "total_amount": self.total_amount,
             "currency": self.currency,
+            "line_items_count": len(self.line_items),
         }
         return fingerprint(body)
 
@@ -54,11 +60,22 @@ def extract_financial_data(
     date_match = re.search(r"\b(\d{4}-\d{2}-\d{2}|\d{2}/\d{2}/\d{4})\b", raw_text)
     invoice_date = date_match.group(1) if date_match else None
 
-    total_match = re.search(r"(?:total|amount due|balance due)\s*:?\s*\$?\s*([\d,]+\.\d{2})", raw_text, re.IGNORECASE)
-    total_amount = float(total_match.group(1).replace(",", "")) if total_match else 0.0
+    # Distinct subtotal matching
+    subtotal_match = re.search(r"(?:subtotal|sub-total)\s*:?\s*\$?\s*([\d,]+\.\d{2})", raw_text, re.IGNORECASE)
+    subtotal_amount = round(float(subtotal_match.group(1).replace(",", "")), 2) if subtotal_match else 0.0
+
+    # Grand total matching (preferring explicit grand total or balance due over subtotal)
+    total_match = re.search(
+        r"(?:grand total|total amount|amount due|balance due|\btotal\b)\s*:?\s*\$?\s*([\d,]+\.\d{2})",
+        raw_text,
+        re.IGNORECASE,
+    )
+    total_amount = round(float(total_match.group(1).replace(",", "")), 2) if total_match else 0.0
 
     tax_match = re.search(r"(?:tax|vat|gst)\s*:?\s*\$?\s*([\d,]+\.\d{2})", raw_text, re.IGNORECASE)
-    tax_amount = float(tax_match.group(1).replace(",", "")) if tax_match else 0.0
+    tax_amount = round(float(tax_match.group(1).replace(",", "")), 2) if tax_match else 0.0
+
+    has_missing = total_amount == 0.0 and subtotal_amount == 0.0
 
     currency = "USD"
     if "EUR" in raw_text or "€" in raw_text:
@@ -73,8 +90,8 @@ def extract_financial_data(
             LineItem(
                 description=desc.strip(),
                 quantity=float(qty),
-                unit_price=float(price),
-                amount=float(amt),
+                unit_price=round(float(price), 2),
+                amount=round(float(amt), 2),
             )
         )
 
@@ -84,7 +101,9 @@ def extract_financial_data(
         invoice_number=invoice_num,
         invoice_date=invoice_date,
         currency=currency,
-        total_amount=total_amount,
+        subtotal_amount=subtotal_amount,
         tax_amount=tax_amount,
+        total_amount=total_amount,
+        has_missing_totals=has_missing,
         line_items=tuple(items),
     )
