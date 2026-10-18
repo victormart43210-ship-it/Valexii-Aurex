@@ -42,7 +42,7 @@ The separate website source/Cloudflare Wrangler work remains in the October 17 h
 
 ## Source integrity and independently repeatable tests
 
-Source is distributed in `artifacts/financial-audit/aurex-audit-install.tar.xz.b64`, a base64-encoded XZ tar containing the additive financial modules, tests, synthetic fixtures and local HTML. The installer checks **the archive SHA-256 against the pinned manifest**, validates archive paths before unpacking, and refuses to overwrite any existing target files. No GitHub credential is used by the installer. Commit a *separate* reviewed change if integration tests pass; no automatic merge/deploy.
+Source is included IN THIS SAME BRANCH as five ordered ASCII Base64 chunks at `artifacts/financial-audit/chunk_01.b64` through `chunk_05.b64` (18,208 characters total). Together they decode to a 13,656-byte XZ tar with **SHA-256 `69fd708ab0e9857036af3696d80c7cf914de6ca43d8738a605e93acf9722c7f2`**. The GitHub readback checksum was verified against the original local archive. The installer rechecks the same digest, accepts only additive module/test/synthetic fixture/local HTML paths, and refuses overwrite or dirty/protected-branch execution. The source is on GitHub now; Linux does not require downloading a ZIP from ChatGPT. The script extracts files into the local working tree; it does NOT automatically commit them to `main` or deploy.
 
 Upstream sandbox validation before import: **47/47 Python tests passed**, local review HTTP smoke, and synthetic Wrangler checks. Those results belong to the offline package, **not** this GitHub branch's current CI until independently run at the exact branch head.
 
