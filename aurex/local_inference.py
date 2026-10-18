@@ -70,7 +70,8 @@ def run_local_inference(*, prompt: str, model: str, base_url: str,
         payload = {'model': model, 'messages': [{'role': 'user', 'content': prompt}], 'stream': False}
     request = Request(root + path, data=json.dumps(payload).encode('utf-8'),
                       headers={'Content-Type': 'application/json'}, method='POST')
-    # A loopback-only model call must never inherit environment HTTP(S) proxies.\n    opener = build_opener(ProxyHandler({}), _NoRedirect)
+    # A loopback-only model call must never inherit environment HTTP(S) proxies.
+    opener = build_opener(ProxyHandler({}), _NoRedirect)
     try:
         with opener.open(request, timeout=timeout_seconds) as response:
             if response.status != 200:
