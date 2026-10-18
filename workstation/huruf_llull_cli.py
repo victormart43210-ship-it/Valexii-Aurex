@@ -75,7 +75,7 @@ def main(argv: list[str] | None = None) -> int:
         if args.mode == "llull":
             if args.file:
                 parser.error("llull wheel needs no source file")
-            result = llull_wheel(offsets=tuple(args.wheel_offsets))
+            result = llull_wheel(offsets=(args.wheel_offsets[0], args.wheel_offsets[1], args.wheel_offsets[2]))
         else:
             if args.file is None:
                 parser.error("mode requires --file")
