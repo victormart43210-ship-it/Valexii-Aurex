@@ -76,6 +76,9 @@ def test_dashboard_and_release_cannot_be_authorized_by_names() -> None:
     deployment = registry["deployment_policy"]
     assert dashboard["display_country_labels"] is False
     assert dashboard["no_flags"] is True
+    assert dashboard["single_reasoning_spine"] is True
+    assert dashboard["new_research_tabs_allowed"] == 0
+    assert dashboard["single_view_contract"] == "NOW -> CHANGED -> NEXT -> WHY -> PROOF"
     assert dashboard["status_must_come_from_independent_evidence"] is True
     assert deployment["no_automatic_merge"] is True
     assert deployment["no_automatic_deployment"] is True
