@@ -174,7 +174,12 @@ class FolioIndex:
         """No cross-tenant relationship observations leak into public listings."""
         counts: dict[str, int] = {}
         for owner, link in self._links:
-            if owner == tenant:
+            if owner != tenant:
+                continue
+            source = self._folio.get((tenant, link.source))
+            target = self._folio.get((tenant, link.target))
+            if (source is not None and target is not None
+                    and source.visibility == "public" and target.visibility == "public"):
                 counts[link.relation] = counts.get(link.relation, 0) + 1
         return dict(sorted(counts.items()))
 
