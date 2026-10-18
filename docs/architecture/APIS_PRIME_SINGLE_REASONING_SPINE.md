@@ -51,9 +51,12 @@ mypy --strict aurex/apis_prime_spine.py workstation/apis_prime_cli.py
 
 python -m workstation.apis_prime_cli --file /path/to/lawfully_held_sample.txt
 python -m workstation.apis_prime_cli --file /path/to/sample.py --details
+# Optional: one explicit local-only model call, metrics-only prompt, no cloud:
+python -m workstation.apis_prime_cli --file /path/to/sample.py --details \
+  --approve-local-model --backend ollama --port 11434 --model '<already-installed-model-id>'
 ```
 
-Use a consented, small plain UTF-8 text file only. Symlinks, PDF, DOCX and binary are not supported by the existing workstation reader. 64KiB maximum. No dynamic Python execution, filesystem writes to user data, package installs, or external HTTP network access in default mode.
+Use a consented, small plain UTF-8 text file only. Symlinks, PDF, DOCX and binary are not supported by the existing workstation reader. 64KiB maximum. No dynamic Python execution, filesystem writes to user data, package installs, or external HTTP network access in default mode. The source reader now uses atomic no-follow file opening and rejects nonregular files on supported Linux hosts.
 
 **Model integration:** The Python function can invoke `aurex.local_inference.run_local_inference` **only with `local_model_approved=True`** and a known local model/backend/port. The prompt contains **derived aggregate statistics, not source text, filenames or source paths**. Model drafts remain `LOCAL_MODEL_DRAFT_UNVERIFIED`; the model can never issue a deployment or security decision. Real workstation Qwen inference has **NOT** been independently run on this exact PR.
 
