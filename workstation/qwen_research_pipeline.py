@@ -5,13 +5,11 @@ No downloads, weights, paid provider calls, public routes, or model authority.
 from __future__ import annotations
 
 import argparse
-import hashlib
 import json
 import os
 import shutil
 import subprocess
 import tempfile
-from dataclasses import asdict
 from importlib.metadata import PackageNotFoundError, version
 from pathlib import Path
 from typing import Any
@@ -77,7 +75,8 @@ def official_opusfilter_demo(*, executable: str | None = None) -> dict[str, obje
             finished = subprocess.run(
                 [executable, str(root / "config.yaml")],
                 cwd=root, env=env, timeout=60, check=False,
-                stdin=subprocess.DEVNULL, capture_output=True,
+                stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
             )
             if finished.returncode != 0:
                 raise ValueError("OpusFilter failed")
