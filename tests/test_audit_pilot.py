@@ -183,3 +183,12 @@ def test_report_cannot_be_written_inside_original_packet(tmp_path: Path) -> None
     root = packet(tmp_path)
     with pytest.raises(SystemExit):
         main(["--packet", str(root), "--out", str(root / "report.json")])
+
+
+def test_real_aurex_engine_returns_hold_without_independent_challenger() -> None:
+    result = run_packet(SOURCE)
+    challenges = result["challenge_results"]
+    assert len(challenges) == 7
+    assert all(x["status"] == "HOLD" for x in challenges)
+    assert all(x["authority_granted"] is False for x in challenges)
+    assert all(x["evidence_ids_supplied"] >= 1 for x in challenges)
