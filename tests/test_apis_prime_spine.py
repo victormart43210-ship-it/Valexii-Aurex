@@ -57,6 +57,22 @@ def test_parallel_input_and_plan_use_existing_offline_adapters() -> None:
     assert result["authority"] == "NONE"
 
 
+def test_shared_spine_cross_method_synthesis_is_scoped() -> None:
+    result = unified_research("alpha alpha beta omega")
+    c = result["convergence"]
+    assert c["statistical_and_manuscript"]["contributors"] == ["AP04", "AP09"]
+    assert c["statistical_and_manuscript"]["token_count"] == 4
+    assert c["manuscript_and_anomaly"]["conclusion"] == "ONE_NULL_SAMPLE_NOT_SIGNIFICANT"
+    assert c["verification"]["external_witness"] == "NOT_RUN"
+    assert "entropy" in result["one_view"]["why"]
+    assert result["spine_status"].startswith("HOLD")
+
+
+def test_oversized_plan_is_rejected_before_parsing() -> None:
+    with pytest.raises(ValueError):
+        unified_research("sample", plan_json="a" * 8193)
+
+
 def test_unknown_model_is_never_called_implicitly() -> None:
     def fail_if_called(**_kw: object) -> None:
         raise AssertionError("model was invoked without approval")
