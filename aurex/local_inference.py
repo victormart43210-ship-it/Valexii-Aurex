@@ -6,7 +6,7 @@ import json
 from dataclasses import dataclass
 from urllib.error import HTTPError, URLError
 from urllib.parse import urlsplit
-from urllib.request import HTTPRedirectHandler, Request, build_opener
+from urllib.request import HTTPRedirectHandler, ProxyHandler, Request, build_opener
 
 MAX_PROMPT_BYTES = 8192
 MAX_RESPONSE_BYTES = 131072
@@ -70,7 +70,7 @@ def run_local_inference(*, prompt: str, model: str, base_url: str,
         payload = {'model': model, 'messages': [{'role': 'user', 'content': prompt}], 'stream': False}
     request = Request(root + path, data=json.dumps(payload).encode('utf-8'),
                       headers={'Content-Type': 'application/json'}, method='POST')
-    opener = build_opener(_NoRedirect)
+    # A loopback-only model call must never inherit environment HTTP(S) proxies.\n    opener = build_opener(ProxyHandler({}), _NoRedirect)
     try:
         with opener.open(request, timeout=timeout_seconds) as response:
             if response.status != 200:
