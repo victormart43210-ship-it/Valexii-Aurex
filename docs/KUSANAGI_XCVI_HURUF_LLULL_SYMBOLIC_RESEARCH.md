@@ -30,6 +30,10 @@ Plain UTF-8 files: .txt, .md, .py, .csv, .json, .tex, .v, .xml, .html. Binary .p
 
 SHA-256 receipts are **integrity fingerprints, not signatures or independent witnesses**. Outputs never claim manuscript translation, executable code behavior, scientific validity or authority. Do not feed historical/numerological correspondences into BCXMET security decisions, financial approvals, hiring, user risk, or production deployment.
 
+## Owner-approved APIS PRIME naming lock (2026-10-18)
+
+The full **14-system internal display-name mapping**, stable AP01–AP14 IDs, technical attribution and governance checks are versioned in [`architecture/APIS_PRIME_NAMING_CANON.md`](architecture/APIS_PRIME_NAMING_CANON.md) and [`architecture/apis_prime_registry.json`](architecture/apis_prime_registry.json). The names are **owner-approved internal terminology**, not 14 deployed agents, installed packages, verified capabilities, authorization grants, or trademark-cleared public names. In future UI work display these exact research-system names without country status labels. The underlying technical source names remain in code and scientific citations.
+
 ## Verification and release gates
 
 Authoring-container source-equivalent prototype: **34 synthetic tests passed** under Python 3.13.5 / pytest 9.0.2 with autoload disabled, compileall PASS. The GitHub version was manually transcribed from the tested prototype. **Exact remote commit tests, complete existing AUREX suite, Ruff, Mypy, actual laptop workstation, document corpus, manuscript decipherment and production integration: NOT RUN / NOT VERIFIED** until independent reproduction.
