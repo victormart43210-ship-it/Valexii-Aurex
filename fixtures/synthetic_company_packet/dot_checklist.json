@@ -1,0 +1,8 @@
+{
+  "asset_id": "TRUCK-17",
+  "company_id": "fictional_northstar_001",
+  "id": "DOT-1001",
+  "inspection_record_id": "INSP-1001",
+  "review_scope": "packet_completeness_only",
+  "type": "dot_checklist"
+}
