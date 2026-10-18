@@ -13,10 +13,10 @@ import stat
 from datetime import date
 from decimal import Decimal, InvalidOperation
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
-from aurex.folio_index import Folio, FolioIndex, FolioLink, digest_of
 from aurex.audit_challenge import hold_challenges
+from aurex.folio_index import Domain, Folio, FolioIndex, FolioLink, Relation, digest_of
 
 POLICY = "aurex-synthetic-company-one-spine-v1"
 MAX_FILE_BYTES = 65_536
@@ -81,7 +81,7 @@ def _json(raw: bytes) -> dict[str, Any]:
         raise ValueError("malformed UTF-8 JSON packet") from exc
     if not isinstance(obj, dict):
         raise ValueError("JSON object required")
-    return obj
+    return cast(dict[str, Any], obj)
 
 
 def _str(obj: dict[str, Any], key: str, *, pattern: re.Pattern[str] | None = None) -> str:
@@ -174,9 +174,10 @@ def run_packet(root: Path) -> dict[str, Any]:
                 or _str(doc, "company_id") != manifest["company_id"]):
             raise ValueError("source ID/type/company mismatch")
         documents[typ] = doc
+        domain: Domain = "compliance" if typ in {"dot_checklist", "insurance_certificate"} else "finance"
         index.admit(Folio(
             accession=rid.lower(), tenant="demo-tenant", collection="demo.2026_09",
-            kind="original", domain=("compliance" if typ in {"dot_checklist", "insurance_certificate"} else "finance"),
+            kind="original", domain=domain,
             sha256=observed_digest, captured_at="2026-10-18T00:00:00+00:00",
             visibility="private", source_date="2026-09", source_calendar="gregorian",
             facets=(typ,),
@@ -252,7 +253,7 @@ def run_packet(root: Path) -> dict[str, Any]:
         findings.append(_finding("INSURANCE_CERTIFICATE_EXPIRED", (insurance["id"], ticket["id"]),
                                  "Provided insurance certificate expired before documented service date; current coverage unknown"))
 
-    relations = (
+    relations: tuple[tuple[str, str, Relation], ...] = (
         (invoice["id"], po["id"], "interprets"),
         (ticket["id"], po["id"], "supports"),
         (pay["id"], invoice["id"], "supports"),
