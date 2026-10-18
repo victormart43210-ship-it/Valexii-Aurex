@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+from typing import Any, cast
 
 REGISTRY = (
     Path(__file__).resolve().parents[1]
@@ -29,9 +30,9 @@ EXPECTED = (
 )
 
 
-def _load() -> dict[str, object]:
+def _load() -> dict[str, Any]:
     with REGISTRY.open(encoding="utf-8") as source:
-        return json.load(source)  # type: ignore[no-any-return]
+        return cast(dict[str, Any], json.load(source))
 
 
 def test_exact_owner_approved_roster_and_stable_ids() -> None:
