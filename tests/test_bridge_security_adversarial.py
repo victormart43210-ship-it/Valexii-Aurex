@@ -4,10 +4,11 @@ from __future__ import annotations
 
 import json
 import threading
+from collections.abc import Iterator
 from contextlib import contextmanager
 from datetime import UTC, datetime
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
-from typing import Any, Iterator
+from typing import Any
 from unittest.mock import patch
 
 import pytest
@@ -69,7 +70,7 @@ class MockResponse:
         self.raw = raw
         self.status = status
 
-    def __enter__(self) -> "MockResponse":
+    def __enter__(self) -> MockResponse:
         return self
 
     def __exit__(self, *_args: Any) -> None:
