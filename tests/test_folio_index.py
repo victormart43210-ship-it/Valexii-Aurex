@@ -82,6 +82,22 @@ def test_no_automatic_private_to_public_declassification() -> None:
         )
 
 
+def test_public_relation_counter_cannot_reveal_private_edges() -> None:
+    index = FolioIndex()
+    index.admit(source("private", visibility="private"))
+    index.admit(source("public", visibility="public"))
+    index.relate(
+        "tenant-a",
+        FolioLink("private", "public", "tests", digest_of(b"held out")),
+    )
+    assert index.relation_counts(tenant="tenant-a") == {}
+    with pytest.raises(ValueError, match="public artifact"):
+        index.relate(
+            "tenant-a",
+            FolioLink("public", "private", "interprets", digest_of(b"forbidden")),
+        )
+
+
 def test_public_listing_does_not_expose_private_receipts() -> None:
     index = FolioIndex()
     index.admit(source("private", visibility="private"))
