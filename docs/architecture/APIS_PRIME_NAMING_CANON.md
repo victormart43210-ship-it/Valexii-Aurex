@@ -29,6 +29,10 @@ AUREX produces **challenge and evidence results**; it is **not** a security, dep
 
 **SPECTRA** expands to *Signal Pattern, Entropy, Correlation, Transmission & Redundancy Analysis*. **SIFTRA** and **CRUCIBLE** retain their expansions above. These are functional names, not new safety certifications, divine claims, science-fiction IP licenses, or evidence of runtime readiness.
 
+## Unified reasoning spine, not fourteen tabs
+
+Owner-approved update: **one logical APIS PRIME research request dispatches all applicable methods, converges their evidence, and yields one NOW → CHANGED → NEXT → WHY → PROOF view**. No 14 separate interfaces, agents or microservices. See [single reasoning-spine contract](APIS_PRIME_SINGLE_REASONING_SPINE.md). Some named roles are explicitly NOT RUN or HOLD because the input/method is unavailable; the unified interface must never conceal those gaps. This internal view model is not evidence the live Lovable website was modified.
+
 ## Engineering design — the safe and maintainable way
 
 1. **Names are labels, not 14 running AI agents or microservices.** Build one AUREX orchestrator with bounded, independently testable research tool adapters. Qwen is an untrusted model adapter. Deterministic filters, cipher checks and Python static inspection should not consume model calls by default.
