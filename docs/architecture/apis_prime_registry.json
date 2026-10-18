@@ -176,7 +176,11 @@
     "display_country_labels": false,
     "no_flags": true,
     "status_must_come_from_independent_evidence": true,
-    "no_new_public_routes": true
+    "no_new_public_routes": true,
+    "single_reasoning_spine": true,
+    "new_research_tabs_allowed": 0,
+    "single_view_contract": "NOW -> CHANGED -> NEXT -> WHY -> PROOF",
+    "internal_research_receipts_expandable": true
   },
   "deployment_policy": {
     "no_automatic_merge": true,
