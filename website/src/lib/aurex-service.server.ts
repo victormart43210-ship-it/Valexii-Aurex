@@ -30,28 +30,23 @@ export function validServiceUrl(raw: string | undefined): URL | null {
   return u;
 }
 
+/**
+ * Health = strict GET /v1/health ({status,version,time}). Capabilities come from
+ * GET /v1/capabilities; only ids with available:true are listed. Never self-verifies.
+ */
 export async function checkAurexService(
   env: { url?: string | undefined; token?: string | undefined },
   fetcher: typeof fetch = fetch,
 ): Promise<ServiceState> {
-  const base = validServiceUrl(env.url);
-  if (!base || !env.token || env.token.length < 16)
+  if (!validServiceUrl(env.url) || !env.token || env.token.length < 32)
     return { state: "NOT_CONFIGURED", checks: NO_BACKEND };
-  try {
-    const res = await fetcher(new URL("/v1/health", base), {
-      headers: { Authorization: `Bearer ${env.token}`, Accept: "application/json" },
-      redirect: "manual",
-      signal: AbortSignal.timeout(5000),
-    });
-    if (!res.ok) return { state: "OFFLINE", checks: NO_BACKEND };
-    const body = (await res.json()) as { status?: unknown; capabilities?: unknown };
-    if (body.status !== "ok" || !Array.isArray(body.capabilities))
-      return { state: "OFFLINE", checks: NO_BACKEND };
-    const caps = body.capabilities.filter(
-      (c): c is string => typeof c === "string" && /^[a-z-]{1,64}$/.test(c),
-    );
-    return { state: "HEALTHY", checks: { serviceHealthy: true, serviceCapabilities: caps } };
-  } catch {
-    return { state: "OFFLINE", checks: NO_BACKEND };
-  }
+  const { createAurexClient } = await import("./aurex-client.server");
+  const client = createAurexClient({ url: env.url, token: env.token, fetcher });
+  const health = await client.health();
+  if (!health.ok) return { state: "OFFLINE", checks: NO_BACKEND };
+  const caps = await client.capabilities();
+  const serviceCapabilities = caps.ok
+    ? caps.value.capabilities.filter((c) => c.available).map((c) => c.id)
+    : [];
+  return { state: "HEALTHY", checks: { serviceHealthy: true, serviceCapabilities } };
 }

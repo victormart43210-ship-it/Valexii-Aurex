@@ -14,6 +14,7 @@ import { applyGate, proposeGate } from "@/lib/aurex-control";
 import { AurexCapabilitiesPanel } from "@/components/aurex-capabilities-panel";
 import { AurexSecurityLab } from "@/components/aurex-security-lab";
 import { AurexOxStatus } from "@/components/aurex-ox-status";
+import { AurexQwenReadiness } from "@/components/aurex-qwen-readiness";
 
 export const Route = createFileRoute("/admin/aurex-control")({
   ssr: false,
@@ -204,6 +205,7 @@ function Console() {
         )}
       </section>
       <AurexOxStatus context="owner" />
+      <div className="site-grid"><AurexQwenReadiness /></div>
       {lab.isError ? (
         <p className="site-grid text-sm text-amber">Security Lab unavailable — locked.</p>
       ) : (

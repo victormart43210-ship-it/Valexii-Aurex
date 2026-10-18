@@ -6,7 +6,7 @@ import { z } from "zod";
 
 export const API_VERSION = "v1";
 export const MAX_RESPONSE_BYTES = 256 * 1024;
-const id = z.string().regex(/^[a-z0-9][a-z0-9_-]{0,63}$/);
+const id = z.string().regex(/^[A-Za-z0-9][A-Za-z0-9_-]{0,63}$/); // includes UUIDs
 const iso = z.string().datetime({ offset: true });
 
 export const HealthSchema = z
@@ -15,7 +15,7 @@ export const HealthSchema = z
 
 export const CapabilitySchema = z
   .object({
-    id: z.string().regex(/^[a-z-]{1,64}$/),
+    id: z.string().regex(/^[a-z_-]{1,64}$/),
     available: z.boolean(),
     evidenceId: id.nullable(),
     verifiedAt: iso.nullable(),
@@ -56,8 +56,8 @@ export const JobCreateSchema = z
 export const EvidenceSchema = z
   .object({
     id,
-    capabilityId: z.string().regex(/^[a-z-]{1,64}$/),
-    kind: z.enum(["test_run", "health_probe", "benchmark_record"]),
+    capabilityId: z.string().regex(/^[a-z_-]{1,64}$/),
+    kind: z.enum(["test_run", "health_probe", "benchmark_record", "offline_probe"]),
     collectedAt: iso,
     sha256: z.string().regex(/^[0-9a-f]{64}$/),
     summary: z.string().max(500),
