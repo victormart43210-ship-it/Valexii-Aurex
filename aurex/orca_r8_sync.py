@@ -100,9 +100,10 @@ async def push_status(
     # Read incrementally: a forged Content-Length cannot bypass this byte bound.
     body = bytearray()
     async for chunk in request.stream():
-        body.extend(chunk)
-        if len(body) > MAX_BODY_BYTES:
+        # Reject before copying a huge ASGI chunk into RAM.
+        if len(body) + len(chunk) > MAX_BODY_BYTES:
             raise HTTPException(413, "status message too large")
+        body.extend(chunk)
     try:
         snapshot = Snapshot.model_validate_json(bytes(body))
     except (ValidationError, ValueError):
