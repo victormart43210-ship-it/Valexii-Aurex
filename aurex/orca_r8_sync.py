@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import hashlib
 import hmac
+import json
 import os
 import sqlite3
 from datetime import UTC, datetime, timedelta
@@ -161,8 +162,6 @@ def read_status() -> dict[str, object]:
             "receivedAt": None, "sha256": None,
             "evidenceStatus": "NOT VERIFIED", "authority": "NONE",
         }
-    import json
-
     received = datetime.fromisoformat(row["received_at"]).astimezone(UTC)
     age = (now - received).total_seconds()
     return {
