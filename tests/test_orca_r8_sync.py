@@ -142,3 +142,29 @@ def test_new_run_must_be_newer(env):
     next_run = sample(run="r8_run_next")
     next_run["observedAt"] = (datetime.now(UTC) + timedelta(seconds=2)).isoformat()
     assert client.post(PATH, json=next_run, headers=auth).status_code == 200
+
+
+def test_backfilled_observation_never_becomes_live(env):
+    client = TestClient(app)
+    report = sample()
+    report["observedAt"] = (datetime.now(UTC) - timedelta(minutes=5)).isoformat()
+    stored = client.post(PATH, json=report, headers={"Authorization": "Bearer " + PUSH})
+    assert stored.status_code == 200
+    state = client.get(PATH, headers={"Authorization": "Bearer " + SERVICE})
+    assert state.status_code == 200
+    assert state.json()["state"] == "STALE"
+    assert state.headers["cache-control"] == "private, no-store"
+
+
+def test_missing_db_path_fails_closed(env, monkeypatch: pytest.MonkeyPatch):
+    monkeypatch.delenv("AUREX_DB_PATH")
+    client = TestClient(app)
+    state = client.get(PATH, headers={"Authorization": "Bearer " + SERVICE})
+    assert state.status_code == 503
+
+
+def test_push_token_must_not_equal_service_token(env, monkeypatch: pytest.MonkeyPatch):
+    monkeypatch.setenv("AUREX_ORCA_PUSH_TOKEN", SERVICE)
+    client = TestClient(app)
+    response = client.post(PATH, json=sample(), headers={"Authorization": "Bearer " + SERVICE})
+    assert response.status_code == 503
