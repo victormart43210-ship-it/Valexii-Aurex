@@ -168,14 +168,27 @@ def read_status(response: Response) -> dict[str, object]:
         }
     received = datetime.fromisoformat(row["received_at"]).astimezone(UTC)
     observed = datetime.fromisoformat(row["observed_at"]).astimezone(UTC)
+    payload = row["payload_json"]
+    if not isinstance(payload, str) or not isinstance(row["sha256"], str):
+        raise HTTPException(503, "ORCA stored metadata invalid")
+    digest = hashlib.sha256(payload.encode("utf-8")).hexdigest()
+    if not hmac.compare_digest(digest, row["sha256"]):
+        raise HTTPException(503, "ORCA stored metadata integrity mismatch")
+    try:
+        snapshot = Snapshot.model_validate_json(payload)
+        _checked_observation(snapshot, observed)
+    except (ValidationError, ValueError, HTTPException):
+        raise HTTPException(503, "ORCA stored metadata invalid") from None
     receipt_age = (now - received).total_seconds()
     observation_age = (now - observed).total_seconds()
     # A delayed/backfilled status is NOT live, even if it only just arrived.
-    fresh = (0 <= receipt_age <= STALE_AFTER_SECONDS
-             and 0 <= observation_age <= STALE_AFTER_SECONDS)
+    fresh = (
+        0 <= receipt_age <= STALE_AFTER_SECONDS
+        and 0 <= observation_age <= STALE_AFTER_SECONDS
+    )
     return {
         "state": "OBSERVED" if fresh else "STALE",
-        "checkedAt": now.isoformat(), "snapshot": json.loads(row["payload_json"]),
-        "receivedAt": received.isoformat(), "sha256": row["sha256"],
+        "checkedAt": now.isoformat(), "snapshot": json.loads(payload),
+        "receivedAt": received.isoformat(), "sha256": digest,
         "evidenceStatus": "NOT VERIFIED", "authority": "NONE",
     }
