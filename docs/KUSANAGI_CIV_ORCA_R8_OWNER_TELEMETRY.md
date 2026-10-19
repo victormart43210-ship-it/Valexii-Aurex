@@ -147,3 +147,22 @@ This does not automatically discover, start, or control the ORCA job.
 Owner source of truth remains one GitHub AUREX repository; no second repository,
 no self-certification, and no automatic promotion of workstation reports to
 security conclusions.
+
+
+## October 19 security-review hardening (source only)
+
+- The backend now **requires an explicit absolute `AUREX_DB_PATH`**, refusing the implicit
+  `/tmp/aurex_jobs.db` fallback when ORCA sync is enabled. This avoids falsely
+  assuming a transient filesystem is durable. The configured path still requires a
+  separately demonstrated real persistent volume, backups, and restart proof.
+- The owner GET response includes `Cache-Control: private, no-store`.
+- `OBSERVED` requires **both the receipt and original workstation observation**
+  to be at most 120 seconds old, avoiding false freshness from late uploads.
+- Persisted JSON is strictly revalidated against the allowlisted schema and
+  SHA-256 consistency before returning it. A digest held alongside the payload
+  is a local integrity check, **not independent cryptographic attestation**.
+- Targeted negative tests were added for missing DB configuration, stale source
+  observation, token reuse, and modified SQLite payload. **All new tests remain
+  NOT RUN until an independent exact-SHA runner executes them.**
+- This PR still does not connect the real local ORCA exporter or the live Lovable
+  site. Deployed Railway remains an older read-only bridge.
