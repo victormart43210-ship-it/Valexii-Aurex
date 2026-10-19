@@ -168,3 +168,15 @@ def test_push_token_must_not_equal_service_token(env, monkeypatch: pytest.Monkey
     client = TestClient(app)
     response = client.post(PATH, json=sample(), headers={"Authorization": "Bearer " + SERVICE})
     assert response.status_code == 503
+
+
+def test_tampered_sqlite_payload_is_refused(env):
+    client = TestClient(app)
+    assert client.post(PATH, json=sample(), headers={"Authorization": "Bearer " + PUSH}).status_code == 200
+    conn = sqlite3.connect(str(env))
+    with conn:
+        conn.execute("UPDATE orca_r8_status SET payload_json = ?", ('{"private":"leak"}',))
+    conn.close()
+    result = client.get(PATH, headers={"Authorization": "Bearer " + SERVICE})
+    assert result.status_code == 503
+    assert "leak" not in result.text
