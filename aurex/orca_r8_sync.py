@@ -49,8 +49,10 @@ def authorize_push(authorization: str | None = Header(default=None)) -> None:
     _enabled()
     expected = os.getenv("AUREX_ORCA_PUSH_TOKEN", "")
     # Never accept an empty or short credential. Never log the supplied header.
-    if len(expected) < 32:
-        raise HTTPException(503, "ORCA status writer not configured")
+    if len(expected) < 32 or expected in (
+        os.getenv("AUREX_SERVICE_TOKEN"), os.getenv("AUREX_ADMIN_TOKEN")
+    ):
+        raise HTTPException(503, "ORCA status writer not configured or token scopes overlap")
     supplied = authorization or ""
     if not hmac.compare_digest(supplied, "Bearer " + expected):
         raise HTTPException(401, "unauthorized")
