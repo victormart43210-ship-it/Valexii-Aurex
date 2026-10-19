@@ -19,7 +19,7 @@ from aurex.database import (
     list_evidence,
     list_jobs,
 )
-from aurex.fenced_worker import cancel_job, claim_job, finalize_job
+from aurex.fenced_worker import cancel_job, claim_job, fail_job, finalize_job
 from aurex.governance_math.research_api import router as research_advice_router
 from aurex.orca_r8_sync import push_router as orca_push_router
 from aurex.orca_r8_sync import read_router as orca_read_router
@@ -268,7 +268,16 @@ def create_job_endpoint(
                     observation, digest, f"ev-{secrets.token_hex(12)}",
                 )
             except Exception:
-                # Do not rewrite a cancelled or superseded worker's terminal state.
+                # Only the lease owner can persist a redacted terminal failure.
+                try:
+                    fail_job(
+                        DEFAULT_DB_PATH, job_id, worker_id,
+                        str(claimed["lease_token"]), int(claimed["lease_generation"]),
+                    )
+                except Exception:
+                    raise HTTPException(
+                        status_code=503, detail="Job persistence unavailable; execution not verified"
+                    ) from None
                 raise HTTPException(status_code=503, detail="Probe not finalized; execution not verified") from None
         else:
             resolved_job = get_job(DEFAULT_DB_PATH, job_id)
