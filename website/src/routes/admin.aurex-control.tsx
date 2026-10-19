@@ -14,6 +14,7 @@ import { applyGate, proposeGate } from "@/lib/aurex-control";
 import { AurexCapabilitiesPanel } from "@/components/aurex-capabilities-panel";
 import { AurexSecurityLab } from "@/components/aurex-security-lab";
 import { AurexOxStatus } from "@/components/aurex-ox-status";
+import { OrcaR8OwnerPanel } from "@/components/orca-r8-owner-panel";
 
 export const Route = createFileRoute("/admin/aurex-control")({
   ssr: false,
@@ -85,6 +86,7 @@ function Console() {
         <p className="mt-3 text-sm text-muted-foreground">
           Owner verified on the server. Research engine: NOT_CONNECTED.
         </p>
+        <OrcaR8OwnerPanel />
         <h2 className="mt-8 font-display text-2xl">OBSERVE</h2>
         <p className="mt-2 text-sm text-muted-foreground">
           Server-side checks of fixed valexii.com pages only. Redirects are reported, not followed.
