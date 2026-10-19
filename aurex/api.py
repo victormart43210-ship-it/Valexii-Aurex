@@ -21,6 +21,8 @@ from aurex.database import (
 )
 from aurex.fenced_worker import cancel_job, claim_job, finalize_job
 from aurex.governance_math.research_api import router as research_advice_router
+from aurex.orca_r8_sync import push_router as orca_push_router
+from aurex.orca_r8_sync import read_router as orca_read_router
 from aurex.real_offline_probe import execute_sqlite_roundtrip
 from aurex.workflows.budget import BudgetGuard
 
@@ -70,6 +72,11 @@ def authenticate(authorization: str | None = Header(default=None)) -> str:
 
 # Opt-in, authenticated, advisory-only mathematics; no capability or authority claims.
 app.include_router(research_advice_router, dependencies=[Depends(authenticate)])
+
+# ORCA writes use a separate ingest-only token; owner reads use existing service auth.
+# Both routes fail closed unless AUREX_ORCA_SYNC_ENABLED=1.
+app.include_router(orca_push_router)
+app.include_router(orca_read_router, dependencies=[Depends(authenticate)])
 
 
 class JobCreateRequest(BaseModel):
