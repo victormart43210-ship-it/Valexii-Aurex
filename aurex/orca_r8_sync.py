@@ -14,7 +14,7 @@ import sqlite3
 from datetime import UTC, datetime, timedelta
 from typing import Literal
 
-from fastapi import APIRouter, Depends, Header, HTTPException, Request
+from fastapi import APIRouter, Depends, Header, HTTPException, Request, Response
 from pydantic import BaseModel, ConfigDict, Field, ValidationError
 
 PUSH_PATH = "/v1/orca/r8/status"
@@ -60,7 +60,10 @@ def authorize_push(authorization: str | None = Header(default=None)) -> None:
 
 
 def _db() -> sqlite3.Connection:
-    path = os.getenv("AUREX_DB_PATH", "/tmp/aurex_jobs.db")
+    path = os.getenv("AUREX_DB_PATH", "")
+    # A temporary default would silently erase status after a deploy. Require an explicit DB.
+    if not path.startswith("/") or path == "/tmp/aurex_jobs.db":
+        raise HTTPException(503, "ORCA durable database path not configured")
     conn = sqlite3.connect(path, timeout=5)
     conn.row_factory = sqlite3.Row
     conn.execute(
@@ -145,13 +148,14 @@ async def push_status(
 
 
 @read_router.get(PUSH_PATH)
-def read_status() -> dict[str, object]:
+def read_status(response: Response) -> dict[str, object]:
+    response.headers["Cache-Control"] = "private, no-store"
     _enabled()
     now = datetime.now(UTC)
     conn = _db()
     try:
         row = conn.execute(
-            "SELECT payload_json, received_at, sha256 FROM orca_r8_status WHERE source_id = ?",
+            "SELECT payload_json, observed_at, received_at, sha256 FROM orca_r8_status WHERE source_id = ?",
             ("orca-r8",),
         ).fetchone()
     finally:
@@ -163,9 +167,14 @@ def read_status() -> dict[str, object]:
             "evidenceStatus": "NOT VERIFIED", "authority": "NONE",
         }
     received = datetime.fromisoformat(row["received_at"]).astimezone(UTC)
-    age = (now - received).total_seconds()
+    observed = datetime.fromisoformat(row["observed_at"]).astimezone(UTC)
+    receipt_age = (now - received).total_seconds()
+    observation_age = (now - observed).total_seconds()
+    # A delayed/backfilled status is NOT live, even if it only just arrived.
+    fresh = (0 <= receipt_age <= STALE_AFTER_SECONDS
+             and 0 <= observation_age <= STALE_AFTER_SECONDS)
     return {
-        "state": "OBSERVED" if 0 <= age <= STALE_AFTER_SECONDS else "STALE",
+        "state": "OBSERVED" if fresh else "STALE",
         "checkedAt": now.isoformat(), "snapshot": json.loads(row["payload_json"]),
         "receivedAt": received.isoformat(), "sha256": row["sha256"],
         "evidenceStatus": "NOT VERIFIED", "authority": "NONE",
