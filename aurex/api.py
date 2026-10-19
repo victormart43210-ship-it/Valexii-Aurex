@@ -46,7 +46,11 @@ def get_token() -> str:
         )
 
     token = service_token or admin_token
-    if not token or len(token) < 32:
+    # compare_digest() rejects non-ASCII str; reject invalid configuration first.
+    if (
+        not token or len(token) < 32 or len(token) > 512
+        or not token.isascii() or token != token.strip()
+    ):
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Server authentication token unconfigured or insecure",
@@ -61,8 +65,13 @@ def authenticate(authorization: str | None = Header(default=None)) -> str:
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Missing or malformed Authorization header",
         )
-    supplied = authorization[7:].strip()
-    if not hmac.compare_digest(supplied, expected):
+    supplied = authorization[7:]
+    # Header text is untrusted; do not normalize whitespace or compare non-ASCII.
+    if (
+        not supplied or len(supplied) > 512 or not supplied.isascii()
+        or supplied != supplied.strip()
+        or not hmac.compare_digest(supplied, expected)
+    ):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid authorization credentials",
