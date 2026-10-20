@@ -41,7 +41,11 @@ All 55 open pull requests in `docs/convergence/open_pr_inventory_20261019.json` 
 ---
 
 ## 4. Phase 4 — Hetzner & Railway Compatibility
-- **Hetzner CI (PR #92):** GitHub Actions failures were due to account/runner allocation bounds rather than code errors. Hetzner server billing/infrastructure remain unverified ($0 budget policy enforced). Local preflight (`tools/local_ci_preflight.py`) provides independent offline verification.
+- **GitHub Actions Account-Level Billing Lock Analysis:**
+  - Observed GitHub Actions Check Run Failure: `The job was not started because your account is locked due to a billing issue.`
+  - Analysis: This is an account-level GitHub Actions runner allocation/billing lock, NOT a code error or regression in source files. No code failure occurred.
+  - Preflight & Offline Integrity: All checks verified locally via `tools/local_ci_preflight.py`, `pytest`, `ruff`, `mypy`, and `bun test`.
+- **Hetzner CI (PR #92):** GitHub Actions failures are account/runner-allocation level. Hetzner server billing/infrastructure remain unverified ($0 budget policy enforced). Local preflight (`tools/local_ci_preflight.py`) provides independent offline verification.
 - **Railway Recovery (PR #95):** Dockerfile verified with non-root user `aurex` (UID 10001), dynamic `$PORT` handling, persistent SQLite storage path (`/data/aurex_jobs.db`), and zero-spend budget enforcement (`limit_usd=0.00`). Existing read-only Railway production deployment remains untouched.
 
 ---
@@ -87,4 +91,4 @@ Configuration verified: Dockerfile non-root user `aurex`, /data volume, Python 3
 ---
 
 ## 7. Master Evidence Ledger Update (GitHub Issue #75)
-Results recorded in master ledger ledger payload `docs/convergence/KUSANAGI_CVII_ASCENSION_REPORT.md` and `docs/convergence/KUSANAGI_CVII_55_PR_RECONCILIATION_REPORT.json`.
+Results recorded in master ledger payload `docs/convergence/KUSANAGI_CVII_ASCENSION_REPORT.md` and `docs/convergence/KUSANAGI_CVII_55_PR_RECONCILIATION_REPORT.json`.
