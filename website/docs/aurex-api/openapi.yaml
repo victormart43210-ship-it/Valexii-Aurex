@@ -3,14 +3,12 @@ info:
   title: AUREX Service API
   version: 1.0.0-draft
   description: >
-    Canonical AUREX v1 contract (DRAFT). An older read-only Railway bridge is
-    deployed separately; it implements five authenticated GETs only. Its presence
-    does not prove a deployed full API, workers, persistence, inference or owner
-    browser-to-backend end-to-end operation. Mirrors src/lib/aurex-api-schema.ts.
-    Named job operations shown here are contract intent, not deployed authority.
+    Contract for an external, separately hosted AUREX service. DRAFT — no hosted
+    implementation exists. Mirrors src/lib/aurex-api-schema.ts. Jobs accept only named
+    kinds with bounded params; no code, shell or URL execution.
 servers:
   - url: https://aurex.example.invalid
-    description: Documentation placeholder, NOT a real deployment endpoint.
+    description: Placeholder; no server is deployed.
 security:
   - bearer: []
 paths:

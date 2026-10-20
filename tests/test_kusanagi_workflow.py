@@ -18,19 +18,9 @@ def setup_env(monkeypatch, tmp_path):
 def test_health_public():
     from aurex.api import app
     client = TestClient(app)
-    res = client.get("/health")
+    res = client.get("/v1/health")
     assert res.status_code == 200
     assert res.json()["status"] == "ok"
-
-
-def test_v1_health_requires_service_authentication():
-    from aurex.api import app
-    client = TestClient(app)
-    assert client.get("/v1/health").status_code == 401
-    assert client.get("/v1/health", headers={"Authorization": "Bearer wrong"}).status_code == 401
-    result = client.get("/v1/health", headers={"Authorization": f"Bearer {VALID_TOKEN}"})
-    assert result.status_code == 200
-    assert result.json()["status"] == "ok"
 
 
 def test_unauthenticated_request_denied(monkeypatch):

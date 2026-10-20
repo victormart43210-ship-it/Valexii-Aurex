@@ -28,58 +28,6 @@ export type ClientErrorCode =
 export type Result<T> =
   { ok: true; value: T } | { ok: false; error: ClientErrorCode; status?: number };
 
-/** The deployed read-only AUREX bridge requires at least 32 token characters. */
-export const MIN_TOKEN_CHARS = 32;
-
-/** Bounded stream read; actual UTF-8 BYTES, not JavaScript string length. */
-async function readBoundedText(
-  response: Response,
-): Promise<{ ok: true; value: string } | { ok: false; error: "too_large" | "malformed" | "network" }> {
-  const contentLength = response.headers.get("content-length");
-  if (contentLength !== null) {
-    const declared = Number(contentLength);
-    if (!Number.isFinite(declared) || declared < 0) return { ok: false, error: "malformed" };
-    if (declared > MAX_RESPONSE_BYTES) {
-      try { await response.body?.cancel(); } catch { /* ignore */ }
-      return { ok: false, error: "too_large" };
-    }
-  }
-  if (!response.body) return { ok: false, error: "malformed" };
-  const reader = response.body.getReader();
-  const chunks: Uint8Array[] = [];
-  let total = 0;
-  try {
-    while (true) {
-      const { done, value } = await reader.read();
-      if (done) break;
-      if (value) {
-        total += value.byteLength;
-        if (total > MAX_RESPONSE_BYTES) {
-          try { await reader.cancel(); } catch { /* ignore */ }
-          return { ok: false, error: "too_large" };
-        }
-        chunks.push(value);
-      }
-    }
-  } catch {
-    try { await reader.cancel(); } catch { /* ignore */ }
-    return { ok: false, error: "network" };
-  } finally {
-    reader.releaseLock();
-  }
-  const bytes = new Uint8Array(total);
-  let offset = 0;
-  for (const chunk of chunks) {
-    bytes.set(chunk, offset);
-    offset += chunk.byteLength;
-  }
-  try {
-    return { ok: true, value: new TextDecoder("utf-8", { fatal: true }).decode(bytes) };
-  } catch {
-    return { ok: false, error: "malformed" };
-  }
-}
-
 export interface ClientConfig {
   url?: string | undefined;
   token?: string | undefined;
@@ -89,7 +37,7 @@ export interface ClientConfig {
 
 export function createAurexClient(cfg: ClientConfig) {
   const base = validServiceUrl(cfg.url);
-  const configured = !!base && !!cfg.token && cfg.token.length >= MIN_TOKEN_CHARS;
+  const configured = !!base && !!cfg.token && cfg.token.length >= 16;
   const fetcher = cfg.fetcher ?? fetch;
   const timeoutMs = Math.min(Math.max(cfg.timeoutMs ?? 5000, 500), 10_000);
 
@@ -127,9 +75,15 @@ export function createAurexClient(cfg: ClientConfig) {
     if (res.status === 401 || res.status === 403)
       return { ok: false, error: "unauthorized", status: res.status };
     if (!res.ok) return { ok: false, error: "http_error", status: res.status };
-    const read = await readBoundedText(res);
-    if (!read.ok) return { ok: false, error: read.error };
-    const text = read.value;
+    const len = Number(res.headers.get("content-length") ?? "0");
+    if (len > MAX_RESPONSE_BYTES) return { ok: false, error: "too_large" };
+    let text: string;
+    try {
+      text = await res.text();
+    } catch {
+      return { ok: false, error: "network" };
+    }
+    if (text.length > MAX_RESPONSE_BYTES) return { ok: false, error: "too_large" };
     let json: unknown;
     try {
       json = JSON.parse(text);
