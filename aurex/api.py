@@ -19,8 +19,10 @@ from aurex.database import (
     list_evidence,
     list_jobs,
 )
-from aurex.fenced_worker import cancel_job, claim_job, finalize_job
+from aurex.fenced_worker import cancel_job, claim_job, fail_job, finalize_job
 from aurex.governance_math.research_api import router as research_advice_router
+from aurex.orca_r8_sync import push_router as orca_push_router
+from aurex.orca_r8_sync import read_router as orca_read_router
 from aurex.real_offline_probe import execute_sqlite_roundtrip
 from aurex.workflows.budget import BudgetGuard
 
@@ -44,7 +46,11 @@ def get_token() -> str:
         )
 
     token = service_token or admin_token
-    if not token or len(token) < 32:
+    # compare_digest() rejects non-ASCII str; reject invalid configuration first.
+    if (
+        not token or len(token) < 32 or len(token) > 512
+        or not token.isascii() or token != token.strip()
+    ):
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Server authentication token unconfigured or insecure",
@@ -59,8 +65,13 @@ def authenticate(authorization: str | None = Header(default=None)) -> str:
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Missing or malformed Authorization header",
         )
-    supplied = authorization[7:].strip()
-    if not hmac.compare_digest(supplied, expected):
+    supplied = authorization[7:]
+    # Header text is untrusted; do not normalize whitespace or compare non-ASCII.
+    if (
+        not supplied or len(supplied) > 512 or not supplied.isascii()
+        or supplied != supplied.strip()
+        or not hmac.compare_digest(supplied, expected)
+    ):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid authorization credentials",
@@ -70,6 +81,11 @@ def authenticate(authorization: str | None = Header(default=None)) -> str:
 
 # Opt-in, authenticated, advisory-only mathematics; no capability or authority claims.
 app.include_router(research_advice_router, dependencies=[Depends(authenticate)])
+
+# Owner-only ORCA R8 metadata status; separate write and authenticated read tokens.
+# Disabled by default pending an independent production admission.
+app.include_router(orca_push_router)
+app.include_router(orca_read_router, dependencies=[Depends(authenticate)])
 
 
 class JobCreateRequest(BaseModel):
@@ -125,7 +141,8 @@ class BudgetResponse(BaseModel):
     period: str = "month"
 
 
-@app.get("/v1/health")
+# Infrastructure probe stays public; v1 application health requires service authentication.
+@app.get("/v1/health", dependencies=[Depends(authenticate)])
 @app.get("/health")
 def health() -> dict[str, str]:
     return {
@@ -251,7 +268,16 @@ def create_job_endpoint(
                     observation, digest, f"ev-{secrets.token_hex(12)}",
                 )
             except Exception:
-                # Do not rewrite a cancelled or superseded worker's terminal state.
+                # Only the lease owner can persist a redacted terminal failure.
+                try:
+                    fail_job(
+                        DEFAULT_DB_PATH, job_id, worker_id,
+                        str(claimed["lease_token"]), int(claimed["lease_generation"]),
+                    )
+                except Exception:
+                    raise HTTPException(
+                        status_code=503, detail="Job persistence unavailable; execution not verified"
+                    ) from None
                 raise HTTPException(status_code=503, detail="Probe not finalized; execution not verified") from None
         else:
             resolved_job = get_job(DEFAULT_DB_PATH, job_id)

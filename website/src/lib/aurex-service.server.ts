@@ -30,28 +30,42 @@ export function validServiceUrl(raw: string | undefined): URL | null {
   return u;
 }
 
+/**
+ * Strict v1 handshake. Health has ONLY status/version/time, never capabilities.
+ * Separate capabilities + evidence must be validated before any capability
+ * is treated as evidence-linked. This does NOT prove independent authority.
+ */
 export async function checkAurexService(
   env: { url?: string | undefined; token?: string | undefined },
   fetcher: typeof fetch = fetch,
 ): Promise<ServiceState> {
-  const base = validServiceUrl(env.url);
-  if (!base || !env.token || env.token.length < 16)
+  if (!validServiceUrl(env.url) || !env.token || env.token.length < 32) {
     return { state: "NOT_CONFIGURED", checks: NO_BACKEND };
-  try {
-    const res = await fetcher(new URL("/v1/health", base), {
-      headers: { Authorization: `Bearer ${env.token}`, Accept: "application/json" },
-      redirect: "manual",
-      signal: AbortSignal.timeout(5000),
-    });
-    if (!res.ok) return { state: "OFFLINE", checks: NO_BACKEND };
-    const body = (await res.json()) as { status?: unknown; capabilities?: unknown };
-    if (body.status !== "ok" || !Array.isArray(body.capabilities))
-      return { state: "OFFLINE", checks: NO_BACKEND };
-    const caps = body.capabilities.filter(
-      (c): c is string => typeof c === "string" && /^[a-z-]{1,64}$/.test(c),
-    );
-    return { state: "HEALTHY", checks: { serviceHealthy: true, serviceCapabilities: caps } };
-  } catch {
-    return { state: "OFFLINE", checks: NO_BACKEND };
   }
+  // Lazy import keeps validServiceUrl re-usable by the client without a
+  // top-level circular-import initialization failure.
+  const [{ createAurexClient }, { capabilityBacked }] = await Promise.all([
+    import("./aurex-client.server"),
+    import("./aurex-api-schema"),
+  ]);
+  const client = createAurexClient({ url: env.url, token: env.token, fetcher });
+  const health = await client.health();
+  if (!health.ok) return { state: "OFFLINE", checks: NO_BACKEND };
+  const caps = await client.capabilities();
+  const evidence = await client.evidence();
+  if (!caps.ok || !evidence.ok) return { state: "OFFLINE", checks: NO_BACKEND };
+  const now = Date.now();
+  const enabled = caps.value.capabilities.filter(
+    (c) => c.verifiedAt !== null &&
+      Number.isFinite(Date.parse(c.verifiedAt)) &&
+      Date.parse(c.verifiedAt) <= now + 60_000 &&
+      capabilityBacked(c, evidence.value.evidence, now),
+  );
+  return {
+    state: "HEALTHY",
+    checks: {
+      serviceHealthy: true,
+      serviceCapabilities: enabled.map((c) => c.id),
+    },
+  };
 }
