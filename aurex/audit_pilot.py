@@ -16,6 +16,7 @@ from pathlib import Path
 from typing import Any, cast
 
 from aurex.audit_challenge import hold_challenges
+from aurex.field_reconciliation import invoice_ticket_difference
 from aurex.folio_index import Domain, Folio, FolioIndex, FolioLink, Relation, digest_of
 
 POLICY = "aurex-synthetic-company-one-spine-v1"
@@ -228,10 +229,11 @@ def run_packet(root: Path) -> dict[str, Any]:
         findings.append(_finding("INVOICE_EXCEEDS_PO", (invoice["id"], po["id"]),
                                  "Invoice exceeds supplied authorized PO amount",
                                  observed=f"difference_usd={invoice_total - po_total:.2f}"))
-    if invoice_total != ticket_total:
+    ticket_variance = invoice_ticket_difference(invoice_total, ticket_total)
+    if ticket_variance != 0:
         findings.append(_finding("INVOICE_VS_FIELD_TICKET", (invoice["id"], ticket["id"]),
                                  "Invoice amount differs from provided field ticket",
-                                 observed=f"difference_usd={invoice_total - ticket_total:.2f}"))
+                                 observed=f"difference_usd={ticket_variance:.2f}"))
     if payment_total != bank_total:
         findings.append(_finding("PAYMENT_VS_BANK_STATEMENT", (pay["id"], bank["id"]),
                                  "Payment register differs from supplied bank statement",
