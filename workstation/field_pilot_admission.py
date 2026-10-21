@@ -55,8 +55,11 @@ def load(path: Path) -> tuple[dict[str, Any], str]:
     if not 1 <= path.stat().st_size <= MAX_BYTES:
         raise ValueError("manifest is outside size limits")
     raw = path.read_bytes()
-    data = json.loads(raw.decode("utf-8", errors="strict"),
-                      object_pairs_hook=_pairs, parse_constant=_invalid_constant)
+    try:
+        data = json.loads(raw.decode("utf-8", errors="strict"),
+                          object_pairs_hook=_pairs, parse_constant=_invalid_constant)
+    except RecursionError as exc:
+        raise ValueError("invalid nesting in admission manifest") from exc
     if type(data) is not dict:
         raise ValueError("manifest must be a JSON object")
     return data, hashlib.sha256(raw).hexdigest()
