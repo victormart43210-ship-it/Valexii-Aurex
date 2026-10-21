@@ -58,7 +58,7 @@ def _wire_shape(endpoint: str, obj: Any) -> bool:
                         and set(e) == {"id", "capabilityId", "kind", "collectedAt", "sha256", "summary"}
                         and type(e["id"]) is str and EVIDENCE_ID.fullmatch(e["id"])
                         and type(e["capabilityId"]) is str and CAP_ID.fullmatch(e["capabilityId"])
-                        and e["kind"] in ALLOWED_EVIDENCE_KINDS
+                        and type(e["kind"]) is str and e["kind"] in ALLOWED_EVIDENCE_KINDS
                         and type(e["collectedAt"]) is str
                         and type(e["sha256"]) is str and DIGEST.fullmatch(e["sha256"])
                         and type(e["summary"]) is str and len(e["summary"]) <= 500
@@ -87,6 +87,15 @@ class NoRedirect(urllib.request.HTTPRedirectHandler):
     def redirect_request(self, request: Any, fp: Any, code: int,
                          msg: str, headers: Any, newurl: str) -> None:
         return None
+
+
+def _distinct_keys(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
+    obj: dict[str, Any] = {}
+    for k, v in pairs:
+        if k in obj:
+            raise ValueError("duplicate JSON key")
+        obj[k] = v
+    return obj
 
 
 def check_service(url: str, token: str,
@@ -119,6 +128,7 @@ def check_service(url: str, token: str,
                     continue
                 try:
                     obj = json.loads(raw.decode("utf-8", errors="strict"),
+                                     object_pairs_hook=_distinct_keys,
                                      parse_constant=lambda _: (_ for _ in ()).throw(ValueError()))
                 except (ValueError, UnicodeError, RecursionError):
                     states[endpoint] = "HOLD_INVALID_JSON"
