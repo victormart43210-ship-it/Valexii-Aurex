@@ -57,7 +57,7 @@ def read_json(path: Path) -> tuple[dict[str, Any], str]:
     try:
         value = json.loads(raw.decode("utf-8", errors="strict"),
                            object_pairs_hook=_unique_pairs, parse_constant=_no_constant)
-    except (UnicodeError, ValueError) as exc:
+    except (UnicodeError, ValueError, RecursionError) as exc:
         raise ValueError("invalid JSON input") from exc
     if type(value) is not dict:
         raise ValueError("top-level JSON object required")
