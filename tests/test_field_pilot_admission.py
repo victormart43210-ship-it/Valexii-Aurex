@@ -150,3 +150,12 @@ def test_malformed_nested_status_fails_closed():
     data["checks"][0]["status"] = ["PASS"]
     with pytest.raises(ValueError, match="gate/status"):
         evaluate(data, now=NOW)
+
+
+def test_deep_nested_manifest_fails_closed_not_crash(tmp_path: Path, capsys):
+    src = tmp_path / "deep.json"
+    src.write_text("[" * 12000 + "0" + "]" * 12000)
+    assert main(["--manifest", str(src)]) == 2
+    result = json.loads(capsys.readouterr().out)
+    assert result["assessment"] == "HOLD_INVALID_INPUT"
+    assert result["production_release"] == "HOLD"
