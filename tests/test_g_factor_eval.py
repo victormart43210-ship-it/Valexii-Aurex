@@ -210,3 +210,26 @@ def test_deeply_nested_json_returns_hold_not_traceback(tmp_path: Path, capsys) -
     report = json.loads(capsys.readouterr().out)
     assert report["cross_domain_gate"] == "HOLD_INVALID_INPUT"
     assert report["production_release"] == "HOLD"
+
+
+def test_fabricated_source_id_blocks_even_if_other_domains_improve() -> None:
+    ref, candidate, baseline = fixture()
+    candidate["answers"][0]["cited_evidence"] = ["fabricated_receipt"]
+    report, good = score(ref, candidate, baseline)
+    assert not good
+    assert report["candidate_invalid_evidence_references"] == 1
+    assert report["cross_domain_gate"] == "HOLD_INVALID_EVIDENCE_REFERENCE"
+
+def test_invalid_baseline_evidence_cannot_make_model_gain() -> None:
+    ref, candidate, baseline = fixture()
+    baseline["answers"][0]["cited_evidence"] = ["fabricated_receipt"]
+    report, good = score(ref, candidate, baseline)
+    assert not good
+    assert report["baseline_invalid_evidence_references"] == 1
+    assert report["cross_domain_gate"] == "HOLD_UNSAFE_COMPARISON_BASELINE"
+
+def test_missing_train_group_manifest_cannot_claim_independence() -> None:
+    ref, candidate, baseline = fixture()
+    ref["training_group_hashes"] = []
+    with pytest.raises(ValueError, match="fingerprint"):
+        score(ref, candidate, baseline)
