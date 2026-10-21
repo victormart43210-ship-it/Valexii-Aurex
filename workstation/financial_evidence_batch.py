@@ -123,6 +123,11 @@ def open_ledger(path: Path) -> sqlite3.Connection:
       formula_count INTEGER NOT NULL, flags TEXT NOT NULL, indexed_at TEXT NOT NULL,
       training_allowed INTEGER NOT NULL DEFAULT 0 CHECK(training_allowed=0),
       PRIMARY KEY(tenant,project,relative_path));
+    CREATE TABLE IF NOT EXISTS intake_failures (
+      tenant TEXT NOT NULL, project TEXT NOT NULL, relative_path TEXT NOT NULL,
+      size INTEGER NOT NULL, mtime_ns INTEGER NOT NULL, ctime_ns INTEGER NOT NULL,
+      recorded_at TEXT NOT NULL, reason TEXT NOT NULL,
+      PRIMARY KEY(tenant,project,relative_path));
     CREATE TABLE IF NOT EXISTS formula_witnesses (
       tenant TEXT NOT NULL, project TEXT NOT NULL, relative_path TEXT NOT NULL,
       sheet TEXT NOT NULL, cell TEXT NOT NULL, formula_raw TEXT NOT NULL,
@@ -176,8 +181,17 @@ def intake(root: Path, ledger: Path, tenant: str, project: str,
                         WHERE tenant=? AND project=? AND relative_path=?""",
                         (tenant, project, relative),
                     ).fetchone()
-                    if existing and tuple(existing) == (s0.st_size, s0.st_mtime_ns, s0.st_ctime_ns):
+                    metadata = (s0.st_size, s0.st_mtime_ns, s0.st_ctime_ns)
+                    if existing and tuple(existing) == metadata:
                         result["unchanged"] += 1
+                        continue
+                    prior_fail = db.execute(
+                        """SELECT size,mtime_ns,ctime_ns FROM intake_failures
+                        WHERE tenant=? AND project=? AND relative_path=?""",
+                        (tenant, project, relative),
+                    ).fetchone()
+                    if prior_fail and tuple(prior_fail) == metadata:
+                        result["unchanged_failed"] = result.get("unchanged_failed", 0) + 1
                         continue
                     if scheduled >= limit:
                         result["batch_limit_hit"] = True
@@ -222,10 +236,32 @@ def intake(root: Path, ledger: Path, tenant: str, project: str,
                           (tenant,project,relative_path,sheet,cell,formula_raw,cached_raw,state)
                           VALUES(?,?,?,?,?,?,?,?)""",
                           ((tenant, project, relative, *w) for w in witnesses))
+                    with db:
+                        db.execute(
+                            "DELETE FROM intake_failures WHERE tenant=? AND project=? AND relative_path=?",
+                            (tenant, project, relative),
+                        )
                     result["indexed"] += 1
                     result["formulas_observed"] += len(witnesses)
                 except (OSError, ValueError, zipfile.BadZipFile, ET.ParseError, sqlite3.Error):
                     result["failed_or_unsupported"] += 1
+                    # Persist a fail-closed retry record so one malformed source cannot
+                    # consume every future batch. Source changes trigger a retry.
+                    try:
+                        st = path.stat()
+                        with db:
+                            db.execute("""INSERT INTO intake_failures
+                              (tenant,project,relative_path,size,mtime_ns,ctime_ns,recorded_at,reason)
+                              VALUES (?,?,?,?,?,?,?,?)
+                              ON CONFLICT(tenant,project,relative_path) DO UPDATE SET
+                              size=excluded.size,mtime_ns=excluded.mtime_ns,
+                              ctime_ns=excluded.ctime_ns,recorded_at=excluded.recorded_at,
+                              reason=excluded.reason""",
+                              (tenant, project, relative, st.st_size, st.st_mtime_ns,
+                               st.st_ctime_ns, datetime.now(UTC).isoformat(),
+                               "UNREADABLE_OR_UNSUPPORTED"))
+                    except (OSError, sqlite3.Error):
+                        result["failure_ledger_write_error"] = True
                     # Keep document names, invoice amounts and other PII out of CLI output.
         return result
     finally:
@@ -241,10 +277,15 @@ def report(ledger: Path, tenant: str, project: str) -> dict:
         rows = db.execute("""SELECT state,COUNT(*),SUM(formula_count) FROM documents
                          WHERE tenant=? AND project=? GROUP BY state""",
                           (tenant, project)).fetchall()
+        failures = db.execute(
+            "SELECT COUNT(*) FROM intake_failures WHERE tenant=? AND project=?",
+            (tenant, project),
+        ).fetchone()[0]
         payload = {
             "schema": "aurex.financial-evidence-receipt.v1",
             "tenant": tenant, "project": project,
             "documents": sum(row[1] for row in rows),
+            "failed_documents": failures,
             "formula_witnesses": sum(row[2] or 0 for row in rows),
             "states": {row[0]: row[1] for row in rows},
             "missing_documents": "UNKNOWN",
