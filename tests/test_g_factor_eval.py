@@ -233,3 +233,20 @@ def test_missing_train_group_manifest_cannot_claim_independence() -> None:
     ref["training_group_hashes"] = []
     with pytest.raises(ValueError, match="fingerprint"):
         score(ref, candidate, baseline)
+
+
+def test_unsupported_non_abstention_cannot_claim_generalization_gain() -> None:
+    ref, candidate, baseline = fixture()
+    candidate["answers"][0]["cited_evidence"] = []
+    report, reviewable = score(ref, candidate, baseline)
+    assert not reviewable
+    assert report["candidate_unsupported_claims"] == 1
+    assert report["cross_domain_gate"] == "HOLD_MISSING_EVIDENCE"
+
+def test_unsupported_baseline_is_untrusted_comparison() -> None:
+    ref, candidate, baseline = fixture()
+    baseline["answers"][0]["cited_evidence"] = []
+    report, reviewable = score(ref, candidate, baseline)
+    assert not reviewable
+    assert report["baseline_unsupported_claims"] == 1
+    assert report["cross_domain_gate"] == "HOLD_UNSAFE_COMPARISON_BASELINE"
