@@ -142,3 +142,83 @@ def test_conflicting_server_auth_tokens_fail_closed(local_lab, monkeypatch):
     assert client.post("/v1/jobs", json=PROBE, headers={
         **AUTH, "Idempotency-Key": "conflicted-secret-probe-001"
     }).status_code == 500
+
+
+def test_fixed_synthetic_financial_100_case_job_is_persisted_hold(local_lab, monkeypatch):
+    client, db = local_lab
+    monkeypatch.setenv("AUREX_ENABLE_SYNTHETIC_FIELD_AUDIT", "1")
+    request = {"kind": "regression_scan",
+               "params": {"probe": "synthetic_field_audit_v1"}, "maxCostUsd": 0}
+    headers = {**AUTH, "Idempotency-Key": "synthetic-fixed-field-001"}
+    response = client.post("/v1/jobs", json=request, headers=headers)
+    assert response.status_code == 200
+    job = response.json()
+    assert job["state"] == "succeeded"
+    persisted = get_job(db, job["id"])
+    assert persisted is not None
+    obs = persisted["result"]["observation"]
+    assert obs["probe"] == "synthetic_field_audit_v1"
+    assert obs["synthetic"] is True
+    assert obs["case_count"] == obs["exact_case_matches"] == 100
+    assert obs["finding_labels"] == 70
+    assert obs["false_positive_flags"] == obs["false_negative_flags"] == 0
+    assert obs["independent_verification"] == "NOT_VERIFIED"
+    assert obs["real_document_accuracy"] == "NOT_MEASURED"
+    assert (obs["authority"], obs["effect"], obs["production_release"]) == (
+        "HOLD", "NONE", "HOLD"
+    )
+    assert len(obs["suite_sha256"]) == 64
+    digest = hashlib.sha256(json.dumps(obs, sort_keys=True).encode()).hexdigest()
+    records = client.get("/v1/evidence", headers=AUTH).json()["evidence"]
+    assert len(records) == 1 and records[0]["sha256"] == digest
+    assert records[0]["kind"] == "offline_probe"
+    assert client.post("/v1/jobs", json=request, headers=headers).json()["id"] == job["id"]
+    assert len(client.get("/v1/evidence", headers=AUTH).json()["evidence"]) == 1
+
+
+def test_synthetic_financial_probe_disabled_by_default(local_lab, monkeypatch):
+    client, _ = local_lab
+    monkeypatch.delenv("AUREX_ENABLE_SYNTHETIC_FIELD_AUDIT", raising=False)
+    response = client.post("/v1/jobs", json={
+        "kind": "regression_scan", "params": {"probe": "synthetic_field_audit_v1"},
+        "maxCostUsd": 0,
+    }, headers={**AUTH, "Idempotency-Key": "disabled-synthetic-case-001"})
+    assert response.status_code == 503
+    assert client.get("/v1/jobs", headers=AUTH).json()["jobs"] == []
+
+
+def test_synthetic_financial_probe_refuses_supplied_financial_records(local_lab, monkeypatch):
+    client, _ = local_lab
+    monkeypatch.setenv("AUREX_ENABLE_SYNTHETIC_FIELD_AUDIT", "1")
+    response = client.post("/v1/jobs", json={
+        "kind": "regression_scan",
+        "params": {"probe": "synthetic_field_audit_v1", "invoice_cents": 99999},
+        "maxCostUsd": 0,
+    }, headers={**AUTH, "Idempotency-Key": "refused-financial-input-001"})
+    assert response.status_code == 422
+    assert client.get("/v1/jobs", headers=AUTH).json()["jobs"] == []
+
+
+def test_corrupt_synthetic_candidate_cannot_return_a_verified_job(local_lab, monkeypatch):
+    client, db = local_lab
+    monkeypatch.setenv("AUREX_ENABLE_SYNTHETIC_FIELD_AUDIT", "1")
+    import workstation.field_audit_beta_pipeline as pipeline
+
+    original = pipeline.candidate_from_suite
+
+    def corrupt(suite_data):
+        candidate = original(suite_data)
+        candidate["results"][0]["flags"] = ["MISSING_RATE_APPROVAL"]
+        return candidate
+
+    monkeypatch.setattr(pipeline, "candidate_from_suite", corrupt)
+    response = client.post("/v1/jobs", json={
+        "kind": "regression_scan", "params": {"probe": "synthetic_field_audit_v1"},
+        "maxCostUsd": 0,
+    }, headers={**AUTH, "Idempotency-Key": "corrupt-synthetic-case-001"})
+    assert response.status_code == 503
+    jobs = client.get("/v1/jobs", headers=AUTH).json()["jobs"]
+    assert len(jobs) == 1
+    assert jobs[0]["state"] != "succeeded"
+    assert client.get("/v1/evidence", headers=AUTH).json()["evidence"] == []
+    assert get_job(db, jobs[0]["id"])["evidence_id"] is None
