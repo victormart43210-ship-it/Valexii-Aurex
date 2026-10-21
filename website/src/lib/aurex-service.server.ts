@@ -35,7 +35,7 @@ export async function checkAurexService(
   fetcher: typeof fetch = fetch,
 ): Promise<ServiceState> {
   const base = validServiceUrl(env.url);
-  if (!base || !env.token || env.token.length < 16)
+  if (!base || !env.token || env.token.length < 32)
     return { state: "NOT_CONFIGURED", checks: NO_BACKEND };
   try {
     const res = await fetcher(new URL("/v1/health", base), {
