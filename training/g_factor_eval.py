@@ -113,6 +113,7 @@ def validate_reference(ref: dict[str, Any]) -> dict[str, dict[str, Any]]:
                 or row["group_sha256"] in train_groups
                 or type(row["novel"]) is not bool
                 or not _label(row["expected_label"])
+                or row["expected_label"] == "ABSTAIN"
                 or not _ids(row["required_evidence"], allow_empty=False)):
             raise ValueError("duplicate/invalid case, training-group leak or label")
         cases[cid] = row
