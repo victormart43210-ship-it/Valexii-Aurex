@@ -223,7 +223,13 @@ def create_job_endpoint(
         raise HTTPException(status_code=402, detail="Paid execution disabled")
     if os.environ.get("AUREX_ENABLE_OFFLINE_LAB") != "1":
         raise HTTPException(status_code=503, detail="Worker unavailable: offline worker disabled")
-    if req.params != {"probe": "sqlite_roundtrip_v1"}:
+    # A second probe is strictly fixed, fictional and disabled unless deliberately
+    # enabled by the server owner. It accepts no customer documents or user data.
+    synthetic_params = {"probe": "synthetic_field_audit_v1"}
+    if req.params == synthetic_params:
+        if os.environ.get("AUREX_ENABLE_SYNTHETIC_FIELD_AUDIT") != "1":
+            raise HTTPException(status_code=503, detail="Synthetic field lab unavailable")
+    elif req.params != {"probe": "sqlite_roundtrip_v1"}:
         raise HTTPException(status_code=422, detail="Unsupported probe")
     if not idempotency_key or len(idempotency_key) > 128:
         raise HTTPException(status_code=422, detail="Idempotency-Key required")
@@ -241,7 +247,36 @@ def create_job_endpoint(
         claimed = claim_job(DEFAULT_DB_PATH, job_id, worker_id)
         if claimed is not None:
             try:
-                observation = execute_sqlite_roundtrip(req.params)
+                if req.params == synthetic_params:
+                    # Selective, source-pinned PR #99 deterministic candidate; the
+                    # independent reference is a transparent *fixture*, not an
+                    # external witness of model intelligence or field accuracy.
+                    from workstation.field_audit_beta_gate import score_candidate, suite
+                    from workstation.field_audit_beta_pipeline import candidate_from_suite
+
+                    cases = suite()
+                    candidate = candidate_from_suite(cases)
+                    report, matched = score_candidate(candidate)
+                    if not matched:
+                        raise ValueError("Synthetic candidate did not match its fixture")
+                    observation = {
+                        "probe": "synthetic_field_audit_v1",
+                        "synthetic": True,
+                        "suite_sha256": cases["suite_sha256"],
+                        "case_count": report["total_cases"],
+                        "exact_case_matches": report["exact_case_matches"],
+                        "finding_labels": report["true_positive_flags"],
+                        "false_positive_flags": report["false_positive_flags"],
+                        "false_negative_flags": report["false_negative_flags"],
+                        "result": report["status"],
+                        "independent_verification": "NOT_VERIFIED",
+                        "real_document_accuracy": "NOT_MEASURED",
+                        "authority": "HOLD",
+                        "effect": "NONE",
+                        "production_release": "HOLD",
+                    }
+                else:
+                    observation = execute_sqlite_roundtrip(req.params)
                 digest = hashlib.sha256(
                     json.dumps(observation, sort_keys=True).encode()
                 ).hexdigest()
