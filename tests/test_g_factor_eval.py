@@ -201,3 +201,12 @@ def test_human_verification_and_deployment_never_inferred() -> None:
     assert report["independent_verification"] == "NOT_VERIFIED"
     assert report["model_training_executed"] is False
     assert report["production_release"] == "HOLD"
+
+
+def test_deeply_nested_json_returns_hold_not_traceback(tmp_path: Path, capsys) -> None:
+    deep = tmp_path / "nested.json"
+    deep.write_text("[" * 12000 + "0" + "]" * 12000)
+    assert main(["--reference", str(deep), "--baseline", str(deep), "--candidate", str(deep)]) == 2
+    report = json.loads(capsys.readouterr().out)
+    assert report["cross_domain_gate"] == "HOLD_INVALID_INPUT"
+    assert report["production_release"] == "HOLD"
