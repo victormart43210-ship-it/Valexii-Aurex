@@ -25,7 +25,7 @@ FORMATS = {".pdf", ".xlsx", ".xls", ".xlsm", ".csv"}
 NS = "{http://schemas.openxmlformats.org/spreadsheetml/2006/main}"
 RID = "{http://schemas.openxmlformats.org/officeDocument/2006/relationships}id"
 REL = "{http://schemas.openxmlformats.org/package/2006/relationships}"
-OPAQUE_ID = re.compile(r"[A-Za-z0-9][A-Za-z0-9._-]{0,63}\\Z")
+OPAQUE_ID = re.compile(r"[A-Za-z0-9][A-Za-z0-9._-]{0,63}")
 
 
 def sha256_file(path: Path) -> str:
