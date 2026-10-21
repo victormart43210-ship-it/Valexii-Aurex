@@ -146,3 +146,19 @@ def test_cli_without_configuration_fails_closed(monkeypatch, capsys):
     monkeypatch.setenv("AUREX_SERVICE_URL", URL)
     assert main(["--execute"]) == 2
     assert json.loads(capsys.readouterr().out)["status"] == "HOLD_INVALID_CONFIGURATION"
+
+
+def test_duplicate_wire_json_keys_are_hold():
+    bad = encoded(fixtures())
+    bad["health"] = b'{"status":"ok","status":"ok","version":"0.1","time":"today"}'
+    report = check_service(URL, TOKEN, opener=FakeOpener(bad))
+    assert report["checks"]["health"] == "HOLD_INVALID_JSON"
+    assert report["production_release"] == "HOLD"
+
+
+def test_non_string_evidence_kind_returns_hold_not_traceback():
+    data = fixtures()
+    data["evidence"]["evidence"][0]["kind"] = ["offline_probe"]
+    report = check_service(URL, TOKEN, opener=FakeOpener(encoded(data)))
+    assert report["checks"]["evidence"] == "HOLD_BAD_SCHEMA"
+    assert report["production_release"] == "HOLD"
