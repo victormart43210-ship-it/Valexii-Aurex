@@ -222,3 +222,57 @@ def test_corrupt_synthetic_candidate_cannot_return_a_verified_job(local_lab, mon
     assert jobs[0]["state"] != "succeeded"
     assert client.get("/v1/evidence", headers=AUTH).json()["evidence"] == []
     assert get_job(db, jobs[0]["id"])["evidence_id"] is None
+
+
+def test_fenced_failure_is_terminal_and_does_not_create_evidence(local_lab, monkeypatch):
+    client, db = local_lab
+
+    def fail_probe(_params):
+        raise RuntimeError("Synthetic forced worker failure")
+
+    monkeypatch.setattr(aurex_api, "execute_sqlite_roundtrip", fail_probe)
+    headers = {**AUTH, "Idempotency-Key": "fenced-terminal-failure-001"}
+    response = client.post("/v1/jobs", json=PROBE, headers=headers)
+    assert response.status_code == 503
+
+    jobs = client.get("/v1/jobs", headers=AUTH).json()["jobs"]
+    assert len(jobs) == 1 and jobs[0]["state"] == "failed"
+    record = get_job(db, jobs[0]["id"])
+    assert record is not None
+    assert record["lease_token"] is None
+    assert record["lease_expires_at"] is None
+    assert json.loads(record["error_json"])["code"] == "PROBE_FAILED"
+    assert record["evidence_id"] is None
+    assert client.get("/v1/evidence", headers=AUTH).json()["evidence"] == []
+
+    # Exactly-once replay must not re-execute or manufacture evidence.
+    replay = client.post("/v1/jobs", json=PROBE, headers=headers)
+    assert replay.status_code == 200 and replay.json()["state"] == "failed"
+    assert len(client.get("/v1/jobs", headers=AUTH).json()["jobs"]) == 1
+
+
+def test_failed_worker_cannot_overwrite_cancelled_or_superseded_lease(local_lab):
+    _client, db = local_lab
+    from aurex.database import create_job
+    from aurex.fenced_worker import cancel_job, claim_job, fail_job
+
+    first_job = create_job(db, "job-fenced-cancel", "regression_scan", {"probe": "sqlite_roundtrip_v1"})
+    first = claim_job(db, first_job["id"], "worker-a")
+    assert first is not None
+    assert cancel_job(db, first_job["id"])["state"] == "cancelled"
+    assert fail_job(db, first_job["id"], "worker-a", first["lease_token"], first["lease_generation"]) is None
+    assert get_job(db, first_job["id"])["state"] == "cancelled"
+
+    second_job = create_job(db, "job-fenced-takeover", "regression_scan", {"probe": "sqlite_roundtrip_v1"})
+    stale = claim_job(db, second_job["id"], "worker-a")
+    assert stale is not None
+    with sqlite3.connect(db) as conn:
+        conn.execute("UPDATE jobs SET lease_expires_at = ? WHERE id = ?",
+                     ("2000-01-01T00:00:00+00:00", second_job["id"]))
+    replacement = claim_job(db, second_job["id"], "worker-b")
+    assert replacement is not None
+    assert replacement["lease_generation"] > stale["lease_generation"]
+    assert fail_job(db, second_job["id"], "worker-a", stale["lease_token"], stale["lease_generation"]) is None
+    live = get_job(db, second_job["id"])
+    assert live["state"] == "running" and live["worker_id"] == "worker-b"
+    assert live["lease_token"] == replacement["lease_token"]
