@@ -182,6 +182,46 @@ def finalize(path: str, claimed: dict[str, Any], worker_id: str) -> dict[str, An
     return out
 
 
+
+def fail_claim(path: str, claimed: dict[str, Any], worker_id: str) -> dict[str, Any] | None:
+    """Atomically fail only a still-owned lease and release its token.
+
+    A cancellation, expiry, or a newer lease generation must not be overwritten.
+    No evidence is inserted and no model/financial authority is asserted.
+    """
+    with connect(path) as c:
+        c.execute("BEGIN IMMEDIATE")
+        try:
+            live = c.execute(
+                "SELECT state,worker_id,lease_token,lease_generation,lease_expires_at "
+                "FROM jobs WHERE id=?", (claimed["id"],),
+            ).fetchone()
+            now = iso()
+            if (
+                live is None
+                or live["state"] != "running"
+                or live["worker_id"] != worker_id
+                or live["lease_token"] != claimed["lease_token"]
+                or live["lease_generation"] != claimed["lease_generation"]
+                or not live["lease_expires_at"]
+                or live["lease_expires_at"] <= now
+            ):
+                c.commit()
+                return None
+            c.execute(
+                """UPDATE jobs SET state='failed', updated_at=?,
+                   worker_id=NULL, lease_token=NULL, lease_expires_at=NULL,
+                   lease_generation=lease_generation+1, evidence_id=NULL,
+                   result_json=NULL WHERE id=?""",
+                (now, claimed["id"]),
+            )
+            c.commit()
+        except BaseException:
+            c.rollback()
+            raise
+    return get_job(path, claimed["id"])
+
+
 def cancel(path: str, job_id: str) -> dict[str, Any] | None:
     with connect(path) as c:
         c.execute("BEGIN IMMEDIATE")
@@ -195,6 +235,56 @@ def cancel(path: str, job_id: str) -> dict[str, Any] | None:
         except BaseException:
             c.rollback(); raise
     return get_job(path,job_id)
+
+
+
+def read_receipt(path: str, job_id: str) -> dict[str, Any] | None:
+    """Return only a verified *local* fixed-probe digest, not third-party proof.
+
+    Never serialize the raw job parameters, customer inputs, or arbitrary
+    result_json fields to the caller. Corruption is a fail-closed error.
+    """
+    with connect(path) as c:
+        row = c.execute(
+            "SELECT id,kind,state,params,evidence_id,result_json FROM jobs WHERE id=?",
+            (job_id,),
+        ).fetchone()
+        if row is None:
+            return None
+        if row["state"] != "succeeded" or row["kind"] != "regression_scan":
+            raise ValueError("Job receipt not available")
+        ev = c.execute(
+            "SELECT id,job_id,capability_id,kind,sha256 FROM evidence WHERE id=?",
+            (row["evidence_id"],),
+        ).fetchone()
+        if ev is None:
+            raise ValueError("Job receipt evidence missing")
+        try:
+            params = json.loads(row["params"])
+            result = json.loads(row["result_json"])
+        except (ValueError, TypeError):
+            raise ValueError("Job receipt format invalid") from None
+        sha = hashlib.sha256(b"aurex-offline-roundtrip-v1").hexdigest()
+        if (
+            params != {"probe": "sqlite_roundtrip_v1"}
+            or result != {"sha256": sha, "independentVerification": "NOT VERIFIED"}
+            or ev["id"] != row["evidence_id"]
+            or ev["job_id"] != row["id"]
+            or ev["capability_id"] != "regression_scan"
+            or ev["kind"] != "offline_probe"
+            or not secrets.compare_digest(ev["sha256"], sha)
+        ):
+            raise ValueError("Job receipt integrity failed")
+    return {
+        "jobId": job_id, "state": "succeeded",
+        "evidenceId": ev["id"], "sha256": sha,
+        "observation": {
+            "probe": "sqlite_roundtrip_v1", "executed": True,
+            "passed": True, "sha256": sha, "verification": "NOT VERIFIED",
+        },
+        "integrity": "RECORDED", "verification": "NOT VERIFIED",
+        "authority": "NONE", "release": "HOLD",
+    }
 
 
 def evidence(path: str) -> list[dict[str, Any]]:
