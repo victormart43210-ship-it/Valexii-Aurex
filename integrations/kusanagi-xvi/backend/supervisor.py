@@ -25,10 +25,11 @@ def validate_config(env: Mapping[str, str], mount_check: Callable[[str], bool] =
     port = env.get("PORT", "8080")
     if not port.isascii() or not port.isdecimal() or not 1 <= int(port) <= 65535:
         raise ValueError("Invalid service port")
-    if env.get("AUREX_REQUIRED_VOLUME") == "true":
-        # Do not silently substitute ephemeral container disk for durable jobs.
-        if not (os.path.realpath(db).startswith("/data/") and mount_check("/data")):
-            raise ValueError("Required persistent /data volume missing")
+    # Do not silently substitute ephemeral disk for durable jobs.
+    if env.get("AUREX_REQUIRED_VOLUME") == "true" and not (
+        os.path.realpath(db).startswith("/data/") and mount_check("/data")
+    ):
+        raise ValueError("Required persistent /data volume missing")
     return db
 
 
