@@ -9,6 +9,7 @@ import argparse
 import json
 import os
 import secrets
+import sqlite3
 import time
 
 from . import store
@@ -27,7 +28,7 @@ def once(worker_id: str | None = None, db_path: str | None = None) -> dict[str, 
 
     try:
         result = store.finalize(path, claimed, identity)
-    except Exception:
+    except (ValueError, RuntimeError, sqlite3.Error, TypeError, KeyError):
         # A real storage error in fail_claim must propagate and terminate the
         # worker; the supervisor then restarts the whole service fail-closed.
         failed = store.fail_claim(path, claimed, identity)
