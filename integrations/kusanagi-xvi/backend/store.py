@@ -182,6 +182,46 @@ def finalize(path: str, claimed: dict[str, Any], worker_id: str) -> dict[str, An
     return out
 
 
+
+def fail_claim(path: str, claimed: dict[str, Any], worker_id: str) -> dict[str, Any] | None:
+    """Atomically fail only a still-owned lease and release its token.
+
+    A cancellation, expiry, or a newer lease generation must not be overwritten.
+    No evidence is inserted and no model/financial authority is asserted.
+    """
+    with connect(path) as c:
+        c.execute("BEGIN IMMEDIATE")
+        try:
+            live = c.execute(
+                "SELECT state,worker_id,lease_token,lease_generation,lease_expires_at "
+                "FROM jobs WHERE id=?", (claimed["id"],),
+            ).fetchone()
+            now = iso()
+            if (
+                live is None
+                or live["state"] != "running"
+                or live["worker_id"] != worker_id
+                or live["lease_token"] != claimed["lease_token"]
+                or live["lease_generation"] != claimed["lease_generation"]
+                or not live["lease_expires_at"]
+                or live["lease_expires_at"] <= now
+            ):
+                c.commit()
+                return None
+            c.execute(
+                """UPDATE jobs SET state='failed', updated_at=?,
+                   worker_id=NULL, lease_token=NULL, lease_expires_at=NULL,
+                   lease_generation=lease_generation+1, evidence_id=NULL,
+                   result_json=NULL WHERE id=?""",
+                (now, claimed["id"]),
+            )
+            c.commit()
+        except BaseException:
+            c.rollback()
+            raise
+    return get_job(path, claimed["id"])
+
+
 def cancel(path: str, job_id: str) -> dict[str, Any] | None:
     with connect(path) as c:
         c.execute("BEGIN IMMEDIATE")
