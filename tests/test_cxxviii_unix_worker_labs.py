@@ -160,7 +160,19 @@ def test_observer_provides_freshness_not_independent_proof(database):
     assert value["worker"] == "NOT_VERIFIED"
     snap = agent.snapshot(database)
     assert snap["running"] is True
+    assert snap["worker"] == "NOT_VERIFIED"
     assert snap["verification"] == "NOT_VERIFIED"
+
+    # Regression: observer may run before worker starts in the same container.
+    store.heartbeat(database, "unix-worker-after-observer")
+    recent = agent.snapshot(database)
+    assert recent["worker"] == "RECENT"
+    assert recent["verification"] == "NOT_VERIFIED"
+
+    # A stale heartbeat must never be presented as a running worker.
+    with store.connect(database) as conn:
+        conn.execute("UPDATE workers SET last_seen=?", ("2000-01-01T00:00:00+00:00",))
+    assert agent.snapshot(database)["worker"] == "NOT_VERIFIED"
 
 
 def test_fastapi_readonly_and_default_disabled(tmp_path, monkeypatch):
