@@ -25,7 +25,7 @@ def _stamp(raw: Any) -> datetime:
     if not isinstance(raw, str) or len(raw) > 40:
         raise ValueError("timestamp required")
     try:
-        dt = datetime.fromisoformat(raw.replace("Z", "+00:00"))
+        dt = datetime.fromisoformat(raw.replace("Z", "+00:00"))  # noqa: FURB162 (explicit UTC normalization)
     except ValueError as exc:
         raise ValueError("invalid timestamp") from exc
     if dt.tzinfo is None or dt.utcoffset() is None:
