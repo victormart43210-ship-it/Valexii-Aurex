@@ -47,5 +47,5 @@ def optional_nvidia_explanation(summary: dict[str, Any], *, reserve: Callable[[]
         if not isinstance(r, dict) or r.get("authority") != "NONE" or r.get("verification") != "NOT_VERIFIED" or not isinstance(r.get("reply"), str):
             return hold
         return {"status": "UNVERIFIED_NVIDIA_NARRATIVE", "reply": r["reply"][:1200], "authority": "NONE", "verification": "NOT_VERIFIED"}
-    except Exception:
+    except Exception:  # noqa: BLE001 (untrusted opt-in provider fails closed)
         return hold
