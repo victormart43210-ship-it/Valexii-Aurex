@@ -2,10 +2,10 @@
 from __future__ import annotations
 
 import importlib.util
+import tempfile
 from pathlib import Path
 from unittest import TestCase
 from unittest.mock import patch
-import tempfile
 
 S = Path(__file__).resolve().parents[1] / "tools" / "aurex_nvidia_readiness_v7.py"
 spec = importlib.util.spec_from_file_location("nvidia_v7", S)
@@ -66,23 +66,26 @@ class TestNvidiaBridge(TestCase):
             v7.evaluate(401, self.agent(), b)
 
     def test_no_token_prevents_network(self):
-        with patch.dict("os.environ", {"RAILWAY_ENVIRONMENT_NAME": "aurex-staging", "AUREX_SERVICE_TOKEN": ""}):
-            with patch.object(v7, "_fetch", side_effect=AssertionError("network must not be used")):
-                self.assertEqual(v7.main(["staging"]), 2)
+        with (
+            patch.dict("os.environ", {"RAILWAY_ENVIRONMENT_NAME": "aurex-staging", "AUREX_SERVICE_TOKEN": ""}),
+            patch.object(v7, "_fetch", side_effect=AssertionError("network must not be used")),
+        ):
+            self.assertEqual(v7.main(["staging"]), 2)
 
     def test_wrong_env_prevents_network(self):
-        with patch.dict("os.environ", {"RAILWAY_ENVIRONMENT_NAME": "production", "AUREX_SERVICE_TOKEN": "s" * 40}):
-            with patch.object(v7, "_fetch", side_effect=AssertionError("network must not be used")):
-                self.assertEqual(v7.main(["staging"]), 2)
+        with (
+            patch.dict("os.environ", {"RAILWAY_ENVIRONMENT_NAME": "production", "AUREX_SERVICE_TOKEN": "s" * 40}),
+            patch.object(v7, "_fetch", side_effect=AssertionError("network must not be used")),
+        ):
+            self.assertEqual(v7.main(["staging"]), 2)
 
     def test_only_allowlisted_paths(self):
         with self.assertRaises(v7.Hold):
             v7._fetch("/v1/agent/ask", "s" * 40)
 
     def test_offline_source_guard_missing(self):
-        with tempfile.TemporaryDirectory() as d:
-            with self.assertRaises(v7.Hold):
-                v7.local(Path(d))
+        with tempfile.TemporaryDirectory() as d, self.assertRaises(v7.Hold):
+            v7.local(Path(d))
 
     def test_https_staging_origin_is_pinned(self):
         self.assertEqual(v7.BASE, "https://aurex-api-aurex-staging.up.railway.app")
