@@ -1,0 +1,122 @@
+name: CXXVIII Unix Worker & Python Labs
+
+on:
+  pull_request:
+    paths:
+      - "integrations/kusanagi-xvi/backend/**"
+      - "tests/test_cxxviii_unix_worker_labs.py"
+      - ".github/workflows/cxxviii-unix-labs.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  python-labs:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install isolated development dependencies
+        run: |
+          python -m pip install -r integrations/kusanagi-xvi/backend/requirements.txt
+          python -m pip install "httpx>=0.27,<1" "pytest>=8,<10" "ruff>=0.12,<1"
+      - name: Python syntax
+        run: python -m compileall -q integrations/kusanagi-xvi/backend tests/test_cxxviii_unix_worker_labs.py
+      - name: Ruff checks
+        run: ruff check integrations/kusanagi-xvi/backend/{store,worker,supervisor,lab}.py tests/test_cxxviii_unix_worker_labs.py
+      - name: Test Unix failure/restart fencing and Python labs
+        run: python -m pytest -q tests/test_cxxviii_unix_worker_labs.py
+      - name: Confirm offline labs never auto-execute
+        run: |
+          PYTHONPATH=integrations/kusanagi-xvi python -m backend.lab
+          PYTHONPATH=integrations/kusanagi-xvi python -m backend.lab --execute
+
+  docker-unix-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - run: docker build -f integrations/kusanagi-xvi/backend/Dockerfile -t aurex-unix-lab:ci integrations/kusanagi-xvi/backend
+      - name: Test opt-in bounded Unix worker + observer in ephemeral container
+        run: |
+          set -eu
+          docker run --rm -d --name cxxviii-aurex -p 18080:8080 \
+            -e AUREX_DB_PATH=/data/lab.sqlite3 \
+            -e AUREX_SERVICE_TOKEN=ssssssssssssssssssssssssssssssssssssssss \
+            -e AUREX_ENABLE_OFFLINE_LAB=true \
+            -e AUREX_OBSERVER_ENABLED=true \
+            -e AUREX_LLM_ENABLED=false \
+            -e AUREX_LLM_ALLOW_BILLING=false \
+            aurex-unix-lab:ci
+          trap 'docker logs cxxviii-aurex 2>&1 || true; docker rm -f cxxviii-aurex >/dev/null 2>&1 || true' EXIT
+          python - <<'PY'
+          import json
+          import time
+          import urllib.error
+          import urllib.request
+
+          base = "http://127.0.0.1:18080"
+          auth = {"Authorization": "Bearer " + "s" * 40}
+          def call(path, method="GET", data=None, headers=None):
+              req = urllib.request.Request(
+                  base + path, method=method, data=data,
+                  headers={**auth, **(headers or {})},
+              )
+              with urllib.request.urlopen(req, timeout=3) as r:
+                  return json.load(r)
+
+          for _ in range(30):
+              try:
+                  if call("/v1/health")["status"] == "ok":
+                      break
+              except OSError:
+                  time.sleep(1)
+          else:
+              raise SystemExit("API failed to start in Docker")
+
+          try:
+              req = urllib.request.Request(base + "/v1/jobs")
+              urllib.request.urlopen(req, timeout=3)
+          except urllib.error.HTTPError as exc:
+              assert exc.code == 401, exc.code
+          else:
+              raise AssertionError("Missing bearer was admitted")
+          for path in ("/v1/capabilities", "/v1/evidence", "/v1/budgets", "/v1/jobs"):
+              assert isinstance(call(path), dict)
+          for _ in range(20):
+              status = call("/v1/agent/status")
+              if status["running"] and status["worker"] == "RECENT":
+                  break
+              time.sleep(1)
+          else:
+              raise AssertionError("Worker/observer not running")
+          assert status["verification"] == "NOT_VERIFIED"
+          payload = json.dumps({
+              "kind": "regression_scan",
+              "params": {"probe": "sqlite_roundtrip_v1"},
+              "maxCostUsd": 0,
+          }).encode()
+          job = call("/v1/jobs", "POST", payload, {
+              "Content-Type": "application/json",
+              "Idempotency-Key": "cxxviii-docker-lab-probe",
+          })
+          assert job["state"] in ("queued", "running", "succeeded")
+          for _ in range(25):
+              current = call("/v1/jobs/" + job["id"])
+              if current["state"] == "succeeded":
+                  break
+              if current["state"] in ("failed", "cancelled"):
+                  raise AssertionError("Worker did not finish")
+              time.sleep(1)
+          else:
+              raise AssertionError("Unix worker failed to finish bounded probe")
+          evidence = call("/v1/evidence")["evidence"]
+          assert len(evidence) == 1
+          assert evidence[0]["kind"] == "offline_probe"
+          assert evidence[0]["summary"].endswith("NOT VERIFIED")
+          print("UNIX_WORKER_DOCKER_SMOKE_PASS; AUTHORITY NONE; EXTERNAL_SPEND 0")
+          PY
