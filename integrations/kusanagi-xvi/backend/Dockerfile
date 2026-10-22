@@ -3,7 +3,10 @@ ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1
 WORKDIR /app
 COPY requirements.txt ./
 RUN pip install --no-cache-dir -r requirements.txt
-RUN mkdir -p /app/backend /data && useradd --uid 10001 --create-home aurex && chown aurex:aurex /data
+RUN mkdir -p /app/backend /data && useradd --uid 10001 --create-home aurex
 COPY *.py ./backend/
-USER aurex
-CMD ["python", "-m", "backend.supervisor"]
+# Railway mounts /data as root at container start, after image build.
+# PID 1 boot owns only this volume path and drops to uid 10001 before
+# launching the API + optional worker/observer. No root-lived app process.
+USER root
+CMD ["python", "-m", "backend.boot"]

@@ -45,8 +45,13 @@ jobs:
       - name: Test opt-in bounded Unix worker + observer in ephemeral container
         run: |
           set -eu
+          # New non-root bootstrap requires a genuine /data mount and the
+          # fixed staging-only database location; tmpfs is disposable and costs $0.
           docker run --rm -d --name cxxviii-aurex -p 18080:8080 \
-            -e AUREX_DB_PATH=/data/lab.sqlite3 \
+            --tmpfs /data:rw,size=32m \
+            -e RAILWAY_ENVIRONMENT_NAME=aurex-staging \
+            -e AUREX_REQUIRED_VOLUME=true \
+            -e AUREX_DB_PATH=/data/aurex.sqlite3 \
             -e AUREX_SERVICE_TOKEN=ssssssssssssssssssssssssssssssssssssssss \
             -e AUREX_ENABLE_OFFLINE_LAB=true \
             -e AUREX_OBSERVER_ENABLED=true \
@@ -56,6 +61,7 @@ jobs:
           trap 'docker logs cxxviii-aurex 2>&1 || true; docker rm -f cxxviii-aurex >/dev/null 2>&1 || true' EXIT
           python - <<'PY'
           import json
+          import subprocess
           import time
           import urllib.error
           import urllib.request
@@ -78,6 +84,17 @@ jobs:
                   time.sleep(1)
           else:
               raise SystemExit("API failed to start in Docker")
+
+          # Root runs only long enough to chown /data. PID 1 must be uid 10001.
+          proc_status = subprocess.check_output(
+              ["docker", "exec", "cxxviii-aurex", "cat", "/proc/1/status"],
+              text=True,
+          )
+          uid = next(
+              line.split()[1] for line in proc_status.splitlines()
+              if line.startswith("Uid:")
+          )
+          assert uid == "10001", "AUREX service did not drop root privileges"
 
           try:
               req = urllib.request.Request(base + "/v1/jobs")
