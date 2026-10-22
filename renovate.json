@@ -1,0 +1,35 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended"
+  ],
+  "timezone": "America/Chicago",
+  "schedule": [
+    "after 4pm on friday"
+  ],
+  "dependencyDashboard": true,
+  "prConcurrentLimit": 2,
+  "branchConcurrentLimit": 2,
+  "prHourlyLimit": 1,
+  "automerge": false,
+  "platformAutomerge": false,
+  "lockFileMaintenance": {
+    "enabled": false
+  },
+  "ignorePaths": [
+    "website/**",
+    "examples/**",
+    "integrations/**",
+    "snapshots/**"
+  ],
+  "packageRules": [
+    {
+      "description": "Group GitHub Actions dependency updates; preserve review gate",
+      "matchManagers": [
+        "github-actions"
+      ],
+      "groupName": "GitHub Actions dependencies",
+      "automerge": false
+    }
+  ]
+}
