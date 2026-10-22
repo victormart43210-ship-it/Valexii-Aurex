@@ -17,7 +17,8 @@ from collections.abc import Callable
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
-from urllib.request import HTTPRedirectHandler, ProxyHandler, Request as URLRequest, build_opener
+from urllib.request import HTTPRedirectHandler, ProxyHandler, build_opener
+from urllib.request import Request as URLRequest
 
 from fastapi import Depends, FastAPI, Header, HTTPException, Request
 from fastapi.concurrency import run_in_threadpool
