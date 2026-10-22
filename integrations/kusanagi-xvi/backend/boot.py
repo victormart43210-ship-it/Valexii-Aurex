@@ -17,10 +17,12 @@ UID = 10001
 
 
 def check_environment() -> tuple[int, int]:
-    if os.environ.get("RAILWAY_ENVIRONMENT_NAME") != "aurex-staging":
-        # Boot also supports later production ONLY after a separate reviewed release.
-        if os.environ.get("AUREX_BOOT_RELEASE_APPROVED") != "true":
-            raise RuntimeError("Boot only admitted in aurex-staging; release gate HOLD")
+    # Production requires a separate explicit release approval; staging does not.
+    if (
+        os.environ.get("RAILWAY_ENVIRONMENT_NAME") != "aurex-staging"
+        and os.environ.get("AUREX_BOOT_RELEASE_APPROVED") != "true"
+    ):
+        raise RuntimeError("Boot only admitted in aurex-staging; release gate HOLD")
     if os.environ.get("AUREX_DB_PATH") != DB:
         raise RuntimeError("AUREX_DB_PATH must be the fixed durable /data/aurex.sqlite3")
     if os.environ.get("AUREX_REQUIRED_VOLUME") != "true":
