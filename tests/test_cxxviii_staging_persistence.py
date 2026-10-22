@@ -60,3 +60,49 @@ def test_tampered_staging_receipt_fails_closed(tmp_path):
         conn.execute("UPDATE evidence SET sha256=?", ("0" * 64,))
     with pytest.raises(RuntimeError, match="integrity check"):
         probe.run(db, ENV)
+
+
+
+def test_local_receipt_readback_and_tamper_rejected(tmp_path):
+    db = str(tmp_path / "staged.sqlite3")
+    probe.run(db, ENV)
+    jobs = store.list_jobs(db)
+    assert len(jobs) == 1
+    jid = jobs[0]["id"]
+    valid = store.read_receipt(db, jid)
+    assert valid is not None
+    assert valid["state"] == "succeeded"
+    assert valid["verification"] == "NOT VERIFIED"
+    assert valid["authority"] == "NONE"
+    assert valid["observation"]["passed"] is True
+    assert store.read_receipt(db, "unknown") is None
+    with store.connect(db) as conn:
+        conn.execute("UPDATE evidence SET sha256=? WHERE job_id=?", ("f" * 64, jid))
+    with pytest.raises(ValueError, match="integrity"):
+        store.read_receipt(db, jid)
+
+
+def test_bearer_protected_http_receipt_after_local_staging_boot(tmp_path, monkeypatch):
+    from fastapi.testclient import TestClient
+
+    import importlib
+
+    app = importlib.import_module("backend.app")
+    db = str(tmp_path / "http-staging.sqlite3")
+    monkeypatch.setenv("AUREX_DB_PATH", db)
+    monkeypatch.setenv("AUREX_SERVICE_TOKEN", "z" * 40)
+    probe.run(db, ENV)
+    jid = store.list_jobs(db)[0]["id"]
+    with TestClient(app.app) as client:
+        route = f"/v1/jobs/{jid}/receipt"
+        assert client.get(route).status_code == 401
+        assert client.get(route, headers={"Authorization": "Bearer wrong"}).status_code == 401
+        r = client.get(route, headers={"Authorization": "Bearer " + "z" * 40})
+        assert r.status_code == 200
+        assert r.json()["verification"] == "NOT VERIFIED"
+        assert "params" not in r.text
+        with store.connect(db) as conn:
+            conn.execute("UPDATE evidence SET sha256=? WHERE job_id=?", ("0" * 64, jid))
+        failure = client.get(route, headers={"Authorization": "Bearer " + "z" * 40})
+        assert failure.status_code == 409
+        assert "0" * 64 not in failure.text
