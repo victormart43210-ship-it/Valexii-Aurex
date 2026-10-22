@@ -114,7 +114,9 @@ def check_service(url: str, token: str,
             root + "/v1/" + endpoint,
             method="GET", headers={
                 "Accept": "application/json",
-                **({} if endpoint == "health" else {"Authorization": f"Bearer {token}"}),
+                # The existing Railway read-only bridge protects /v1/health too.
+                # Authenticate all five GETs; no browser receives this token.
+                "Authorization": f"Bearer {token}",
             },
         )
         try:
