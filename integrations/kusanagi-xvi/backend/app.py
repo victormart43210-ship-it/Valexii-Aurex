@@ -12,10 +12,11 @@ from fastapi import Depends, FastAPI, Header, HTTPException, Request
 from pydantic import BaseModel, ConfigDict, Field
 
 try:
-    from . import agent, llm, store
+    from . import agent, llm, research_api, store
 except ImportError:
     import agent  # type: ignore[no-redef]
     import llm  # type: ignore[no-redef]
+    import research_api  # type: ignore[no-redef]
     import store  # type: ignore[no-redef]
 
 @asynccontextmanager
@@ -150,3 +151,8 @@ def cancel_job(job_id: str, idempotency_key: Annotated[str, Header()] = ""):
     if not result:
         raise HTTPException(409,"job already terminal or not found")
     return result
+
+
+# Optional staging-only research intake. This inherits existing service bearer.
+# The endpoint does not call a model and can never issue PASS/CLEAR authority.
+app.include_router(research_api.router, dependencies=[Depends(authorize)])
