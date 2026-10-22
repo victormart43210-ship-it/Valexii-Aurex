@@ -22,6 +22,7 @@ from aurex.database import (
 from aurex.fenced_worker import cancel_job, claim_job, fail_job, finalize_job
 from aurex.governance_math.research_api import router as research_advice_router
 from aurex.nvidia_doc_v4 import register_document_routes
+from aurex.pipeline_receipts import read_pipeline_receipt
 from aurex.real_offline_probe import execute_sqlite_roundtrip
 from aurex.workflows.budget import BudgetGuard
 
@@ -324,6 +325,17 @@ def get_job_endpoint(job_id: str, _: str = Depends(authenticate)) -> JobResponse
         updatedAt=j["updated_at"],
         reservationUsd=j["reservation_usd"],
     )
+
+
+@app.get("/v1/jobs/{job_id}/receipt")
+def get_job_receipt_endpoint(job_id: str, _: str = Depends(authenticate)) -> dict[str, Any]:
+    try:
+        receipt = read_pipeline_receipt(DEFAULT_DB_PATH, job_id)
+    except ValueError as exc:
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(exc)) from exc
+    if not receipt:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Receipt not found")
+    return receipt
 
 
 @app.post("/v1/jobs/{job_id}/cancel", response_model=JobResponse)

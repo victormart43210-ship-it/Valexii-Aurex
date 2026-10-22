@@ -3,9 +3,9 @@ info:
   title: AUREX Service API
   version: 1.0.0-draft
   description: >
-    Contract for an external, separately hosted AUREX service. DRAFT — no hosted
-    implementation exists. Mirrors src/lib/aurex-api-schema.ts. Jobs accept only named
-    kinds with bounded params; no code, shell or URL execution.
+    Candidate v1 API contract, NOT proof of deployed capability. A limited read-only
+    Railway bridge is deployed separately. Mirrors src/lib/aurex-api-schema.ts.
+    Jobs accept only named kinds with bounded params; no code, shell or URL execution.
 servers:
   - url: https://aurex.example.invalid
     description: Placeholder; no server is deployed.
@@ -37,7 +37,7 @@ paths:
         required: true
         content: { application/json: { schema: { $ref: "#/components/schemas/JobCreate" } } }
       responses:
-        "201": { description: Created, content: { application/json: { schema: { $ref: "#/components/schemas/Job" } } } }
+        "200": { description: Created or idempotent replay, content: { application/json: { schema: { $ref: "#/components/schemas/Job" } } } }
         "402": { $ref: "#/components/responses/Error" }
         default: { $ref: "#/components/responses/Error" }
   /v1/jobs/{jobId}:
@@ -78,7 +78,7 @@ components:
       content: { application/json: { schema: { $ref: "#/components/schemas/Error" } } }
   schemas:
     Id: { type: string, pattern: "^[a-z0-9][a-z0-9_-]{0,63}$" }
-    CapId: { type: string, pattern: "^[a-z-]{1,64}$" }
+    CapId: { type: string, pattern: "^[a-z][a-z0-9_-]{0,63}$" }
     Time: { type: string, format: date-time }
     Health:
       type: object
@@ -136,7 +136,7 @@ components:
       properties:
         id: { $ref: "#/components/schemas/Id" }
         capabilityId: { $ref: "#/components/schemas/CapId" }
-        kind: { enum: [test_run, health_probe, benchmark_record] }
+        kind: { enum: [test_run, health_probe, benchmark_record, offline_probe] }
         collectedAt: { $ref: "#/components/schemas/Time" }
         sha256: { type: string, pattern: "^[0-9a-f]{64}$" }
         summary: { type: string, maxLength: 500 }
