@@ -11,13 +11,13 @@ import hashlib
 import hmac
 import json
 import os
-import re
 import sqlite3
 import time
-from datetime import datetime, timezone
+from collections.abc import Callable
+from datetime import UTC, datetime
 from pathlib import Path
-from typing import Any, Callable
-from urllib.request import HTTPRedirectHandler, ProxyHandler, Request, build_opener
+from typing import Any
+from urllib.request import HTTPRedirectHandler, ProxyHandler, Request as URLRequest, build_opener
 
 from fastapi import Depends, FastAPI, Header, HTTPException, Request
 from fastapi.concurrency import run_in_threadpool
@@ -104,7 +104,7 @@ def _database(cfg: dict[str, Any]) -> sqlite3.Connection:
 
 
 def _usage(cfg: dict[str, Any]) -> tuple[int, float]:
-    day = datetime.now(timezone.utc).date().isoformat()
+    day = datetime.now(UTC).date().isoformat()
     db = _database(cfg)
     try:
         row = db.execute("SELECT calls,estimated_usd FROM document_quota WHERE day=?", (day,)).fetchone()
@@ -131,7 +131,7 @@ def _reserve(cfg: dict[str, Any], calls: int) -> bool:
     Does NOT guarantee real vendor billing is within USD cap; provider-level
     spend ceilings must be configured independently before enabling.
     """
-    day = datetime.now(timezone.utc).date().isoformat()
+    day = datetime.now(UTC).date().isoformat()
     conn = _database(cfg)
     try:
         conn.execute("BEGIN IMMEDIATE")
@@ -172,7 +172,7 @@ def _provider_request(prompt: str) -> tuple[str, int | None, int | None]:
         "chat_template_kwargs": {"enable_thinking": False},
     }
     key = os.environ.get("AUREX_NVIDIA_API_KEY", "").strip()
-    request = Request(
+    request = URLRequest(
         NVIDIA_URL,
         data=json.dumps(payload, separators=(",", ":")).encode("utf-8"),
         headers={"Authorization": "Bearer " + key, "Content-Type": "application/json"},
