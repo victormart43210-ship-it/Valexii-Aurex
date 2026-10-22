@@ -1,8 +1,9 @@
-"""Read-only AUREX v1 bridge. No AI inference, jobs, or computer use enabled."""
+"""Read-only AUREX v1 bridge with document analysis support. No AI inference or jobs enabled."""
 import hmac
 import os
 from datetime import UTC, datetime
 
+from doc_intelligence import budget_snapshot, register_document_routes
 from fastapi import Depends, FastAPI, Header, HTTPException
 
 app = FastAPI(title="AUREX read-only bridge", docs_url=None, redoc_url=None, openapi_url=None)
@@ -29,8 +30,10 @@ def evidence():
 
 @app.get("/v1/budgets", dependencies=[Depends(authorize)])
 def budgets():
-    return {"limitUsd": 0, "reservedUsd": 0, "spentUsd": 0, "period": "month"}
+    return budget_snapshot()
 
 @app.get("/v1/jobs", dependencies=[Depends(authorize)])
 def jobs():
     return {"jobs": [], "nextCursor": None}
+
+register_document_routes(app, authorize)
