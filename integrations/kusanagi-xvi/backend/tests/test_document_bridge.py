@@ -6,6 +6,7 @@ import tempfile
 import unittest
 from pathlib import Path
 from unittest.mock import patch
+from urllib.request import Request as URLRequest
 
 from fastapi.testclient import TestClient
 
@@ -135,6 +136,18 @@ class OfflineBridgeTests(unittest.TestCase):
         self.assertEqual(doc._quote_result(p, "This is `an`\nexample."), "EXACT_MATCH")
         self.assertEqual(doc._quote_result(p, "This is an example."), "NORMALIZED_MATCH")
         self.assertEqual(doc._quote_result(p, "not there"), "NOT_FOUND")
+
+    def test_nvidia_request_uses_http_request_not_fastapi_request(self):
+        response = {"choices": [{"message": {"content": "candidate"}}], "usage": {"prompt_tokens": 3, "completion_tokens": 1}}
+        with patch.object(doc, "build_opener") as factory:
+            factory.return_value.open.return_value.__enter__.return_value.read.return_value = json.dumps(response).encode()
+            output, input_tokens, output_tokens = doc._provider_request("test-only document")
+            sent = factory.return_value.open.call_args.args[0]
+        self.assertIsInstance(sent, URLRequest)
+        self.assertEqual(sent.full_url, doc.NVIDIA_URL)
+        self.assertEqual(sent.get_method(), "POST")
+        self.assertEqual(output, "candidate")
+        self.assertEqual((input_tokens, output_tokens), (3, 1))
 
     def test_auth_constant_time_header_value(self):
         self.assertEqual(CLIENT.get("/v1/health", headers={"Authorization": "Bearer bad"}).status_code, 401)
