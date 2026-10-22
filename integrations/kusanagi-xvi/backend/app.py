@@ -2,8 +2,9 @@
 import hmac
 import os
 from datetime import UTC, datetime
-from fastapi import Depends, FastAPI, Header, HTTPException
+
 from doc_intelligence import budget_snapshot, register_document_routes
+from fastapi import Depends, FastAPI, Header, HTTPException
 
 app = FastAPI(title="AUREX governed bridge", docs_url=None, redoc_url=None, openapi_url=None)
 CAPABILITIES = ("memory-graph", "evidence-vault", "model-benchmarking", "hypothesis-testing", "computer-use")
