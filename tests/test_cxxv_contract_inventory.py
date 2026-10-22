@@ -21,7 +21,7 @@ from aurex.api import (
 
 
 def test_candidate_http_paths_exist_but_not_inference() -> None:
-    methods = {(method, route.path) for route in app.routes for method in (route.methods or [])}
+    methods = {(method, route.path) for route in app.routes for method in (getattr(route, "methods", None) or [])}
     for path in ("/v1/health", "/v1/capabilities", "/v1/evidence", "/v1/budgets", "/v1/jobs"):
         assert ("GET", path) in methods
     # NVIDIA document routes are NOT on canonical main; Jules owns their integration.
