@@ -4,19 +4,19 @@ from __future__ import annotations
 import hmac
 import os
 import re
-from datetime import datetime, timezone
 from contextlib import asynccontextmanager
+from datetime import UTC, datetime
 from typing import Annotated, Literal
 
 from fastapi import Depends, FastAPI, Header, HTTPException, Request
 from pydantic import BaseModel, ConfigDict, Field
 
 try:
-    from . import store, agent, llm
+    from . import agent, llm, store
 except ImportError:
-    import store  # type: ignore[no-redef]
     import agent  # type: ignore[no-redef]
     import llm  # type: ignore[no-redef]
+    import store  # type: ignore[no-redef]
 
 @asynccontextmanager
 async def lifespan(_app: FastAPI):
@@ -57,7 +57,7 @@ async def no_store(request: Request, call_next):
 
 @app.get("/v1/health", dependencies=[Depends(authorize)])
 def health():
-    return {"status":"ok", "version":"1.1.0-sqlite-offline", "time":datetime.now(timezone.utc).isoformat()}
+    return {"status":"ok", "version":"1.1.0-sqlite-offline", "time":datetime.now(UTC).isoformat()}
 
 
 @app.get("/v1/capabilities", dependencies=[Depends(authorize)])
