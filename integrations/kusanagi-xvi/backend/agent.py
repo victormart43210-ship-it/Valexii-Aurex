@@ -6,7 +6,6 @@ worker. No network calls, paid inference, actions, or security authority.
 from __future__ import annotations
 import argparse
 import json
-import os
 import sqlite3
 import time
 from datetime import UTC, datetime, timedelta
