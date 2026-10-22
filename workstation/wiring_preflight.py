@@ -14,7 +14,7 @@ import ssl
 import urllib.error
 import urllib.parse
 import urllib.request
-from typing import Any, Callable
+from typing import Any
 
 MAX_RESPONSE_BYTES = 256 * 1024
 CAP_ID = re.compile(r"[a-z][a-z0-9_-]{0,63}\Z")
