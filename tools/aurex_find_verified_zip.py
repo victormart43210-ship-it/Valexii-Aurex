@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """AUREX XXV: find a downloaded release ZIP by its checksum, not its filename.
 
 Read-only unless --extract-to is explicit. Never runs scripts inside archives.
@@ -72,7 +71,7 @@ def find_verified(fragment: str, expected: str, roots: list[Path]) -> Path:
                     continue
     if not matches:
         raise Hold("no downloaded ZIP matched the provided SHA-256; do not bypass verification")
-    return sorted(matches, key=lambda p: (len(p.parts), len(str(p)), str(p)))[0]
+    return min(matches, key=lambda p: (len(p.parts), len(str(p)), str(p)))
 
 
 def _valid_members(z: zipfile.ZipFile) -> list[zipfile.ZipInfo]:
