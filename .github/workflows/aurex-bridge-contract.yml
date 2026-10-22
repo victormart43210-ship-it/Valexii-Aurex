@@ -1,0 +1,26 @@
+name: AUREX staging bridge contract (offline)
+on:
+  pull_request:
+    paths:
+      - "tools/aurex_bridge_probe.py"
+      - "tests/test_aurex_bridge_probe.py"
+      - "docs/AUREX_OPEN_SOURCE_BRIDGE.md"
+      - ".github/workflows/aurex-bridge-contract.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  offline-bridge:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Compile source
+        run: python -m compileall -q tools/aurex_bridge_probe.py tests/test_aurex_bridge_probe.py
+      - name: No-network staging dry run
+        run: python tools/aurex_bridge_probe.py | python -c 'import json,sys; r=json.load(sys.stdin); assert (r["status"],r["release"],r["execute"]) == ("STAGED","HOLD","NOT RUN")'
+      - name: Synthetic offline tests
+        run: python -m unittest discover -s tests -p test_aurex_bridge_probe.py -v
