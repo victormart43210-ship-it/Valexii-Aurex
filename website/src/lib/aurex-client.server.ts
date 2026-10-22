@@ -11,6 +11,7 @@ import {
   JobCreateSchema,
   JobListSchema,
   JobSchema,
+  PipelineReceiptSchema,
   MAX_RESPONSE_BYTES,
   type JobCreate,
 } from "./aurex-api-schema";
@@ -105,6 +106,11 @@ export function createAurexClient(cfg: ClientConfig) {
     jobStatus: async (jobId: string) =>
       idOk(jobId)
         ? call("GET", `/jobs/${jobId}`, JobSchema)
+        : { ok: false as const, error: "invalid_input" as const },
+    /** Authenticated *server-only* receipt; not a claim of financial accuracy. */
+    jobReceipt: async (jobId: string) =>
+      idOk(jobId)
+        ? call("GET", `/jobs/${jobId}/receipt`, PipelineReceiptSchema)
         : { ok: false as const, error: "invalid_input" as const },
     createJob: async (input: JobCreate, idempotencyKey: string) => {
       if (!keyOk(idempotencyKey) || !JobCreateSchema.safeParse(input).success)
