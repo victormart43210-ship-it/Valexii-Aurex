@@ -23,8 +23,8 @@ VALUES = {
 
 class Response:
     status = 200
-    headers = {"Content-Type": "application/json"}
     def __init__(self, value, code=200):
+        self.headers = {"Content-Type": "application/json"}
         self.status = code
         self.buffer = io.BytesIO(json.dumps(value).encode())
     def __enter__(self):
