@@ -3,7 +3,7 @@ ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1
 WORKDIR /app
 COPY requirements.txt ./
 RUN pip install --no-cache-dir -r requirements.txt
-COPY app.py ./
-RUN useradd --create-home --uid 10001 aurex
+RUN mkdir -p /app/backend /data && useradd --uid 10001 --create-home aurex && chown aurex:aurex /data
+COPY *.py ./backend/
 USER aurex
-CMD ["sh", "-c", "exec uvicorn app:app --host 0.0.0.0 --port ${PORT:-8080} --no-access-log"]
+CMD ["python", "-m", "backend.supervisor"]
