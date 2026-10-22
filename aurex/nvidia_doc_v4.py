@@ -5,16 +5,7 @@ AI outputs are advisory and never grant financial or verification authority.
 """
 from __future__ import annotations
 
-import sys
-from pathlib import Path
-
-# Bridge to integrations/kusanagi-xvi/backend/doc_intelligence.py
-root = Path(__file__).resolve().parents[1]
-bridge_path = root / "integrations" / "kusanagi-xvi" / "backend"
-if str(bridge_path) not in sys.path:
-    sys.path.insert(0, str(bridge_path))
-
-from doc_intelligence import (  # type: ignore[import-not-found] # noqa: E402
+from aurex.doc_intelligence import (
     Analysis,
     AnalyzeInput,
     budget_snapshot,

@@ -3,8 +3,12 @@ import hmac
 import os
 from datetime import UTC, datetime
 
-from doc_intelligence import budget_snapshot, register_document_routes
 from fastapi import Depends, FastAPI, Header, HTTPException
+
+try:
+    from aurex.doc_intelligence import budget_snapshot, register_document_routes
+except ImportError:
+    from doc_intelligence import budget_snapshot, register_document_routes  # type: ignore[no-redef]
 
 app = FastAPI(title="AUREX read-only bridge", docs_url=None, redoc_url=None, openapi_url=None)
 CAPABILITIES = ("memory-graph", "evidence-vault", "model-benchmarking", "hypothesis-testing", "computer-use")
