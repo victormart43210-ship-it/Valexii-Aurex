@@ -27,11 +27,13 @@ class GateTests(unittest.TestCase):
         with mock.patch.dict("os.environ", {"AUREX_SERVICE_TOKEN": "x" * 3}, clear=True):
             self.assertEqual(gate.stage_readonly()["status"], "HOLD")
     def test_unauth_denial_first(self):
-        with mock.patch.dict("os.environ", {"AUREX_SERVICE_TOKEN": "A" * 64}, clear=True):
-            with mock.patch.object(gate, "_open", return_value=(200, b"{}")) as req:
-                got = gate.stage_readonly()
-                self.assertEqual(got["status"], "FAIL")
-                self.assertEqual(req.call_count, 1)
+        with (
+            mock.patch.dict("os.environ", {"AUREX_SERVICE_TOKEN": "A" * 64}, clear=True),
+            mock.patch.object(gate, "_open", return_value=(200, b"{}")) as req,
+        ):
+            got = gate.stage_readonly()
+            self.assertEqual(got["status"], "FAIL")
+            self.assertEqual(req.call_count, 1)
     def test_all_valid_statuses_no_nvidia(self):
         def response(url, token=None):
             if token is None:
@@ -43,12 +45,14 @@ class GateTests(unittest.TestCase):
             if url.endswith("/v1/agent/status"):
                 return 200, b'{"chatConfigured":false}'
             return 200, b"{}"
-        with mock.patch.dict("os.environ", {"AUREX_SERVICE_TOKEN": "A" * 64}, clear=True):
-            with mock.patch.object(gate, "_open", side_effect=response) as req:
-                x = gate.stage_readonly()
-                self.assertEqual(x["status"], "PASS")
-                self.assertEqual(req.call_count, 1 + len(gate.GET_PATHS))
-                self.assertEqual(x["modelInference"], "NOT_RUN")
+        with (
+            mock.patch.dict("os.environ", {"AUREX_SERVICE_TOKEN": "A" * 64}, clear=True),
+            mock.patch.object(gate, "_open", side_effect=response) as req,
+        ):
+            x = gate.stage_readonly()
+            self.assertEqual(x["status"], "PASS")
+            self.assertEqual(req.call_count, 1 + len(gate.GET_PATHS))
+            self.assertEqual(x["modelInference"], "NOT_RUN")
     def test_llm_enabled_fails(self):
         def response(url, token=None):
             if token is None:
@@ -60,9 +64,11 @@ class GateTests(unittest.TestCase):
             if url.endswith("/v1/budgets"):
                 return 200, b'{"limitUsd":0,"spentUsd":0}'
             return 200, b"{}"
-        with mock.patch.dict("os.environ", {"AUREX_SERVICE_TOKEN":"A"*64}, clear=True):
-            with mock.patch.object(gate,"_open",side_effect=response):
-                self.assertEqual(gate.stage_readonly()["status"],"FAIL")
+        with (
+            mock.patch.dict("os.environ", {"AUREX_SERVICE_TOKEN":"A"*64}, clear=True),
+            mock.patch.object(gate,"_open",side_effect=response),
+        ):
+            self.assertEqual(gate.stage_readonly()["status"],"FAIL")
     def test_nonzero_cost_fails(self):
         def response(url, token=None):
             if token is None:
@@ -72,9 +78,11 @@ class GateTests(unittest.TestCase):
             if url.endswith("/v1/budgets"):
                 return 200, b'{"limitUsd":1,"spentUsd":0}'
             return 200,b"{}"
-        with mock.patch.dict("os.environ", {"AUREX_SERVICE_TOKEN":"A"*64}, clear=True):
-            with mock.patch.object(gate,"_open",side_effect=response):
-                self.assertEqual(gate.stage_readonly()["status"],"FAIL")
+        with (
+            mock.patch.dict("os.environ", {"AUREX_SERVICE_TOKEN":"A"*64}, clear=True),
+            mock.patch.object(gate,"_open",side_effect=response),
+        ):
+            self.assertEqual(gate.stage_readonly()["status"],"FAIL")
     def test_website_200_marker_not_browser_proof(self):
         with mock.patch.object(gate,"_open",return_value=(200,b"<html>AUREX</html>")):
             x=gate.website_readonly()
