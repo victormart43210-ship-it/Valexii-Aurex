@@ -59,9 +59,9 @@ def test_failure_clears_exact_lease_and_does_not_create_evidence(monkeypatch, da
     assert store.evidence(database) == []
     with store.connect(database) as c:
         row = c.execute("SELECT lease_token,lease_expires_at,worker_id,result_json "
-                        "FROM jobs").fetchone()
+                        " ,lease_generation FROM jobs").fetchone()
         assert all(row[k] is None for k in ("lease_token", "lease_expires_at", "worker_id", "result_json"))
-        assert row["lease_generation"] if "lease_generation" in row.keys() else True
+        assert row["lease_generation"] == 2
 
 
 def test_stale_failed_worker_does_not_override_cancelled_job(monkeypatch, database):
