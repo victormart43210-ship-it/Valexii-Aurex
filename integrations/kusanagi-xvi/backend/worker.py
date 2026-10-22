@@ -1,9 +1,11 @@
 """One-shot bounded offline worker, isolated from HTTP and without AI calls."""
 from __future__ import annotations
+
 import argparse
 import json
 import os
 import time
+
 try:
     from . import store
 except ImportError:
