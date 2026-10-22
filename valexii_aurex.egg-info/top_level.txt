@@ -1,1 +1,5 @@
 aurex
+aurex_workflows
+fixtures
+training
+workstation
