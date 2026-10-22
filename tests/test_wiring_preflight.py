@@ -62,9 +62,8 @@ class FakeOpener:
         endpoint = request.full_url.rsplit("/", 1)[-1]
         assert endpoint in ENDPOINTS
         assert request.get_header("Accept") == "application/json"
-        assert request.get_header("Authorization") == (
-            None if endpoint == "health" else f"Bearer {TOKEN}"
-        )
+        # The older deployed bridge requires a Bearer token even on /v1/health.
+        assert request.get_header("Authorization") == f"Bearer {TOKEN}"
         self.calls.append(endpoint)
         return Reply(self.payloads[endpoint])
 
