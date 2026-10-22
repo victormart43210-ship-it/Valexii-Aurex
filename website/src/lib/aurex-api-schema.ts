@@ -56,7 +56,7 @@ export const JobCreateSchema = z
 export const EvidenceSchema = z
   .object({
     id,
-    capabilityId: z.string().regex(/^[a-z-]{1,64}$/),
+    capabilityId: z.string().regex(/^[a-z][a-z0-9_-]{0,63}$/),
     kind: z.enum(["test_run", "health_probe", "benchmark_record", "offline_probe"]),
     collectedAt: iso,
     sha256: z.string().regex(/^[0-9a-f]{64}$/),
