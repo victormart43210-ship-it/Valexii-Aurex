@@ -60,7 +60,14 @@ def main() -> int:
     try:
         db = validate_config(env)
         store.initialize(db)
-    except (ValueError, OSError) as exc:
+        if env.get("AUREX_STAGING_PERSISTENCE_PROBE") == "true":
+            from . import staging_probe
+
+            result = staging_probe.run(db, env)
+            import json
+
+            print(json.dumps(result, sort_keys=True), flush=True)
+    except (ValueError, OSError, RuntimeError) as exc:
         print(f"FATAL: AUREX startup refused ({type(exc).__name__})", file=sys.stderr)
         return 2
 
