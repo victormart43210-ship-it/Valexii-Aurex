@@ -83,9 +83,9 @@ def test_local_receipt_readback_and_tamper_rejected(tmp_path):
 
 
 def test_bearer_protected_http_receipt_after_local_staging_boot(tmp_path, monkeypatch):
-    from fastapi.testclient import TestClient
-
     import importlib
+
+    from fastapi.testclient import TestClient
 
     app = importlib.import_module("backend.app")
     db = str(tmp_path / "http-staging.sqlite3")
