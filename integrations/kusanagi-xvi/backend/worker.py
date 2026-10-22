@@ -3,7 +3,6 @@ from __future__ import annotations
 import argparse
 import json
 import os
-import socket
 import time
 try:
     from . import store
