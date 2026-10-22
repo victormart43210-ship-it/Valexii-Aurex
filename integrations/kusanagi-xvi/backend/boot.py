@@ -9,7 +9,6 @@ import os
 import pwd
 import stat
 import sys
-from pathlib import Path
 
 MOUNT = "/data"
 DB = "/data/aurex.sqlite3"
