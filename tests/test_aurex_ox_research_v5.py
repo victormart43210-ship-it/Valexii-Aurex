@@ -119,8 +119,8 @@ def test_wilson_zero_trials_and_zero_error_not_zero_risk():
 
 
 def test_selective_risk_coverage_brier_and_wilson():
-    truth = [dict(id="a", expected="REVIEW"), dict(id="b", expected="CLEAR"), dict(id="c", expected="REVIEW"), dict(id="d", expected="CLEAR")]
-    pred = [dict(id="a", prediction="REVIEW", pReview=0.8), dict(id="b", prediction="CLEAR", pReview=0.2), dict(id="c", prediction="HOLD"), dict(id="d", prediction="REVIEW", pReview=0.6)]
+    truth = [{"id": "a", "expected": "REVIEW"}, {"id": "b", "expected": "CLEAR"}, {"id": "c", "expected": "REVIEW"}, {"id": "d", "expected": "CLEAR"}]
+    pred = [{"id": "a", "prediction": "REVIEW", "pReview": 0.8}, {"id": "b", "prediction": "CLEAR", "pReview": 0.2}, {"id": "c", "prediction": "HOLD"}, {"id": "d", "prediction": "REVIEW", "pReview": 0.6}]
     q = evals.evaluate_rows(truth, pred)
     assert q["coverage"] == 0.75
     assert q["selectiveRisk"] == pytest.approx(1/3, abs=1e-6)
@@ -131,8 +131,8 @@ def test_selective_risk_coverage_brier_and_wilson():
 
 
 def test_abstention_never_counts_as_correct():
-    truth = [dict(id="a", expected="CLEAR"), dict(id="b", expected="REVIEW")]
-    pred = [dict(id="a", prediction="HOLD"), dict(id="b", prediction="HOLD")]
+    truth = [{"id": "a", "expected": "CLEAR"}, {"id": "b", "expected": "REVIEW"}]
+    pred = [{"id": "a", "prediction": "HOLD"}, {"id": "b", "prediction": "HOLD"}]
     q = evals.evaluate_rows(truth, pred)
     assert q["coverage"] == 0 and q["selectiveRisk"] is None
     assert q["brierScore"] is None
@@ -140,13 +140,13 @@ def test_abstention_never_counts_as_correct():
 
 def test_exact_id_join_and_bad_probability_rejected():
     with pytest.raises(ValueError):
-        evals.evaluate_rows([dict(id="x", expected="CLEAR")], [])
+        evals.evaluate_rows([{"id": "x", "expected": "CLEAR"}], [])
     with pytest.raises(ValueError):
-        evals.evaluate_rows([dict(id="x", expected="CLEAR")], [dict(id="x", prediction="REVIEW", pReview=float("nan"))])
+        evals.evaluate_rows([{"id": "x", "expected": "CLEAR"}], [{"id": "x", "prediction": "REVIEW", "pReview": float("nan")}])
 
 
 def test_group_fold_reproducibility_and_no_leak():
-    rows = [dict(id=f"{g}.{i}", group=f"subject{g}") for g in range(7) for i in range(g % 3 + 1)]
+    rows = [{"id": f"{g}.{i}", "group": f"subject{g}"} for g in range(7) for i in range(g % 3 + 1)]
     folds = evals.deterministic_group_folds(rows, k=4)
     assert folds == evals.deterministic_group_folds(list(reversed(rows)), k=4)
     for g in range(7):
@@ -182,7 +182,7 @@ def enable_nvidia(monkeypatch):
 
 def test_nvidia_aggregates_only_and_quota(monkeypatch):
     enable_nvidia(monkeypatch)
-    summary = dict(sourceFamilyCount=2, supportFamilies=1, contradictFamilies=1, conflictingFamilies=0)
+    summary = {"sourceFamilyCount": 2, "supportFamilies": 1, "contradictFamilies": 1, "conflictingFamilies": 0}
     called = []
     r = nim.optional_nvidia_explanation(summary, reserve=lambda: True, answer=lambda q: called.append(q) or {"reply": "Unverified explanation", "authority": "NONE", "verification": "NOT_VERIFIED"})
     assert r["status"] == "UNVERIFIED_NVIDIA_NARRATIVE"
@@ -194,7 +194,7 @@ def test_nvidia_aggregates_only_and_quota(monkeypatch):
 
 def test_nvidia_rejects_sensitive_fields_and_fake_authority(monkeypatch):
     enable_nvidia(monkeypatch)
-    summary = dict(sourceFamilyCount=2, supportFamilies=1, contradictFamilies=1, conflictingFamilies=0)
+    summary = {"sourceFamilyCount": 2, "supportFamilies": 1, "contradictFamilies": 1, "conflictingFamilies": 0}
     with pytest.raises(ValueError):
         nim.optional_nvidia_explanation({**summary, "customerData": "private"}, reserve=lambda: True, answer=lambda _: {})
     r = nim.optional_nvidia_explanation(summary, reserve=lambda: True, answer=lambda _: {"reply": "All clear", "authority": "PASS", "verification": "VERIFIED"})
