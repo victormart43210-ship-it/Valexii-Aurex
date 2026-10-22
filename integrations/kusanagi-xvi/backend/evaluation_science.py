@@ -108,7 +108,7 @@ def deterministic_group_folds(rows: list[dict[str, str]], k: int = 5) -> dict[st
         raise ValueError("too many rows")
     for row in rows:
         if not isinstance(row, dict) or not isinstance(row.get("id"), str) or not isinstance(row.get("group"), str):
-            raise ValueError("id/group strings required")
+            raise ValueError("id/group strings required")  # noqa: TRY004 (stable validation contract)
         i, group = row["id"], row["group"]
         if not i or len(i) > 96 or not group or len(group) > 96 or i in ids:
             raise ValueError("missing or duplicate id/group")
