@@ -7,8 +7,14 @@ from pathlib import Path
 import pytest
 
 from workstation.field_audit_beta_gate import (
-    ALLOWED_FLAGS, RESULT_SCHEMA, load_candidate, main, oracle,
-    score_candidate, suite, synthetic_cases,
+    ALLOWED_FLAGS,
+    RESULT_SCHEMA,
+    load_candidate,
+    main,
+    oracle,
+    score_candidate,
+    suite,
+    synthetic_cases,
 )
 
 
