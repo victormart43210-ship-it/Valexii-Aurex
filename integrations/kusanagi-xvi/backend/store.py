@@ -6,10 +6,11 @@ import json
 import os
 import secrets
 import sqlite3
-from contextlib import contextmanager, closing
-from datetime import datetime, timedelta, timezone
+from collections.abc import Iterator
+from contextlib import closing, contextmanager
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
-from typing import Any, Iterator
+from typing import Any
 from uuid import uuid4
 
 LEASE_S = 60
@@ -17,7 +18,7 @@ HEARTBEAT_S = 90
 
 
 def iso() -> str:
-    return datetime.now(timezone.utc).isoformat()
+    return datetime.now(UTC).isoformat()
 
 
 def path_from_env() -> str:
@@ -120,7 +121,7 @@ def heartbeat(path: str, worker_id: str) -> None:
 
 def worker_recent(path: str) -> bool:
     with connect(path) as c:
-        since = (datetime.now(timezone.utc) - timedelta(seconds=HEARTBEAT_S)).isoformat()
+        since = (datetime.now(UTC) - timedelta(seconds=HEARTBEAT_S)).isoformat()
         return c.execute("SELECT 1 FROM workers WHERE last_seen>=? LIMIT 1", (since,)).fetchone() is not None
 
 
@@ -134,7 +135,7 @@ def claim(path: str, worker_id: str) -> dict[str, Any] | None:
                 c.commit()
                 return None
             token = secrets.token_hex(24)
-            expires = (datetime.now(timezone.utc) + timedelta(seconds=LEASE_S)).isoformat()
+            expires = (datetime.now(UTC) + timedelta(seconds=LEASE_S)).isoformat()
             c.execute("""UPDATE jobs SET state='running',updated_at=?,worker_id=?,lease_token=?,
                          lease_expires_at=?,lease_generation=lease_generation+1 WHERE id=?""", (now,worker_id,token,expires,r["id"]))
             out = c.execute("SELECT * FROM jobs WHERE id=?", (r["id"],)).fetchone()
@@ -209,7 +210,7 @@ def reserve_llm_call(path: str, now: datetime | None = None) -> bool:
 
     Count reservations even if a provider request fails: never retry or refund.
     """
-    timestamp=now or datetime.now(timezone.utc)
+    timestamp=now or datetime.now(UTC)
     minute=timestamp.strftime('%Y-%m-%dT%H:%M')
     day=timestamp.strftime('%Y-%m-%d')
     with connect(path) as c:
