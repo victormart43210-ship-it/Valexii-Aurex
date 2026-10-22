@@ -8,6 +8,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import math
 import os
 import sys
 import urllib.error
@@ -95,7 +96,7 @@ def validate_route(path: str, value: Any) -> None:
                 and isinstance(value.get("time"), str)):
             raise BridgeFailure("invalid_health")
         try:
-            datetime.fromisoformat(value["time"].replace("Z", "+00:00"))
+            datetime.fromisoformat(value["time"])
         except ValueError:
             raise BridgeFailure("invalid_health_time") from None
     elif path == "/v1/capabilities":
@@ -111,7 +112,7 @@ def validate_route(path: str, value: Any) -> None:
             raise BridgeFailure("invalid_budget")
         for field in ("limitUsd", "reservedUsd", "spentUsd"):
             n = value.get(field)
-            if isinstance(n, bool) or not isinstance(n, (int, float)) or n < 0 or n != n:
+            if isinstance(n, bool) or not isinstance(n, (int, float)) or n < 0 or (isinstance(n, float) and not math.isfinite(n)):
                 raise BridgeFailure("invalid_budget")
     else:
         raise BridgeFailure("unapproved_path")
