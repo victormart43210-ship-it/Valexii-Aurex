@@ -59,3 +59,22 @@ A later authorized owner-only read-only upload route should validate tenant iden
 ### Public-facing claim policy
 
 Use: **DISPATER.AI — Revenue Intelligence & Audit Readiness**, powered by AUREX/OX (developmental). Industry-specific dashboards for towing and oilfield, plus future consulting for workflow automation and private, citation-based company knowledge search. Mark all visual dashboards **CONCEPT PREVIEW · FICTIONAL DATA · NOT LIVE**. Maintain existing Lovable Roman Dis Pater artwork and the two homepage rainbow orbit rings. The project does not offer IRS certification, DOT certification, tax or legal advice, secure production RAG, or live customer audit services yet.
+
+## Local browser demo (synthetic data only)
+
+A **localhost-only** preview also exists. It is deliberately separate from canonical AUREX API and *never deployed* to Railway or the public website.
+
+```bash
+DISPATER_ALLOW_LOCAL_SYNTHETIC_DEMO=1 python -m aurex.dispater_demo_server
+# Open http://127.0.0.1:8777/ on the same computer.
+```
+
+Use the **Towing example** or **Oilfield example** button, select **Run AUREX audit**, choose a reviewer disposition for a finding, **Save demo manager review**, then **Export evidence report**. An optional file chooser is for **fictional JSON examples only**, not real records.
+
+The server binds `127.0.0.1`, requires an explicit local opt-in, enforces strict Host/Origin and JSON body checks, limits requests to 512KiB, issues no CORS permissions, and keeps NVIDIA **NOT RUN**. The browser only sends data to this loopback process; it cannot access external connectors. The server has no authentication and is **not safe to deploy, tunnel, port-forward, or expose to customer data**.
+
+Run HTTP smoke tests with:
+
+```bash
+pytest -q tests/test_dispater_demo_server.py
+```
