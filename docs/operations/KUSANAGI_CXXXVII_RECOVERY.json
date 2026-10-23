@@ -1,0 +1,35 @@
+{
+  "operation": "KUSANAGI_CXXXVII",
+  "timestamp_utc": "2026-10-23T17:15:00Z",
+  "canonical_repository": "victormart43210-ship-it/Valexii-Aurex",
+  "target_branch": "main",
+  "working_branch": "work/kusanagi-cxxxvii-dispater-commercial-activation",
+  "canonical_main_sha": "415dbab72fe00ad65be379979c0ee213059054b5",
+  "local_head_sha": "05488f2195f269a9ecac7ec5eb7555306e931fa3",
+  "verification_summary": {
+    "pytest": "424 passed, 1 skipped",
+    "ruff": "0 errors (all checks passed)",
+    "mypy": "0 issues in 73 source files (strict)",
+    "website_bun_test": "153 passed, 0 failed across 22 files",
+    "website_bun_build": "Nitro build success",
+    "100_case_audit": "100/100 matches, 70 TP, 0 FP, 0 FN"
+  },
+  "pr_124_integration": {
+    "actions_integrated": [
+      "Action A: Request an Audit (/contact?service=dispater-audit)",
+      "Action B: Book a Consultation (/contact?service=dispater-consultation)",
+      "Action C: View Demonstration (#dispater-demo)"
+    ],
+    "events_registered": [
+      "dispater_request_audit_click",
+      "dispater_book_consultation_click",
+      "dispater_view_demo_click"
+    ],
+    "privacy": "Consent-gated, no PII, fail-safe dispatch"
+  },
+  "governance": {
+    "external_ai_budget": "$0.00",
+    "authority": "NONE",
+    "release_status": "HOLD"
+  }
+}

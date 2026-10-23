@@ -1,1 +1,0 @@
-Resume KUSANAGI CXXXII from exact saved remote head. Read recovery and resume first. Do not redo CXXIX. First unfinished task: reconcile backend.app startup with canonical jobs on an explicit isolated synthetic DB; test same entrypoint and worker. Preserve all release holds.

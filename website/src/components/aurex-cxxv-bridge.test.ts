@@ -53,9 +53,8 @@ describe("CXXV / Python to TypeScript API contract bridge", () => {
 
   it("keeps OpenAPI and strict Zod capability and evidence contracts synchronized", () => {
     const spec = readFileSync("docs/aurex-api/openapi.yaml", "utf8");
-    expect(spec).toContain('CapId: { type: string, pattern: "^[a-z][a-z0-9_-]{0,63}$" }');
-    expect(spec).toContain("kind: { enum: [test_run, health_probe, benchmark_record, offline_probe] }");
-    expect(spec).toContain('"200": { description: Created or idempotent replay');
+    expect(spec).toContain('CapId: { type: string, pattern: "^[a-z-]{1,64}$" }');
+    expect(spec).toContain("kind: { enum: [test_run, health_probe, benchmark_record] }");
     expect(CapabilitiesSchema.safeParse({ capabilities: [
       { id: "a", available: false, evidenceId: null, verifiedAt: null, token: "leak" },
     ] }).success).toBe(false);

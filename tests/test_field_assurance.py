@@ -128,10 +128,10 @@ def test_manifest_json_duplicate_keys_and_symlink_rejected(tmp_path: Path) -> No
     p.write_text('{"schema":"a","schema":"b"}')
     with pytest.raises(ValueError, match="malformed"):
         read_claims(p)
-    symlink_path = tmp_path / "symlink.json"
-    symlink_path.symlink_to(p)
+    sym = tmp_path / "symlink.json"
+    sym.symlink_to(p)
     with pytest.raises(ValueError, match="non-symlink"):
-        read_claims(symlink_path)
+        read_claims(sym)
 
 
 def test_cli_prints_profile_and_hold_for_template(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:

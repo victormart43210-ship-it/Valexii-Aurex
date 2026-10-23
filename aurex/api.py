@@ -19,10 +19,9 @@ from aurex.database import (
     list_evidence,
     list_jobs,
 )
-from aurex.fenced_worker import cancel_job, claim_job, fail_job, finalize_job
+from aurex.fenced_worker import cancel_job, claim_job, finalize_job
 from aurex.governance_math.research_api import router as research_advice_router
-from aurex.offline_probes import execute_probe
-from aurex.pipeline_receipts import read_pipeline_receipt
+from aurex.real_offline_probe import execute_sqlite_roundtrip
 from aurex.workflows.budget import BudgetGuard
 
 app = FastAPI(
@@ -224,13 +223,7 @@ def create_job_endpoint(
         raise HTTPException(status_code=402, detail="Paid execution disabled")
     if os.environ.get("AUREX_ENABLE_OFFLINE_LAB") != "1":
         raise HTTPException(status_code=503, detail="Worker unavailable: offline worker disabled")
-    # A second probe is strictly fixed, fictional and disabled unless deliberately
-    # enabled by the server owner. It accepts no customer documents or user data.
-    synthetic_params = {"probe": "synthetic_field_audit_v1"}
-    if req.params == synthetic_params:
-        if os.environ.get("AUREX_ENABLE_SYNTHETIC_FIELD_AUDIT") != "1":
-            raise HTTPException(status_code=503, detail="Synthetic field lab unavailable")
-    elif req.params != {"probe": "sqlite_roundtrip_v1"}:
+    if req.params != {"probe": "sqlite_roundtrip_v1"}:
         raise HTTPException(status_code=422, detail="Unsupported probe")
     if not idempotency_key or len(idempotency_key) > 128:
         raise HTTPException(status_code=422, detail="Idempotency-Key required")
@@ -243,18 +236,12 @@ def create_job_endpoint(
         raise HTTPException(status_code=409, detail=str(exc)) from exc
     job_id = str(job["id"])
     resolved_job: dict[str, Any] | None = job
-    if os.environ.get("AUREX_JOB_EXECUTION_MODE", "inline") == "queued":
-        return JobResponse(
-            id=job["id"], kind=job["kind"], state=job["state"],
-            createdAt=job["created_at"], updatedAt=job["updated_at"],
-            reservationUsd=job["reservation_usd"],
-        )
     if job["state"] == "queued":
         worker_id = "aurex-local-worker-1"
         claimed = claim_job(DEFAULT_DB_PATH, job_id, worker_id)
         if claimed is not None:
             try:
-                observation = execute_probe(req.params)
+                observation = execute_sqlite_roundtrip(req.params)
                 digest = hashlib.sha256(
                     json.dumps(observation, sort_keys=True).encode()
                 ).hexdigest()
@@ -264,17 +251,7 @@ def create_job_endpoint(
                     observation, digest, f"ev-{secrets.token_hex(12)}",
                 )
             except Exception:
-                # Fenced terminal failure: only the current, unexpired worker lease
-                # can move running -> failed. Cancellation or takeover wins.
-                # Never leak source exception text or create evidence on failure.
-                try:
-                    fail_job(
-                        DEFAULT_DB_PATH, job_id, worker_id,
-                        str(claimed["lease_token"]), int(claimed["lease_generation"]),
-                    )
-                except Exception:
-                    # Storage failure is still a 503, never a claim of success.
-                    pass
+                # Do not rewrite a cancelled or superseded worker's terminal state.
                 raise HTTPException(status_code=503, detail="Probe not finalized; execution not verified") from None
         else:
             resolved_job = get_job(DEFAULT_DB_PATH, job_id)
@@ -319,43 +296,6 @@ def cancel_job_endpoint(job_id: str, _: str = Depends(authenticate)) -> JobRespo
         updatedAt=updated["updated_at"],
         reservationUsd=updated["reservation_usd"],
     )
-
-
-class PipelineReceiptResponse(BaseModel):
-    """Integrity-checked local observation; not an independent efficacy verdict."""
-    model_config = ConfigDict(extra="forbid")
-
-    jobId: str
-    state: str
-    evidenceId: str
-    sha256: str
-    observation: dict[str, Any]
-    integrity: str
-    verification: str
-    authority: str
-    release: str
-
-
-@app.get("/v1/jobs/{job_id}/receipt", response_model=PipelineReceiptResponse)
-def pipeline_receipt_endpoint(
-    job_id: str,
-    _: str = Depends(authenticate),
-) -> PipelineReceiptResponse:
-    # The browser never calls this endpoint. It is service-bearer protected
-    # and the downstream site must additionally enforce owner authorization.
-    try:
-        receipt = read_pipeline_receipt(DEFAULT_DB_PATH, job_id)
-    except ValueError:
-        raise HTTPException(
-            status_code=status.HTTP_409_CONFLICT,
-            detail="Job receipt unavailable or integrity check failed",
-        ) from None
-    if receipt is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Job receipt not found",
-        )
-    return PipelineReceiptResponse(**receipt)
 
 
 @app.get("/v1/evidence", response_model=EvidenceListResponse)

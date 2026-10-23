@@ -98,42 +98,6 @@ def finalize_job(
     return result
 
 
-
-def fail_job(
-    db_path: str, job_id: str, worker_id: str, token: str, generation: int,
-) -> dict[str, Any] | None:
-    """Mark a worker failure only while its exact live lease remains authoritative.
-
-    A cancelled, expired or superseded worker can never overwrite terminal state.
-    Failed execution creates no evidence and never reports success.
-    """
-    conn = get_db(db_path)
-    try:
-        conn.execute("BEGIN IMMEDIATE")
-        _ensure_generation(conn)
-        now = _now().isoformat()
-        error = json.dumps({
-            "code": "PROBE_FAILED",
-            "message": "Probe execution failed; result not verified",
-        })
-        cur = conn.execute(
-            """UPDATE jobs SET state='failed', updated_at=?, error_json=?,
-               lease_token=NULL, lease_expires_at=NULL
-               WHERE id=? AND state='running' AND worker_id=?
-               AND lease_token=? AND lease_generation=?
-               AND lease_expires_at IS NOT NULL AND lease_expires_at>?""",
-            (now, error, job_id, worker_id, token, generation, now),
-        )
-        conn.commit()
-        if cur.rowcount != 1:
-            return None
-    except BaseException:
-        conn.rollback()
-        raise
-    finally:
-        conn.close()
-    return get_job(db_path, job_id)
-
 def cancel_job(db_path: str, job_id: str) -> dict[str, Any] | None:
     conn = get_db(db_path)
     try:
