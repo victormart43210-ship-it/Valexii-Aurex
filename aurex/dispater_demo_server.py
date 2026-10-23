@@ -6,6 +6,7 @@ import json
 import os
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
+from typing import cast
 
 from aurex.dispater_demo import MAX_INPUT_BYTES, build_demo_report
 from aurex.dispater_pilot import InvalidSnapshot
@@ -28,8 +29,11 @@ def make_handler() -> type[BaseHTTPRequestHandler]:
             self.end_headers()
             self.wfile.write(body)
 
+        def _local_port(self) -> int:
+            return cast(ThreadingHTTPServer, self.server).server_port
+
         def _valid_host(self) -> bool:
-            port = self.server.server_port
+            port = self._local_port()
             return self.headers.get("Host") == f"127.0.0.1:{port}"
 
         def do_GET(self) -> None:
@@ -67,7 +71,7 @@ def make_handler() -> type[BaseHTTPRequestHandler]:
                 self._json(403, {"error": "invalid loopback host"})
                 return
             origin = self.headers.get("Origin")
-            if origin is not None and origin != f"http://127.0.0.1:{self.server.server_port}":
+            if origin is not None and origin != f"http://127.0.0.1:{self._local_port()}":
                 self._json(403, {"error": "invalid origin"})
                 return
             if self.path != "/api/report":
