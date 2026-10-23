@@ -12,10 +12,11 @@ _CANONICAL_JOBS = frozenset({
     "id", "kind", "state", "params_json", "idempotency_key",
     "reservation_usd", "created_at", "updated_at", "result_json",
     "worker_id", "lease_token", "lease_expires_at", "evidence_id",
+    "request_id", "trace_id", "error_json",
 })
 _CANONICAL_EVIDENCE = frozenset({
     "id", "capability_id", "kind", "collected_at", "sha256", "summary",
-    "integrity_status", "verification_status",
+    "integrity_status", "verification_status", "source_ref",
 })
 _LEGACY_JOBS = frozenset({
     "id", "kind", "state", "params", "idempotency_key", "created_at",
