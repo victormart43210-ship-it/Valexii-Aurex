@@ -73,16 +73,9 @@ describe("client fails closed", () => {
   it("times out slow services", async () => {
     const slow = ((_u: unknown, init: RequestInit) =>
       new Promise((_r, rej) => {
-        const timer = setTimeout(() => {}, 10000);
-        if (init.signal?.aborted) {
-          clearTimeout(timer);
-          rej(Object.assign(new Error("t"), { name: "TimeoutError" }));
-          return;
-        }
-        init.signal?.addEventListener("abort", () => {
-          clearTimeout(timer);
-          rej(Object.assign(new Error("t"), { name: "TimeoutError" }));
-        });
+        init.signal?.addEventListener("abort", () =>
+          rej(Object.assign(new Error("t"), { name: "TimeoutError" })),
+        );
       })) as unknown as typeof fetch;
     expect(await createAurexClient({ url, token, timeoutMs: 500, fetcher: slow }).health()).toEqual(
       { ok: false, error: "timeout" },

@@ -21,8 +21,8 @@ from aurex.database import (
 )
 from aurex.fenced_worker import cancel_job, claim_job, fail_job, finalize_job
 from aurex.governance_math.research_api import router as research_advice_router
+from aurex.offline_probes import execute_probe
 from aurex.pipeline_receipts import read_pipeline_receipt
-from aurex.real_offline_probe import execute_sqlite_roundtrip
 from aurex.workflows.budget import BudgetGuard
 
 app = FastAPI(
@@ -243,41 +243,18 @@ def create_job_endpoint(
         raise HTTPException(status_code=409, detail=str(exc)) from exc
     job_id = str(job["id"])
     resolved_job: dict[str, Any] | None = job
+    if os.environ.get("AUREX_JOB_EXECUTION_MODE", "inline") == "queued":
+        return JobResponse(
+            id=job["id"], kind=job["kind"], state=job["state"],
+            createdAt=job["created_at"], updatedAt=job["updated_at"],
+            reservationUsd=job["reservation_usd"],
+        )
     if job["state"] == "queued":
         worker_id = "aurex-local-worker-1"
         claimed = claim_job(DEFAULT_DB_PATH, job_id, worker_id)
         if claimed is not None:
             try:
-                if req.params == synthetic_params:
-                    # Selective, source-pinned PR #99 deterministic candidate; the
-                    # independent reference is a transparent *fixture*, not an
-                    # external witness of model intelligence or field accuracy.
-                    from workstation.field_audit_beta_gate import score_candidate, suite
-                    from workstation.field_audit_beta_pipeline import candidate_from_suite
-
-                    cases = suite()
-                    candidate = candidate_from_suite(cases)
-                    report, matched = score_candidate(candidate)
-                    if not matched:
-                        raise ValueError("Synthetic candidate did not match its fixture")
-                    observation = {
-                        "probe": "synthetic_field_audit_v1",
-                        "synthetic": True,
-                        "suite_sha256": cases["suite_sha256"],
-                        "case_count": report["total_cases"],
-                        "exact_case_matches": report["exact_case_matches"],
-                        "finding_labels": report["true_positive_flags"],
-                        "false_positive_flags": report["false_positive_flags"],
-                        "false_negative_flags": report["false_negative_flags"],
-                        "result": report["status"],
-                        "independent_verification": "NOT_VERIFIED",
-                        "real_document_accuracy": "NOT_MEASURED",
-                        "authority": "HOLD",
-                        "effect": "NONE",
-                        "production_release": "HOLD",
-                    }
-                else:
-                    observation = execute_sqlite_roundtrip(req.params)
+                observation = execute_probe(req.params)
                 digest = hashlib.sha256(
                     json.dumps(observation, sort_keys=True).encode()
                 ).hexdigest()
