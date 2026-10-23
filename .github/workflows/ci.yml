@@ -22,5 +22,5 @@ jobs:
       - run: pip install -e ".[dev]"
       - run: ruff check .
       - run: mypy aurex
-      - run: pytest -q
+      - run: python -m pytest -q
       - run: node --experimental-strip-types --test website/tests/cxxxii-financial.test.ts
