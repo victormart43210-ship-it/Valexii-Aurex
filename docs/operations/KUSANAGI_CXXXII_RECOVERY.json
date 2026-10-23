@@ -1,0 +1,90 @@
+{
+  "operation": "KUSANAGI CXXXII",
+  "checkpoint": 2,
+  "utc": "2026-10-23T01:02:50.829Z",
+  "repository": "victormart43210-ship-it/Valexii-Aurex",
+  "branch": "work/kusanagi-cxxxii-schema-admission",
+  "base_checkpoint": "6adc1936d09534b134182e769f88fea9c5a0125a",
+  "inspected_source_sha": "42f298e82e3ac8d40e04ff1ab752ae45662af07e",
+  "file_ownership": [
+    "aurex/staging_schema_preflight.py",
+    "tests/test_cxxxii_staging_schema_preflight.py",
+    "docs/operations/KUSANAGI_CXXXII_RECOVERY.json",
+    "docs/operations/KUSANAGI_CXXXII_RESUME.md",
+    "docs/operations/KUSANAGI_CXXXII_NEXT_AGENT.md"
+  ],
+  "scope": "Source-only read-only schema admission preflight and Railway inventory; no DB writes or deployments",
+  "test_evidence": [
+    {
+      "command": "python -m pytest -q tests/test_cxxxii_staging_schema_preflight.py",
+      "environment": "isolated local reproduction of two added files",
+      "outcome": "PASS",
+      "summary": "6 passed in 0.09s"
+    },
+    {
+      "command": "python -m compileall -q /mnt/data/aurex_cxxxii_local",
+      "outcome": "PASS"
+    },
+    {
+      "command": "python -m ruff check ...",
+      "outcome": "NOT RUN",
+      "reason": "ruff not installed in local environment"
+    }
+  ],
+  "railway": {
+    "project": "78095d3d-5911-41c8-aa3e-f9ebf5d81054",
+    "staging_environment": "98c103eb-a1af-46b6-948e-19c80e4d720d",
+    "production_environment": "9a139b10-9e6b-4ebd-89c7-731855cbbb5c",
+    "service": "2b51dfe6-2175-4cb0-aac2-eb40ecbc3a1d",
+    "staging_source": "d22e06e9412a07e06ab8bd597e0e5ebf5b8c125c",
+    "production_source": "57a079f93b947594f1a6f854aa46a6f606f86f76",
+    "last_staging_deployment": "05345f25-bde4-4569-a853-e51771030992",
+    "volume_logical_id": "4d23b1e6-3625-4def-aa97-82e10859f04d",
+    "volume_instance_isolation": "NOT VERIFIED",
+    "backup_restore": "NOT VERIFIED",
+    "deployment": "NOT RUN",
+    "staged_patch": "NONE",
+    "runtime_status": "ONLINE (1/1 replica), 0 observed warning/critical notifications; does not prove financial route is available"
+  },
+  "completed": [
+    "Read CXXIX checkpoint 004 and policy",
+    "Verified Railway source, Docker root and two environment volume inventories",
+    "Compared canonical jobs/evidence_records and legacy jobs/evidence layouts",
+    "Wrote a no-create immutable SQLite schema classifier that detects canonical/legacy/mixed/WAL and fails closed",
+    "Ran six local self-contained regression tests",
+    "Checkpoint 001 confirmed pushed on PR #120 at fdc80e29c5d438778884591f0a82a0faef13051a; exact-head CI 445 passed, 1 skipped, Ruff/MyPy PASS",
+    "Confirmed CXXVIII supervisor source is absent from CXXIX branch (different source histories); no untested copy or deployment attempted"
+  ],
+  "blockers": [
+    "Canonical financial API is not available in current staging Docker build root",
+    "Legacy and canonical SQLite schemas are incompatible; migration/segregated DB requires explicit design and tests",
+    "Volume-instance IDs, backup/restore and staging isolation not independently established",
+    "Website staging-backed path not implemented",
+    "Independent reviewer NOT RUN"
+  ],
+  "next_three_actions": [
+    "Explicitly reconcile CXXVIII source under integrations/kusanagi-xvi/backend (supervisor, boot, store, worker) with CXXIX canonical execution into a single staging Docker build, or use a validated migration-free entrypoint. Preserve old behavior and add integration tests.",
+    "Retrieve environment-specific Railway volumeInstance and backup/restore evidence (same project-level volume ID alone is insufficient), then verify real separation without writing to production.",
+    "Obtain independent exact-head review and test actual staging Docker entrypoint with disposable SQLite; only then request separate Railway staged-deploy approval and connect owner-only VALEXII.COM."
+  ],
+  "checkpoint_sha": "Resolve via GitHub latest branch head. Commit cannot embed itself.",
+  "remote_push_verification": "PASS for checkpoint 001; checkpoint 002 to verify after commit",
+  "authority": "NONE",
+  "release": "HOLD",
+  "customer_data": "NONE",
+  "paid_inference": "DISABLED",
+  "checkpoint_001_remote_sha": "fdc80e29c5d438778884591f0a82a0faef13051a",
+  "checkpoint_001_remote_verified": "PASS",
+  "exact_head_ci_checkpoint_001": {
+    "tested_sha": "fdc80e29c5d438778884591f0a82a0faef13051a",
+    "ci_run": 39881783231,
+    "ci": "PASS",
+    "python_tests": "445 passed, 1 skipped, 1 warning in 3.30s",
+    "ruff": "PASS",
+    "mypy": "PASS (77 source files)",
+    "image_build_smoke": "PASS (run 39881783210)",
+    "independent_runner_smoke": "PASS (run 39881783213)",
+    "limitation": "GitHub CI is self-contained source verification, NOT a Railway financial execution or external independent audit."
+  },
+  "new_source_discovery": "CXXIX PR118 branch DOES NOT contain CXXVIII supervisor.py/boot.py/store.py/worker.py; these exist on deployed staging branch d22e06e.., with divergent source history. Integrating actual runtime requires explicit source reconciliation before staging image can use new finance files. Never assume canonical source files enter the existing Railway Docker build."
+}
