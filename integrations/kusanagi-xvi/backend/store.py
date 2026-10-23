@@ -228,12 +228,14 @@ def cancel(path: str, job_id: str) -> dict[str, Any] | None:
         try:
             r=c.execute("SELECT state FROM jobs WHERE id=?",(job_id,)).fetchone()
             if not r or r["state"] not in ("queued","running"):
-                c.commit(); return None
+                c.commit()
+                return None
             c.execute("""UPDATE jobs SET state='cancelled',updated_at=?,lease_generation=lease_generation+1,
                          lease_token=NULL,lease_expires_at=NULL WHERE id=?""",(iso(),job_id))
             c.commit()
         except BaseException:
-            c.rollback(); raise
+            c.rollback()
+            raise
     return get_job(path,job_id)
 
 
@@ -310,11 +312,14 @@ def reserve_llm_call(path: str, now: datetime | None = None) -> bool:
             for key,limit in (('minute:'+minute,4),('day:'+day,20)):
                 seen=c.execute('SELECT used FROM llm_quotas WHERE period=?',(key,)).fetchone()
                 if seen and seen['used']>=limit:
-                    c.commit();return False
+                    c.commit()
+                    return False
             for key in ('minute:'+minute,'day:'+day):
                 c.execute('INSERT INTO llm_quotas(period,used) VALUES(?,1) ON CONFLICT(period) DO UPDATE SET used=used+1',(key,))
             cutoff=(timestamp-timedelta(days=2)).strftime('%Y-%m-%d')
             c.execute("DELETE FROM llm_quotas WHERE (period LIKE 'day:%' AND period < ?) OR (period LIKE 'minute:%' AND period < ?)",('day:'+cutoff,'minute:'+cutoff))
-            c.commit();return True
+            c.commit()
+            return True
         except BaseException:
-            c.rollback();raise
+            c.rollback()
+            raise
