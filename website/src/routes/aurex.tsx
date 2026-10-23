@@ -58,6 +58,48 @@ function Aurex() {
       <AurexOxStatus context="public" />
       <AurexCapabilitiesPanel />
       <AurexPrivatePreview />
+      <section className="section-space border-y border-border bg-card/10">
+        <div className="site-grid grid items-center gap-10 lg:grid-cols-2">
+          <div>
+            <SectionHeading
+              eyebrow="AUREX Integration Architecture"
+              title="From Evidence to Operations: How AUREX Supports DISPATER.AI"
+              copy="AUREX supplies the evidence architecture for receiving permitted operational data, comparing field tickets, approved contract rates, and invoice records, identifying discrepancies, and recording human-reviewed outcomes."
+            />
+            <div className="mt-6 space-y-3 text-sm text-muted-foreground">
+              <p>• <strong>1. Permitted Operational Evidence:</strong> Ingests structured digital field tickets and dispatch logs.</p>
+              <p>• <strong>2. Automated Rate Reconciliation:</strong> Compares documented hours and ticket rates against approved contract rate cards.</p>
+              <p>• <strong>3. Exception Flagging:</strong> Identifies unapproved rate variations, missing approvals, or duplicate invoice IDs.</p>
+              <p>• <strong>4. Audit Receipt Generation:</strong> Produces SHA-256 evidence digests linking job ID and human-reviewed decisions.</p>
+            </div>
+            <div className="mt-6">
+              <Button asChild variant="gold">
+                <Link to="/dispater">
+                  Explore DISPATER.AI <ArrowRight />
+                </Link>
+              </Button>
+            </div>
+          </div>
+          <div className="rounded-xl border border-border p-6 bg-card shadow-xl space-y-4">
+            <div className="flex items-center justify-between border-b border-border pb-3">
+              <span className="text-xs font-bold text-primary">DISPATER.AI</span>
+              <span className="rounded bg-emerald-500/10 px-2 py-0.5 text-[10px] font-bold text-emerald-400">VERIFIED PROOF</span>
+            </div>
+            <div className="space-y-2">
+              <p className="text-sm font-semibold text-foreground">Digital Field Ticket #FT-2026-9041</p>
+              <p className="text-xs text-muted-foreground">Permian Basin Energy Corp • Wellsite Pad B-14</p>
+            </div>
+            <div className="rounded-lg bg-background p-3 text-xs space-y-1">
+              <div className="flex justify-between"><span className="text-muted-foreground">Flowback Unit (12 hrs @ $185)</span><span className="text-foreground">$2,220.00</span></div>
+              <div className="flex justify-between"><span className="text-muted-foreground">Pressure Monitoring Equipment</span><span className="text-foreground">$450.00</span></div>
+              <div className="flex justify-between font-bold border-t border-border pt-1 mt-1"><span className="text-foreground">TOTAL</span><span className="text-primary">$2,670.00</span></div>
+            </div>
+            <p className="text-[10px] text-center text-muted-foreground">
+              CONCEPT PREVIEW — FICTIONAL DATA — NOT LIVE
+            </p>
+          </div>
+        </div>
+      </section>
       <section className="section-space border-b border-border">
         <div className="site-grid">
           <SectionHeading

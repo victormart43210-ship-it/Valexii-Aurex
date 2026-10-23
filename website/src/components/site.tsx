@@ -10,6 +10,7 @@ export const navItems = [
   ["Home", "/"],
   ["BCXMET", "/bcxmet"],
   ["XAELI", "/xaeli"],
+  ["DISPATER.AI", "/dispater"],
   ["VALEXII System", "/system"],
   ["Research", "/research"],
   ["AUREX", "/aurex"],

@@ -108,23 +108,26 @@ describe("CXXV synthetic field financial audit staging", () => {
     }
   });
 
-  it.each([
-    null, [], {}, [caseOne, caseOne], Array(101).fill(caseOne),
-    [{ ...caseOne, synthetic: false }],
-    [{ ...caseOne, case_id: "CUSTOMER-123" }],
-    [{ ...caseOne, invoice_cents: 0 }],
-    [{ ...caseOne, invoice_cents: -1 }],
-    [{ ...caseOne, ticket_cents: 0.1 }],
-    [{ ...caseOne, invoice_cents: Number.MAX_SAFE_INTEGER }],
-    [{ ...caseOne, documented_hours: 0 }],
-    [{ ...caseOne, documented_hours: 10001 }],
-    [{ ...caseOne, approved_rate_cents_per_hour: 0 }],
-    [{ ...caseOne, invoice_id: "INV-0001", bank_account: "123456" }],
-  ])("refuses malformed, sensitive or unsafely bounded input", (value) => {
-    const result = stageSyntheticFieldAudit(value);
-    expect(result).toEqual({
-      status: "HOLD", authority: "NONE", reason: "INVALID_OR_NON_SYNTHETIC_INPUT",
-    });
+  it("refuses malformed, sensitive or unsafely bounded input", () => {
+    const invalidInputs = [
+      null, [], {}, [caseOne, caseOne], Array(101).fill(caseOne),
+      [{ ...caseOne, synthetic: false }],
+      [{ ...caseOne, case_id: "CUSTOMER-123" }],
+      [{ ...caseOne, invoice_cents: 0 }],
+      [{ ...caseOne, invoice_cents: -1 }],
+      [{ ...caseOne, ticket_cents: 0.1 }],
+      [{ ...caseOne, invoice_cents: Number.MAX_SAFE_INTEGER }],
+      [{ ...caseOne, documented_hours: 0 }],
+      [{ ...caseOne, documented_hours: 10001 }],
+      [{ ...caseOne, approved_rate_cents_per_hour: 0 }],
+      [{ ...caseOne, invoice_id: "INV-0001", bank_account: "123456" }],
+    ];
+    for (const value of invalidInputs) {
+      const result = stageSyntheticFieldAudit(value);
+      expect(result).toEqual({
+        status: "HOLD", authority: "NONE", reason: "INVALID_OR_NON_SYNTHETIC_INPUT",
+      });
+    }
   });
 
   it("pins input shapes against Python contract without copying the engine", () => {
