@@ -135,3 +135,65 @@ body{background:var(--launch-bg);color:var(--launch-white)}
 @media(max-width:850px){.equipment-pair-grid{gap:11px}.equipment-pair-stage{height:clamp(235px,45vw,390px)}.launch-section-head{display:block}.launch-section-head>p{max-width:750px}.shad-shell{grid-template-columns:1fr}.shad-sidebar{border-right:0;border-bottom:1px solid #34515e;padding:12px 16px}.shad-side-brand{padding-bottom:7px;border-bottom:0;font-size:12px}.shad-side-section,.shad-side-foot{display:none}.shad-side-link{display:inline-flex;min-height:36px}.shad-stats-grid{grid-template-columns:repeat(2,1fr)}.shad-work-grid{grid-template-columns:1fr}.launch-industry-grid{grid-template-columns:1fr}}
 @media(max-width:540px){.wrap{padding-left:18px;padding-right:18px}.launch-header-inner{gap:8px}.launch-brand{font-size:24px}.launch-emblem{width:35px;height:35px;font-size:23px}.launch-header-cta{font-size:9px;padding:9px}.launch-header nav{gap:10px;overflow-x:auto;justify-content:space-between;flex-wrap:nowrap}.launch-header nav a{font-size:9px}.launch-hero h1{font-size:clamp(48px,12.5vw,72px);letter-spacing:-1.4px}.launch-hero h2{font-size:36px}.launch-hero-actions{display:grid}.launch-btn{font-size:10px;width:100%}.equipment-pair-grid{grid-template-columns:1fr;gap:14px}.equipment-pair-stage{height:clamp(285px,80vw,420px)}.pair-disclaimer{font-size:8px;letter-spacing:.35px;line-height:1.7}.launch-steps{grid-template-columns:1fr}.shad-main{padding:14px}.shad-sidebar{display:block}.shad-side-brand{margin:0 0 8px}.shad-side-link{font-size:10px;padding:7px}.shad-topline{align-items:flex-start;flex-wrap:wrap}.shad-stat-value{font-size:20px}.shad-stat-value.small{font-size:14px}.shad-stat-label{font-size:10px}.shad-tab-list button{font-size:10px;padding:10px}.shad-pane-header{display:block}.shad-actions{justify-content:flex-start;margin-top:15px}.shad-bar-row{grid-template-columns:85px 1fr 18px;gap:6px}.shad-bar-row span{font-size:10px}.shad-toolbar-left{display:block}.shad-toggle{margin-top:9px}.shad-toggle button{padding:8px 10px}.launch-hero{padding-top:55px;padding-bottom:50px}.industry-card{padding:26px}.launch-services{padding-bottom:65px}.service-badges span{font-size:10px}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{animation-duration:0.01ms!important;transition-duration:0.01ms!important}}
+
+/* KUSANAGI CXLI · PREMIUM SOVEREIGN TRIAD
+   Real original Dis Pater artwork occupies the center of the two Three.js canvases.
+   Quiet gold/cyan light; no captions, telemetry or floating actions across the art. */
+.equipment-pair{background:
+  radial-gradient(ellipse 44% 70% at 50% 42%,rgba(165,113,46,.16),transparent 92%),
+  radial-gradient(ellipse 80% 70% at 50% 50%,rgba(6,149,192,.13),transparent 83%),
+  #020e17;padding:clamp(28px,3vw,54px) 0 25px}
+.equipment-pair-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(225px,.78fr) minmax(0,1fr);
+  gap:clamp(9px,1.35vw,21px);align-items:stretch}
+.equipment-pair-stage{height:clamp(365px,38vw,600px);min-width:0;border-color:rgba(49,192,208,.35);
+  border-radius:17px;background:
+  linear-gradient(150deg,rgba(30,111,133,.10),rgba(4,17,31,.65) 55%,rgba(15,88,117,.10)),
+  #06141d;box-shadow:inset 0 0 50px #069fbd0d,0 26px 60px #0008;
+  transition:border-color .3s ease, box-shadow .3s ease}
+.equipment-pair-stage:hover,.equipment-pair-stage:focus-visible{border-color:#49d8df;
+  box-shadow:inset 0 0 45px #07e4e91b,0 20px 60px #00dcef16}
+.sovereign-art-stage{height:clamp(365px,38vw,600px);min-width:0;margin:0;position:relative;
+  display:grid;place-items:center;isolation:isolate;overflow:hidden;border-radius:17px;
+  border:1px solid rgba(235,184,99,.55);background:#06131c;
+  box-shadow:0 0 0 1px #6f532829,inset 0 0 45px #9c73382e,0 24px 75px #000c;
+  transition:transform .35s ease,border-color .35s ease,box-shadow .35s ease}
+.sovereign-art-stage:before{content:"";position:absolute;inset:0;pointer-events:none;z-index:2;
+  border-radius:inherit;border:8px solid #06182140;box-shadow:inset 0 0 42px #020b15a8}
+.sovereign-art-stage:after{content:"";position:absolute;inset:0;pointer-events:none;z-index:2;
+  background:linear-gradient(180deg,#070c141f 0%,transparent 20%,transparent 72%,#050e1b48 100%)}
+.sovereign-art-stage:hover{transform:translateY(-4px);border-color:#f0c883;
+  box-shadow:0 0 42px #c18d3632,0 28px 80px #000c}
+.sovereign-art-image{display:block;position:relative;z-index:1;width:100%;height:100%;
+  object-fit:cover;object-position:50% 50%;filter:contrast(1.07) saturate(1.09)}
+.sovereign-art-orbit{position:absolute;width:132%;aspect-ratio:1;top:50%;left:50%;
+  transform:translate(-50%,-50%);border-radius:50%;pointer-events:none;z-index:0;
+  border:1px solid rgba(216,155,67,.37);box-shadow:0 0 75px #b0873542}
+.sovereign-art-orbit-two{width:110%;border-color:rgba(76,225,229,.35);box-shadow:0 0 65px #00d9ee33}
+.equipment-pair .wrap{max-width:1530px}
+.pair-stage-halo{width:min(86%,490px)}
+.launch-hero{background:
+  radial-gradient(ellipse 49% 52% at 50% -8%,#174f666c,transparent 100%),
+  radial-gradient(ellipse 59% 57% at 50% 93%,#063a4f45,transparent 100%),
+  linear-gradient(180deg,#020b12,#061621)}
+.launch-hero h1{letter-spacing:-.045em;text-shadow:0 0 35px #2ae9f014,0 12px 80px #06131b}
+.launch-overline{font-weight:760}
+.launch-btn,.launch-header-cta{transition:transform .2s ease,filter .2s ease,box-shadow .2s ease}
+.launch-btn:hover,.launch-header-cta:hover{transform:translateY(-2px);filter:brightness(1.12)}
+.launch-audit{border-top:1px solid #2b6a78}
+.launch-audit .launch-section-head em{color:#e9c080}
+.shad-shell{box-shadow:0 0 0 1px rgba(66,231,241,.05),0 35px 110px #0009}
+:where(a,button,select):focus-visible{outline:2px solid #eed59c;outline-offset:3px}
+@media(max-width:920px) and (min-width:621px){
+  .equipment-pair-grid{grid-template-columns:minmax(0,1fr) minmax(180px,.78fr) minmax(0,1fr);gap:9px}
+  .equipment-pair-stage,.sovereign-art-stage{height:clamp(290px,49vw,460px)}
+}
+@media(max-width:620px){
+  .equipment-pair{padding:20px 0 25px}
+  .equipment-pair-grid{grid-template-columns:minmax(0,1fr);gap:18px;max-width:480px;margin:auto}
+  .equipment-pair-stage{height:clamp(295px,87vw,435px)}
+  .sovereign-art-stage{height:clamp(380px,108vw,530px);max-width:480px}
+  .sovereign-art-image{object-fit:contain;background:radial-gradient(ellipse at center,#17222a,#050e17)}
+  .launch-hero h1{word-break:normal}
+  .launch-header nav{scrollbar-width:none}
+}
+@media(prefers-reduced-motion:reduce){.sovereign-art-stage,.equipment-pair-stage,.launch-btn,.launch-header-cta{transition:none!important}}
