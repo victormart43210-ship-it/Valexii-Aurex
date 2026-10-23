@@ -1,15 +1,15 @@
 {
   "operation": "KUSANAGI CXXIX",
-  "checkpoint_sequence": 1,
-  "checkpoint_timestamp_utc": "2026-10-23T00:09:31.166Z",
+  "checkpoint_sequence": 2,
+  "checkpoint_timestamp_utc": "2026-10-23T00:10:07.255Z",
   "repository": "victormart43210-ship-it/Valexii-Aurex",
   "active_branch": "work/kusanagi-cxxix-staging-convergence",
   "current_source_commit_sha": "82d70c0da20ba5128c48c254987cb433ddae6b35",
   "parent_base_commit_sha": "82d70c0da20ba5128c48c254987cb433ddae6b35",
   "checkpoint_commit_resolution": "Use git log -1 --format=%H -- docs/operations/KUSANAGI_CXXIX_RECOVERY.json. A commit cannot embed its own SHA; current_source_commit_sha identifies inspected source, enclosing Git commit identifies checkpoint.",
   "main_base_sha": "df0654390049118a142ec3b3356f0f40b4789fe4",
-  "latest_known_pr": 117,
-  "checkpoint_pr": null,
+  "latest_known_pr": 118,
+  "checkpoint_pr": 118,
   "files_modified": [
     "docs/operations/KUSANAGI_CXXIX_RECOVERY.json",
     "docs/operations/KUSANAGI_CXXIX_RESUME.md",
@@ -20,7 +20,8 @@
     "Observed six successful workflow runs at source SHA",
     "Inspected Railway staging config and production inventory read-only",
     "Traced staging Dockerfile -> backend.boot -> backend.supervisor -> backend.app:app",
-    "Refreshed Lovable revision"
+    "Refreshed Lovable revision",
+    "Checkpoint 001 remote commit read back; draft PR118 created"
   ],
   "tests_executed": [],
   "source_ci": {
@@ -303,5 +304,7 @@
     "deployment": false
   },
   "independent_verification": "NOT VERIFIED",
-  "release": "HOLD"
+  "release": "HOLD",
+  "previous_checkpoint_sha": "35de80b4fc01d57037af2245696acc8e28ef9723",
+  "previous_checkpoint_remote_save_verified": "PASS"
 }

@@ -26,3 +26,6 @@ Fetch branch and check for later commits before edits. Read AGENTS.md and requir
 Reconcile canonical aurex job store and financial fixture with CXXVIII auth, schema, lease fencing and supervisor. Test receipts and 100-case suite, then obtain independent exact-SHA review. Record all actual outcomes. Before every external mutation and after each substantial milestone commit recovery docs and source, push, and read back remote head. A local save is not durable.
 
 Rollback: no runtime changes made. Source base above; staging prior source above. Database rollback procedure NOT VERIFIED. Deployment HOLD, production authority NONE, real-world accuracy NOT VERIFIED.
+
+## Durable checkpoint receipt
+Checkpoint 001: 35de80b4fc01d57037af2245696acc8e28ef9723. Remote branch read-back PASS. Draft PR: https://github.com/victormart43210-ship-it/Valexii-Aurex/pull/118. Checkpoint 002 adds this receipt; resolve its enclosing commit as documented above.
