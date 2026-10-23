@@ -20,11 +20,12 @@ def _db(tmp_path: Path, layout: str) -> Path:
                 id TEXT, kind TEXT, state TEXT, params_json TEXT,
                 idempotency_key TEXT, reservation_usd REAL, created_at TEXT,
                 updated_at TEXT, result_json TEXT, worker_id TEXT,
-                lease_token TEXT, lease_expires_at TEXT, evidence_id TEXT)""")
+                lease_token TEXT, lease_expires_at TEXT, evidence_id TEXT,
+                request_id TEXT, trace_id TEXT, error_json TEXT)""")
             conn.execute("""CREATE TABLE evidence_records (
                 id TEXT, capability_id TEXT, kind TEXT, collected_at TEXT,
-                sha256 TEXT, summary TEXT, integrity_status TEXT,
-                verification_status TEXT)""")
+                sha256 TEXT, summary TEXT, source_ref TEXT,
+                integrity_status TEXT, verification_status TEXT)""")
             if layout == "mixed":
                 conn.execute("ALTER TABLE jobs ADD COLUMN params TEXT")
         elif layout == "legacy":
@@ -83,3 +84,25 @@ def test_other_sqlite_and_invalid_input_rejected(tmp_path):
     assert module.inspect_schema(str(p))["schema"] == "EMPTY_OR_UNRECOGNIZED"
     p.write_bytes(b"not-a-database")
     assert module.inspect_schema(str(p))["schema"] == "UNREADABLE"
+
+
+def test_canonical_looking_incomplete_schema_is_not_compatible(tmp_path):
+    path = tmp_path / "partial.sqlite3"
+    with sqlite3.connect(path) as conn:
+        conn.execute("""CREATE TABLE jobs (
+            id TEXT, kind TEXT, state TEXT, params_json TEXT,
+            idempotency_key TEXT, reservation_usd REAL,
+            created_at TEXT, updated_at TEXT, result_json TEXT,
+            worker_id TEXT, lease_token TEXT, lease_expires_at TEXT,
+            evidence_id TEXT)""")
+        conn.execute("""CREATE TABLE evidence_records (
+            id TEXT, capability_id TEXT, kind TEXT, collected_at TEXT,
+            sha256 TEXT, summary TEXT, integrity_status TEXT,
+            verification_status TEXT)""")
+    original = path.read_bytes()
+    classification = module.inspect_schema(str(path))
+    assert classification["schema"] == "INCOMPATIBLE"
+    assert classification["canonical_compatible"] is False
+    assert classification["deployment_authority"] == "NONE"
+    assert classification["release"] == "HOLD"
+    assert path.read_bytes() == original
