@@ -1,0 +1,57 @@
+{
+  "operation": "KUSANAGI CXXXIV",
+  "checkpoint": "initial live inventory and convergence candidate review",
+  "recorded_at": "2026-10-23",
+  "repository": "victormart43210-ship-it/Valexii-Aurex",
+  "canonical_main_sha": "df0654390049118a142ec3b3356f0f40b4789fe4",
+  "working_branch": "copilot/safely-merge-all-prs",
+  "working_tree_before_checkpoint": "clean",
+  "changes_in_checkpoint": [
+    "documentation-only audit checkpoint",
+    "no product code changed",
+    "no PR merged or closed",
+    "no deployment or database mutation"
+  ],
+  "status": {
+    "open_prs_observed": 78,
+    "full_individual_pr_audit": "INCOMPLETE",
+    "independent_review": "NOT VERIFIED",
+    "mainline_merge": "HOLD",
+    "staging": "HOLD",
+    "production": "HOLD",
+    "schema_migration": "HOLD",
+    "paid_inference": "DISABLED",
+    "real_financial_execution": "PROHIBITED"
+  },
+  "priority_heads": {
+    "97": "f44571a463ea46cd00c25bb1f672dd5fe6e9e382",
+    "117": "82d70c0da20ba5128c48c254987cb433ddae6b35",
+    "118": "6adc1936d09534b134182e769f88fea9c5a0125a",
+    "119": "522807e0b9b9ff5ba6e996fb4a154c0fd8455ea6",
+    "120": "3e7ce03d72031e048f0101e3484f176b56b542fa"
+  },
+  "blocking_evidence": [
+    "PR #119 exact observed head has 8 Ruff findings and 2 failed test jobs.",
+    "PR #97 has passing observed checks but no review record.",
+    "PR #117-#120 are drafts; #118-#120 belong to a non-main lineage with unresolved integration questions.",
+    "No independent review records were returned for PR #97 or #117-#120.",
+    "All other PRs require individual audit; no duplicate or superseded disposition is asserted."
+  ],
+  "resume_steps": [
+    "Fetch and record the current main SHA before starting the next integration action.",
+    "Refresh all open-PR metadata and exact head SHAs because this checkpoint is a point-in-time snapshot.",
+    "Continue individual audit using docs/convergence/KUSANAGI_CXXXIV_78_PR_MATRIX.json; replace provisional dispositions only with evidence.",
+    "Repair and reverify PR #119 in an authorized isolated branch; preserve the original failure logs and exact SHA.",
+    "Require independent review and exact-head CI before an individually authorized merge; refresh main and rerun tests after each merge.",
+    "Keep deployment, migration, paid inference, and real financial execution on HOLD."
+  ],
+  "rollback": "No repository code or runtime state was changed. Revert the documentation commit if this checkpoint itself is rejected; do not reset or rewrite main.",
+  "evidence_paths": [
+    "docs/convergence/KUSANAGI_CXXXIV_78_PR_INVENTORY.md",
+    "docs/convergence/KUSANAGI_CXXXIV_78_PR_MATRIX.json",
+    "docs/convergence/KUSANAGI_CXXXIV_DEPENDENCY_GRAPH.md",
+    "docs/convergence/KUSANAGI_CXXXIV_MAINLINE_MERGE_PLAN.md",
+    "docs/convergence/KUSANAGI_CXXXIV_FEATURE_PRESERVATION.md",
+    "docs/verification/KUSANAGI_CXXXIV_CUSTOS_REPORT.md"
+  ]
+}
