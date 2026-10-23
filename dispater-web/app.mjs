@@ -97,3 +97,16 @@ if (checkRailway) {
     }
   });
 }
+
+/* View-only equipment interaction; never reads or computes sensor pressure. */
+const treeInspect = byId("tree-inspect");
+const treeViewer = byId("frac-tree-viewer");
+if (treeInspect && treeViewer) {
+  treeInspect.addEventListener("click", () => {
+    const detailed = treeInspect.getAttribute("aria-pressed") !== "true";
+    treeInspect.setAttribute("aria-pressed", String(detailed));
+    treeInspect.setAttribute("aria-label", detailed ? "Return to full frac tree view" : "Zoom in on the frac tree");
+    treeInspect.textContent = detailed ? "VIEW FULL TREE −" : "VIEW DETAILS +";
+    treeViewer.classList.toggle("tree-detail", detailed);
+  });
+}
