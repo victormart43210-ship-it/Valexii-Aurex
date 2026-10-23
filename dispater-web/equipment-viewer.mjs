@@ -80,7 +80,7 @@ function tick(){
  controls.autoRotate=showMotion;
  controls.autoRotateSpeed=.46;
  draw();
- if(showMotion || controls.enabled)animationId=requestAnimationFrame(tick);
+ if(showMotion)animationId=requestAnimationFrame(tick);
 }
 function runLoop(){
  if(animationId)cancelAnimationFrame(animationId);
@@ -115,7 +115,7 @@ function init(){
    controls.enablePan=false;
    controls.rotateSpeed=.67;
    controls.zoomSpeed=.7;
-   controls.addEventListener("change",draw);
+   controls.addEventListener("change",()=>{if(renderer&&scene&&camera)renderer.render(scene,camera);});
    viewport.append(canvas);
    fallback.hidden=true;
    engine=true;
