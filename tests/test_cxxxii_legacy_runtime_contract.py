@@ -1,17 +1,19 @@
 """Source-only checks for the recovered legacy runtime."""
 
+import importlib
 import sys
 from pathlib import Path
 
 import pytest
 
-ROOT = Path(__file__).resolve().parents[1]
-sys.path.insert(
-    0, str(ROOT / "integrations/kusanagi-xvi")
-)
-
-from backend import store, supervisor, worker
 from aurex.database import get_db
+
+ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / "integrations/kusanagi-xvi"))
+
+store = importlib.import_module("backend.store")
+supervisor = importlib.import_module("backend.supervisor")
+worker = importlib.import_module("backend.worker")
 
 
 def test_default_supervisor_has_no_worker():
