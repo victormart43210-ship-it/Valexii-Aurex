@@ -1,0 +1,73 @@
+{
+  "operation": "KUSANAGI CXXXII",
+  "checkpoint": 1,
+  "utc": "2026-10-23T01:02:50.829Z",
+  "repository": "victormart43210-ship-it/Valexii-Aurex",
+  "branch": "work/kusanagi-cxxxii-schema-admission",
+  "base_checkpoint": "6adc1936d09534b134182e769f88fea9c5a0125a",
+  "inspected_source_sha": "42f298e82e3ac8d40e04ff1ab752ae45662af07e",
+  "file_ownership": [
+    "aurex/staging_schema_preflight.py",
+    "tests/test_cxxxii_staging_schema_preflight.py",
+    "docs/operations/KUSANAGI_CXXXII_RECOVERY.json",
+    "docs/operations/KUSANAGI_CXXXII_RESUME.md",
+    "docs/operations/KUSANAGI_CXXXII_NEXT_AGENT.md"
+  ],
+  "scope": "Source-only read-only schema admission preflight and Railway inventory; no DB writes or deployments",
+  "test_evidence": [
+    {
+      "command": "python -m pytest -q tests/test_cxxxii_staging_schema_preflight.py",
+      "environment": "isolated local reproduction of two added files",
+      "outcome": "PASS",
+      "summary": "6 passed in 0.09s"
+    },
+    {
+      "command": "python -m compileall -q /mnt/data/aurex_cxxxii_local",
+      "outcome": "PASS"
+    },
+    {
+      "command": "python -m ruff check ...",
+      "outcome": "NOT RUN",
+      "reason": "ruff not installed in local environment"
+    }
+  ],
+  "railway": {
+    "project": "78095d3d-5911-41c8-aa3e-f9ebf5d81054",
+    "staging_environment": "98c103eb-a1af-46b6-948e-19c80e4d720d",
+    "production_environment": "9a139b10-9e6b-4ebd-89c7-731855cbbb5c",
+    "service": "2b51dfe6-2175-4cb0-aac2-eb40ecbc3a1d",
+    "staging_source": "d22e06e9412a07e06ab8bd597e0e5ebf5b8c125c",
+    "production_source": "57a079f93b947594f1a6f854aa46a6f606f86f76",
+    "last_staging_deployment": "05345f25-bde4-4569-a853-e51771030992",
+    "volume_logical_id": "4d23b1e6-3625-4def-aa97-82e10859f04d",
+    "volume_instance_isolation": "NOT VERIFIED",
+    "backup_restore": "NOT VERIFIED",
+    "deployment": "NOT RUN",
+    "staged_patch": "NONE"
+  },
+  "completed": [
+    "Read CXXIX checkpoint 004 and policy",
+    "Verified Railway source, Docker root and two environment volume inventories",
+    "Compared canonical jobs/evidence_records and legacy jobs/evidence layouts",
+    "Wrote a no-create immutable SQLite schema classifier that detects canonical/legacy/mixed/WAL and fails closed",
+    "Ran six local self-contained regression tests"
+  ],
+  "blockers": [
+    "Canonical financial API is not available in current staging Docker build root",
+    "Legacy and canonical SQLite schemas are incompatible; migration/segregated DB requires explicit design and tests",
+    "Volume-instance IDs, backup/restore and staging isolation not independently established",
+    "Website staging-backed path not implemented",
+    "Independent reviewer NOT RUN"
+  ],
+  "next_three_actions": [
+    "Finish source-level legacy-to-canonical startup contract and disposable-DB integration tests",
+    "Get Railway environment-specific volume-instance and backup/restore evidence via provider's volumeInstance API or CLI; never modify prod",
+    "Run repository exact-head CI and independent review; only then stage controlled Railway change for user approval"
+  ],
+  "checkpoint_sha": "Resolve via GitHub latest branch head. Commit cannot embed itself.",
+  "remote_push_verification": "PENDING_READBACK",
+  "authority": "NONE",
+  "release": "HOLD",
+  "customer_data": "NONE",
+  "paid_inference": "DISABLED"
+}
