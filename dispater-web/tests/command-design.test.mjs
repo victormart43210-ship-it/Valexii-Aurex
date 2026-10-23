@@ -9,7 +9,7 @@ test("approved command hero keeps frac tree, live buttons, and explicit fictiona
     "DISPATER", "WELL PRESSURE", "FLOW RATE", "PROPPANT",
     "REQUEST AN AUDIT", "BOOK A CONSULTATION", "VIEW DEMONSTRATION",
     "OILFIELD OPERATIONS", "TOWING &amp; RECOVERY", "AUDIT INTELLIGENCE",
-    "FICTIONAL DEMO DATA", "SIMULATED", "HUMAN REVIEW", "/frac-tree.svg",
+    "FICTIONAL DEMO DATA", "SIMULATED", "Manager Review Workflow", "/frac-tree.svg",
     "/oilfield-scene.svg", "/tow-recovery.svg", "/audit-intelligence.svg",
     "id=\"audit\"", "id=\"run\"", "id=\"results\"", "id=\"railway-check\"",
   ]) assert.ok(html.includes(phrase), "missing required element: " + phrase);
