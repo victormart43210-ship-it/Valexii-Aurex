@@ -40,7 +40,7 @@ test("audit demo stays browser-only and financial-authority HOLD", async () => {
  assert.ok(!html.includes("api/execute"));
 });
 
-test("approved hero is first, not a clickable overlay, with factory section immediately beneath",async()=>{const html=await read("index.html");const a=html.indexOf('class="approved-hero-reference"');const f=html.indexOf('class="factory-showcase"');const c=html.indexOf('class="command-hero"');assert.ok(a>0 && f>a && c>f);const first=html.slice(a,f);assert.ok(first.includes('src="/approved-hero.png"'));assert.ok(!first.includes('<a ') && !first.includes('<button '));assert.ok(html.includes('src="/industrial-companion.png"'));const css=await read("reference.css");assert.ok(css.includes(".factory-showcase"));const build=await read("build.mjs");assert.ok(build.includes('industrial-companion.png'));});
+test("approved hero stays noninteractive above 3D studio, factory, and command center",async()=>{const html=await read("index.html");const a=html.indexOf('class="approved-hero-reference"');const equipment=html.indexOf('id="equipment-3d"');const f=html.indexOf('class="factory-showcase"');const c=html.indexOf('class="command-hero"');assert.ok(a>0 && equipment>a && f>equipment && c>f);const hero=html.slice(a,equipment);assert.ok(hero.includes('src="/approved-hero.png"'));assert.ok(!hero.includes('<a ') && !hero.includes('<button '));assert.ok(html.includes('src="/industrial-companion.png"'));const css=await read("reference.css");assert.ok(css.includes(".factory-showcase"));const build=await read("build.mjs");assert.ok(build.includes('industrial-companion.png'));});
 
 test("equipment viewer displays frac tree without simulated pressure gauges", async () => {
   const html = await read("index.html");
