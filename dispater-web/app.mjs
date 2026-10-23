@@ -75,3 +75,25 @@ byId("export").addEventListener("click", () => {
   setTimeout(() => URL.revokeObjectURL(url), 1500);
 });
 setSector("towing");
+
+const checkRailway = byId("railway-check");
+if (checkRailway) {
+  checkRailway.addEventListener("click", async () => {
+    const status = byId("railway-result");
+    checkRailway.disabled = true;
+    status.textContent = "Checking read-only staging health …";
+    try {
+      const response = await fetch("/api/railway-status", { method: "GET", cache: "no-store", credentials: "same-origin" });
+      if (!response.ok) throw new Error("PROBE_NOT_VERIFIED");
+      const result = await response.json();
+      if (result.stagingReachability === "HEALTH_ENDPOINT_RESPONDED")
+        status.textContent = "RAILWAY HEALTH: ENDPOINT RESPONDED · FINANCIAL AUDIT: NOT CONNECTED · AUTHORITY: NONE";
+      else
+        status.textContent = "RAILWAY HEALTH: NOT VERIFIED · FINANCIAL AUDIT: NOT CONNECTED · AUTHORITY: NONE";
+    } catch {
+      status.textContent = "RAILWAY HEALTH: NOT VERIFIED · CHECK UNAVAILABLE · NO FINANCIAL ACTION";
+    } finally {
+      checkRailway.disabled = false;
+    }
+  });
+}
