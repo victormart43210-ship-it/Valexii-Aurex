@@ -1,0 +1,307 @@
+{
+  "operation": "KUSANAGI CXXIX",
+  "checkpoint_sequence": 1,
+  "checkpoint_timestamp_utc": "2026-10-23T00:09:31.166Z",
+  "repository": "victormart43210-ship-it/Valexii-Aurex",
+  "active_branch": "work/kusanagi-cxxix-staging-convergence",
+  "current_source_commit_sha": "82d70c0da20ba5128c48c254987cb433ddae6b35",
+  "parent_base_commit_sha": "82d70c0da20ba5128c48c254987cb433ddae6b35",
+  "checkpoint_commit_resolution": "Use git log -1 --format=%H -- docs/operations/KUSANAGI_CXXIX_RECOVERY.json. A commit cannot embed its own SHA; current_source_commit_sha identifies inspected source, enclosing Git commit identifies checkpoint.",
+  "main_base_sha": "df0654390049118a142ec3b3356f0f40b4789fe4",
+  "latest_known_pr": 117,
+  "checkpoint_pr": null,
+  "files_modified": [
+    "docs/operations/KUSANAGI_CXXIX_RECOVERY.json",
+    "docs/operations/KUSANAGI_CXXIX_RESUME.md",
+    "docs/operations/KUSANAGI_CXXIX_NEXT_AGENT_HANDOFF.md"
+  ],
+  "completed_milestones": [
+    "Refreshed PR117 exact head and main",
+    "Observed six successful workflow runs at source SHA",
+    "Inspected Railway staging config and production inventory read-only",
+    "Traced staging Dockerfile -> backend.boot -> backend.supervisor -> backend.app:app",
+    "Refreshed Lovable revision"
+  ],
+  "tests_executed": [],
+  "source_ci": {
+    "status": "PASS",
+    "evidence": [
+      {
+        "name": "AUREX independent runner smoke checks",
+        "sha": "82d70c0da20ba5128c48c254987cb433ddae6b35",
+        "status": "completed",
+        "conclusion": "success",
+        "url": "https://github.com/victormart43210-ship-it/Valexii-Aurex/actions/runs/39874940724"
+      },
+      {
+        "name": "CI",
+        "sha": "82d70c0da20ba5128c48c254987cb433ddae6b35",
+        "status": "completed",
+        "conclusion": "success",
+        "url": "https://github.com/victormart43210-ship-it/Valexii-Aurex/actions/runs/39874940720"
+      },
+      {
+        "name": "Canonical Railway image",
+        "sha": "82d70c0da20ba5128c48c254987cb433ddae6b35",
+        "status": "completed",
+        "conclusion": "success",
+        "url": "https://github.com/victormart43210-ship-it/Valexii-Aurex/actions/runs/39874940731"
+      },
+      {
+        "name": "CXXV website contract bridge",
+        "sha": "82d70c0da20ba5128c48c254987cb433ddae6b35",
+        "status": "completed",
+        "conclusion": "success",
+        "url": "https://github.com/victormart43210-ship-it/Valexii-Aurex/actions/runs/39874940717"
+      },
+      {
+        "name": "AUREX CXXVI Pipeline Gate",
+        "sha": "82d70c0da20ba5128c48c254987cb433ddae6b35",
+        "status": "completed",
+        "conclusion": "success",
+        "url": "https://github.com/victormart43210-ship-it/Valexii-Aurex/actions/runs/39874940773"
+      },
+      {
+        "name": "CI",
+        "sha": "82d70c0da20ba5128c48c254987cb433ddae6b35",
+        "status": "completed",
+        "conclusion": "success",
+        "url": "https://github.com/victormart43210-ship-it/Valexii-Aurex/actions/runs/39874934615"
+      }
+    ],
+    "limitation": "Workflow results read from GitHub; tests not independently rerun in this session."
+  },
+  "failed_tests": [],
+  "unresolved_defects": [
+    "Canonical financial source is not the staging entrypoint; reconciliation NOT RUN"
+  ],
+  "railway": {
+    "staging": {
+      "project": {
+        "id": "78095d3d-5911-41c8-aa3e-f9ebf5d81054",
+        "name": "VALEXII-AUREX",
+        "workspaceName": "victormart43210-ship-it's Projects"
+      },
+      "environment": {
+        "id": "98c103eb-a1af-46b6-948e-19c80e4d720d",
+        "name": "aurex-staging",
+        "isEphemeral": false
+      },
+      "staged": null,
+      "region": null,
+      "services": [
+        {
+          "id": "2b51dfe6-2175-4cb0-aac2-eb40ecbc3a1d",
+          "name": "aurex-api",
+          "state": "live",
+          "source": {
+            "image": null,
+            "repo": "victormart43210-ship-it/Valexii-Aurex",
+            "branch": "work/kusanagi-xxiv-cxxviii-convergence"
+          },
+          "regions": [
+            "sfo"
+          ],
+          "numReplicas": 1,
+          "cronSchedule": null,
+          "volumeMounts": [
+            {
+              "volumeId": "4d23b1e6-3625-4def-aa97-82e10859f04d",
+              "volumeName": "aurex-evidence-db",
+              "mountPath": "/data"
+            }
+          ],
+          "latestDeployment": {
+            "id": "05345f25-bde4-4569-a853-e51771030992",
+            "status": "SUCCESS",
+            "createdAt": "2026-10-22T20:15:18.651Z",
+            "url": null
+          },
+          "stagedChangeCount": 0
+        }
+      ],
+      "volumes": [
+        {
+          "id": "4d23b1e6-3625-4def-aa97-82e10859f04d",
+          "name": "aurex-evidence-db",
+          "state": "live",
+          "region": "sfo",
+          "sizeMB": 50000,
+          "mountedOn": {
+            "serviceId": "2b51dfe6-2175-4cb0-aac2-eb40ecbc3a1d",
+            "serviceName": "aurex-api",
+            "mountPath": "/data"
+          },
+          "stagedChangeCount": 0
+        }
+      ],
+      "buckets": [],
+      "sharedVariableNames": [
+        "AUREX_SERVICE_TOKEN",
+        "aurex"
+      ]
+    },
+    "config": {
+      "service": {
+        "id": "2b51dfe6-2175-4cb0-aac2-eb40ecbc3a1d",
+        "name": "aurex-api"
+      },
+      "environment": {
+        "id": "98c103eb-a1af-46b6-948e-19c80e4d720d",
+        "name": "aurex-staging"
+      },
+      "config": {
+        "source": {
+          "repo": "victormart43210-ship-it/Valexii-Aurex",
+          "branch": "work/kusanagi-xxiv-cxxviii-convergence",
+          "commitSha": "d22e06e9412a07e06ab8bd597e0e5ebf5b8c125c",
+          "rootDirectory": "/integrations/kusanagi-xvi/backend"
+        },
+        "networking": {
+          "serviceDomains": {
+            "aurex-api-aurex-staging.up.railway.app": {}
+          }
+        },
+        "build": {
+          "builder": "DOCKERFILE",
+          "buildEnvironment": "V3",
+          "dockerfilePath": "Dockerfile"
+        },
+        "deploy": {
+          "restartPolicyMaxRetries": 3,
+          "useLegacyStacker": false,
+          "ipv6EgressEnabled": false,
+          "runtime": "V2",
+          "multiRegionConfig": {
+            "sfo": {
+              "numReplicas": 1
+            }
+          }
+        },
+        "volumeMounts": {
+          "4d23b1e6-3625-4def-aa97-82e10859f04d": {
+            "mountPath": "/data"
+          }
+        }
+      },
+      "variableNames": [
+        "AUREX_DB_PATH",
+        "AUREX_ENABLE_OFFLINE_LAB",
+        "AUREX_LLM_ALLOW_BILLING",
+        "AUREX_LLM_ENABLED",
+        "AUREX_OBSERVER_ENABLED",
+        "AUREX_REQUIRED_VOLUME",
+        "AUREX_SERVICE_TOKEN",
+        "AUREX_STAGING_PERSISTENCE_PROBE",
+        "RAILWAY_RUN_UID"
+      ],
+      "staged": null
+    },
+    "production_inventory": {
+      "project": {
+        "id": "78095d3d-5911-41c8-aa3e-f9ebf5d81054",
+        "name": "VALEXII-AUREX",
+        "workspaceName": "victormart43210-ship-it's Projects"
+      },
+      "environment": {
+        "id": "9a139b10-9e6b-4ebd-89c7-731855cbbb5c",
+        "name": "production",
+        "isEphemeral": false
+      },
+      "staged": null,
+      "region": null,
+      "services": [
+        {
+          "id": "2b51dfe6-2175-4cb0-aac2-eb40ecbc3a1d",
+          "name": "aurex-api",
+          "state": "live",
+          "source": {
+            "image": null,
+            "repo": "victormart43210-ship-it/Valexii-Aurex",
+            "branch": "integration/kusanagi-xvi-railway"
+          },
+          "regions": [
+            "sfo"
+          ],
+          "numReplicas": 1,
+          "cronSchedule": null,
+          "volumeMounts": [
+            {
+              "volumeId": "4d23b1e6-3625-4def-aa97-82e10859f04d",
+              "volumeName": "aurex-evidence-db",
+              "mountPath": "/data"
+            }
+          ],
+          "latestDeployment": {
+            "id": "ee18058c-cde8-4611-b0bd-443e124c9761",
+            "status": "SUCCESS",
+            "createdAt": "2026-10-22T11:43:40.519Z",
+            "url": null
+          },
+          "stagedChangeCount": 0
+        }
+      ],
+      "volumes": [
+        {
+          "id": "4d23b1e6-3625-4def-aa97-82e10859f04d",
+          "name": "aurex-evidence-db",
+          "state": "live",
+          "region": "sfo",
+          "sizeMB": 50000,
+          "mountedOn": {
+            "serviceId": "2b51dfe6-2175-4cb0-aac2-eb40ecbc3a1d",
+            "serviceName": "aurex-api",
+            "mountPath": "/data"
+          },
+          "stagedChangeCount": 0
+        }
+      ],
+      "buckets": [],
+      "sharedVariableNames": [
+        "AUREX_SERVICE_TOKEN",
+        "aurex"
+      ]
+    },
+    "health": "NOT VERIFIED; platform deployment SUCCESS is not runtime evidence",
+    "isolation": "NOT VERIFIED; same logical volume ID in both environments"
+  },
+  "lovable": {
+    "revision": "558fcbcd51a36a0a3beae8500677347acd616cdd",
+    "integration_status": "NOT VERIFIED",
+    "changes_made": false,
+    "credit_consuming_operations": []
+  },
+  "confirmed_security_findings": [
+    "Deployment isolation not established; do not deploy",
+    "Staging build root excludes root aurex modules; route addition alone cannot expose canonical financial jobs"
+  ],
+  "outstanding_dependencies": [
+    "Astral primary checker unavailable: sessions-directory-unavailable; skill requires explicit fallback confirmation before dependent orchestration",
+    "Jules tool/reviewer availability NOT VERIFIED",
+    "Staging volume instance isolation, backup/rollback and credentials NOT VERIFIED"
+  ],
+  "next_three_actions": [
+    "Resolve Astral primary evidence or explicit fallback per selected skill",
+    "Compare staging store/worker/auth contracts with canonical aurex financial pipeline; freeze one execution contract",
+    "Implement bounded source convergence and tests in isolated branch; checkpoint before any infrastructure change"
+  ],
+  "assigned_agent": "ChatGPT Work primary; Jules NOT ASSIGNED",
+  "deployment_authorization": {
+    "scope": "User authorizes staging-only after all prerequisites",
+    "status": "HOLD",
+    "production": "NONE",
+    "paid_inference": "NONE"
+  },
+  "rollback_reference": {
+    "source": "82d70c0da20ba5128c48c254987cb433ddae6b35",
+    "staging": "d22e06e9412a07e06ab8bd597e0e5ebf5b8c125c",
+    "database_restore": "NOT VERIFIED"
+  },
+  "safe_to_resume": {
+    "source_discovery": true,
+    "orchestrated_implementation": "BLOCKED on Astral runtime gate",
+    "deployment": false
+  },
+  "independent_verification": "NOT VERIFIED",
+  "release": "HOLD"
+}

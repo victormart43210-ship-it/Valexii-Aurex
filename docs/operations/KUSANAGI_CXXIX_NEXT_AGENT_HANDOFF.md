@@ -1,0 +1,3 @@
+Resume OPERATION KUSANAGI CXXIX from the exact saved GitHub checkpoint. Read the recovery manifest and resume document first. Do not restart completed waves. Preserve all security and release holds. Continue from the first unfinished executable task.
+
+Fetch work/kusanagi-cxxix-staging-convergence and verify remote SHA. Discovery is completed; implementation has not started. Resolve Astral runtime fallback gate, reconcile backend.app:app against canonical aurex financial execution, freeze contracts, implement offline tests and checkpoint. Staging isolation, authenticated end-to-end execution and independent review remain NOT VERIFIED. Never deploy or touch production to bypass these gaps.
