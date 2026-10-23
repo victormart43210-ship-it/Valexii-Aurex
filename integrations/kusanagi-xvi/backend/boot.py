@@ -11,7 +11,8 @@ import stat
 import sys
 
 MOUNT = "/data"
-DB = "/data/aurex.sqlite3"
+DB = ("/data/aurex-cxxxii-synthetic.sqlite3"
+      if os.environ.get("AUREX_CANONICAL_STAGING") == "1" else "/data/aurex.sqlite3")
 IDENTITY = "aurex"
 UID = 10001
 
@@ -46,7 +47,7 @@ def repair_volume(uid: int, gid: int) -> None:
             raise RuntimeError("Invalid volume mount")
         os.fchown(fd, uid, gid)
         os.fchmod(fd, 0o700)
-        for name in ("aurex.sqlite3", "aurex.sqlite3-wal", "aurex.sqlite3-shm"):
+        for name in (os.path.basename(DB), os.path.basename(DB) + "-wal", os.path.basename(DB) + "-shm"):
             try:
                 child = os.open(name, os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_NONBLOCK", 0), dir_fd=fd)
             except FileNotFoundError:

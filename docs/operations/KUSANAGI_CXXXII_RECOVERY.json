@@ -1,17 +1,31 @@
 {
   "operation": "KUSANAGI CXXXII",
-  "checkpoint": 1,
-  "utc": "2026-10-23T00:38:06.502Z",
+  "checkpoint": 6,
+  "utc": "2026-10-23T06:19:22.534448+00:00",
   "branch": "work/kusanagi-cxxxii-sovereign-activation",
-  "source_sha": "6adc1936d09534b134182e769f88fea9c5a0125a",
+  "source_sha": "9e599510bb24074bf6b72f1893acef916d151122",
   "checkpoint_sha_rule": "Enclosing Git commit is checkpoint identity; source_sha is inspected parent. Resolve git log -1 --format=%H -- this file.",
-  "pr": null,
+  "pr": 119,
   "completed": [
-    "Refreshed CXXIX and staging source",
-    "Inspected Copilot a922e8db8070a86d5f290c22ffb9002ad4395079 verifier and tests; tests reported NOT RUN",
-    "No CXXX Jules review found among fetched branches/open PRs"
+    "Merged concurrent CP005 strict schema guards without overwriting work",
+    "Actual backend.app selects canonical runtime only with staging opt-in",
+    "Supervised HTTP financial audit, persisted receipt, restart replay and killed worker shutdown tested",
+    "Legacy CXXVIII modules preserved; canonical database refuses legacy schema"
   ],
-  "tests": [],
+  "tests": [
+    {
+      "command": "PYTHONPATH=. pytest -q (proxy env removed, plugin autoload disabled)",
+      "result": "PASS: 478 passed, 1 skipped, 1 warning in 11.18s"
+    },
+    {
+      "command": "ruff check aurex tests scripts",
+      "result": "PASS"
+    },
+    {
+      "command": "mypy aurex",
+      "result": "PASS: 77 source files"
+    }
+  ],
   "railway": {
     "service": {
       "id": "2b51dfe6-2175-4cb0-aac2-eb40ecbc3a1d",
@@ -68,18 +82,46 @@
     ],
     "staged": null
   },
-  "website_revision": "558fcbcd51a36a0a3beae8500677347acd616cdd",
+  "website_revision": "5b6caa16ee506ac57120cb693e2d04c637cb1a73",
   "security": [
     "Actual storage instance isolation NOT VERIFIED",
     "No production, real financial data, paid inference or main merge authorized"
   ],
   "next_actions": [
-    "Integrate canonical execution behind actual backend.app entrypoint with explicit disposable schema guard",
-    "Run entrypoint worker receipt restart and mutation tests",
-    "Verify volume instances and backup before staging changes"
+    "Implement default-off canonical financial website server adapter and owner panel; preserve local mock",
+    "Verify Railway volume instances, backup and rollback before any infrastructure changes",
+    "Run exact-head CI and independent review before admission"
   ],
   "rollback": "No infrastructure changes; staging d22e06e9412a07e06ab8bd597e0e5ebf5b8c125c unchanged",
   "release": "HOLD",
-  "remote_save": "Read back enclosing commit after publication",
-  "independent_review": "NOT RUN"
+  "remote_save": "NOT VERIFIED until enclosing commit readback",
+  "independent_review": "NOT RUN",
+  "credit_operations": [],
+  "blockers": [
+    "Railway actual storage instance isolation and backups NOT VERIFIED",
+    "Docker build NOT RUN: Docker unavailable",
+    "Independent review NOT RUN"
+  ],
+  "modified_files": [
+    "Dockerfile.cxxxii",
+    "aurex/staging_runtime.py",
+    "docs/verification/KUSANAGI_CXXXI_CONTRACT_MATRIX.md",
+    "integrations/kusanagi-xvi/backend/Dockerfile",
+    "integrations/kusanagi-xvi/backend/agent.py",
+    "integrations/kusanagi-xvi/backend/app.py",
+    "integrations/kusanagi-xvi/backend/boot.py",
+    "integrations/kusanagi-xvi/backend/entrypoint.sh",
+    "integrations/kusanagi-xvi/backend/evaluation_science.py",
+    "integrations/kusanagi-xvi/backend/evidence_science.py",
+    "integrations/kusanagi-xvi/backend/lab.py",
+    "integrations/kusanagi-xvi/backend/llm.py",
+    "integrations/kusanagi-xvi/backend/nvidia_research.py",
+    "integrations/kusanagi-xvi/backend/qa_probe.py",
+    "integrations/kusanagi-xvi/backend/requirements.txt",
+    "integrations/kusanagi-xvi/backend/research_api.py",
+    "integrations/kusanagi-xvi/backend/staging_probe.py",
+    "integrations/kusanagi-xvi/backend/supervisor.py",
+    "tests/test_cxxviii_unix_worker_labs.py",
+    "tests/test_cxxxii_staging_runtime.py"
+  ]
 }

@@ -17,6 +17,9 @@ from . import store
 
 
 def validate_config(env: Mapping[str, str], mount_check: Callable[[str], bool] = os.path.ismount) -> str:
+    if env.get("AUREX_CANONICAL_STAGING") == "1":
+        from aurex.staging_runtime import validate_environment
+        validate_environment(dict(env))
     db = env.get("AUREX_DB_PATH", "")
     if not db or not os.path.isabs(db) or db == ":memory:":
         raise ValueError("AUREX_DB_PATH must name an absolute, durable SQLite file")
@@ -35,7 +38,9 @@ def validate_config(env: Mapping[str, str], mount_check: Callable[[str], bool] =
 
 def child_commands(env: Mapping[str, str]) -> list[list[str]]:
     commands: list[list[str]] = []
-    if env.get("AUREX_ENABLE_OFFLINE_LAB") == "true":
+    if env.get("AUREX_CANONICAL_STAGING") == "1":
+        commands.append([sys.executable, "-m", "aurex.offline_worker"])
+    elif env.get("AUREX_ENABLE_OFFLINE_LAB") == "true":
         commands.append([sys.executable, "-m", "backend.worker", "loop", "--interval", "10"])
     if env.get("AUREX_OBSERVER_ENABLED") == "true":
         commands.append([sys.executable, "-m", "backend.agent", "loop", "--interval", "60"])
@@ -59,8 +64,12 @@ def main() -> int:
     env = os.environ.copy()
     try:
         db = validate_config(env)
-        store.initialize(db)
-        if env.get("AUREX_STAGING_PERSISTENCE_PROBE") == "true":
+        if env.get("AUREX_CANONICAL_STAGING") == "1":
+            from aurex.staging_runtime import initialize_canonical
+            initialize_canonical(db)
+        else:
+            store.initialize(db)
+        if env.get("AUREX_CANONICAL_STAGING") != "1" and env.get("AUREX_STAGING_PERSISTENCE_PROBE") == "true":
             from . import staging_probe
 
             result = staging_probe.run(db, env)

@@ -1,1 +1,3 @@
-Resume KUSANAGI CXXXII from exact saved remote head. Read recovery and resume first. Do not redo CXXIX. First unfinished task: reconcile backend.app startup with canonical jobs on an explicit isolated synthetic DB; test same entrypoint and worker. Preserve all release holds.
+Resume OPERATION KUSANAGI CXXXII from the exact saved GitHub checkpoint. Read the recovery manifest and resume document first. Do not restart completed waves. Preserve all security and release holds. Continue from the first unfinished executable task.
+
+Resolve enclosing CP006 commit, verify current remote head, reconcile newer work, then implement and test the gated canonical financial website adapter. Infrastructure remains HOLD pending actual volume-instance isolation and backups.
