@@ -3,7 +3,7 @@
  * No access token, source data, raw response, or audit authorization.
  * Deployment protection must remain enabled on the preview project.
  */
-const STAGING_HEALTH = "https://aurex-api-aurex-staging.up.railway.app/health";
+const STAGING_HEALTH = "https://aurex-api-aurex-staging.up.railway.app/v1/health";
 export default async function handler(req, res) {
   res.setHeader("Cache-Control", "no-store, max-age=0");
   res.setHeader("X-Content-Type-Options", "nosniff");
@@ -26,7 +26,7 @@ export default async function handler(req, res) {
       return res.status(200).json({
         state: "HOLD",
         stagingReachability: "NOT VERIFIED",
-        reason: "UPSTREAM_HEALTH_UNAVAILABLE",
+        reason: upstream.status === 401 ? "BEARER_AUTHORIZATION_REQUIRED" : "UPSTREAM_HEALTH_UNAVAILABLE",
         auditRuntime: "NOT CONNECTED",
         modelInference: "NOT RUN",
         financialAuthority: "NONE",
