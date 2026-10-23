@@ -29,3 +29,12 @@ Rollback: no runtime changes made. Source base above; staging prior source above
 
 ## Durable checkpoint receipt
 Checkpoint 001: 35de80b4fc01d57037af2245696acc8e28ef9723. Remote branch read-back PASS. Draft PR: https://github.com/victormart43210-ship-it/Valexii-Aurex/pull/118. Checkpoint 002 adds this receipt; resolve its enclosing commit as documented above.
+
+## Checkpoint 003 supersedes initial execution blocker
+User explicitly confirmed the Astral fallback. Primary identity remains unverified. Reviewer launcher dry-run failed: no compatible Codex runtime. Jules connector absent. Independent CUSTOS review NOT RUN.
+
+Implemented opt-in AUREX_JOB_EXECUTION_MODE=queued in canonical API, aurex.offline_worker.run_once and module CLI, and shared aurex.offline_probes.execute_probe. Existing inline mode preserved. Actual fictional 100-case job now queues, is claimed, persists evidence and returns a receipt in a local HTTP/SQLite integration test. Fixed prior receipt rejection of SYNTHETIC_GATE_PASS_NOT_BETA_RELEASE. Cancellation and disabled financial-worker paths create no success receipt. Existing fencing tests run.
+
+Full offline suite: 438 passed, 1 skipped, 1 dependency deprecation warning; Mypy 76 files PASS. First run had moved fault-injection seam plus host SOCKS proxy dependency failures; seam updated and offline test process stripped proxy env. No provider calls authorized.
+
+This is source-only, NOT completed Wave One convergence: legacy params/evidence schema differs from canonical params_json/evidence_records and job IDs differ. Do not start canonical code against legacy DB. No migration or new supervisor deployed. Next: independent review, schema/entrypoint convergence, volume-instance and backup verification, then frontend. Same logical volume ID is environment-scoped per Railway docs, but actual attachments still require verification. https://docs.railway.com/integrations/api/manage-volumes#get-volume-instance-details

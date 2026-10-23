@@ -1,19 +1,22 @@
 {
   "operation": "KUSANAGI CXXIX",
-  "checkpoint_sequence": 2,
-  "checkpoint_timestamp_utc": "2026-10-23T00:10:07.255Z",
+  "checkpoint_sequence": 3,
+  "checkpoint_timestamp_utc": "2026-10-23T00:22:42.477481+00:00",
   "repository": "victormart43210-ship-it/Valexii-Aurex",
   "active_branch": "work/kusanagi-cxxix-staging-convergence",
-  "current_source_commit_sha": "82d70c0da20ba5128c48c254987cb433ddae6b35",
+  "current_source_commit_sha": "35d9040074287dd75eb7cba86576f720a93a46a6",
   "parent_base_commit_sha": "82d70c0da20ba5128c48c254987cb433ddae6b35",
   "checkpoint_commit_resolution": "Use git log -1 --format=%H -- docs/operations/KUSANAGI_CXXIX_RECOVERY.json. A commit cannot embed its own SHA; current_source_commit_sha identifies inspected source, enclosing Git commit identifies checkpoint.",
   "main_base_sha": "df0654390049118a142ec3b3356f0f40b4789fe4",
   "latest_known_pr": 118,
   "checkpoint_pr": 118,
   "files_modified": [
-    "docs/operations/KUSANAGI_CXXIX_RECOVERY.json",
-    "docs/operations/KUSANAGI_CXXIX_RESUME.md",
-    "docs/operations/KUSANAGI_CXXIX_NEXT_AGENT_HANDOFF.md"
+    "aurex/api.py",
+    "aurex/offline_probes.py",
+    "aurex/offline_worker.py",
+    "aurex/pipeline_receipts.py",
+    "tests/test_api_sqlite_contract.py",
+    "tests/test_cxxix_queued_financial.py"
   ],
   "completed_milestones": [
     "Refreshed PR117 exact head and main",
@@ -21,60 +24,43 @@
     "Inspected Railway staging config and production inventory read-only",
     "Traced staging Dockerfile -> backend.boot -> backend.supervisor -> backend.app:app",
     "Refreshed Lovable revision",
-    "Checkpoint 001 remote commit read back; draft PR118 created"
+    "Checkpoint 001 remote commit read back; draft PR118 created",
+    "User confirmed Astral primary fallback; model/effort remains unverified",
+    "Added opt-in queued canonical job execution and detached fenced worker",
+    "Extracted shared deterministic offline probe executor",
+    "Reproduced and repaired financial receipt status rejection",
+    "Local full suite 438 passed, 1 skipped; Mypy 76 source files PASS"
   ],
-  "tests_executed": [],
+  "tests_executed": [
+    {
+      "command": "env -u ALL_PROXY -u all_proxy -u HTTP_PROXY -u HTTPS_PROXY PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 .venv/bin/pytest -q",
+      "status": "PASS",
+      "result": "438 passed, 1 skipped, 1 Starlette deprecation warning"
+    },
+    {
+      "command": ".venv/bin/mypy aurex",
+      "status": "PASS",
+      "result": "76 source files"
+    },
+    {
+      "command": "initial new queued financial test",
+      "status": "FAIL",
+      "result": "Expected queued, got succeeded; subsequent receipt retrieval 409 exposed result-label mismatch; both repaired"
+    },
+    {
+      "command": "first full suite",
+      "status": "FAIL",
+      "result": "3 failed: fault injection referenced moved executor; two web_adapter tests affected by host SOCKS proxy. Updated injection seam and ran offline suite without proxy env."
+    }
+  ],
   "source_ci": {
-    "status": "PASS",
-    "evidence": [
-      {
-        "name": "AUREX independent runner smoke checks",
-        "sha": "82d70c0da20ba5128c48c254987cb433ddae6b35",
-        "status": "completed",
-        "conclusion": "success",
-        "url": "https://github.com/victormart43210-ship-it/Valexii-Aurex/actions/runs/39874940724"
-      },
-      {
-        "name": "CI",
-        "sha": "82d70c0da20ba5128c48c254987cb433ddae6b35",
-        "status": "completed",
-        "conclusion": "success",
-        "url": "https://github.com/victormart43210-ship-it/Valexii-Aurex/actions/runs/39874940720"
-      },
-      {
-        "name": "Canonical Railway image",
-        "sha": "82d70c0da20ba5128c48c254987cb433ddae6b35",
-        "status": "completed",
-        "conclusion": "success",
-        "url": "https://github.com/victormart43210-ship-it/Valexii-Aurex/actions/runs/39874940731"
-      },
-      {
-        "name": "CXXV website contract bridge",
-        "sha": "82d70c0da20ba5128c48c254987cb433ddae6b35",
-        "status": "completed",
-        "conclusion": "success",
-        "url": "https://github.com/victormart43210-ship-it/Valexii-Aurex/actions/runs/39874940717"
-      },
-      {
-        "name": "AUREX CXXVI Pipeline Gate",
-        "sha": "82d70c0da20ba5128c48c254987cb433ddae6b35",
-        "status": "completed",
-        "conclusion": "success",
-        "url": "https://github.com/victormart43210-ship-it/Valexii-Aurex/actions/runs/39874940773"
-      },
-      {
-        "name": "CI",
-        "sha": "82d70c0da20ba5128c48c254987cb433ddae6b35",
-        "status": "completed",
-        "conclusion": "success",
-        "url": "https://github.com/victormart43210-ship-it/Valexii-Aurex/actions/runs/39874934615"
-      }
-    ],
-    "limitation": "Workflow results read from GitHub; tests not independently rerun in this session."
+    "status": "NOT RUN",
+    "note": "Historical base CI is not exact-head evidence for new code"
   },
   "failed_tests": [],
   "unresolved_defects": [
-    "Canonical financial source is not the staging entrypoint; reconciliation NOT RUN"
+    "Queued mode not yet wired to deployment supervisor; source-only candidate",
+    "Canonical and legacy schema differ; do not deploy this branch"
   ],
   "railway": {
     "staging": {
@@ -277,14 +263,14 @@
     "Staging build root excludes root aurex modules; route addition alone cannot expose canonical financial jobs"
   ],
   "outstanding_dependencies": [
-    "Astral primary checker unavailable: sessions-directory-unavailable; skill requires explicit fallback confirmation before dependent orchestration",
-    "Jules tool/reviewer availability NOT VERIFIED",
-    "Staging volume instance isolation, backup/rollback and credentials NOT VERIFIED"
+    "Jules unavailable; Astral reviewer dry-run failed: no compatible Codex runtime",
+    "Legacy-to-canonical SQLite schema migration and CXXVIII supervisor convergence NOT IMPLEMENTED",
+    "Staging actual volume-instance isolation, backup/restore, credentials and end-to-end execution NOT VERIFIED"
   ],
   "next_three_actions": [
-    "Resolve Astral primary evidence or explicit fallback per selected skill",
-    "Compare staging store/worker/auth contracts with canonical aurex financial pipeline; freeze one execution contract",
-    "Implement bounded source convergence and tests in isolated branch; checkpoint before any infrastructure change"
+    "Review detached worker and receipt change at checkpoint SHA independently",
+    "Implement explicit legacy schema migration and supervisor convergence, preserving CXXVIII behavior",
+    "Verify volume instances and rollback before any staging mutation; then connect existing frontend"
   ],
   "assigned_agent": "ChatGPT Work primary; Jules NOT ASSIGNED",
   "deployment_authorization": {
@@ -300,11 +286,11 @@
   },
   "safe_to_resume": {
     "source_discovery": true,
-    "orchestrated_implementation": "BLOCKED on Astral runtime gate",
+    "source_implementation": true,
     "deployment": false
   },
   "independent_verification": "NOT VERIFIED",
   "release": "HOLD",
-  "previous_checkpoint_sha": "35de80b4fc01d57037af2245696acc8e28ef9723",
+  "previous_checkpoint_sha": "35d9040074287dd75eb7cba86576f720a93a46a6",
   "previous_checkpoint_remote_save_verified": "PASS"
 }
