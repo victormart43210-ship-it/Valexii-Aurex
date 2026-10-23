@@ -197,3 +197,59 @@ body{background:var(--launch-bg);color:var(--launch-white)}
   .launch-header nav{scrollbar-width:none}
 }
 @media(prefers-reduced-motion:reduce){.sovereign-art-stage,.equipment-pair-stage,.launch-btn,.launch-header-cta{transition:none!important}}
+
+/* KUSANAGI CXLII — MagicPath project 464525232678535168 design convergence.
+   Keep the actual WebGL models and real Roman artwork; do not substitute SVG pseudo-3D. */
+.launch-lead strong{font-weight:680;color:#f5e6c9}
+.launch-hero h1{font-family:Georgia,"Times New Roman",serif}
+.launch-hero .launch-value-pills span{background:linear-gradient(145deg,#0d2d3abf,#071824d9);box-shadow:inset 0 1px #17a6b21c}
+.sovereign-proof-ribbon{margin:clamp(20px,3.2vw,44px) auto 0;display:flex;align-items:center;justify-content:center;gap:clamp(8px,1.1vw,22px);flex-wrap:wrap;max-width:1200px;color:#d2e4ea}
+.sovereign-proof-ribbon .proof-logo{font-size:33px;color:#79dce4;border:1px solid #2ba1aa;width:43px;height:43px;line-height:40px;border-radius:50%;text-align:center;text-shadow:0 0 15px #4eeef58c}
+.sovereign-proof-ribbon>span:nth-child(2){display:flex;flex-direction:column;gap:1px;font:normal 22px Georgia,serif;letter-spacing:2px;color:#b3f8fc;line-height:1.12;white-space:nowrap}
+.sovereign-proof-ribbon small{font:650 8px/1.4 "Segoe UI",sans-serif;color:#7fc1cb;letter-spacing:1.35px}
+.sovereign-proof-divider{height:35px;width:1px;background:linear-gradient(transparent,#46aeb5,transparent)}
+.sovereign-proof-ribbon .proof-path{font-size:10px;letter-spacing:1.15px;color:#bad1d7;line-height:1.75}
+.sovereign-proof-ribbon .proof-path b{font-size:12px;font-weight:600;color:#e4ba75;margin:0 3px}
+.sovereign-proof-ribbon .proof-human{border:1px solid #876c43;color:#e4ba7d;font-size:9px;letter-spacing:1.25px;white-space:nowrap;border-radius:24px;padding:8px 12px;background:#241e1ac7}
+.ai-externalized{position:relative;overflow:hidden;text-align:center;background:
+  radial-gradient(ellipse 56% 65% at 50% 34%,rgba(11,80,108,.29),transparent 82%),
+  linear-gradient(180deg,#03101a,#061b2a 62%,#041420);
+  padding:clamp(68px,7.3vw,115px) 0 clamp(65px,6.5vw,105px);border-bottom:1px solid #245363}
+.ai-externalized:before{content:"";position:absolute;pointer-events:none;left:50%;top:15%;width:min(76vw,900px);height:160px;transform:translateX(-50%);background:#16b2c514;filter:blur(70px);border-radius:50%}
+.ai-externalized .wrap{position:relative;max-width:1210px}
+.ai-externalized h2{font:normal clamp(38px,5.7vw,78px)/1.15 Georgia,"Times New Roman",serif;letter-spacing:-1.3px;color:#f6f6f3;margin:17px 0 26px}
+.ai-externalized h2 em{font-weight:normal;color:#e8be81}
+.externalized-lede{font-size:clamp(15px,1.3vw,19px);line-height:1.83;color:#b7ced8;max-width:835px;margin:0 auto 45px}
+.externalized-capabilities{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:13px;text-align:left;margin:0 auto 34px}
+.externalized-capabilities>div{display:flex;flex-direction:column;align-items:flex-start;gap:11px;min-height:174px;background:linear-gradient(135deg,rgba(9,43,59,.87),rgba(6,23,36,.94));border:1px solid #2b5d6e;border-top:2px solid #3bbcc9;border-radius:9px;padding:22px;transition:transform .2s ease,border-color .2s ease}
+.externalized-capabilities>div:hover{transform:translateY(-4px);border-color:#9ce6eb}
+.externalized-capabilities span{font:normal 27px Georgia,serif;color:#e5bf86}
+.externalized-capabilities strong{font-size:12px;letter-spacing:1.5px;color:#edf7f8}
+.externalized-capabilities small{font-size:13px;line-height:1.55;color:#aac6d0}
+.externalized-jump{display:inline-flex;align-items:center;gap:12px;border-bottom:1px solid #5edfe2;padding:11px 2px;color:#8deef2;font-size:11px;font-weight:730;letter-spacing:1.4px}
+.externalized-jump:hover{color:#fff;border-color:#fff}
+@media(max-width:970px){
+ .sovereign-proof-ribbon{max-width:820px}
+ .sovereign-proof-divider{display:none}
+ .sovereign-proof-ribbon .proof-path{order:3;flex-basis:100%}
+ .sovereign-proof-ribbon .proof-human{order:4}
+}
+@media(max-width:780px){
+ .externalized-capabilities{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .ai-externalized h2{font-size:clamp(40px,6.5vw,58px)}
+}
+@media(max-width:480px){
+ .sovereign-proof-ribbon{gap:8px;margin-top:20px}
+ .sovereign-proof-ribbon .proof-path{font-size:9px;letter-spacing:.12px}
+ .sovereign-proof-ribbon .proof-path b{margin:0}
+ .sovereign-proof-ribbon .proof-human{font-size:8px}
+ .ai-externalized{padding:65px 0}
+ .ai-externalized h2{font-size:38px}
+ .externalized-lede{font-size:15px}
+ .externalized-capabilities{gap:8px}
+ .externalized-capabilities>div{padding:16px;min-height:150px;gap:8px}
+ .externalized-capabilities small{font-size:11px}
+ .externalized-capabilities strong{font-size:11px}
+ .externalized-jump{font-size:9px}
+}
+@media(prefers-reduced-motion:reduce){.externalized-capabilities>div{transition:none}}
