@@ -70,7 +70,8 @@ def inspect_schema(path: str) -> dict[str, str | bool]:
             if canonical and not legacy and "params" not in jobs and "evidence" not in names:
                 result["schema"] = "CANONICAL"
                 result["canonical_compatible"] = True
-            elif legacy and not canonical and "params_json" not in jobs and "evidence_records" not in names:
+            elif (legacy and not canonical and "params_json" not in jobs
+                  and "evidence_records" not in names):
                 result["schema"] = "LEGACY_MIGRATION_REQUIRED"
             elif canonical or legacy or ("params" in jobs and "params_json" in jobs):
                 result["schema"] = "MIXED_MIGRATION_REQUIRED"
