@@ -1,0 +1,118 @@
+# AUREX GitHub PR → existing Hetzner GitLab Runner, manual one-SHA verification.
+# Include this file only in a protected CI-only GitLab branch/project.
+# The AUREX source of truth remains GitHub; no GitLab mirroring or merge.
+#
+# Prerequisites: trusted non-privileged GitLab Docker executor on Hetzner,
+# tag aurex-hetzner (or manually override AUREX_RUNNER_TAG), no mounted
+# host docker.sock, production credentials, USB disks, or privileged containers.
+#
+# Start a web pipeline with AUREX_PR_NUMBER and AUREX_EXPECTED_SHA variables;
+# then manually start the verification job. Exact SHA expected, fail closed.
+
+aurex_github_pr_verify:
+  stage: test
+  image: python:3.12-bookworm
+  tags:
+    - ${AUREX_RUNNER_TAG}
+  variables:
+    GIT_STRATEGY: none
+    GIT_SUBMODULE_STRATEGY: none
+    AUREX_RUNNER_TAG: "aurex-hetzner"
+    PIP_DISABLE_PIP_VERSION_CHECK: "1"
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "web" && $AUREX_PR_NUMBER =~ /^[0-9]+$/ && $AUREX_EXPECTED_SHA =~ /^[0-9a-f]{40}$/'
+      when: manual
+      allow_failure: false
+    - when: never
+  timeout: 35 minutes
+  artifacts:
+    when: always
+    expire_in: 7 days
+    paths:
+      - aurex-ci-evidence/
+  script:
+    - |
+      bash <<'AUREX_VERIFY_JOB'
+      set -euo pipefail
+      umask 077
+      REPO="victormart43210-ship-it/Valexii-Aurex"
+      EVIDENCE="${CI_PROJECT_DIR:?}/aurex-ci-evidence"
+      mkdir -p "$EVIDENCE"
+      printf '%s\n' "source_repo=$REPO" "pr_number=${AUREX_PR_NUMBER:-unset}"         "expected_head_sha=${AUREX_EXPECTED_SHA:-unset}"         "runner_id=${CI_RUNNER_ID:-unknown}" "execution=STARTED" > "$EVIDENCE/identity.txt"
+      CURRENT_GATE="admission"
+      finish() {
+        code=$?
+        printf '%s\n' "gate=$CURRENT_GATE" "exit_code=$code"           "status=$([ "$code" -eq 0 ] && echo PASS || echo FAIL)"           "authority=NONE" "independent_review=REQUIRED" >> "$EVIDENCE/identity.txt"
+        sha256sum "$EVIDENCE/identity.txt" > "$EVIDENCE/identity.txt.sha256"
+      }
+      trap finish EXIT
+      if [ ! -f /.dockerenv ] && [ ! -f /run/.containerenv ]; then
+        echo "HOLD: refusing to execute GitHub PR code outside an isolated container" >&2
+        exit 20
+      fi
+      if ! [[ "${AUREX_PR_NUMBER:-}" =~ ^[0-9]{1,6}$ ]]; then
+        echo "HOLD: valid PR number required" >&2
+        exit 21
+      fi
+      if ! [[ "${AUREX_EXPECTED_SHA:-}" =~ ^[a-f0-9]{40}$ ]]; then
+        echo "HOLD: exact 40-hex GitHub PR HEAD SHA required" >&2
+        exit 22
+      fi
+      command -v git >/dev/null && command -v python3 >/dev/null || {
+        echo "HOLD: Git and Python 3 required" >&2; exit 23;
+      }
+      CURRENT_GATE="github_pr_ownership_and_head"
+      python3 - "$AUREX_PR_NUMBER" "$AUREX_EXPECTED_SHA" "$REPO" <<'PY'
+      import json
+      import sys
+      import urllib.request
+
+      number, expected, repo = sys.argv[1:]
+      url = f"https://api.github.com/repos/{repo}/pulls/{number}"
+      request = urllib.request.Request(
+          url, headers={"Accept": "application/vnd.github+json",
+                        "User-Agent": "AUREX-Hetzner-CI-Read-Only"}
+      )
+      with urllib.request.urlopen(request, timeout=15) as response:
+          payload = json.load(response)
+      assert payload["state"] == "open", "PR is not open"
+      assert payload["base"]["repo"]["full_name"] == repo, "unexpected base repo"
+      assert payload["base"]["ref"] == "main", "stacked PR must first be rebased onto main"
+      assert payload["head"]["repo"]["full_name"] == repo, "external forks refused"
+      assert payload["head"]["sha"] == expected, "PR HEAD moved: stale expected SHA"
+      print("PR provenance and immutable HEAD: PASS")
+      PY
+      WORK="$(mktemp -d /tmp/aurex-pr.XXXXXXXX)"
+      trap 'finish; rm -rf "$WORK"' EXIT
+      mkdir -p "$WORK/workspace" "$WORK/home" "$WORK/temp" "$WORK/wheels"
+      CURRENT_GATE="fetch_exact_commit"
+      git -C "$WORK/workspace" init -q
+      export GIT_TERMINAL_PROMPT=0
+      git -C "$WORK/workspace" -c credential.helper= -c core.hooksPath=/dev/null         fetch --no-tags --depth=1 "https://github.com/$REPO.git"         "refs/pull/$AUREX_PR_NUMBER/head"
+      git -C "$WORK/workspace" -c core.hooksPath=/dev/null checkout -q --detach FETCH_HEAD
+      OBSERVED="$(git -C "$WORK/workspace" rev-parse HEAD)"
+      printf 'observed_head_sha=%s\n' "$OBSERVED" >> "$EVIDENCE/identity.txt"
+      if [ "$OBSERVED" != "$AUREX_EXPECTED_SHA" ]; then
+        echo "HOLD: fetched HEAD differs from expected SHA" >&2
+        exit 24
+      fi
+      # PR code must not inherit GitLab job tokens or unrelated CI credentials.
+      clean_run() {
+        env -i PATH="$PATH" HOME="$WORK/home" TMPDIR="$WORK/temp"           PYTHONNOUSERSITE=1 PYTEST_DISABLE_PLUGIN_AUTOLOAD=1           PIP_DISABLE_PIP_VERSION_CHECK=1 PIP_NO_INPUT=1           GIT_CONFIG_NOSYSTEM=1 GIT_CONFIG_GLOBAL=/dev/null "$@"
+      }
+      CURRENT_GATE="install_dependencies"
+      python3 -m venv "$WORK/venv"
+      clean_run "$WORK/venv/bin/python" -m pip install -e "$WORK/workspace[dev]"         > "$EVIDENCE/install.log" 2>&1
+      clean_run "$WORK/venv/bin/python" -m pip freeze > "$EVIDENCE/dependencies.txt"
+      cd "$WORK/workspace"
+      CURRENT_GATE="syntax"
+      clean_run "$WORK/venv/bin/python" -m compileall -q aurex training workstation         > "$EVIDENCE/syntax.log" 2>&1
+      CURRENT_GATE="ruff"
+      clean_run "$WORK/venv/bin/ruff" check . > "$EVIDENCE/ruff.log" 2>&1
+      CURRENT_GATE="mypy"
+      clean_run "$WORK/venv/bin/mypy" aurex > "$EVIDENCE/mypy.log" 2>&1
+      CURRENT_GATE="pytest"
+      clean_run "$WORK/venv/bin/python" -m pytest -q > "$EVIDENCE/pytest.log" 2>&1
+      CURRENT_GATE="complete"
+      printf '%s\n' "All checks PASS on exactly $OBSERVED"         "No production deploy, merge, regulatory verdict or authority granted."
+      AUREX_VERIFY_JOB
