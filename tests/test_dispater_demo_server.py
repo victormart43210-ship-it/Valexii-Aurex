@@ -5,10 +5,11 @@ from __future__ import annotations
 import http.client
 import json
 import threading
+from collections.abc import Iterator
 from contextlib import contextmanager
 from http.server import ThreadingHTTPServer
 from pathlib import Path
-from typing import Any, Iterator
+from typing import Any
 
 from aurex.dispater_demo_server import make_handler
 
