@@ -49,3 +49,31 @@ test("build ships actual React/Radix dashboard and two GPU models, no external C
  assert.ok(!html.includes('<input type="file"'));
  assert.ok(html.includes("no official audit")||html.includes("no official audit".toUpperCase())||html.includes("no official audit,"));
 });
+
+test("MagicPath premium design is realized with real three-piece arrangement and no redundant artwork card",async()=>{
+ const html=await read("index.html");
+ const hero=html.indexOf('id="launch-title"'),triad=html.indexOf('class="equipment-pair-grid"'),externalized=html.indexOf('id="framework"'),audit=html.indexOf('id="audit"');
+ assert.ok(hero>0&&triad>hero&&externalized>triad&&audit>externalized,"clear marketing → equipment → purpose → audit flow");
+ const section=html.slice(triad,externalized);
+ const tree=section.indexOf('data-equipment="frac-tree"'),art=section.indexOf('class="sovereign-art-stage"'),tow=section.indexOf('data-equipment="tow-truck"');
+ assert.ok(tree>=0&&art>tree&&tow>art,"real Roman image centered between actual interactive WebGL stages");
+ assert.equal((section.match(/class="sovereign-art-stage"/g)||[]).length,1);
+ assert.ok(section.includes("dispater-hero.jpg"));
+ assert.ok(!html.includes("CANONICAL ARTWORK PRESERVED"));
+ assert.ok(!html.includes("Industrial vision"));
+ assert.ok(section.includes("EVIDENCE")&&section.includes("QUALIFICATION")&&section.includes("AUTHORITY"));
+ const css=await read("launch.css");
+ assert.ok(css.includes("grid-template-columns:minmax(0,1fr) minmax(225px,.78fr) minmax(0,1fr)"),"three-piece desktop layout");
+ assert.ok(css.includes("max-width:620px"),"mobile stacking");
+});
+test("AI is presented as source-linked assistance, never autonomous audit authority",async()=>{
+ const html=await read("index.html");
+ assert.ok(html.includes("THE POWER OF AI. EXTERNALIZED."));
+ assert.ok(html.includes("Intelligence you can see."));
+ assert.ok(html.includes("Evidence you can defend."));
+ assert.ok(html.includes("AI helps surface the gaps. You retain the authority."));
+ assert.ok(html.includes("HUMAN APPROVAL REQUIRED"));
+ assert.ok(html.includes("IRS record readiness"));
+ assert.ok(html.includes("DOT / FMCSA readiness where applicable"));
+ assert.ok(html.includes("fictional records") || html.includes("fictional"));
+});
