@@ -4,7 +4,7 @@
 <meta name="theme-color" content="#030d16">
 <meta name="description" content="DISPATER.AI — sovereign operations intelligence for oilfield and towing. Revenue intelligence, evidence review and fictional audit demonstration.">
 <title>DISPATER.AI | Sovereign Operations Intelligence</title>
-<link rel="stylesheet" href="/styles.css"><link rel="stylesheet" href="/command.css"><link rel="stylesheet" href="/reference.css"><script src="/app.mjs" type="module"></script>
+<link rel="stylesheet" href="/styles.css"><link rel="stylesheet" href="/command.css"><link rel="stylesheet" href="/reference.css"><script src="/app.mjs" type="module"></script><script src="/equipment-viewer.js" type="module"></script>
 </head>
 <body>
 <a class="skip" href="#main">Skip to content</a>
@@ -32,6 +32,55 @@
 <section class="approved-hero-reference" aria-label="DISPATER.AI approved visual concept. This image is noninteractive and contains illustrative buttons only.">
   <img src="/approved-hero.png" width="1672" height="941" alt="DISPATER.AI cinematic reference with frac tree, oilfield, towing, audit panels and illustrated controls. Fictional concept; the controls pictured here are not clickable." fetchpriority="high" decoding="async">
   <p class="approved-hero-caption">APPROVED DESIGN SHOWCASE · FICTIONAL DATA · STATIC ARTWORK · INTERACTIVE OPERATIONS BELOW ↓</p>
+</section>
+<section class="equipment-3d-section" id="equipment-3d" aria-labelledby="equipment-showcase-title">
+ <div class="wrap equipment-3d-inner">
+   <div class="equipment-3d-intro">
+     <div><p class="eyebrow">DISPATER · INTERACTIVE EQUIPMENT STUDIO</p>
+       <h2 id="equipment-showcase-title">Industrial equipment. <em>Every angle.</em></h2>
+       <p>Explore two original, interactive 3D concept models. Drag to rotate, scroll or pinch to zoom. These are equipment illustrations—not operational digital twins or live telemetry.</p>
+     </div>
+     <span class="studio-badge">3D CONCEPTS · NO PRESSURE DATA</span>
+   </div>
+   <div class="equipment-layout">
+     <div class="equipment-view-column">
+       <div class="equipment-tabs" role="group" aria-label="Select industrial 3D equipment">
+         <button id="equipment-frac" class="is-active" aria-pressed="true" type="button"><span aria-hidden="true">✣</span> FRAC TREE</button>
+         <button id="equipment-tow" aria-pressed="false" type="button"><span aria-hidden="true">↗</span> TOW TRUCK</button>
+       </div>
+       <div id="equipment-stage" class="equipment-stage" role="group" aria-label="Interactive 3D equipment viewer">
+         <div class="equipment-stage-grid" aria-hidden="true"></div>
+         <div class="equipment-floor" aria-hidden="true"></div>
+         <img id="equipment-fallback" src="/frac-tree.svg" alt="Illustrative frac tree / wellhead fallback image" width="700" height="760" loading="lazy">
+         <div class="equipment-corner upper-left" aria-hidden="true"></div>
+         <div class="equipment-corner upper-right" aria-hidden="true"></div>
+         <div class="equipment-corner lower-left" aria-hidden="true"></div>
+         <div class="equipment-corner lower-right" aria-hidden="true"></div>
+       </div>
+       <div class="equipment-view-controls">
+         <button id="equipment-reset" type="button">RESET VIEW</button>
+         <button id="equipment-rotation" type="button" aria-pressed="false">PAUSE ROTATION</button>
+         <span id="equipment-status" role="status">ILLUSTRATIVE 3D · NO LIVE TELEMETRY</span>
+       </div>
+     </div>
+     <aside class="equipment-info">
+       <p class="eyebrow">EQUIPMENT / CONCEPT</p>
+       <h3 id="equipment-title">Frac tree / wellhead</h3>
+       <p id="equipment-description">Valve bodies, forged flanges, lateral outlets and handwheels. Illustration only; no pressure data.</p>
+       <div class="equipment-info-rule"></div>
+       <div class="equipment-info-row"><span>MODEL SOURCE</span><strong>ORIGINAL THREE.JS GEOMETRY</strong></div>
+       <div class="equipment-info-row"><span>INTERACTION</span><strong>ROTATE · ZOOM · TOUCH</strong></div>
+       <div class="equipment-info-row"><span>OPERATIONAL DATA</span><strong>NONE CONNECTED</strong></div>
+       <div class="equipment-info-row"><span>STATUS</span><strong class="model-hold">ILLUSTRATIVE ONLY</strong></div>
+       <p class="equipment-caution">The models are artistic technical approximations, not certified engineering drawings. No pressure numbers, location data, dispatch commands, or financial actions.</p>
+       <div class="equipment-ctas">
+         <a class="button primary" href="#audit">TRY SYNTHETIC AUDIT ↗</a>
+         <a class="button outlined" href="https://valexii.com/contact?service=dispater-consultation">DISCUSS A PILOT ↗</a>
+       </div>
+     </aside>
+   </div>
+   <p class="equipment-bottom-note">OPEN-SOURCE THREE.JS · MOUSE / TOUCH INTERACTIVE · MODEL DATA STORED LOCALLY · NO EXTERNAL 3D LIBRARY REQUESTS AT RUNTIME</p>
+ </div>
 </section>
 <section class="factory-showcase" aria-label="Industrial field operations and audit intelligence visual showcase">
   <div class="factory-art" aria-hidden="true"><img src="/industrial-companion.png" width="1122" height="1402" alt="" loading="eager" decoding="async"></div>
