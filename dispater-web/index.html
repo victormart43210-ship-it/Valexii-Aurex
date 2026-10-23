@@ -1,193 +1,115 @@
 <!doctype html>
-<html lang="en"><head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#030d16">
-<meta name="description" content="DISPATER.AI — sovereign operations intelligence for oilfield and towing. Revenue intelligence, evidence review and fictional audit demonstration.">
-<title>DISPATER.AI | Sovereign Operations Intelligence</title>
-<link rel="stylesheet" href="/styles.css"><link rel="stylesheet" href="/command.css"><link rel="stylesheet" href="/reference.css"><link rel="stylesheet" href="/equipment-3d.css"><script src="/app.mjs" type="module"></script><script src="/equipment-viewer.js" type="module"></script>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#030e17">
+<meta name="description" content="DISPATER.AI — Audit-readiness and revenue intelligence for oilfield and towing businesses. Organize evidence, review discrepancies and prepare for IRS and applicable DOT/FMCSA audits.">
+<title>DISPATER.AI | Audit Readiness for Oilfield & Towing</title>
+<link rel="stylesheet" href="/styles.css">
+<link rel="stylesheet" href="/launch.css">
+<script type="module" src="/dual-equipment.js"></script>
+<script type="module" src="/audit-dashboard.js"></script>
+<script type="module" src="/site.js"></script>
 </head>
 <body>
 <a class="skip" href="#main">Skip to content</a>
-
-<header class="topbar"><div class="wrap topbar-inner">
-  <a class="parent-brand" href="https://valexii.com" aria-label="VALEXII.AI parent company">
-    <span class="parent-sigil" aria-hidden="true">✥</span>
-    <span><strong>VALEXII</strong><small>SOVEREIGN INTELLIGENCE</small></span>
-  </a>
-  <nav aria-label="Primary navigation">
-    <a href="https://valexii.com">HOME</a>
-    <a href="https://valexii.com/aurex">AUREX</a>
-    <a class="active" href="/" aria-current="page">DISPATER</a>
-    <a href="https://valexii.com/bcxmet">BCXMET</a>
-    <a href="https://valexii.com/xaeli">XAELI</a>
-    <a href="#platform">SOLUTIONS</a>
-    <a href="#integrations">ABOUT</a>
+<header class="launch-header"><div class="wrap launch-header-inner">
+  <a href="/" class="launch-brand" aria-label="DISPATER.AI home"><span class="launch-emblem" aria-hidden="true">✣</span><span>DISPATER<span class="launch-accent">.AI</span></span></a>
+  <nav aria-label="Main navigation">
+    <a href="#audit">AUDIT READINESS</a><a href="#process">HOW IT WORKS</a><a href="#industries">INDUSTRIES</a><a href="#services">SERVICES</a><a href="https://valexii.com">VALEXII.AI ↗</a>
   </nav>
-  <div class="topbar-actions">
-    <a class="top-cta gold" href="https://valexii.com/contact?service=dispater-consultation">CONTACT</a>
-    <a class="top-cta neon" href="https://valexii.com/contact?service=dispater-audit">REQUEST AN AUDIT</a>
-    <span class="top-motto">SECURE&nbsp; // &nbsp;PRIVATE&nbsp; // &nbsp;SOVEREIGN</span>
-  </div>
+  <a href="https://valexii.com/contact?service=dispater-audit" class="launch-header-cta">REQUEST A REVIEW <span aria-hidden="true">↗</span></a>
 </div></header>
-<section class="approved-hero-reference" aria-label="DISPATER.AI approved visual concept. This image is noninteractive and contains illustrative buttons only.">
-  <img src="/approved-hero.png" width="1672" height="941" alt="DISPATER.AI cinematic reference with frac tree, oilfield, towing, audit panels and illustrated controls. Fictional concept; the controls pictured here are not clickable." fetchpriority="high" decoding="async">
-  <p class="approved-hero-caption">APPROVED DESIGN SHOWCASE · FICTIONAL DATA · STATIC ARTWORK · INTERACTIVE OPERATIONS BELOW ↓</p>
-</section>
-<section class="equipment-3d-section" id="equipment-3d" aria-labelledby="equipment-showcase-title">
- <div class="wrap equipment-3d-inner">
-   <div class="equipment-3d-intro">
-     <div><p class="eyebrow">DISPATER · INTERACTIVE EQUIPMENT STUDIO</p>
-       <h2 id="equipment-showcase-title">Industrial equipment. <em>Every angle.</em></h2>
-       <p>Explore two original, interactive 3D concept models. Drag to rotate, scroll or pinch to zoom. These are equipment illustrations—not operational digital twins or live telemetry.</p>
-     </div>
-     <span class="studio-badge">3D CONCEPTS · NO PRESSURE DATA</span>
-   </div>
-   <div class="equipment-layout">
-     <div class="equipment-view-column">
-       <div class="equipment-tabs" role="group" aria-label="Select industrial 3D equipment">
-         <button id="equipment-frac" class="is-active" aria-pressed="true" type="button"><span aria-hidden="true">✣</span> FRAC TREE</button>
-         <button id="equipment-tow" aria-pressed="false" type="button"><span aria-hidden="true">↗</span> TOW TRUCK</button>
-       </div>
-       <div id="equipment-stage" class="equipment-stage" role="group" aria-label="Interactive 3D equipment viewer">
-         <div class="equipment-stage-grid" aria-hidden="true"></div>
-         <div class="equipment-floor" aria-hidden="true"></div>
-         <img id="equipment-fallback" src="/frac-tree.svg" alt="Illustrative frac tree / wellhead fallback image" width="700" height="760" loading="lazy">
-         <div class="equipment-corner upper-left" aria-hidden="true"></div>
-         <div class="equipment-corner upper-right" aria-hidden="true"></div>
-         <div class="equipment-corner lower-left" aria-hidden="true"></div>
-         <div class="equipment-corner lower-right" aria-hidden="true"></div>
-       </div>
-       <div class="equipment-view-controls">
-         <button id="equipment-reset" type="button">RESET VIEW</button>
-         <button id="equipment-rotation" type="button" aria-pressed="false">PAUSE ROTATION</button>
-         <span id="equipment-status" role="status">ILLUSTRATIVE 3D · NO LIVE TELEMETRY</span>
-       </div>
-     </div>
-     <aside class="equipment-info">
-       <p class="eyebrow">EQUIPMENT / CONCEPT</p>
-       <h3 id="equipment-title">Frac tree / wellhead</h3>
-       <p id="equipment-description">Valve bodies, forged flanges, lateral outlets and handwheels. Illustration only; no pressure data.</p>
-       <div class="equipment-info-rule"></div>
-       <div class="equipment-info-row"><span>MODEL SOURCE</span><strong>ORIGINAL THREE.JS GEOMETRY</strong></div>
-       <div class="equipment-info-row"><span>INTERACTION</span><strong>ROTATE · ZOOM · TOUCH</strong></div>
-       <div class="equipment-info-row"><span>OPERATIONAL DATA</span><strong>NONE CONNECTED</strong></div>
-       <div class="equipment-info-row"><span>STATUS</span><strong class="model-hold">ILLUSTRATIVE ONLY</strong></div>
-       <p class="equipment-caution">The models are artistic technical approximations, not certified engineering drawings. No pressure numbers, location data, dispatch commands, or financial actions.</p>
-       <div class="equipment-ctas">
-         <a class="button primary" href="#audit">TRY SYNTHETIC AUDIT ↗</a>
-         <a class="button outlined" href="https://valexii.com/contact?service=dispater-consultation">DISCUSS A PILOT ↗</a>
-       </div>
-     </aside>
-   </div>
-   <p class="equipment-bottom-note">OPEN-SOURCE THREE.JS · MOUSE / TOUCH INTERACTIVE · MODEL DATA STORED LOCALLY · NO EXTERNAL 3D LIBRARY REQUESTS AT RUNTIME</p>
- </div>
-</section>
-<section class="factory-showcase" aria-label="Industrial field operations and audit intelligence visual showcase">
-  <div class="factory-art" aria-hidden="true"><img src="/industrial-companion.png" width="1122" height="1402" alt="" loading="eager" decoding="async"></div>
-  <div class="wrap factory-grid">
-    <div class="factory-message">
-      <p class="eyebrow">SOVEREIGN OPERATIONS INFRASTRUCTURE / CONCEPT</p>
-      <h2>DISPATER<span>.AI</span></h2>
-      <h3>OPERATIONS INTELLIGENCE<br>FOR OILFIELD &amp; TOWING</h3>
-      <p>Field tickets, invoices, crew records and evidence — explained and reconciled through proposed human-reviewed workflows.</p>
-      <div class="factory-actions"><a class="button primary" href="#platform">EXPLORE THE PLATFORM ↗</a><a class="button outlined" href="#audit">VIEW FICTIONAL DEMO ↗</a></div>
-    </div>
-    <div class="factory-monitor" aria-label="Fictional operations metrics">
-      <p class="eyebrow">ILLUSTRATIVE DASHBOARD / NOT LIVE</p>
-      <div><span>FIELD TICKETS</span><strong>127</strong><small>SIMULATED</small></div>
-      <div><span>DISPATCH &amp; FLEET</span><strong>23</strong><small>SIMULATED</small></div>
-      <div><span>INVOICE REVIEW</span><strong>8</strong><small>FICTIONAL REVIEW FLAGS</small></div>
-      <div><span>AUDIT AUTHORITY</span><strong>NONE</strong><small>HUMAN APPROVAL REQUIRED</small></div>
-    </div>
-  </div>
-  <div class="factory-tiles wrap">
-    <a href="#platform"><b>REVENUE INTELLIGENCE</b><small>Rates · Invoices · Reconciliation</small></a>
-    <a href="#platform"><b>OPERATIONAL TOOLS</b><small>Oilfield · Towing · Documentation</small></a>
-    <a href="#audit"><b>AUDIT READINESS</b><small>IRS · DOT · Evidence Inventory</small></a>
-    <a href="#integrations"><b>GOVERNED INTEGRATIONS</b><small>AUREX/OX · Human Review</small></a>
-  </div>
-  <p class="factory-disclaimer">ILLUSTRATIVE OPERATIONS CONCEPT • FICTIONAL DATA • NO LIVE DISPATCH, INVOICING OR AUDIT AUTHORITY</p>
-</section>
 <main id="main">
-<section class="command-hero" aria-labelledby="dispater-title">
- <div class="command-atmosphere" aria-hidden="true"><div class="ambient-horizon"></div><div class="scene-silhouettes"><i></i><i></i><i></i><i></i><i></i></div></div>
- <div class="wrap command-grid">
-  <div class="command-left">
-   <h1 id="dispater-title">DISPATER<span>.AI</span><sup>™</sup></h1>
-   <p class="command-subtitle">REVENUE INTELLIGENCE<br>&amp; AUDIT READINESS</p>
-   <p class="command-industry">FOR OILFIELD OPERATIONS<br>AND TOWING &amp; RECOVERY</p>
-   <div class="command-buttons">
-    <a class="neon-cta cta-cyan" href="https://valexii.com/contact?service=dispater-audit"><span class="hud-bars" aria-hidden="true"></span><span>REQUEST AN AUDIT<small>Start a Discovery Review</small></span><span aria-hidden="true" class="cta-arrow">→</span></a>
-    <a class="neon-cta cta-gold" href="https://valexii.com/contact?service=dispater-consultation"><span class="hud-bars" aria-hidden="true"></span><span>BOOK A CONSULTATION<small>Discuss Your Operations</small></span><span aria-hidden="true" class="cta-arrow">→</span></a>
-    <a class="neon-cta cta-violet" href="#audit"><span class="hud-bars" aria-hidden="true"></span><span>VIEW DEMONSTRATION<small>Explore a Fictional Scenario</small></span><span aria-hidden="true" class="cta-arrow">→</span></a>
-   </div>
-   <p class="request-note">Discovery inquiries only; no appointment is booked automatically. Never submit confidential financial or driver records here.</p>
+<section class="launch-hero" aria-labelledby="launch-title">
+  <div class="wrap launch-hero-content">
+    <p class="launch-overline"><span class="launch-indicator" aria-hidden="true"></span> REVENUE INTELLIGENCE &nbsp; / &nbsp; AUDIT READINESS</p>
+    <h1 id="launch-title">DISPATER<span>.AI</span></h1>
+    <h2>Be ready <em>before</em> they ask.</h2>
+    <p class="launch-lead">Your next audit shouldn't begin with a scramble for paperwork. DISPATER.AI is building an evidence-first operations service for oilfield and towing businesses—bringing tickets, invoices, rates and supporting records into one clear, human-reviewed picture.</p>
+    <div class="launch-value-pills">
+      <span><i aria-hidden="true">◈</i> IRS record readiness</span>
+      <span><i aria-hidden="true">◈</i> DOT / FMCSA readiness where applicable</span>
+      <span><i aria-hidden="true">◈</i> Revenue discrepancy review</span>
+    </div>
+    <div class="launch-hero-actions">
+      <a class="launch-btn launch-primary" href="https://valexii.com/contact?service=dispater-audit">REQUEST AN AUDIT-READINESS REVIEW <span aria-hidden="true">↗</span></a>
+      <a class="launch-btn launch-secondary" href="#audit">EXPLORE THE AUDIT WORKSPACE <span aria-hidden="true">↓</span></a>
+    </div>
+    <p class="launch-status">Currently developing controlled pilot services. Interactive examples below use fictional records; no official audit, tax advice, compliance certification or customer-data processing is provided by this demo.</p>
   </div>
-  <div class="command-center" id="frac-tree-viewer" aria-label="Frac tree concept viewer, no live pressure readings">
-    <div class="tree-view-label"><span class="tree-label-dot" aria-hidden="true"></span> FRAC TREE / EQUIPMENT VISUALIZATION</div>
-    <div class="wellhead-halo"><div class="halo-main"></div><div class="halo-markers" aria-hidden="true"></div><div class="halo-ring ring-2"></div><img src="/frac-tree.svg" class="wellhead-art" alt="Illustration of a frac tree with stacked valves, gauges, flanges and two horizontal wing connections. Illustration only, not a connected instrument." width="700" height="760"><div class="wellhead-name">FRAC TREE · CONCEPT MODEL</div></div>
-    <div class="tree-view-actions">
-      <button id="tree-inspect" class="tree-inspect-button" type="button" aria-pressed="false" aria-label="Zoom in on the frac tree">VIEW DETAILS +</button>
-      <span>NO LIVE PRESSURE DATA · NO SENSORS CONNECTED</span>
+</section>
+<section class="equipment-pair" aria-label="Interactive industrial 3D models">
+  <div class="wrap">
+    <div class="equipment-pair-grid">
+      <div class="equipment-pair-stage" data-equipment="frac-tree" tabindex="0" role="group" aria-label="Rotatable 3D frac tree visualization. Drag to rotate or use arrow keys; scroll or pinch to zoom.">
+        <div class="pair-stage-halo" aria-hidden="true"></div>
+        <img class="pair-fallback" src="/frac-tree.svg" alt="Illustrated frac tree" width="700" height="760" loading="lazy">
+      </div>
+      <div class="equipment-pair-stage" data-equipment="tow-truck" tabindex="0" role="group" aria-label="Rotatable 3D tow and recovery truck visualization. Drag to rotate or use arrow keys; scroll or pinch to zoom.">
+        <div class="pair-stage-halo" aria-hidden="true"></div>
+        <img class="pair-fallback" src="/tow-recovery.svg" alt="Illustrated tow truck" width="500" height="335" loading="lazy">
+      </div>
+    </div>
+    <p class="pair-disclaimer">DRAG / TOUCH TO ROTATE &nbsp; · &nbsp; EQUIPMENT CONCEPTS ONLY &nbsp; · &nbsp; NO LIVE TELEMETRY OR DISPATCH CONTROLS</p>
+  </div>
+</section>
+<section id="audit" class="launch-audit" aria-labelledby="audit-title">
+  <div class="wrap">
+    <div class="launch-section-head">
+      <div><p class="launch-overline">OUR FLAGSHIP · AUDIT PREPAREDNESS</p><h2 id="audit-title">Know what's missing.<br><em>Organize what matters.</em></h2></div>
+      <p>Explore the audit workspace design: revenue exceptions, IRS-supporting records and potentially applicable DOT/FMCSA evidence—all reviewed by people, not automatically certified by AI.</p>
+    </div>
+    <div id="audit-dashboard-root"><p class="audit-loading">Loading fictional audit readiness workspace…</p></div>
+    <noscript><p class="audit-loading">This interactive example needs JavaScript. Contact us to discuss an audit-readiness discovery review.</p></noscript>
+    <p class="audit-boundary">CONCEPT WORKSPACE · FICTIONAL EXAMPLES · AUREX FINANCIAL RUNTIME NOT CONNECTED · HUMAN AUTHORITY REQUIRED</p>
+  </div>
+</section>
+<section id="process" class="launch-process" aria-labelledby="process-title">
+  <div class="wrap">
+    <p class="launch-overline">ONE STRAIGHTFORWARD PROCESS</p><h2 id="process-title">From scattered records <em>to review-ready evidence.</em></h2>
+    <div class="launch-steps">
+      <article><span>01</span><h3>Map your records</h3><p>Identify the tickets, invoices, rate sheets and documents your team already maintains. Determine which sources are relevant to the requested review.</p></article>
+      <article><span>02</span><h3>Find the gaps</h3><p>Compare linked records and surface candidate missing invoices, inconsistent rates, unreconciled payments and evidence-index gaps.</p></article>
+      <article><span>03</span><h3>Review with a human</h3><p>Managers resolve exceptions; qualified tax and transportation professionals determine what requirements apply. AI explanations never certify compliance.</p></article>
+      <article><span>04</span><h3>Prepare the packet</h3><p>Organize a traceable document index and an unresolved-items list for human review. No automatic filing, submission, dispatch or payment.</p></article>
     </div>
   </div>
-  <div class="command-right">
-   <a class="intelligence-card" href="#platform">
-    <img src="/oilfield-scene.svg" alt="Concept oilfield pumpjack at sunset" width="500" height="335">
-    <div class="intel-copy"><div class="intel-heading">OILFIELD OPERATIONS <span aria-hidden="true">→</span></div><ul><li>Field Ticket Reconciliation</li><li>Rate Verification</li><li>Invoice Discrepancy Detection</li><li>Crew &amp; Equipment Records</li><li>IRS &amp; DOT Readiness</li></ul><small>FICTIONAL DEMO DATA</small></div>
-   </a>
-   <a class="intelligence-card" href="#platform">
-    <img src="/tow-recovery.svg" alt="Illustration of heavy-duty towing and recovery truck" width="500" height="335">
-    <div class="intel-copy"><div class="intel-heading">TOWING &amp; RECOVERY <span aria-hidden="true">→</span></div><ul><li>Tow Ticket Reconciliation</li><li>Dispatch &amp; Driver Documentation</li><li>Motor-Club Invoice Review</li><li>Payment Discrepancy Detection</li><li>IRS &amp; DOT Readiness</li></ul><small>FICTIONAL DEMO DATA</small></div>
-   </a>
-   <a class="intelligence-card" href="#audit">
-    <img src="/audit-intelligence.svg" alt="Fictional blue audit intelligence dashboard" width="500" height="335">
-    <div class="intel-copy"><div class="intel-heading">AUDIT INTELLIGENCE <span aria-hidden="true">→</span></div><ul><li>Find Missing Invoices</li><li>Detect Payment Differences</li><li>Identify Rate Discrepancies</li><li>Manager Review Workflow</li><li>Export Example Reports</li></ul><small>FICTIONAL DEMO DATA</small></div>
-   </a>
-  </div>
- </div>
- <div class="command-bottom wrap">
-  <div class="powered-aurex"><span class="aurex-glyph" aria-hidden="true">◉</span><span><strong>AUREX</strong><small>POWERED BY OX</small></span></div>
-  <div class="capability-strip">
-   <a href="#integrations"><span>◎</span><strong>INTEGRATE</strong><small>With Existing Systems</small></a>
-   <a href="#integrations"><span>⚙</span><strong>AUTOMATE</strong><small>Workflows, Human-Approved</small></a>
-   <a href="#audit"><span>〽</span><strong>ANALYZE</strong><small>Invoices, Tickets &amp; Records</small></a>
-   <a href="#integrations"><span>◇</span><strong>EXPLAIN</strong><small>XAELI Concept, Not Live</small></a>
-   <a href="#platform"><span>▤</span><strong>PREPARE</strong><small>For Document Review</small></a>
-  </div>
-  <div class="powered-dispater"><span class="small-laurel" aria-hidden="true">❧</span><span><strong>DISPATER.AI</strong><small>A VALEXII COMPANY</small></span></div>
- </div>
- <div class="command-disclaimer">FICTIONAL DEMONSTRATION&nbsp;&nbsp; • &nbsp;&nbsp; SIMULATED DATA&nbsp;&nbsp; • &nbsp;&nbsp; NOT A LIVE OPERATIONAL SYSTEM</div>
 </section>
-<section class="section platform" id="platform"><div class="wrap">
- <p class="eyebrow">ONE EVIDENCE MODEL / TWO INDUSTRIES</p><h2>Enterprise clarity for <em>field operations.</em></h2>
- <div class="feature-grid">
-  <article><span>01 / OILFIELD</span><h3>Frac &amp; Field Services</h3><p>Proposed integration of frac-site tickets, flowback records, equipment, agreed rates, purchase orders and invoicing.</p><div class="feature-footer">TICKET → RATE → REVIEW</div></article>
-  <article><span>02 / TOWING</span><h3>Towing &amp; Recovery</h3><p>Proposed reconciliation of tow jobs, dispatch, storage documentation, motor-club rates and payments.</p><div class="feature-footer">JOB → INVOICE → REVIEW</div></article>
-  <article><span>03 / AUDIT</span><h3>IRS &amp; DOT Readiness</h3><p>Illustrative record inventories and exception queues. A qualified reviewer determines actual requirements and compliance.</p><div class="feature-footer">SOURCE → EVIDENCE → HUMAN</div></article>
- </div>
-</div></section>
-<section class="section audit-area" id="audit"><div class="wrap">
- <p class="eyebrow">INTERACTIVE / FICTIONAL DATA ONLY</p><h2>AUREX-INSPIRED <em>Audit Command Center.</em></h2>
- <p class="section-copy">Try deterministic reconciliation on fictional oilfield or towing records. This browser demonstration is not connected to the AUREX Railway runtime or NVIDIA inference.</p>
- <div class="audit-terminal">
-  <div class="audit-bar"><span class="terminal-lights" aria-hidden="true">● ● ●</span><span>DISPATER / SYNTHETIC AUDIT CONSOLE</span><strong>HOLD</strong></div>
-  <div class="audit-body">
-   <div class="audit-controls"><div><p class="eyebrow">CHOOSE DATASET</p><h3 id="sector-name">Towing &amp; Recovery</h3></div><div role="group" aria-label="Choose fictional sector"><button type="button" id="towing" aria-pressed="true">TOWING</button><button type="button" id="oilfield" aria-pressed="false">OILFIELD</button></div></div>
-   <div class="audit-kpis"><div><span>WORK RECORDS</span><strong id="jobs">—</strong></div><div><span>INVOICES</span><strong id="invoices">—</strong></div><div><span>REVIEW FLAGS</span><strong id="findings">—</strong></div><div><span>FINANCIAL AUTHORITY</span><strong class="no-authority">NONE</strong></div></div>
-   <div class="actions"><button id="run" type="button" class="button primary">RUN SYNTHETIC AUDIT ↗</button><button id="export" type="button" class="button outlined" disabled>EXPORT FICTIONAL REPORT ↓</button></div>
-   <div id="results" class="results" aria-live="polite"><p>Choose a sector and run the demonstration to view human-review candidates.</p></div>
-   <p class="terminal-note">NVIDIA: NOT RUN · RAILWAY AUDIT EXECUTION: NOT CONNECTED · NO PAYROLL, INVOICING, DISPATCH OR REGULATORY ACTIONS</p>
+<section id="industries" class="launch-industries" aria-labelledby="industries-title"><div class="wrap">
+  <p class="launch-overline">BUILT AROUND REAL WORKFLOWS</p><h2 id="industries-title">One evidence system. <em>Two demanding industries.</em></h2>
+  <div class="launch-industry-grid">
+    <article class="industry-card"><div class="industry-icon">01 / OILFIELD</div><h3>From field ticket to reviewed invoice.</h3><p>Proposed workflows for flowback and field-service tickets, rate verification, purchase orders, equipment records, invoice exceptions and supporting documentation.</p><a href="https://valexii.com/contact?service=dispater-consultation">EXPLORE AN OILFIELD PILOT ↗</a></article>
+    <article class="industry-card"><div class="industry-icon">02 / TOWING &amp; RECOVERY</div><h3>From tow request to defensible records.</h3><p>Proposed workflows for dispatch and tow tickets, motor-club rates, storage documentation, driver and vehicle records, invoices and payment reconciliation.</p><a href="https://valexii.com/contact?service=dispater-consultation">EXPLORE A TOWING PILOT ↗</a></article>
   </div>
- </div>
 </div></section>
-<section class="section integrations" id="integrations"><div class="wrap">
- <p class="eyebrow">ARCHITECTURE / GOVERNED CONNECTIONS</p><h2>One ecosystem.<br><em>Separate authority.</em></h2>
- <div class="integration-grid"><article><b>DISPATER.AI</b><span>Vercel storefront and fictional demonstration</span><small>HOSTED PREVIEW</small></article><article><b>AUREX/OX</b><span>Railway staging and evidence engine</span><small>STAGING / SEPARATE</small></article><article><b>NVIDIA</b><span>Planned document explanation model adapter</span><small>NOT RUN</small></article><article><b>GIT WORKFLOWS</b><span>Canonical code and controlled releases</span><small>MANUAL LINK REQUIRED</small></article></div>
- <div class="staging-probe"><div><p class="eyebrow">READ-ONLY INFRASTRUCTURE CHECK</p><p>Railway AUREX staging is separate from this fictional audit. A health response proves only the endpoint answered, not that the audit or NVIDIA is active.</p><p id="railway-result" role="status" aria-live="polite">STAGING: NOT CHECKED · AUDIT RUNTIME: NOT CONNECTED</p></div><button id="railway-check" type="button" class="button outlined">CHECK RAILWAY HEALTH ↗</button></div>
- <div class="original-art"><div><p class="eyebrow">CANONICAL ARTWORK PRESERVED</p><h3>Dis Pater · Industrial vision</h3><p>The original Roman Dis Pater hero concept remains part of the brand, alongside the new frac-tree operations centerpiece.</p></div><img src="https://valexii.com/__l5e/assets-v1/a49f2efe-e4fc-4e26-8429-72834b4d2423/dispater-hero.jpg" alt="Existing Roman Dis Pater oilfield concept artwork from VALEXII.COM" loading="lazy" referrerpolicy="no-referrer" width="240" height="248"></div>
+<section id="services" class="launch-services"><div class="wrap">
+  <p class="launch-overline">COMPLEMENTARY SERVICES / PLANNED</p><h2>Keep your tools. <em>Reduce the gaps between them.</em></h2>
+  <p class="launch-services-intro">Our proposed managed services include workflow automation across approved CRM and accounting tools, structured document organization, and a private, citation-based knowledge assistant for approved company material. We start with a scoped discovery review—not a risky system replacement.</p>
+  <div class="service-badges"><span>WORKFLOW AUTOMATION CONSULTING</span><span>REVENUE RECONCILIATION</span><span>PRIVATE COMPANY KNOWLEDGE AI</span><span>AUDIT EVIDENCE ORGANIZATION</span></div>
 </div></section>
-<section class="end-cta section"><div class="wrap"><p class="eyebrow">THE NEXT GENERATION OF FIELD INTELLIGENCE</p><h2>Bring clarity to <em>your operation.</em></h2><p>Interested in an oilfield or towing discovery pilot? We are developing the platform. No appointment or paid service is confirmed by this page.</p><div class="actions center"><a class="button primary" href="https://valexii.com/contact?service=dispater-consultation">REQUEST A CONSULTATION ↗</a><a class="button outlined" href="https://valexii.com/dispater">EXPLORE VALEXII.AI ↗</a></div></div></section>
+<section id="integrations" class="section integrations"><div class="wrap">
+  <p class="eyebrow">THE AUREX/OX APPROACH</p><h2>Evidence first.<br><em>Authority stays human.</em></h2>
+  <div class="integration-grid">
+    <article><b>DISPATER.AI</b><span>Customer-facing site and proposed operations workflow</span><small>CONCEPT / SYNTHETIC DEMO</small></article>
+    <article><b>AUREX/OX</b><span>Evidence, provenance and human review architecture</span><small>STAGING SEPARATE</small></article>
+    <article><b>NVIDIA / XAELI</b><span>Planned governed explanations of reviewed records</span><small>LIVE INFERENCE NOT VERIFIED</small></article>
+    <article><b>EXISTING BUSINESS TOOLS</b><span>Proposed permissioned CRM, invoicing and document integrations</span><small>NOT CONNECTED</small></article>
+  </div>
+  <div class="staging-probe"><div><p class="eyebrow">OWNER VERIFICATION / READ-ONLY</p><p>Railway staging health does not establish that financial auditing or model inference is operating.</p><p id="railway-result" role="status" aria-live="polite">STAGING: NOT CHECKED · AUDIT RUNTIME: NOT CONNECTED</p></div><button id="railway-check" type="button" class="button outlined">CHECK STAGING HEALTH ↗</button></div>
+  <div class="original-art"><div><p class="eyebrow">CANONICAL ARTWORK PRESERVED</p><h3>Dis Pater · Industrial vision</h3><p>The original Roman Dis Pater hero concept remains part of the brand, alongside the new frac-tree operations centerpiece.</p></div><img loading="lazy" src="https://valexii.com/__l5e/assets-v1/a49f2efe-e4fc-4e26-8429-72834b4d2423/dispater-hero.jpg" alt="Existing Roman Dis Pater oilfield concept artwork from VALEXII.COM" loading="lazy" referrerpolicy="no-referrer" width="240" height="248"></div>
+</div>
+</div></section>
+<section class="end-cta section"><div class="wrap">
+  <p class="launch-overline">LESS RECONSTRUCTION. MORE PREPARATION.</p>
+  <h2>Know your records <em>before the request arrives.</em></h2>
+  <p>Tell us how your oilfield or towing business manages documentation today. We can discuss a limited discovery review and the pilot capabilities still under development.</p>
+  <div class="actions center">
+    <a class="button primary" href="https://valexii.com/contact?service=dispater-audit">REQUEST A READINESS DISCOVERY ↗</a>
+    <a class="button outlined" href="https://valexii.com/dispater">RETURN TO VALEXII.AI ↗</a>
+  </div>
+</div></section>
 </main>
-<footer><div class="wrap foot-content"><b>DISPATER<span class="cyan">.AI</span></b><span>© 2026 VALEXII.AI · EVIDENCE-FIRST · HUMAN-REVIEWED</span><a href="https://valexii.com/privacy">PRIVACY ↗</a></div></footer>
+<footer><div class="wrap foot-content"><b>DISPATER<span class="cyan">.AI</span></b><span>© 2026 VALEXII.AI · EVIDENCE FIRST · HUMAN-REVIEWED</span><a href="https://valexii.com/privacy">PRIVACY ↗</a></div></footer>
 </body></html>
