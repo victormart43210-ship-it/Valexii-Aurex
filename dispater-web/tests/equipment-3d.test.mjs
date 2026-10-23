@@ -24,7 +24,8 @@ test("both models rotate in independent viewports, no visible model explanations
  assert.ok(source.includes("prefers-reduced-motion: reduce"));
  assert.ok(source.includes("getContext(\"webgl2\""));
  assert.ok(source.includes("IntersectionObserver"));
- assert.ok(source.includes("pointer"));
+ const css=await readFile(new URL("../launch.css",import.meta.url),"utf8");
+ assert.ok(css.includes("touch-action:none"));
  assert.ok(!source.includes("API_KEY"));
  assert.ok(MODEL_INFO["frac-tree"].summary.includes("no pressure data"));
  assert.ok(MODEL_INFO["tow-truck"].summary.includes("no dispatch data"));
