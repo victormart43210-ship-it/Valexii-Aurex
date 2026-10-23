@@ -74,12 +74,13 @@
    </div>
    <p class="request-note">Discovery inquiries only; no appointment is booked automatically. Never submit confidential financial or driver records here.</p>
   </div>
-  <div class="command-center">
-    <div class="holo-metric metric-left m1"><span>WELL PRESSURE</span><strong>8,450 <small>PSI</small></strong><em>SIMULATED</em><i></i></div>
-    <div class="holo-metric metric-left m2"><span>FLOW RATE</span><strong>42.6 <small>BPM</small></strong><em>SIMULATED</em><i></i></div>
-    <div class="holo-metric metric-right m3"><span>STAGE</span><strong>12 <small>/ 50</small></strong><em>SIMULATED</em><i></i></div>
-    <div class="holo-metric metric-right m4"><span>PROPPANT</span><strong>2,850</strong><em>SIMULATED</em><i></i></div>
-    <div class="wellhead-halo"><div class="halo-main"></div><div class="halo-markers" aria-hidden="true"></div><div class="halo-ring ring-2"></div><img src="/frac-tree.svg" class="wellhead-art" alt="Illustrated high-pressure frac tree and red valve assemblies inside luminous operational data rings. Concept only." width="700" height="760"><div class="wellhead-name">HIGH-PRESSURE FRAC TREE</div></div>
+  <div class="command-center" id="frac-tree-viewer" aria-label="Frac tree concept viewer, no live pressure readings">
+    <div class="tree-view-label"><span class="tree-label-dot" aria-hidden="true"></span> FRAC TREE / EQUIPMENT VISUALIZATION</div>
+    <div class="wellhead-halo"><div class="halo-main"></div><div class="halo-markers" aria-hidden="true"></div><div class="halo-ring ring-2"></div><img src="/frac-tree.svg" class="wellhead-art" alt="Illustration of a frac tree with stacked valves, gauges, flanges and two horizontal wing connections. Illustration only, not a connected instrument." width="700" height="760"><div class="wellhead-name">FRAC TREE · CONCEPT MODEL</div></div>
+    <div class="tree-view-actions">
+      <button id="tree-inspect" class="tree-inspect-button" type="button" aria-pressed="false" aria-label="Zoom in on the frac tree">VIEW DETAILS +</button>
+      <span>NO LIVE PRESSURE DATA · NO SENSORS CONNECTED</span>
+    </div>
   </div>
   <div class="command-right">
    <a class="intelligence-card" href="#platform">
