@@ -55,7 +55,7 @@ def _bounded_observation(observation: object) -> dict[str, Any]:
                 raise ValueError("Synthetic count invalid")
         if (observation["case_count"] != 100
                 or observation["exact_case_matches"] > observation["case_count"]
-                or observation.get("result") not in ("PASS", "HOLD", "FAIL")):
+                or observation.get("result") not in ("PASS", "HOLD", "FAIL", "SYNTHETIC_GATE_PASS_NOT_BETA_RELEASE")):
             raise ValueError("Synthetic report inconsistent")
     else:
         raise ValueError("Unsupported probe type")

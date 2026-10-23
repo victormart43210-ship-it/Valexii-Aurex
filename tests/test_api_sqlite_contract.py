@@ -230,7 +230,7 @@ def test_fenced_failure_is_terminal_and_does_not_create_evidence(local_lab, monk
     def fail_probe(_params):
         raise RuntimeError("Synthetic forced worker failure")
 
-    monkeypatch.setattr(aurex_api, "execute_sqlite_roundtrip", fail_probe)
+    monkeypatch.setattr(aurex_api, "execute_probe", fail_probe)
     headers = {**AUTH, "Idempotency-Key": "fenced-terminal-failure-001"}
     response = client.post("/v1/jobs", json=PROBE, headers=headers)
     assert response.status_code == 503
