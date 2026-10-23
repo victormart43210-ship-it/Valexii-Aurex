@@ -61,6 +61,17 @@ def _assert_canonical_schema(conn: sqlite3.Connection) -> None:
                 f"Incompatible AUREX {table} schema refused"
             )
 
+    # Existing storage must be a complete canonical pair, not a partial
+    # database that startup can silently "repair" by creating missing tables.
+    if ("jobs" in tables) != ("evidence_records" in tables):
+        raise ValueError("Partial AUREX schema refused")
+    if "jobs" in tables:
+        jobs_columns = {
+            row[1] for row in conn.execute('PRAGMA table_info("jobs")')
+        }
+        if "params" in jobs_columns:
+            raise ValueError("Mixed legacy/canonical AUREX jobs schema refused")
+
 
 def get_db(db_path: str = DEFAULT_DB_PATH) -> sqlite3.Connection:
     conn = sqlite3.connect(db_path)
