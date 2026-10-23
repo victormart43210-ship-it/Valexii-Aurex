@@ -6,7 +6,7 @@ const read = name => readFile(new URL(name, root), "utf8");
 test("approved command hero keeps frac tree, live buttons, and explicit fictional data labels", async () => {
   const html = await read("index.html");
   for (const phrase of [
-    "DISPATER", "WELL PRESSURE", "FLOW RATE", "PROPPANT",
+    "DISPATER", "FRAC TREE / EQUIPMENT VISUALIZATION", "NO LIVE PRESSURE DATA", "VIEW DETAILS +",
     "REQUEST AN AUDIT", "BOOK A CONSULTATION", "VIEW DEMONSTRATION",
     "OILFIELD OPERATIONS", "TOWING &amp; RECOVERY", "AUDIT INTELLIGENCE",
     "FICTIONAL DEMO DATA", "SIMULATED", "Manager Review Workflow", "/frac-tree.svg",
@@ -41,3 +41,23 @@ test("audit demo stays browser-only and financial-authority HOLD", async () => {
 });
 
 test("approved hero is first, not a clickable overlay, with factory section immediately beneath",async()=>{const html=await read("index.html");const a=html.indexOf('class="approved-hero-reference"');const f=html.indexOf('class="factory-showcase"');const c=html.indexOf('class="command-hero"');assert.ok(a>0 && f>a && c>f);const first=html.slice(a,f);assert.ok(first.includes('src="/approved-hero.png"'));assert.ok(!first.includes('<a ') && !first.includes('<button '));assert.ok(html.includes('src="/industrial-companion.png"'));const css=await read("reference.css");assert.ok(css.includes(".factory-showcase"));const build=await read("build.mjs");assert.ok(build.includes('industrial-companion.png'));});
+
+test("equipment viewer displays frac tree without simulated pressure gauges", async () => {
+  const html = await read("index.html");
+  const from = html.indexOf('<div class="command-center"');
+  const to = html.indexOf('<div class="command-right"', from);
+  const viewer = html.slice(from, to);
+  assert.ok(from >= 0 && to > from, "equipment viewer exists");
+  assert.ok(viewer.includes('id="frac-tree-viewer"'));
+  assert.ok(viewer.includes('id="tree-inspect"'));
+  assert.ok(viewer.includes('src="/frac-tree.svg"'));
+  assert.ok(viewer.includes("NO LIVE PRESSURE DATA"));
+  for(const term of ["WELL PRESSURE", "8,450", "42.6", "PROPPANT", "STAGE", "PSI", "BPM"]) {
+    assert.ok(!viewer.includes(term), "unexpected pressure/gauge telemetry: " + term);
+  }
+  const app = await read("app.mjs");
+  assert.ok(app.includes('byId("tree-inspect")'));
+  assert.ok(app.includes('setAttribute("aria-pressed"'));
+  const css = await read("command.css");
+  assert.ok(css.includes(".command-center.tree-detail .wellhead-art"));
+});
