@@ -61,3 +61,21 @@ def test_cancelled_and_failed_jobs_never_receive_worker_receipts(tmp_path, monke
         with pytest.raises(ValueError):
             read_pipeline_receipt(path, job_id)
     assert run_once(path, "worker") is False
+
+
+def test_live_leases_do_not_starve_queued_work(tmp_path, monkeypatch):
+    from aurex.database import create_job
+    from aurex.fenced_worker import claim_job
+    from aurex.offline_worker import run_once
+
+    path = str(tmp_path / "jobs.sqlite3")
+    monkeypatch.setenv("AUREX_ENABLE_OFFLINE_LAB", "1")
+    params = {"probe": "sqlite_roundtrip_v1"}
+    for index in range(100):
+        job_id = f"job-{index:024x}"
+        create_job(path, job_id, "regression_scan", params)
+        assert claim_job(path, job_id, "busy-worker") is not None
+    queued_id = "job-" + "f" * 24
+    create_job(path, queued_id, "regression_scan", params)
+    assert run_once(path, "free-worker") is True
+    assert get_job(path, queued_id)["state"] == "succeeded"

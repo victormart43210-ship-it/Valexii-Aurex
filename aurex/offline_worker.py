@@ -6,6 +6,7 @@ import json
 import os
 import secrets
 import time
+from datetime import UTC, datetime
 
 from aurex.database import DEFAULT_DB_PATH, get_db
 from aurex.fenced_worker import claim_job, fail_job, finalize_job
@@ -19,8 +20,9 @@ def run_once(db_path: str, worker_id: str) -> bool:
     conn = get_db(db_path)
     try:
         rows = conn.execute(
-            "SELECT id FROM jobs WHERE state IN ('queued', 'running') "
-            "ORDER BY created_at, id LIMIT 100"
+            "SELECT id FROM jobs WHERE state='queued' OR "
+            "(state='running' AND lease_expires_at IS NOT NULL AND lease_expires_at<=?) "
+            "ORDER BY created_at, id LIMIT 100", (datetime.now(UTC).isoformat(),)
         ).fetchall()
     finally:
         conn.close()

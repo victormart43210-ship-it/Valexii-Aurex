@@ -1,10 +1,10 @@
 {
   "operation": "KUSANAGI CXXIX",
-  "checkpoint_sequence": 3,
-  "checkpoint_timestamp_utc": "2026-10-23T00:22:42.477481+00:00",
+  "checkpoint_sequence": 4,
+  "checkpoint_timestamp_utc": "2026-10-23T00:23:44.448735+00:00",
   "repository": "victormart43210-ship-it/Valexii-Aurex",
   "active_branch": "work/kusanagi-cxxix-staging-convergence",
-  "current_source_commit_sha": "35d9040074287dd75eb7cba86576f720a93a46a6",
+  "current_source_commit_sha": "f2711ff56b1c00ac492cdee989053b00bbb9ca74",
   "parent_base_commit_sha": "82d70c0da20ba5128c48c254987cb433ddae6b35",
   "checkpoint_commit_resolution": "Use git log -1 --format=%H -- docs/operations/KUSANAGI_CXXIX_RECOVERY.json. A commit cannot embed its own SHA; current_source_commit_sha identifies inspected source, enclosing Git commit identifies checkpoint.",
   "main_base_sha": "df0654390049118a142ec3b3356f0f40b4789fe4",
@@ -29,7 +29,8 @@
     "Added opt-in queued canonical job execution and detached fenced worker",
     "Extracted shared deterministic offline probe executor",
     "Reproduced and repaired financial receipt status rejection",
-    "Local full suite 438 passed, 1 skipped; Mypy 76 source files PASS"
+    "Local full suite 438 passed, 1 skipped; Mypy 76 source files PASS",
+    "Queue starvation regression reproduced and fixed; 439 passed, 1 skipped, Ruff PASS, Mypy 76 files PASS"
   ],
   "tests_executed": [
     {
@@ -51,6 +52,16 @@
       "command": "first full suite",
       "status": "FAIL",
       "result": "3 failed: fault injection referenced moved executor; two web_adapter tests affected by host SOCKS proxy. Updated injection seam and ran offline suite without proxy env."
+    },
+    {
+      "command": "env -u ALL_PROXY -u all_proxy -u HTTP_PROXY -u HTTPS_PROXY PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 .venv/bin/pytest -q",
+      "status": "PASS",
+      "result": "439 passed, 1 skipped, 1 Starlette deprecation warning after queue fix"
+    },
+    {
+      "command": ".venv/bin/ruff check aurex tests",
+      "status": "PASS",
+      "result": "All checks passed"
     }
   ],
   "source_ci": {
@@ -265,7 +276,8 @@
   "outstanding_dependencies": [
     "Jules unavailable; Astral reviewer dry-run failed: no compatible Codex runtime",
     "Legacy-to-canonical SQLite schema migration and CXXVIII supervisor convergence NOT IMPLEMENTED",
-    "Staging actual volume-instance isolation, backup/restore, credentials and end-to-end execution NOT VERIFIED"
+    "Staging actual volume-instance isolation, backup/restore, credentials and end-to-end execution NOT VERIFIED",
+    "Existing service-bearer API is single-owner, not multi-tenant; cross-tenant authorization requires an explicit owner-proxy contract and independent test"
   ],
   "next_three_actions": [
     "Review detached worker and receipt change at checkpoint SHA independently",
@@ -291,6 +303,6 @@
   },
   "independent_verification": "NOT VERIFIED",
   "release": "HOLD",
-  "previous_checkpoint_sha": "35d9040074287dd75eb7cba86576f720a93a46a6",
+  "previous_checkpoint_sha": "f2711ff56b1c00ac492cdee989053b00bbb9ca74",
   "previous_checkpoint_remote_save_verified": "PASS"
 }
