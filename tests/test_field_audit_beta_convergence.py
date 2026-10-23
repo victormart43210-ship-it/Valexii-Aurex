@@ -7,7 +7,11 @@ from pathlib import Path
 
 import pytest
 
-from workstation.field_audit_beta_convergence import PACKET, run_convergence
+from workstation.field_audit_beta_convergence import run_convergence
+
+# Locate the checkout's synthetic-only packet rather than relying on a
+# site-packages workstation module path when CI installs AUREX as a package.
+PACKET = Path(__file__).resolve().parents[1] / "fixtures" / "synthetic_company_packet"
 
 
 def test_nine_source_and_100_case_workflow_are_connected() -> None:

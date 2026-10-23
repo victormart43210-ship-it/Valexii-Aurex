@@ -1,0 +1,26 @@
+{
+  "checkpoint": "001",
+  "operation": "KUSANAGI_CXXX_PROJECT_IRON_WITNESS",
+  "timestamp_utc": "2026-10-22T20:00:00Z",
+  "inspected_source_sha": "35d9040074287dd75eb7cba86576f720a93a46a6",
+  "target_branch": "work/kusanagi-cxxx-jules-financial-verification",
+  "integration_target": "work/kusanagi-cxxix-staging-convergence",
+  "pr117_verified_source_sha": "82d70c0da20ba5128c48c254987cb433ddae6b35",
+  "pr118_work_head": "35d9040074287dd75eb7cba86576f720a93a46a6",
+  "status": {
+    "source_discovery": "PASS",
+    "cxxix_recovery_inspection": "PASS",
+    "railway_staging_entrypoint_reconciliation": "IN_PROGRESS",
+    "adversarial_worker_suite": "PENDING",
+    "100_case_field_audit_evaluation": "PENDING",
+    "independent_verification": "NOT_VERIFIED",
+    "release": "HOLD"
+  },
+  "cxxiv_recovery_status": "RECOVERED_FROM_SUBMIT_BRANCH",
+  "railway_entrypoint": {
+    "file": "integrations/kusanagi-xvi/backend/app.py",
+    "supervisor": "integrations/kusanagi-xvi/backend/backend/supervisor.py",
+    "boot": "integrations/kusanagi-xvi/backend/backend/boot.py"
+  },
+  "next_executable_action": "Reconcile Railway entrypoint app.py with canonical aurex job, receipt, and document endpoints"
+}

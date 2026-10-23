@@ -24,9 +24,9 @@ def test_candidate_http_paths_exist_but_not_inference() -> None:
     methods = {(method, route.path) for route in app.routes for method in (getattr(route, "methods", None) or [])}
     for path in ("/v1/health", "/v1/capabilities", "/v1/evidence", "/v1/budgets", "/v1/jobs"):
         assert ("GET", path) in methods
-    # NVIDIA document routes are integrated on canonical API app.
-    assert ("POST", "/v1/documents/analyze") in methods
-    assert ("GET", "/v1/documents/status") in methods
+    # NVIDIA document routes are NOT on canonical main; Jules owns their integration.
+    # Their absence means source integration remains pending, not "verified".
+    assert ("POST", "/v1/documents/analyze") not in methods
 
 
 def test_python_capability_shape_agrees_with_cxxv_wire() -> None:

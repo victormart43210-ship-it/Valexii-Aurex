@@ -28,10 +28,9 @@ dev = [
 ]
 
 [tool.setuptools.packages.find]
-include = ["aurex*", "fixtures*", "training", "workstation*"]
+include = ["aurex*", "training", "workstation*"]
 
 [tool.setuptools.package-data]
-fixtures = ["synthetic_company_packet/*.json"]
 training = ["configs/*.json", "requirements.txt", "README.md"]
 
 [tool.pytest.ini_options]

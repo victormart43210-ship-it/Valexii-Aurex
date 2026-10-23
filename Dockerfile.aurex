@@ -7,7 +7,6 @@ ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 \
 WORKDIR /app
 COPY pyproject.toml README.md ./
 COPY aurex ./aurex
-COPY integrations ./integrations
 COPY workstation ./workstation
 COPY training ./training
 RUN python -m pip install --no-cache-dir . && \

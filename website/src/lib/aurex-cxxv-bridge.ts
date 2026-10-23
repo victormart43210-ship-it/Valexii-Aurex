@@ -33,7 +33,7 @@ export const SyntheticFieldBatchSchema = z.array(SyntheticFieldCaseSchema)
     for (const [index, row] of rows.entries()) {
       if (cases.has(row.case_id)) {
         ctx.addIssue({
-          code: "custom",
+          code: z.ZodIssueCode.custom,
           path: [index, "case_id"],
           message: "Duplicate case ID",
         });

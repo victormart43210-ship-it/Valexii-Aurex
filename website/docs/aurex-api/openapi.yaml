@@ -3,12 +3,13 @@ info:
   title: AUREX Service API
   version: 1.0.0-draft
   description: >
-    Candidate v1 API contract, NOT proof of deployed capability. A limited read-only
-    Railway bridge is deployed separately. Mirrors src/lib/aurex-api-schema.ts.
-    Jobs accept only named kinds with bounded params; no code, shell or URL execution.
+    Candidate v1 API: deployed Railway bridge currently exposes only five read-only GETs.
+    Job execution and receipts require gated canonical backend deployment.
+    Mirrors src/lib/aurex-api-schema.ts. Jobs accept only named
+    kinds with bounded params; no code, shell or URL execution.
 servers:
   - url: https://aurex.example.invalid
-    description: Placeholder; no server is deployed.
+    description: Documentation placeholder, not a production endpoint.
 security:
   - bearer: []
 paths:
@@ -47,6 +48,15 @@ paths:
       responses:
         "200": { description: OK, content: { application/json: { schema: { $ref: "#/components/schemas/Job" } } } }
         default: { $ref: "#/components/responses/Error" }
+  /v1/jobs/{jobId}/receipt:
+    get:
+      summary: Integrity-checked persisted observation; not independent efficacy
+      parameters: [{ $ref: "#/components/parameters/JobId" }]
+      responses:
+        "200": { description: Recorded local receipt, content: { application/json: { schema: { $ref: "#/components/schemas/PipelineReceipt" } } } }
+        "401": { description: Missing or invalid bearer token }
+        "404": { description: Job unknown }
+        "409": { description: Receipt unavailable or digest mismatch }
   /v1/jobs/{jobId}/cancel:
     post:
       summary: Cancel job (releases unspent reservation)
@@ -110,6 +120,49 @@ components:
         createdAt: { $ref: "#/components/schemas/Time" }
         updatedAt: { $ref: "#/components/schemas/Time" }
         reservationUsd: { type: number, minimum: 0, maximum: 10000 }
+    SQLiteObservation:
+      type: object
+      additionalProperties: false
+      required: [probe, executed, passed, sha256, verification]
+      properties:
+        probe: { const: sqlite_roundtrip_v1 }
+        executed: { const: true }
+        passed: { const: true }
+        sha256: { type: string, pattern: "^[0-9a-f]{64}$" }
+        verification: { const: "NOT VERIFIED" }
+    SyntheticObservation:
+      type: object
+      additionalProperties: false
+      required: [probe, synthetic, suite_sha256, case_count, exact_case_matches, finding_labels, false_positive_flags, false_negative_flags, result, independent_verification, real_document_accuracy, authority, effect, production_release]
+      properties:
+        probe: { const: synthetic_field_audit_v1 }
+        synthetic: { const: true }
+        suite_sha256: { type: string, pattern: "^[0-9a-f]{64}$" }
+        case_count: { type: integer, minimum: 0, maximum: 100 }
+        exact_case_matches: { type: integer, minimum: 0, maximum: 100 }
+        finding_labels: { type: integer, minimum: 0, maximum: 100 }
+        false_positive_flags: { type: integer, minimum: 0, maximum: 100 }
+        false_negative_flags: { type: integer, minimum: 0, maximum: 100 }
+        result: { enum: [PASS, HOLD, FAIL] }
+        independent_verification: { const: NOT_VERIFIED }
+        real_document_accuracy: { const: NOT_MEASURED }
+        authority: { const: HOLD }
+        effect: { const: NONE }
+        production_release: { const: HOLD }
+    PipelineReceipt:
+      type: object
+      additionalProperties: false
+      required: [jobId, state, evidenceId, sha256, observation, integrity, verification, authority, release]
+      properties:
+        jobId: { $ref: "#/components/schemas/Id" }
+        state: { const: succeeded }
+        evidenceId: { $ref: "#/components/schemas/Id" }
+        sha256: { type: string, pattern: "^[0-9a-f]{64}$" }
+        observation: { oneOf: [{ $ref: "#/components/schemas/SQLiteObservation" }, { $ref: "#/components/schemas/SyntheticObservation" }] }
+        integrity: { const: RECORDED }
+        verification: { const: "NOT VERIFIED" }
+        authority: { const: NONE }
+        release: { const: HOLD }
     JobList:
       type: object
       additionalProperties: false
