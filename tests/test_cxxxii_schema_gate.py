@@ -56,3 +56,26 @@ def test_incompatible_evidence_records_refused(tmp_path):
         get_db(str(path))
 
     assert path.read_bytes() == original
+
+
+@pytest.mark.parametrize("missing", ["jobs", "evidence_records"])
+def test_partial_canonical_database_refused_without_mutation(tmp_path, missing):
+    path = tmp_path / "partial.sqlite3"
+    get_db(str(path)).close()
+    with sqlite3.connect(path) as conn:
+        conn.execute(f'DROP TABLE "{missing}"')
+    original = path.read_bytes()
+    with pytest.raises(ValueError, match="Partial"):
+        get_db(str(path))
+    assert path.read_bytes() == original
+
+
+def test_mixed_canonical_and_legacy_columns_refused(tmp_path):
+    path = tmp_path / "mixed.sqlite3"
+    get_db(str(path)).close()
+    with sqlite3.connect(path) as conn:
+        conn.execute("ALTER TABLE jobs ADD COLUMN params TEXT")
+    original = path.read_bytes()
+    with pytest.raises(ValueError, match="Mixed"):
+        get_db(str(path))
+    assert path.read_bytes() == original
