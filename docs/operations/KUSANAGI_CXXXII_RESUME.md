@@ -1,4 +1,4 @@
-# CXXXII checkpoint 006
+# CXXXII checkpoint 007
 Authoritative candidate is this enclosing Git commit on work/kusanagi-cxxxii-sovereign-activation (PR119). Resolve exact checkpoint SHA with git log -1 --format=%H -- docs/operations/KUSANAGI_CXXXII_RECOVERY.json. The manifest source_sha identifies inspected local merge parent, not its own commit (self-hash cannot be embedded).
 
 Canonical opt-in backend.app -> aurex.staging_runtime uses the canonical fenced worker via existing supervisor. Dockerfile.cxxxii builds from repo root; DO NOT switch existing Railway root blindly. CXXVIII legacy mode is preserved. New synthetic DB is /data/aurex-cxxxii-synthetic.sqlite3; legacy/mixed/partial schemas fail closed, with no migration.
@@ -8,3 +8,5 @@ Run PYTHONPATH=. pytest -q, ruff check aurex tests scripts, mypy aurex in instal
 Next: add canonical financial server adapter to existing Lovable owner Financial Audit panel, default off until staging gates pass. Legacy website lab requires different IDs/receipt shape and must remain separate. Website revision before change 5b6caa16ee506ac57120cb693e2d04c637cb1a73. No customer input, bearer only server-side, fixed staging origin, no redirects, bounded timeout/body, owner auth and origin validation. Preserve local mock.
 
 Railway last observed d22e06e9412a07e06ab8bd597e0e5ebf5b8c125c. Actual volume instances/backup and rollback NOT VERIFIED; deployment HOLD. No credentials available from redacted OAuth values. No Docker installed; container build NOT RUN. No independent reviewer executed. No infrastructure or website mutation at this checkpoint. Do not repeat engine implementation or completed schema tests; reconcile newer branch head before editing. Never deploy production, merge main, submit customer documents, activate models or issue payments.
+
+CP007: frontend source and exact live-workbench mount patch are prepared; see FRONTEND_INTEGRATION.md. Lovable writes failed twice. Full website build/typecheck NOT RUN. Node adapter tests pass and a real local HTTP worker integration passes. Do not overwrite live website with stale mirror. CP006 CI failed legacy module Ruff, now formatted. CI includes Node24 and a dedicated Dockerfile.cxxxii volume/restart workflow. Inspect exact remote checks next.

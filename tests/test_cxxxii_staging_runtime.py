@@ -152,6 +152,19 @@ def test_supervised_http_worker_persistence_and_child_failure(tmp_path):
                     if saved is not None:
                         assert data == saved
                     saved = data
+                    if not restart:
+                        import shutil
+                        node = shutil.which("node")
+                        if node:
+                            adapter = subprocess.run(
+                                [node, "--experimental-strip-types",
+                                 str(ROOT / "website/tests/cxxxii-live-adapter.ts"),
+                                 f"http://127.0.0.1:{port}"],
+                                capture_output=True, text=True, timeout=12,
+                            )
+                            assert adapter.returncode == 0, adapter.stderr + adapter.stdout
+                            assert '"state":"STAGING_EXECUTION"' in adapter.stdout
+                            (tmp_path / "typescript-adapter.json").write_text(adapter.stdout)
                     if restart:
                         worker_pid = int((tmp_path / "worker.pid").read_text())
                         os.kill(worker_pid, signal.SIGKILL)

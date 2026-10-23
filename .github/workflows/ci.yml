@@ -15,8 +15,12 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
       - run: python -m pip install --upgrade pip
       - run: pip install -e ".[dev]"
       - run: ruff check .
       - run: mypy aurex
       - run: pytest -q
+      - run: node --experimental-strip-types --test website/tests/cxxxii-financial.test.ts

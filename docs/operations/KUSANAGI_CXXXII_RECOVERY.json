@@ -1,29 +1,49 @@
 {
   "operation": "KUSANAGI CXXXII",
-  "checkpoint": 6,
-  "utc": "2026-10-23T06:19:22.534448+00:00",
+  "checkpoint": 7,
+  "utc": "2026-10-23T06:27:54.559042+00:00",
   "branch": "work/kusanagi-cxxxii-sovereign-activation",
-  "source_sha": "9e599510bb24074bf6b72f1893acef916d151122",
+  "source_sha": "6b36bccc75fea14cb8a61b33c2c384f4715b84f7",
   "checkpoint_sha_rule": "Enclosing Git commit is checkpoint identity; source_sha is inspected parent. Resolve git log -1 --format=%H -- this file.",
   "pr": 119,
   "completed": [
     "Merged concurrent CP005 strict schema guards without overwriting work",
     "Actual backend.app selects canonical runtime only with staging opt-in",
     "Supervised HTTP financial audit, persisted receipt, restart replay and killed worker shutdown tested",
-    "Legacy CXXVIII modules preserved; canonical database refuses legacy schema"
+    "Legacy CXXVIII modules preserved; canonical database refuses legacy schema",
+    "TypeScript server adapter reproduces Python persisted receipt digest",
+    "TypeScript adapter submitted and retrieved real local supervised worker audit over HTTP",
+    "Default-off owner/origin-gated RPC and separate staging UI source added; mount patch prepared against current Lovable revision",
+    "Full repository Ruff repaired recovered legacy formatting"
   ],
   "tests": [
     {
-      "command": "PYTHONPATH=. pytest -q (proxy env removed, plugin autoload disabled)",
-      "result": "PASS: 478 passed, 1 skipped, 1 warning in 11.18s"
+      "command": "pytest -q",
+      "result": "PASS: 478 passed, 1 skipped, 1 warning in 12.42s; includes TypeScript-to-supervised-backend HTTP audit"
     },
     {
-      "command": "ruff check aurex tests scripts",
+      "command": "node --experimental-strip-types --test website/tests/cxxxii-financial.test.ts",
+      "result": "PASS: 6 tests"
+    },
+    {
+      "command": "ruff check .",
       "result": "PASS"
     },
     {
       "command": "mypy aurex",
-      "result": "PASS: 77 source files"
+      "result": "PASS:77 source files"
+    },
+    {
+      "command": "esbuild touched UI/RPC transpile",
+      "result": "PASS syntax only; NOT full typecheck/build"
+    },
+    {
+      "command": "CP006 GitHub CI",
+      "result": "FAIL: full Ruff legacy agent formatting; repaired locally"
+    },
+    {
+      "command": "CP006 canonical image + independent runner smoke workflows",
+      "result": "PASS: workflow conclusions; not independent financial review"
     }
   ],
   "railway": {
@@ -88,19 +108,32 @@
     "No production, real financial data, paid inference or main merge authorized"
   ],
   "next_actions": [
-    "Implement default-off canonical financial website server adapter and owner panel; preserve local mock",
-    "Verify Railway volume instances, backup and rollback before any infrastructure changes",
-    "Run exact-head CI and independent review before admission"
+    "Run new CXXXII image and CI checks at published head; fix any failures",
+    "Apply narrow new frontend files and mount patch in existing Lovable project, run its complete typecheck/test/build/browser checks without publishing",
+    "Obtain volume-instance and backup evidence; no staging deployment before all gates pass"
   ],
   "rollback": "No infrastructure changes; staging d22e06e9412a07e06ab8bd597e0e5ebf5b8c125c unchanged",
   "release": "HOLD",
-  "remote_save": "NOT VERIFIED until enclosing commit readback",
+  "remote_save": {
+    "checkpoint_006": "PASS: branch readback 6b36bccc75fea14cb8a61b33c2c384f4715b84f7",
+    "current": "NOT VERIFIED until enclosing commit readback"
+  },
   "independent_review": "NOT RUN",
-  "credit_operations": [],
+  "credit_operations": [
+    {
+      "service": "Lovable",
+      "attempts": 2,
+      "result": "FAIL: INVALID_ARGUMENT; no task ID returned",
+      "credits": "NOT VERIFIED; no cost reported"
+    }
+  ],
   "blockers": [
     "Railway actual storage instance isolation and backups NOT VERIFIED",
     "Docker build NOT RUN: Docker unavailable",
-    "Independent review NOT RUN"
+    "Independent review NOT RUN",
+    "Lovable send_message rejects INVALID_ARGUMENT; live UI unchanged",
+    "Full website typecheck/build and browser owner flow NOT RUN",
+    "New Dockerfile.cxxxii CI added, execution NOT RUN until remote workflow"
   ],
   "modified_files": [
     "Dockerfile.cxxxii",

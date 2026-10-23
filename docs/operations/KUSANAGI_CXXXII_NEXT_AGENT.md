@@ -1,3 +1,3 @@
 Resume OPERATION KUSANAGI CXXXII from the exact saved GitHub checkpoint. Read the recovery manifest and resume document first. Do not restart completed waves. Preserve all security and release holds. Continue from the first unfinished executable task.
 
-Resolve enclosing CP006 commit, verify current remote head, reconcile newer work, then implement and test the gated canonical financial website adapter. Infrastructure remains HOLD pending actual volume-instance isolation and backups.
+CP007: inspect exact-head CI/new image workflow; frontend source/tests/mount patch are ready in canonical repo. Lovable rejected writes, so apply only the documented narrow files/patch after verifying its current revision. Do not replace the old website mirror wholesale. Stage deployment remains HOLD pending volume instances, credential isolation, backup and rollback.
