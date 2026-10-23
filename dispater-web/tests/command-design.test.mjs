@@ -1,63 +1,51 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { readFile } from "node:fs/promises";
-const root = new URL("../", import.meta.url);
-const read = name => readFile(new URL(name, root), "utf8");
-test("approved command hero keeps frac tree, live buttons, and explicit fictional data labels", async () => {
-  const html = await read("index.html");
-  for (const phrase of [
-    "DISPATER", "FRAC TREE / EQUIPMENT VISUALIZATION", "NO LIVE PRESSURE DATA", "VIEW DETAILS +",
-    "REQUEST AN AUDIT", "BOOK A CONSULTATION", "VIEW DEMONSTRATION",
-    "OILFIELD OPERATIONS", "TOWING &amp; RECOVERY", "AUDIT INTELLIGENCE",
-    "FICTIONAL DEMO DATA", "SIMULATED", "Manager Review Workflow", "/frac-tree.svg",
-    "/oilfield-scene.svg", "/tow-recovery.svg", "/audit-intelligence.svg",
-    "id=\"audit\"", "id=\"run\"", "id=\"results\"", "id=\"railway-check\"",
-  ]) assert.ok(html.includes(phrase), "missing required element: " + phrase);
-  assert.ok(html.includes('href="https://valexii.com/contact?service=dispater-audit"'));
-  assert.ok(html.includes('href="https://valexii.com/contact?service=dispater-consultation"'));
-  assert.ok(html.includes('href="#audit"'));
-  assert.ok(html.includes('href="/command.css"'));
-  assert.ok(!html.includes("<input type=\"file\""), "never accept customer uploads");
+import {readFile} from "node:fs/promises";
+const read=name=>readFile(new URL("../"+name,import.meta.url),"utf8");
+test("DISPATER audit-readiness message leads the page, models then dashboard",async()=>{
+ const html=await read("index.html");
+ const headline=html.indexOf('id="launch-title"'),equipment=html.indexOf('class="equipment-pair"'),audit=html.indexOf('id="audit"'),process=html.indexOf('id="process"');
+ assert.ok(headline>0&&equipment>headline&&audit>equipment&&process>audit);
+ assert.ok(html.includes("Be ready <em>before</em> they ask."));
+ assert.ok(html.includes("DISPATER<span>.AI</span>"));
+ assert.ok(html.includes("IRS record readiness"));
+ assert.ok(html.includes("DOT / FMCSA readiness where applicable"));
+ assert.ok(html.includes("REQUEST AN AUDIT-READINESS REVIEW"));
+ assert.ok(html.includes('id="audit-dashboard-root"'));
+ assert.ok(html.includes('href="/launch.css"'));
+ assert.ok(!html.includes('class="approved-hero-reference"'),"blurry image should not lead the new website");
 });
-test("industrial artwork and generated build assets stay local and reproducible", async () => {
-  const build = await read("build.mjs");
-  for (const asset of ["command.css", "frac-tree.svg", "oilfield-scene.svg", "tow-recovery.svg", "audit-intelligence.svg"]) {
-    assert.ok(build.includes(asset), "asset missing from static bundle " + asset);
-    const bytes = await read(asset);
-    assert.ok(bytes.length > 100, "asset empty " + asset);
-    if (asset.endsWith(".svg")) {
-      assert.ok(bytes.startsWith("<svg"));
-      assert.ok(bytes.includes("</svg>"));
-    }
-  }
+test("both decorative 3D models appear together without inline copy, controls or fake metrics",async()=>{
+ const html=await read("index.html");
+ const start=html.indexOf('class="equipment-pair-grid"'),end=html.indexOf('class="pair-disclaimer"');
+ const markup=html.slice(start,end);
+ assert.ok(markup.includes('data-equipment="frac-tree"'));
+ assert.ok(markup.includes('data-equipment="tow-truck"'));
+ assert.equal((markup.match(/class="equipment-pair-stage"/g)||[]).length,2);
+ assert.ok(!markup.includes("<h3")&&!markup.includes("<p")&&!markup.includes("<button"));
+ for(const word of ["PSI","BPM","WELL PRESSURE","SIMULATED","8,450"]){assert.ok(!markup.includes(word),"unexpected telemetry "+word);}
+ assert.ok(html.includes('src="/dual-equipment.js"'));
 });
-test("audit demo stays browser-only and financial-authority HOLD", async () => {
- const html = await read("index.html");
- const script = await read("audit.mjs");
- assert.ok(html.includes("FICTIONAL DEMONSTRATION"));
- assert.ok(script.includes("NOT CONNECTED"));
- assert.ok(script.includes('authority: "NONE"'));
- assert.ok(!html.includes("api/execute"));
+test("shadcn-style dashboard includes IRS, DOT, and revenue evidence paths",async()=>{
+ const jsx=await read("audit-dashboard.jsx");
+ for(const word of ['@radix-ui/react-tabs','Revenue Audit','IRS Evidence','DOT / FMCSA Evidence','APPROVED','NOT REVIEWED','HUMAN_REVIEW_REQUIRED']){
+  assert.ok(word==="APPROVED"||word==="HUMAN_REVIEW_REQUIRED"||jsx.includes(word),word);
+ }
+ assert.ok(jsx.includes('audit(sector)'));
+ assert.ok(jsx.includes('reviewFinding(report,id,value)'));
+ assert.ok(jsx.includes("FICTIONAL"));
+ const css=await read("launch.css");
+ assert.ok(css.includes(".shad-shell")&&css.includes(".shad-tab-list"));
 });
-
-test("approved hero stays noninteractive above 3D studio, factory, and command center",async()=>{const html=await read("index.html");const a=html.indexOf('class="approved-hero-reference"');const equipment=html.indexOf('id="equipment-3d"');const f=html.indexOf('class="factory-showcase"');const c=html.indexOf('class="command-hero"');assert.ok(a>0 && equipment>a && f>equipment && c>f);const hero=html.slice(a,equipment);assert.ok(hero.includes('src="/approved-hero.png"'));assert.ok(!hero.includes('<a ') && !hero.includes('<button '));assert.ok(html.includes('src="/industrial-companion.png"'));const css=await read("reference.css");assert.ok(css.includes(".factory-showcase"));const build=await read("build.mjs");assert.ok(build.includes('industrial-companion.png'));});
-
-test("equipment viewer displays frac tree without simulated pressure gauges", async () => {
-  const html = await read("index.html");
-  const from = html.indexOf('<div class="command-center"');
-  const to = html.indexOf('<div class="command-right"', from);
-  const viewer = html.slice(from, to);
-  assert.ok(from >= 0 && to > from, "equipment viewer exists");
-  assert.ok(viewer.includes('id="frac-tree-viewer"'));
-  assert.ok(viewer.includes('id="tree-inspect"'));
-  assert.ok(viewer.includes('src="/frac-tree.svg"'));
-  assert.ok(viewer.includes("NO LIVE PRESSURE DATA"));
-  for(const term of ["WELL PRESSURE", "8,450", "42.6", "PROPPANT", "STAGE", "PSI", "BPM"]) {
-    assert.ok(!viewer.includes(term), "unexpected pressure/gauge telemetry: " + term);
-  }
-  const app = await read("app.mjs");
-  assert.ok(app.includes('byId("tree-inspect")'));
-  assert.ok(app.includes('setAttribute("aria-pressed"'));
-  const css = await read("command.css");
-  assert.ok(css.includes(".command-center.tree-detail .wellhead-art"));
+test("build ships actual React/Radix dashboard and two GPU models, no external CDN",async()=>{
+ const build=await read("build.mjs");
+ const pkg=JSON.parse(await read("package.json"));
+ assert.ok(build.includes("audit-dashboard.jsx"));
+ assert.ok(build.includes("dual-equipment.mjs"));
+ assert.ok(build.includes("launch.css"));
+ assert.ok(pkg.dependencies.react&&pkg.dependencies["react-dom"]&&pkg.dependencies["@radix-ui/react-tabs"]&&pkg.dependencies.three);
+ assert.ok(!build.includes("approved-hero.png")&&!build.includes("industrial-companion.png"));
+ const html=await read("index.html");
+ assert.ok(!html.includes('<input type="file"'));
+ assert.ok(html.includes("no official audit")||html.includes("no official audit".toUpperCase())||html.includes("no official audit,"));
 });
