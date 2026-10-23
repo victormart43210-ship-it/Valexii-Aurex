@@ -20,3 +20,15 @@ Next: reconcile canonical financial worker into actual Railway boot/supervisor w
 
 ## Recovery
 Fetch this branch HEAD and PR (to be opened), inspect exact source, consult CXXIX and CXXXI changes. Update manifest each checkpoint, commit/push and remotely read back. The JSON cannot contain its enclosing Git SHA. No production deploy, real documents, paid model inference, payment authority or main merge.
+
+## Checkpoint 002 — verified CI and critical source convergence blocker
+
+Remote checkpoint 001 commit `fdc80e29c5d438778884591f0a82a0faef13051a` was read back through GitHub. GitHub Actions run `39881783231` on that exact SHA completed successfully: **445 passed, 1 skipped, 1 warning**, Ruff PASS, MyPy PASS (77 source files). Canonical Railway image smoke `39881783210` PASS and independent practice runner `39881783213` PASS. These do not test the actual staging service.
+
+Read-only Railway health inventory showed the existing staging deployment ONLINE, 1/1 replicas, 0 provider warnings/criticals. No live financial audit executed.
+
+**Source convergence blocker confirmed:** `integrations/kusanagi-xvi/backend/supervisor.py`, `boot.py`, `store.py`, and `worker.py` exist at the deployed CXXVIII staging commit `d22e06e...` but are absent from CXXIX PR #118's source tree. The CXXIX tree instead contains the older document-candidate read-only bridge. Before integrating, compare and reconcile BOTH source histories; do not blindly copy the new `aurex/api.py` module into the existing Dockerfile or overwrite CXXVIII startup.
+
+Next safe action: implement a versioned, local staging runtime with CXXVIII's actual boot/supervisor and CXXIX canonical queued financial engine using an isolated disposable SQLite database. Preserve existing owner routes; run source Docker smoke tests and migration/rollback checks. Obtain actual environment-specific volume instance and backup evidence before staging writes. Deploy only after explicit Railway staged-change confirmation and independent review.
+
+No Railway environment, production, website, data, or secrets were modified.
