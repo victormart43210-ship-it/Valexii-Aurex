@@ -1,0 +1,46 @@
+{
+  "operation": "KUSANAGI CXXXI",
+  "checkpoint_number": 1,
+  "repository": "victormart43210-ship-it/Valexii-Aurex",
+  "branch": "work/kusanagi-cxxxi-copilot-continuity",
+  "source_base_sha": "6adc1936d09534b134182e769f88fea9c5a0125a",
+  "source_base_branch": "work/kusanagi-cxxix-staging-convergence",
+  "pr117_head": "82d70c0da20ba5128c48c254987cb433ddae6b35",
+  "checkpoint_commit_resolution": "git log -1 --format=%H -- docs/operations/KUSANAGI_CXXXI_RECOVERY.json (a commit cannot embed its own SHA)",
+  "files_changed": [
+    "scripts/cxxxi_receipt_verify.py",
+    "tests/test_cxxxi_receipt_verify.py",
+    "docs/verification/KUSANAGI_CXXXI_CONTRACT_MATRIX.md",
+    "docs/operations/KUSANAGI_CXXXI_RECOVERY.json",
+    "docs/operations/KUSANAGI_CXXXI_RESUME.md",
+    "docs/operations/KUSANAGI_CXXXI_NEXT_AGENT.md"
+  ],
+  "completed_tasks": [
+    "Source freeze of PR117/PR118 and CXXIX recovery files",
+    "Isolated branch created from CXXIX head",
+    "Receipt verifier and mutation tests authored",
+    "Partial contract matrix (api.py, pipeline_receipts.py)"
+  ],
+  "tests": [
+    {"name": "tests/test_cxxxi_receipt_verify.py", "status": "NOT RUN", "note": "authored; no execution environment available to this agent in this session"}
+  ],
+  "exact_head_ci": "NOT RUN",
+  "failures_and_blockers": [
+    "This agent session has no code execution; all tests are NOT RUN until CI or another agent runs them",
+    "Storage isolation staging vs production NOT VERIFIED",
+    "Health auth drift (matrix F1) needs Work decision"
+  ],
+  "latest_pr": "NOT OPENED YET (target: work/kusanagi-cxxix-staging-convergence)",
+  "next_three_actions": [
+    "Run: PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 python -m pytest -q tests/test_cxxxi_receipt_verify.py and Ruff; record real results",
+    "Add scripts/cxxxi_financial_e2e.py using FastAPI TestClient with temp SQLite and AUREX_ENABLE_OFFLINE_LAB=1",
+    "Add scripts/cxxxi_staging_preflight.py (read-only, no network by default) and the CI workflow"
+  ],
+  "compatibility_notes": "No files owned by Work or Jules were modified. Only new files added.",
+  "staging_authorization": "HOLD (owned by Work)",
+  "rollback_source": "6adc1936d09534b134182e769f88fea9c5a0125a",
+  "remote_save_verification": "NOT YET READ BACK",
+  "authority": "NONE",
+  "independent_verification": "NOT VERIFIED",
+  "release": "HOLD"
+}
