@@ -17,7 +17,7 @@ test("DISPATER audit-readiness message leads the page, models then dashboard",as
 });
 test("both decorative 3D models appear together without inline copy, controls or fake metrics",async()=>{
  const html=await read("index.html");
- const start=html.indexOf('class="equipment-pair-grid"'),end=html.indexOf('class="pair-disclaimer"');
+ const start=html.indexOf('class="equipment-pair-grid"'),end=html.indexOf('<p class="pair-disclaimer"');
  const markup=html.slice(start,end);
  assert.ok(markup.includes('data-equipment="frac-tree"'));
  assert.ok(markup.includes('data-equipment="tow-truck"'));
