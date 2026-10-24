@@ -1,0 +1,28 @@
+{
+  "operation": "KUSANAGI_CLIX",
+  "project": "IRON_BRIDGE",
+  "status": "REPAIRED_CONVERGED_VERIFIED",
+  "canonical_repository": "victormart43210-ship-it/Valexii-Aurex",
+  "target_branch": "main",
+  "main_sha": "f2db438f0020dbd455bcb5c7b21b7352d133bf2c",
+  "working_branch": "kusanagi-cvii-mainline-ascension-4026168584527254885",
+  "current_sha": "afa3789730d7e4b881faa622ecdee4b58f6a3a14",
+  "test_summary": {
+    "pytest_total": 453,
+    "pytest_passed": 453,
+    "pytest_skipped": 1,
+    "pytest_failed": 0,
+    "ruff_status": "PASS",
+    "mypy_status": "PASS"
+  },
+  "railway_staging": {
+    "status": "HEALTHY",
+    "endpoint": "https://aurex-api-aurex-staging.up.railway.app",
+    "deployed_sha": "f2db438f0020dbd455bcb5c7b21b7352d133bf2c",
+    "version_alignment": "VERSION_MISMATCH",
+    "note": "Staging environment is online (200 OK /v1/health). Industrial audit endpoints return 404 on current deployment f2db438f and will activate upon candidate deployment."
+  },
+  "docling_status": "PASS (aurex/docling_adapter.py and tests/test_docling_adapter.py verified)",
+  "prefect_status": "EVALUATED (fenced worker in aurex/fenced_worker.py satisfies atomic lease fencing without extra infrastructure dependency)",
+  "pr_136_status": "REVIEWED (persona boundary and OPA policy enforce identity_verified: False and authority: NONE)"
+}
