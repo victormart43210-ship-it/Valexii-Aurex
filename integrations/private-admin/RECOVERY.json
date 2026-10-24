@@ -1,16 +1,42 @@
 {
   "operation": "AUREX private administrator access",
-  "checkpoint": 1,
+  "checkpoint": 2,
   "base_sha": "415dbab72fe00ad65be379979c0ee213059054b5",
   "branch": "work/aurex-private-admin-candidate",
   "checkpoint_identity": "Enclosing git commit; resolve remote branch and file history",
-  "completed": ["Fresh main inspected; isolated worktree created", "wg-easy v15.4.0 upstream configuration reviewed"],
-  "tests": "NOT RUN",
+  "completed": [
+    "Fresh main inspected; isolated worktree created",
+    "wg-easy v15.4.0 upstream configuration reviewed",
+    "Offline Compose renderer implemented",
+    "16 focused tests PASS after 16 expected pre-implementation failures",
+    "Host admission and rollback runbook written"
+  ],
+  "tests": {
+    "focused": "16 passed",
+    "full_suite": "321 passed, 1 skipped, 1 warning in 2.24s",
+    "ruff_check_all": "PASS",
+    "mypy_aurex": "PASS 66 source files",
+    "docker_compose_runtime": "NOT RUN"
+  },
   "deployment": "HOLD",
   "host_access": "NOT VERIFIED",
-  "independent_review": "NOT RUN",
-  "next_actions": ["Implement offline Compose renderer with safe defaults and mutation tests", "Review generated config and host admission runbook", "Save verified source and open draft PR"],
+  "independent_review": "IN PROGRESS: separate source-review subagent, not financial verification",
+  "next_actions": [
+    "Read separate source review and repair any important defects",
+    "Verify remote checkpoint and draft PR CI",
+    "Obtain host access/identity and complete admission checks before any activation"
+  ],
   "rollback": "No host changes; remove candidate branch artifacts only",
-  "remote_save": "NOT VERIFIED until branch readback",
-  "restrictions": ["No production changes", "No server access or new paid resources", "No AUREX secrets in VPN", "n3n and training deferred"]
+  "remote_save": {
+    "checkpoint_001": "PASS c4273cc392723efb39198a56fa1962d5aeefe178",
+    "current": "NOT VERIFIED until branch readback"
+  },
+  "restrictions": [
+    "No production changes",
+    "No server access or new paid resources",
+    "No AUREX secrets in VPN",
+    "n3n and training deferred"
+  ],
+  "utc": "2026-10-24T00:20:00.533500+00:00",
+  "source_sha": "c4273cc392723efb39198a56fa1962d5aeefe178"
 }

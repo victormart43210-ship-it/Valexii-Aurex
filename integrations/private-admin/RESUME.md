@@ -6,3 +6,5 @@ The renderer must require a digest and specific IPv4 bind address, bind UI to lo
 Ruling: keep host activation HOLD because host identity, kernel, firewall, routes and console recovery are not verified. Cost: requires host validation before use.
 Dependency: upstream wg-easy v15.4.0; no upstream implementation copied. See upstream AGPL-3.0 license before modification or redistribution.
 No network connectivity or air-gap claim. Existing AUREX authentication, financial receipt authority and release holds remain.
+
+Checkpoint002: implementation and focused/full suite complete; see TEST_RESULTS.txt. Separate source review pending. No Hetzner connector or host session is available. Fetch branch head, read review, then resolve host admission. No credentials should be pasted into chat. Do not rerun completed development just because context was lost.
