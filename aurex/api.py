@@ -21,9 +21,11 @@ from aurex.database import (
 )
 from aurex.fenced_worker import cancel_job, claim_job, finalize_job
 from aurex.governance_math.research_api import router as research_advice_router
+from aurex.integrations.pilot_policy import review_synthetic_pilot
 from aurex.real_offline_probe import execute_sqlite_roundtrip
 from aurex.workflows.budget import BudgetGuard
 from aurex_foundation.correlation import CorrelationMiddleware
+from aurex_foundation.opa import evaluate_policy
 
 app = FastAPI(
     title="VALEXII-AUREX",
@@ -230,6 +232,31 @@ def create_job_endpoint(
         raise HTTPException(status_code=422, detail="Unsupported probe")
     if not idempotency_key or len(idempotency_key) > 128:
         raise HTTPException(status_code=422, detail="Idempotency-Key required")
+    if os.environ.get("AUREX_OPA_PILOT_ENABLED") == "1":
+        if os.environ.get("AUREX_OPA_OPERATOR_APPROVED") != "1":
+            raise HTTPException(status_code=503, detail="Policy approval required")
+
+        if os.environ.get("AUREX_OPA_SYNTHETIC_ONLY") != "1":
+            raise HTTPException(status_code=503, detail="Synthetic-only policy gate required")
+
+        policy = evaluate_policy({
+            "kind": canonical_kind,
+            "synthetic": True,
+            "probe": "sqlite_roundtrip_v1",
+            "max_cost_usd": 0,
+        })
+
+        decision = review_synthetic_pilot(
+            synthetic=True,
+            explicit_operator_approval=True,
+            policy_response={
+                "result": {"allow": policy.disposition == "QUALIFIED"}
+            },
+        )
+
+        if not decision.permitted_for_review:
+            raise HTTPException(status_code=503, detail="Policy review HOLD")
+
     try:
         job = create_job(
             DEFAULT_DB_PATH, f"job-{secrets.token_hex(12)}", canonical_kind,

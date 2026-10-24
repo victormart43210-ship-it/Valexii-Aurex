@@ -1,6 +1,8 @@
 """OPA is advisory qualification only. Missing/error/denial => HOLD."""
 import json
+from collections.abc import Callable
 from dataclasses import dataclass
+from typing import Any
 from urllib.request import Request, urlopen
 
 
@@ -10,7 +12,13 @@ class PolicyResult:
     reason: str
 
 
-def evaluate_policy(payload, *, endpoint="http://127.0.0.1:8181/v1/data/aurex/allow", timeout=1.0, opener=urlopen):
+def evaluate_policy(
+    payload: object,
+    *,
+    endpoint: str = "http://127.0.0.1:8181/v1/data/aurex/allow",
+    timeout: float = 1.0,
+    opener: Callable[..., Any] = urlopen,
+) -> PolicyResult:
     if not endpoint.startswith("http://127.0.0.1:") and not endpoint.startswith("http://localhost:"):
         return PolicyResult("HOLD", "non_loopback_opa_endpoint_not_approved")
     if not isinstance(payload, dict):
