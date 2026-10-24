@@ -10,10 +10,8 @@ This module NEVER grants regulatory certification, legal authority, or automated
 from __future__ import annotations
 
 import hashlib
-import json
 import re
 from datetime import UTC, datetime
-from decimal import Decimal
 from typing import Any
 
 SECTOR_A_OILFIELD_CATEGORIES = {
