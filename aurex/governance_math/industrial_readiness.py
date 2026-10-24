@@ -8,10 +8,10 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from datetime import date
-from enum import Enum
+from enum import StrEnum
 
 
-class FindingStatus(str, Enum):
+class FindingStatus(StrEnum):
     PRESENT = "PRESENT_NOT_VERIFIED"
     MISSING = "MISSING"
     EXPIRED = "EXPIRED"
