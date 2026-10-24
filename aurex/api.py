@@ -21,6 +21,7 @@ from aurex.database import (
 )
 from aurex.fenced_worker import cancel_job, claim_job, finalize_job
 from aurex.governance_math.research_api import router as research_advice_router
+from aurex.pipeline_receipts import read_pipeline_receipt
 from aurex.real_offline_probe import execute_sqlite_roundtrip
 from aurex.workflows.budget import BudgetGuard
 
@@ -296,6 +297,43 @@ def cancel_job_endpoint(job_id: str, _: str = Depends(authenticate)) -> JobRespo
         updatedAt=updated["updated_at"],
         reservationUsd=updated["reservation_usd"],
     )
+
+
+class PipelineReceiptResponse(BaseModel):
+    """Integrity-checked local observation; not an independent efficacy verdict."""
+    model_config = ConfigDict(extra="forbid")
+
+    jobId: str
+    state: str
+    evidenceId: str
+    sha256: str
+    observation: dict[str, Any]
+    integrity: str
+    verification: str
+    authority: str
+    release: str
+
+
+@app.get("/v1/jobs/{job_id}/receipt", response_model=PipelineReceiptResponse)
+def pipeline_receipt_endpoint(
+    job_id: str,
+    _: str = Depends(authenticate),
+) -> PipelineReceiptResponse:
+    # The browser never calls this endpoint. It is service-bearer protected
+    # and the downstream site must additionally enforce owner authorization.
+    try:
+        receipt = read_pipeline_receipt(DEFAULT_DB_PATH, job_id)
+    except ValueError:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="Job receipt unavailable or integrity check failed",
+        ) from None
+    if receipt is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Job receipt not found",
+        )
+    return PipelineReceiptResponse(**receipt)
 
 
 @app.get("/v1/evidence", response_model=EvidenceListResponse)
