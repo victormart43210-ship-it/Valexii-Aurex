@@ -1,0 +1,12 @@
+{
+  "source": "local supervised HTTP worker; canonical SQLite; persisted receipt survives restart",
+  "job_id": "job-e7d420fd3cd8cbacc7a2a170",
+  "evidence_id": "ev-0aaf79d3879ae204f0bdbb01",
+  "observation_sha256": "cfe33bfbbba3731e37e3ce5b84fc76b12727a97de6933728bcbbac4e51d6f2a4",
+  "receipt_file_sha256": "a134a03b5975ecb034289bc089ef4c2976af0ae96c6c5719ef68f72b1e143168",
+  "bagit_validation": "PASS: bagit 1.9.0",
+  "archivematica_ingest": "NOT RUN",
+  "independent_financial_verification": "NOT VERIFIED",
+  "authority": "NONE",
+  "release": "HOLD"
+}

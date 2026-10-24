@@ -10,3 +10,5 @@ No production, paid inference, model downloads, customer data, main merge or aut
 Live website, Archivematica ingest, Tailscale enforcement, Railway isolation: NOT VERIFIED. Recovery and reviewed source are the deliverables until infrastructure admission gates pass.
 
 Checkpoint 002: optional tools and Robot suites implemented. 18 new tests and 3 Robot tests passed; full suite needs proxy-free rerun (2 existing httpx SOCKS import errors). Next: fresh review, regression, checkpoint. No live activation.
+
+Checkpoint 003: full proxy-free suite 496 passed/1 skipped, Robot3 passed, Ruff/MyPy77 passed. CP002 GitHub CI/Robot/image/smoke passed. Fresh reviewer independently reran tests: no Critical/Important findings; one minor cleanup regression test deferred (injected failure behavior passed). Actual local supervised receipt exported and BagIt validated; exact synthetic receipt and hashes preserved. Next actions and unresolved live admission gates are in NEXT_AGENT.md. Do not present source completion as deployed services.

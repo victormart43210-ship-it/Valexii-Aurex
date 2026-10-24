@@ -1,6 +1,6 @@
 {
-  "checkpoint": 2,
-  "utc": "2026-10-24T12:10:04.453434+00:00",
+  "checkpoint": 3,
+  "utc": "2026-10-24T12:12:48.377825+00:00",
   "branch": "work/aurex-canada-finland-integration",
   "base_sha": "2ce2f654b0d5d1f21786dd587d9137d77695f420",
   "main_sha": "415dbab72fe00ad65be379979c0ee213059054b5",
@@ -9,26 +9,34 @@
     "Refreshed main and PR119; read CXXXII CP008 and agent instructions",
     "Implemented exact-fixture BagIt export and bounded Tailscale policy generator",
     "Added Robot local acceptance groups and gated manual website suite",
-    "New tests RED: 18 failed before implementation; GREEN: 18 passed"
+    "New tests RED: 18 failed before implementation; GREEN: 18 passed",
+    "Validated BagIt export of actual local supervised worker receipt",
+    "Exact CP002 GitHub workflows passed"
   ],
   "tests": {
     "integration": "18 passed",
     "robot": "3 passed",
     "ruff": "PASS",
     "mypy": "PASS: 77 files",
-    "full_suite": "FAIL: 2 HTTP adapter tests SOCKS proxy ImportError; 494 passed, 1 skipped, 1 warning. Clean environment rerun pending.",
+    "full_suite": "PASS clean environment: 496 passed, 1 skipped, 1 warning; initial SOCKS environment failures retained in TEST_RESULTS.txt",
     "browser_gate": "Expected FAIL before navigation: admission unset",
     "live_browser": "NOT RUN",
     "archivematica_ingest": "NOT RUN",
-    "tailscale_enforcement": "NOT RUN"
+    "tailscale_enforcement": "NOT RUN",
+    "github_cp002": "PASS: CI, Robot acceptance, canonical image, smoke",
+    "actual_worker_to_bagit": "PASS: local supervised HTTP worker/restart and bagit1.9.0 validation"
   },
   "deployment": "HOLD",
   "independent_verification": "NOT VERIFIED",
-  "remote_save": "Read back enclosing commit after publication",
+  "remote_save": {
+    "checkpoint_001": "PASS: 177df63bc9af89b4a8fd30183bc223af48bb7e32 read back",
+    "checkpoint_002": "PASS: 927ea8bbaf437331410049e74b4214e27a08e16c read back",
+    "current": "Resolve enclosing commit and read branch back after publication"
+  },
   "next_actions": [
-    "Complete clean-environment full regression run",
-    "Fresh source review and repair meaningful defects",
-    "Verify remote checkpoint and latest CI"
+    "Read fresh reviewer report and exact final GitHub checks",
+    "Resolve CXXXII staging isolation and existing Lovable workbench mount before website.robot",
+    "Inventory dedicated Archivematica instance and Tailscale staging tailnet before any activation"
   ],
   "blockers": [
     "Railway storage isolation and live website owner flow remain NOT VERIFIED",
@@ -36,5 +44,27 @@
   ],
   "rollback": "No infrastructure changes; discard isolated branch",
   "pr": 127,
-  "previous_checkpoint": "177df63bc9af89b4a8fd30183bc223af48bb7e32"
+  "previous_checkpoint": "927ea8bbaf437331410049e74b4214e27a08e16c",
+  "source_sha": "927ea8bbaf437331410049e74b4214e27a08e16c",
+  "source_review": "PASS: fresh agent reviewed CP002 equivalent local tree; REVIEW.md",
+  "deferred_minors": [
+    "Commit cleanup-failure fault-injection regression test; behavior independently exercised and passed"
+  ],
+  "modified_files": [
+    ".github/workflows/canada-finland-acceptance.yml",
+    "acceptance/canada_finland.robot",
+    "acceptance/requirements.txt",
+    "acceptance/website.robot",
+    "docs/operations/canada-finland/RECOVERY.json",
+    "docs/operations/canada-finland/RESUME.md",
+    "integrations/canada_finland/README.md",
+    "integrations/canada_finland/tools.py",
+    "pyproject.toml",
+    "tests/test_canada_finland.py",
+    "docs/operations/canada-finland/REVIEW.md",
+    "docs/operations/canada-finland/TEST_RESULTS.txt",
+    "docs/operations/canada-finland/NEXT_AGENT.md",
+    "docs/operations/canada-finland/LOCAL_EXPORT_EVIDENCE.json",
+    "docs/operations/canada-finland/LOCAL_SYNTHETIC_RECEIPT.json"
+  ]
 }
