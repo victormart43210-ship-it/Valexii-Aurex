@@ -11,28 +11,35 @@ from datetime import date, timedelta
 from .industrial_readiness import EvidenceRecord, assess_readiness
 
 
-def build_demo(as_of: date | None = None) -> dict[str, object]:
+def build_demo(as_of: date | None = None, *, fixture: str = "towing_v1") -> dict[str, object]:
     """Produce reproducible, clearly labeled findings from synthetic records."""
-    today = as_of or date.today()
-    records = (
+    today = as_of or date(2026, 10, 24)
+    if fixture not in ("towing_v1", "oilfield_v1"):
+        raise ValueError("Unknown fictional fixture")
+    records: tuple[EvidenceRecord, ...] = (
         EvidenceRecord("demo-driver-01", "driver_qualification", "a" * 64),
         EvidenceRecord("demo-vehicle-01", "vehicle_inspection", "b" * 64, today - timedelta(days=1)),
         EvidenceRecord("demo-maint-01", "maintenance", "c" * 64),
         EvidenceRecord("demo-maint-02", "maintenance", "d" * 64),
         EvidenceRecord("demo-ticket-01", "service_ticket", "unknown"),
     )
-    categories = (
+    categories: tuple[str, ...] = (
         "driver_qualification",
         "vehicle_inspection",
         "maintenance",
         "service_ticket",
         "incident_register",
     )
+    if fixture == "oilfield_v1":
+        mapping = dict(zip(categories, ("crew_qualification", "equipment_inspection", "maintenance", "field_ticket", "incident_register"), strict=True))
+        records = tuple(EvidenceRecord(r.record_id, mapping[r.category], r.source_sha256, r.expires_on) for r in records)
+        categories = tuple(mapping[c] for c in categories)
     findings = assess_readiness(records, categories, as_of=today)
     return {
         "demo": True,
         "authority": "ADVISORY_ONLY_NO_CERTIFICATION",
-        "operator": "SYNTHETIC_TOWING_COMPANY",
+        "operator": ("Permian Recovery Services (fictional)" if fixture == "towing_v1"
+                     else "Permian Field Operations (fictional)"),
         "as_of": today.isoformat(),
         "now": [
             {

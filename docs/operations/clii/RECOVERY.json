@@ -1,7 +1,7 @@
 {
   "operation": "KUSANAGI CLII",
-  "checkpoint": 1,
-  "utc": "2026-10-24T16:38:13.330886+00:00",
+  "checkpoint": 2,
+  "utc": "2026-10-24T16:41:33.003495+00:00",
   "repository": "victormart43210-ship-it/Valexii-Aurex",
   "branch": "work/kusanagi-cli-industrial-readiness-synthetic",
   "pr": 133,
@@ -10,21 +10,30 @@
   "checkpoint_identity": "Enclosing Git commit; resolve git log -1 --format=%H -- docs/operations/clii/RECOVERY.json",
   "completed": [
     "Refreshed PR133 and main",
-    "PR133 CI40111954345, canonical image40111954359 and smoke40111954384 all PASS"
+    "PR133 CI40111954345, canonical image40111954359 and smoke40111954384 all PASS",
+    "Canonical authenticated industrial endpoint with streamed 128-byte selector limit",
+    "Pinned towing/oilfield fixtures and malformed evidence type rejection"
   ],
-  "local_tests": "NOT RUN: baseline in progress",
+  "local_tests": {
+    "baseline": "316 passed, 1 skipped",
+    "endpoint": "21 passed",
+    "full": "337 passed, 1 skipped, 1 warning",
+    "ruff": "PASS",
+    "mypy": "PASS 69 files"
+  },
   "website_revision": "42731ae295377800fb81dd4cc8f1cadb21817750",
   "railway": "NOT VERIFIED this session; no mutations",
   "release": "HOLD",
   "next_actions": [
-    "Bound malformed classifier inputs and pin server-owned fixtures",
-    "Add authenticated stateless route in canonical app and sandbox tests",
-    "Prepare owner-only frontend adapter and component; independent review"
+    "Complete frontend contract tests and owner RPC",
+    "Exercise real local API via browser sandbox",
+    "Independent review and final regression"
   ],
   "blockers": [
     "Canonical PR133 job API accepts only sqlite_roundtrip_v1; industrial persistence not integrated",
     "Lovable credits not exposed by get_project; prior exhausted-credit report not disproven"
   ],
   "remote_save": "Read enclosing commit back after publication",
-  "rollback": "Revert source changes; no deployment or migration"
+  "rollback": "Revert source changes; no deployment or migration",
+  "previous_checkpoint": "8f0d098c857b2ff77b3c05839008d6c83b8e064f"
 }

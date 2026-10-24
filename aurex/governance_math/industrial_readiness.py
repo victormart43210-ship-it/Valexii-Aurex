@@ -47,19 +47,23 @@ def assess_readiness(
     Conflicting active digests are flagged for human review. Identical content
     is not independent corroboration. Missing digest is never verified.
     """
-    if not isinstance(as_of, date):
+    if type(as_of) is not date:
         raise ValueError("as_of must be a date")
     if len(records) > 1000 or len(required_categories) > 100:
         raise ValueError("input exceeds bounded limits")
-    if len(set(required_categories)) != len(required_categories):
-        raise ValueError("duplicate required category")
     if any(not isinstance(c, str) or not c or len(c) > 128 for c in required_categories):
         raise ValueError("invalid required category")
+    if len(set(required_categories)) != len(required_categories):
+        raise ValueError("duplicate required category")
     ids: set[str] = set()
     by_category: dict[str, list[EvidenceRecord]] = {}
     for record in records:
         if not isinstance(record, EvidenceRecord):
             raise ValueError("invalid evidence record")
+        if (not isinstance(record.record_id, str) or not isinstance(record.category, str)
+            or not isinstance(record.source_sha256, str)
+            or (record.expires_on is not None and type(record.expires_on) is not date)):
+            raise ValueError("invalid evidence field type")
         if (not record.record_id or len(record.record_id) > 128 or record.record_id in ids
             or not record.category or len(record.category) > 128):
             raise ValueError("invalid or duplicate evidence identity")
