@@ -38,7 +38,7 @@ export interface ClientConfig {
 
 export function createAurexClient(cfg: ClientConfig) {
   const base = validServiceUrl(cfg.url);
-  const configured = !!base && !!cfg.token && cfg.token.length >= 16;
+  const configured = !!base && !!cfg.token && cfg.token.length >= 32;
   const fetcher = cfg.fetcher ?? fetch;
   const timeoutMs = Math.min(Math.max(cfg.timeoutMs ?? 5000, 500), 10_000);
 

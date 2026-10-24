@@ -132,6 +132,41 @@ describe("client fails closed", () => {
     expect(r.ok).toBe(true);
     expect(seen).toEqual({ url: "https://aurex.example.com/v1/jobs", key: "k".repeat(20) });
   });
+  it("authenticates the five read-only service endpoints", async () => {
+    const paths: string[] = [];
+    const fetcher = (async (url: URL, init: RequestInit) => {
+      paths.push(url.pathname);
+      expect(init.method).toBe("GET");
+      expect(new Headers(init.headers).get("Authorization")).toBe("Bearer " + token);
+      const body =
+        url.pathname === "/v1/health"
+          ? { status: "ok", version: "0.1.0", time: now }
+          : url.pathname === "/v1/capabilities"
+            ? { capabilities: [] }
+            : url.pathname === "/v1/evidence"
+              ? { evidence: [] }
+              : url.pathname === "/v1/budgets"
+                ? { limitUsd: 0, reservedUsd: 0, spentUsd: 0, period: "month" }
+                : { jobs: [], nextCursor: null };
+      return new Response(JSON.stringify(body));
+    }) as unknown as typeof fetch;
+    const client = createAurexClient({ url, token, fetcher });
+    const results = await Promise.all([
+      client.health(),
+      client.capabilities(),
+      client.evidence(),
+      client.budget(),
+      client.listJobs(),
+    ]);
+    expect(results.every((result) => result.ok)).toBe(true);
+    expect(paths.sort()).toEqual([
+      "/v1/budgets",
+      "/v1/capabilities",
+      "/v1/evidence",
+      "/v1/health",
+      "/v1/jobs",
+    ]);
+  });
 });
 
 describe("stale evidence never supports a capability", () => {
@@ -155,6 +190,17 @@ describe("stale evidence never supports a capability", () => {
     expect(capabilityBacked(cap, [])).toBe(false);
     expect(capabilityBacked({ ...cap, available: false }, [ev(now)])).toBe(false);
     expect(evidenceFresh(null)).toBe(false);
+  });
+  it.each([
+    ["valid UTC time", { collectedAt: "2026-10-24T03:00:00.000Z" }, true],
+    ["valid offset time", { collectedAt: "2026-10-24T05:00:00.000+02:00" }, true],
+    ["expired time", { collectedAt: "2026-10-16T02:59:59.999Z" }, false],
+    ["malformed time", { collectedAt: "not-a-timestamp" }, false],
+    ["missing time", {}, false],
+    ["future time", { collectedAt: "2026-10-24T03:02:00.000Z" }, false],
+  ])("evaluates %s fail-closed", (_label, evidence, expected) => {
+    const fixedNow = Date.parse("2026-10-24T03:00:00.000Z");
+    expect(evidenceFresh(evidence as { collectedAt: string }, fixedNow)).toBe(expected);
   });
 });
 
