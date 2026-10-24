@@ -4,7 +4,7 @@ const STAGING='https://aurex-api-aurex-staging.up.railway.app';
 export function authorizeIndustrial(user:string,owner:string|undefined,origin:string|null):boolean {
   return !!owner && user===owner && origin==='https://valexii.com';
 }
-export async function industrialRequest(config:{enabled?:string;url?:string;token?:string},fixture:IndustrialFixture,transport:typeof fetch=fetch):Promise<IndustrialResult> {
+export async function industrialRequest(config:{enabled?:string|undefined;url?:string|undefined;token?:string|undefined},fixture:IndustrialFixture,transport:typeof fetch=fetch):Promise<IndustrialResult> {
   const unavailable:IndustrialResult={state:'NOT_VERIFIED',report:null};
   if(config.enabled!=='1'||config.url!==STAGING||!config.token||config.token.length<32) return unavailable;
   try {

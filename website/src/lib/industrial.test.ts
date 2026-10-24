@@ -6,7 +6,7 @@ import { authorizeIndustrial, industrialRequest } from './industrial.server';
 describe('industrial admission', () => {
   it('accepts only advisory fixed towing response', () => {
     expect(validateIndustrial(fixture, 'towing_v1').proof.status).toBe('NOT_VERIFIED');
-    for (const altered of [{...fixture, authority:'CERTIFIED'}, {...fixture, changed:'COMPLIANT'}, {...fixture, proof:{status:'PASS'}}, {...fixture, extra:'data'}, {...fixture,now:[]}]) {
+    for (const altered of [{...fixture, authority:'CERTIFIED'}, {...fixture, changed:'COMPLIANT'}, {...fixture, proof:{status:'PASS'}}, {...fixture, extra:'data'}, {...fixture,now:[]}, {...fixture,now:fixture.now.map((row,i)=>i===0?{...row,record_ids:['demo-forged','demo-forged']}:row)}, {...fixture,now:fixture.now.map((row,i)=>i===4?{...row,record_ids:['demo-unexpected']}:row)}]) {
       expect(() => validateIndustrial(altered,'towing_v1')).toThrow();
     }
   });
@@ -17,9 +17,10 @@ describe('industrial admission', () => {
     }
   });
   it('disabled or unexpected destination never fetches', async () => {
-    const never = async () => { throw new Error('must not fetch'); };
+    let calls=0; const never = async () => { calls++; throw new Error('must not fetch'); };
     expect((await industrialRequest({}, 'towing_v1', never)).state).toBe('NOT_VERIFIED');
     expect((await industrialRequest({enabled:'1',url:'https://evil.example',token:'x'.repeat(40)},'towing_v1',never)).state).toBe('NOT_VERIFIED');
+    expect(calls).toBe(0);
   });
   it('bounded response, no redirect and no false success on failures', async () => {
     const config={enabled:'1',url:'https://aurex-api-aurex-staging.up.railway.app',token:'x'.repeat(40)};

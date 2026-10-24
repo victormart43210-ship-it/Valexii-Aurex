@@ -8,8 +8,9 @@ export type IndustrialResult={state:'NOT_VERIFIED';report:null}|{state:'STAGING_
 export function validateIndustrial(value:unknown, fixture:IndustrialFixture):IndustrialReport {
   const parsed=schema.parse(value);
   const categories=fixture==='towing_v1'?['driver_qualification','vehicle_inspection','maintenance','service_ticket','incident_register']:['crew_qualification','equipment_inspection','maintenance','field_ticket','incident_register'];
+  const recordIds=[['demo-driver-01'],['demo-vehicle-01'],['demo-maint-01','demo-maint-02'],['demo-ticket-01'],[]];
   const statuses=['PRESENT_NOT_VERIFIED','EXPIRED','CONFLICTING','NOT_VERIFIED','MISSING'];
   const company=fixture==='towing_v1'?'Permian Recovery Services (fictional)':'Permian Field Operations (fictional)';
-  if(parsed.operator!==company || parsed.now.some((row,i)=>row.category!==categories[i]||row.status!==statuses[i]) || parsed.next.some((row,i)=>row.category!==categories[i+1])) throw new Error('Unexpected fictional result');
+  if(parsed.operator!==company || parsed.now.some((row,i)=>row.category!==categories[i]||row.status!==statuses[i]||JSON.stringify(row.record_ids)!==JSON.stringify(recordIds[i])) || parsed.next.some((row,i)=>row.category!==categories[i+1])) throw new Error('Unexpected fictional result');
   return parsed;
 }

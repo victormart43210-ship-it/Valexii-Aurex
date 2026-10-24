@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import argparse
+import http.client
 import os
 import secrets
 import shutil
@@ -9,6 +10,7 @@ import socket
 import subprocess
 import sys
 import tempfile
+import time
 from pathlib import Path
 
 
@@ -39,6 +41,22 @@ def main() -> None:
         try:
             processes.append(subprocess.Popen([sys.executable, '-m', 'uvicorn', 'aurex.api:app',
                 '--host', '127.0.0.1', '--port', str(api_port), '--no-access-log'], cwd=root, env=env))
+            deadline = time.monotonic() + 10
+            while True:
+                if processes[0].poll() is not None:
+                    raise RuntimeError('Canonical sandbox API failed to start')
+                connection = http.client.HTTPConnection('127.0.0.1', api_port, timeout=1)
+                try:
+                    connection.request('GET', '/health')
+                    if connection.getresponse().status == 200:
+                        break
+                except OSError:
+                    pass
+                finally:
+                    connection.close()
+                if time.monotonic() >= deadline:
+                    raise RuntimeError('Canonical sandbox API readiness timed out')
+                time.sleep(.1)
             processes.append(subprocess.Popen([node, 'node_modules/vite/bin/vite.js', '--config',
                 'sandbox-industrial/vite.config.ts'], cwd=root / 'website', env=env))
             print(f'LOCAL SANDBOX http://127.0.0.1:{args.ui_port} — stateless; production HOLD', flush=True)
