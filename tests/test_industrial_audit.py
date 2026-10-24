@@ -148,3 +148,29 @@ def test_invalid_sector_param_returns_400(monkeypatch: pytest.MonkeyPatch) -> No
 
     response = client.get("/v1/industrial-audit/readiness?sector=invalid_sector", headers=headers)
     assert response.status_code == 400
+
+
+def test_invalid_bearer_token_fails_closed(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("AUREX_SERVICE_TOKEN", "a" * 32)
+    client = TestClient(app)
+    headers = {"Authorization": "Bearer WRONG_TOKEN_VALUE"}
+    response = client.get("/v1/industrial-audit/readiness", headers=headers)
+    assert response.status_code == 401
+
+
+def test_missing_server_token_config_fails_closed(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.delenv("AUREX_SERVICE_TOKEN", raising=False)
+    monkeypatch.delenv("AUREX_ADMIN_TOKEN", raising=False)
+    client = TestClient(app)
+    headers = {"Authorization": "Bearer test_token"}
+    response = client.get("/v1/industrial-audit/readiness", headers=headers)
+    assert response.status_code == 500
+
+
+def test_short_server_token_config_fails_closed(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("AUREX_SERVICE_TOKEN", "too_short")
+    monkeypatch.delenv("AUREX_ADMIN_TOKEN", raising=False)
+    client = TestClient(app)
+    headers = {"Authorization": "Bearer too_short"}
+    response = client.get("/v1/industrial-audit/readiness", headers=headers)
+    assert response.status_code == 500
