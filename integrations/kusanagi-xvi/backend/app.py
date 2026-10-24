@@ -127,6 +127,20 @@ def job_status(job_id: str):
     return result
 
 
+@app.get("/v1/jobs/{job_id}/receipt", dependencies=[Depends(authorize)])
+def job_receipt(job_id: str):
+    """Authenticated integrity-bound SQLite observation, never an audit verdict."""
+    if not JOB_ID.fullmatch(job_id):
+        raise HTTPException(422, "invalid id")
+    try:
+        value = store.read_receipt(store.path_from_env(), job_id)
+    except ValueError:
+        raise HTTPException(409, "receipt unavailable or integrity invalid") from None
+    if value is None:
+        raise HTTPException(404, "job not found")
+    return value
+
+
 @app.post("/v1/jobs", dependencies=[Depends(authorize)])
 def submit(job: JobRequest, idempotency_key: Annotated[str, Header()] = ""):
     if not offline_enabled() or not store.worker_recent(store.path_from_env()):

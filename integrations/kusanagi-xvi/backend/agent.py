@@ -54,12 +54,21 @@ def snapshot(db: str | None = None) -> dict[str,object]:
         with store.connect(target) as c:
             row=c.execute('SELECT * FROM agent_cycles ORDER BY id DESC LIMIT 1').fetchone()
             if row is None: return {'running':False,'checkedAt':None,'database':'UNKNOWN','worker':'UNKNOWN','authority':'NONE','verification':'NOT_VERIFIED'}
-            t=datetime.fromisoformat(row['observed_at'])
-            fresh= datetime.now(UTC)-timedelta(seconds=FRESH_S) <= t <= datetime.now(UTC)+timedelta(seconds=60)
-            return {'running':fresh,'checkedAt':row['observed_at'],
-                    'database':'OBSERVED_OK' if fresh and row['db_ok'] else 'UNKNOWN',
-                    'worker':'RECENT' if fresh and row['worker_fresh'] else 'NOT_VERIFIED',
-                    'authority':'NONE','verification':'NOT_VERIFIED'}
+            t = datetime.fromisoformat(row['observed_at'])
+            now = datetime.now(UTC)
+            fresh = now - timedelta(seconds=FRESH_S) <= t <= now + timedelta(seconds=60)
+            # Check the *latest* worker heartbeat at read time. The observer
+            # can start before the Unix worker on a fresh container, so its
+            # first recorded worker_fresh=0 is not a reliable live indicator.
+            # Never claim model accuracy or independent attestation from it.
+            cutoff = (now - timedelta(seconds=store.HEARTBEAT_S)).isoformat()
+            live_worker = c.execute(
+                'SELECT 1 FROM workers WHERE last_seen>=? LIMIT 1', (cutoff,)
+            ).fetchone() is not None
+            return {'running': fresh, 'checkedAt': row['observed_at'],
+                    'database': 'OBSERVED_OK' if fresh and row['db_ok'] else 'UNKNOWN',
+                    'worker': 'RECENT' if fresh and live_worker else 'NOT_VERIFIED',
+                    'authority': 'NONE', 'verification': 'NOT_VERIFIED'}
     except sqlite3.Error:
         return {'running':False,'checkedAt':None,'database':'UNKNOWN','worker':'UNKNOWN','authority':'NONE','verification':'NOT_VERIFIED'}
 
