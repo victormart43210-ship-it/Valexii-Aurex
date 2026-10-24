@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
+import { createHash } from 'node:crypto';
 import { validateReceipt, financialRequest, authorizeFinancial } from '../src/lib/aurex-financial.server.ts';
 
 const receipt = JSON.parse(readFileSync(new URL('./cxxxii-receipt.json', import.meta.url), 'utf8'));
@@ -20,6 +21,15 @@ test('owner and origin are both required', () => {
   for (const origin of [null, 'null', 'http://valexii.com', 'https://valexii.com.evil.example']) assert.equal(authorizeFinancial(owner, owner, origin), false);
   assert.equal(authorizeFinancial('other', owner, 'https://valexii.com'), false);
   assert.equal(authorizeFinancial(owner, undefined, 'https://valexii.com'), false);
+  assert.equal(authorizeFinancial('-'.repeat(36), '-'.repeat(36), 'https://valexii.com'), false);
+});
+test('recomputed digest cannot bless malformed observation types or extra fields', () => {
+  for (const patch of [{ result: ['PASS'] }, { exact_case_matches: 1.5 }, { extra: true }, { probe: 'sqlite_roundtrip_v1' }]) {
+    const observation = { ...receipt.observation, ...patch };
+    const canonical = '{' + Object.keys(observation).sort().map(k => JSON.stringify(k) + ': ' + JSON.stringify(observation[k])).join(', ') + '}';
+    const sha256 = createHash('sha256').update(canonical).digest('hex');
+    assert.throws(() => validateReceipt({ ...receipt, observation, sha256 }, receipt.jobId));
+  }
 });
 test('disabled, missing credential and wrong destination make zero calls', async () => {
   let calls = 0;
@@ -59,4 +69,13 @@ test('queued, failed, cancelled, invalid IDs, oversized responses and errors can
     assert.equal(result.state, 'HOLD');
     assert.equal(JSON.stringify(result).includes('secret'), false);
   }
+});
+test('409 stays pending and streaming size cap cancels the response', async () => {
+  const pending = await financialRequest(config, receipt.jobId, async url => url.endsWith('/receipt') ? new Response(null, { status: 409 }) : Response.json(job));
+  assert.equal(pending.state, 'PENDING');
+  let cancelled = false;
+  const body = new ReadableStream({ pull(controller) { controller.enqueue(new Uint8Array(25001)); }, cancel() { cancelled = true; } });
+  const result = await financialRequest(config, receipt.jobId, async () => new Response(body, { headers: { 'Content-Type': 'application/json' } }));
+  assert.equal(result.state, 'HOLD');
+  assert.equal(cancelled, true);
 });

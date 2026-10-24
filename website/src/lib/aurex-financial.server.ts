@@ -20,7 +20,7 @@ type Config = { enabled?: string | undefined; url?: string | undefined; token?: 
 type Transport = (url: string, init: RequestInit) => Promise<Response>;
 
 export function authorizeFinancial(user: string, owner: string | undefined, origin: string | null): boolean {
-  return !!owner && /^[0-9a-f-]{36}$/i.test(owner) && user === owner && !!origin && ORIGINS.has(origin);
+  return !!owner && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(owner) && user === owner && !!origin && ORIGINS.has(origin);
 }
 function object(value: unknown): ObjectValue {
   if (!value || typeof value !== 'object' || Array.isArray(value)) throw new Error('Invalid contract');
@@ -46,7 +46,7 @@ export function validateReceipt(raw: unknown, jobId: string): FinancialReceipt {
   requireValue(o['probe'] === 'synthetic_field_audit_v1' && o['synthetic'] === true);
   requireValue(typeof o['suite_sha256'] === 'string' && HEX.test(o['suite_sha256']));
   for (const key of counts) requireValue(typeof o[key] === 'number' && Number.isInteger(o[key]) && (o[key] as number) >= 0 && (o[key] as number) <= 100);
-  requireValue(o['case_count'] === 100 && ['PASS', 'HOLD', 'FAIL', 'SYNTHETIC_GATE_PASS_NOT_BETA_RELEASE'].includes(String(o['result'])));
+  requireValue(o['case_count'] === 100 && typeof o['result'] === 'string' && ['PASS', 'HOLD', 'FAIL', 'SYNTHETIC_GATE_PASS_NOT_BETA_RELEASE'].includes(o['result']));
   requireValue(o['independent_verification'] === 'NOT_VERIFIED' && o['real_document_accuracy'] === 'NOT_MEASURED' && o['authority'] === 'HOLD' && o['effect'] === 'NONE' && o['production_release'] === 'HOLD');
   // All admitted strings are ASCII enum literals/hex; integers are bounded.
   // Exactly Python json.dumps(sort_keys=True), including separator spaces.
@@ -80,7 +80,7 @@ function validateJob(raw: unknown, expected: string | null): ObjectValue {
   exact(j, ['id', 'kind', 'state', 'createdAt', 'updatedAt', 'reservationUsd']);
   requireValue(typeof j['id'] === 'string' && JOB.test(j['id']) && (!expected || j['id'] === expected));
   requireValue(j['kind'] === 'regression_scan' && j['reservationUsd'] === 0);
-  requireValue(['queued', 'running', 'succeeded', 'failed', 'cancelled'].includes(String(j['state'])));
+  requireValue(typeof j['state'] === 'string' && ['queued', 'running', 'succeeded', 'failed', 'cancelled'].includes(j['state']));
   requireValue(typeof j['createdAt'] === 'string' && Number.isFinite(Date.parse(j['createdAt'])) && typeof j['updatedAt'] === 'string' && Number.isFinite(Date.parse(j['updatedAt'])));
   return j;
 }

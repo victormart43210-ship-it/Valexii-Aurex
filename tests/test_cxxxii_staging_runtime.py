@@ -147,8 +147,9 @@ def test_supervised_http_worker_persistence_and_child_failure(tmp_path):
                         time.sleep(.1)
                     data = receipt.json()
                     assert data["observation"]["exact_case_matches"] == 100
-                    from scripts.cxxxi_receipt_verify import verify_receipt
-                    assert verify_receipt(data, expected_job_id=job_id)["digest_consistency"] == "PASS"
+                    import runpy
+                    verifier = runpy.run_path(str(ROOT / "scripts/cxxxi_receipt_verify.py"))
+                    assert verifier["verify_receipt"](data, expected_job_id=job_id)["digest_consistency"] == "PASS"
                     if saved is not None:
                         assert data == saved
                     saved = data
