@@ -7,7 +7,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from enum import Enum
 from hashlib import sha256
-from typing import Callable
+from collections.abc import Callable
 
 
 class Verdict(str, Enum):
@@ -46,6 +46,7 @@ class SafetyResult:
     engine_version: str
     source_commit_sha: str
     reviewer_id: str | None = None
+    implementer_id: str | None = None
     evidence_receipt: str | None = None
     explanation: str = ""
 
@@ -58,7 +59,7 @@ class SafetyResult:
             raise ValueError("invalid fixture hash")
         if not self.engine_version.strip() or not self.source_commit_sha.strip():
             raise ValueError("engine version and source commit required")
-        if self.verdict is Verdict.PASS and (
+        if self.verdict is Verdict.PASS and (\n            not self.implementer_id or not self.implementer_id.strip()\n            or self.reviewer_id == self.implementer_id
             not self.reviewer_id or not self.reviewer_id.strip()
             or not self.evidence_receipt or not self.evidence_receipt.strip()
         ):
@@ -84,7 +85,7 @@ def evaluate_offline(case: SafetyCase, evaluator: Evaluator, *,
                 or result.source_commit_sha != source_commit_sha):
             raise ValueError("evaluation provenance mismatch")
         return result
-    except (Exception):
+    except Exception:
         return SafetyResult(
             scenario_id=case.scenario_id,
             fixture_sha256=case.fixture_sha256,
