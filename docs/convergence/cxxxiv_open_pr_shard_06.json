@@ -1,0 +1,216 @@
+{
+  "schema": "kusanagi-cxxxiv-inventory-shard-v1",
+  "source": "GitHub PR metadata and changed-file APIs",
+  "snapshot_date": "2026-10-22 America/Chicago",
+  "total_open_prs_at_snapshot": 78,
+  "shard": 6,
+  "entries": [
+    {
+      "number": 56,
+      "title": "KUSANAGI LXVIII: fix Bayesian CI and enforce canonical Docker regression checks",
+      "base": "main",
+      "base_sha": "df0654390049118a142ec3b3356f0f40b4789fe4",
+      "head": "work/kusanagi-lxviii-repair-ci-release-guards",
+      "head_sha": "16a23725f5d206d1449f8dd2b5042440802347b5",
+      "draft": true,
+      "mergeable_observed": true,
+      "commits": 8,
+      "updated_at": "2026-10-17T01:32:08Z",
+      "changed_files": 5,
+      "paths": [
+        ".github/workflows/railway-image.yml",
+        "aurex/bayesian_evidence.py",
+        "docs/KUSANAGI_LXIII_SAVANT_BAYESIAN_MATH.md",
+        "docs/KUSANAGI_LXVIII_REPAIR_RELEASE.md",
+        "tests/test_bayesian_evidence.py"
+      ],
+      "disposition": "REVIEW_REQUIRED",
+      "verification": "NOT_VERIFIED"
+    },
+    {
+      "number": 51,
+      "title": "KUSANAGI LXIII: Savant-pattern and Bayesian evidence fusion Python foundation",
+      "base": "main",
+      "base_sha": "c41675fc0830be5f1b66e2f75782b139668b6cb3",
+      "head": "work/kusanagi-lxiii-bayesian-evidence-fusion",
+      "head_sha": "d63325620e0ef43beeb0ec6d9ad3417a9f899eb3",
+      "draft": true,
+      "mergeable_observed": true,
+      "commits": 3,
+      "updated_at": "2026-10-17T00:05:55Z",
+      "changed_files": 3,
+      "paths": [
+        "aurex/bayesian_evidence.py",
+        "docs/KUSANAGI_LXIII_SAVANT_BAYESIAN_MATH.md",
+        "tests/test_bayesian_evidence.py"
+      ],
+      "disposition": "REVIEW_REQUIRED",
+      "verification": "NOT_VERIFIED"
+    },
+    {
+      "number": 50,
+      "title": "KUSANAGI LXII: evidence-weighted 90% readiness gate (fail closed)",
+      "base": "main",
+      "base_sha": "c41675fc0830be5f1b66e2f75782b139668b6cb3",
+      "head": "work/kusanagi-lxii-evidence-weighted-readiness",
+      "head_sha": "20adaa1220a03ed41e30e8893331b1fcc37c60b7",
+      "draft": false,
+      "mergeable_observed": true,
+      "commits": 2,
+      "updated_at": "2026-10-16T23:40:11Z",
+      "changed_files": 2,
+      "paths": [
+        "aurex/readiness.py",
+        "tests/test_readiness.py"
+      ],
+      "disposition": "REVIEW_REQUIRED",
+      "verification": "NOT_VERIFIED"
+    },
+    {
+      "number": 45,
+      "title": "KUSANAGI LV — Measurable workflow gates and Chromebook alignment",
+      "base": "main",
+      "base_sha": "07549fefa363cc16866037e46eec2f8a7a9744f3",
+      "head": "work/kusanagi-lv-workflow-gates",
+      "head_sha": "e7d1292a9f343cbe9674b83751d5e75b151a23bf",
+      "draft": true,
+      "mergeable_observed": true,
+      "commits": 1,
+      "updated_at": "2026-10-16T03:54:56Z",
+      "changed_files": 1,
+      "paths": [
+        "docs/KUSANAGI_LV_WORKFLOW_GATES.md"
+      ],
+      "disposition": "REVIEW_REQUIRED",
+      "verification": "NOT_VERIFIED"
+    },
+    {
+      "number": 44,
+      "title": "KUSANAGI LII: fenced real offline probe and atomic evidence finalization",
+      "base": "main",
+      "base_sha": "07549fefa363cc16866037e46eec2f8a7a9744f3",
+      "head": "work/kusanagi-lii-fenced-recovery",
+      "head_sha": "a060ed300945a8dddb067dcbcee6e79e619471f2",
+      "draft": true,
+      "mergeable_observed": false,
+      "commits": 12,
+      "updated_at": "2026-10-16T04:01:32Z",
+      "changed_files": 8,
+      "paths": [
+        "aurex/api.py",
+        "aurex/database.py",
+        "aurex/evaluation_worker.py",
+        "aurex/fenced_worker.py",
+        "aurex/international_eval.py",
+        "aurex/real_offline_probe.py",
+        "aurex/sovereign_studio.py",
+        "tests/test_real_offline_probe.py"
+      ],
+      "disposition": "REVIEW_REQUIRED",
+      "verification": "NOT_VERIFIED"
+    },
+    {
+      "number": 43,
+      "title": "KUSANAGI LIII: staged AUREX platform integration and release gates",
+      "base": "main",
+      "base_sha": "07549fefa363cc16866037e46eec2f8a7a9744f3",
+      "head": "work/kusanagi-liii-platform-expansion",
+      "head_sha": "74f0d4bc970b60587b0135c685bc593b5e190294",
+      "draft": true,
+      "mergeable_observed": true,
+      "commits": 1,
+      "updated_at": "2026-10-16T03:37:57Z",
+      "changed_files": 1,
+      "paths": [
+        "docs/KUSANAGI_LIII_PLATFORM_EXPANSION.md"
+      ],
+      "disposition": "REVIEW_REQUIRED",
+      "verification": "NOT_VERIFIED"
+    },
+    {
+      "number": 42,
+      "title": "PALIMPSEST: bounded inert decoys and defensive IP hardening policy",
+      "base": "main",
+      "base_sha": "07549fefa363cc16866037e46eec2f8a7a9744f3",
+      "head": "work/palimpsest-defensive-hardening",
+      "head_sha": "b79cfbd6a36cba95bc1c8847d57f99d6d60c32f0",
+      "draft": true,
+      "mergeable_observed": true,
+      "commits": 2,
+      "updated_at": "2026-10-16T03:03:48Z",
+      "changed_files": 2,
+      "paths": [
+        "docs/PALIMPSEST.md",
+        "tools/palimpsest_decoys.py"
+      ],
+      "disposition": "REVIEW_REQUIRED",
+      "verification": "NOT_VERIFIED"
+    },
+    {
+      "number": 41,
+      "title": "KUSANAGI L: refreshed consolidation on policy-protected main",
+      "base": "main",
+      "base_sha": "07549fefa363cc16866037e46eec2f8a7a9744f3",
+      "head": "work/kusanagi-l-main-refresh",
+      "head_sha": "ac027699329cf0dac0216e0960d06d90394cb18a",
+      "draft": true,
+      "mergeable_observed": false,
+      "commits": 7,
+      "updated_at": "2026-10-16T02:33:32Z",
+      "changed_files": 5,
+      "paths": [
+        "aurex/api.py",
+        "aurex/database.py",
+        "aurex/real_offline_probe.py",
+        "aurex/sovereign_studio.py",
+        "tests/test_real_offline_probe.py"
+      ],
+      "disposition": "REVIEW_REQUIRED",
+      "verification": "NOT_VERIFIED"
+    },
+    {
+      "number": 39,
+      "title": "KUSANAGI L: mainline reconciliation of offline execution and Sovereign Studio",
+      "base": "main",
+      "base_sha": "62d67c7636c58359998268e8e73c853493fb56f8",
+      "head": "work/kusanagi-l-reconciled-mainline",
+      "head_sha": "0f6f4b8628ebd3b3d2c7bbda013946afc9bb2efe",
+      "draft": true,
+      "mergeable_observed": false,
+      "commits": 7,
+      "updated_at": "2026-10-16T02:17:44Z",
+      "changed_files": 6,
+      "paths": [
+        "aurex/api.py",
+        "aurex/database.py",
+        "aurex/real_offline_probe.py",
+        "aurex/sovereign_studio.py",
+        "docs/AGENT_MAINLINE_POLICY.md",
+        "tests/test_real_offline_probe.py"
+      ],
+      "disposition": "REVIEW_REQUIRED",
+      "verification": "NOT_VERIFIED"
+    },
+    {
+      "number": 38,
+      "title": "KUSANAGI XLIX: real gated SQLite probe behind authenticated API",
+      "base": "main",
+      "base_sha": "62d67c7636c58359998268e8e73c853493fb56f8",
+      "head": "work/kusanagi-xlix-real-offline-probe",
+      "head_sha": "56b611dcede433fd6d07d0c2ad93b53e3dd3ac01",
+      "draft": true,
+      "mergeable_observed": false,
+      "commits": 6,
+      "updated_at": "2026-10-16T02:12:50Z",
+      "changed_files": 4,
+      "paths": [
+        "aurex/api.py",
+        "aurex/database.py",
+        "aurex/real_offline_probe.py",
+        "tests/test_real_offline_probe.py"
+      ],
+      "disposition": "REVIEW_REQUIRED",
+      "verification": "NOT_VERIFIED"
+    }
+  ]
+}
