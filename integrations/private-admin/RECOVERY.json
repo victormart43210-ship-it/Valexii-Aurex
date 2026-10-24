@@ -1,0 +1,16 @@
+{
+  "operation": "AUREX private administrator access",
+  "checkpoint": 1,
+  "base_sha": "415dbab72fe00ad65be379979c0ee213059054b5",
+  "branch": "work/aurex-private-admin-candidate",
+  "checkpoint_identity": "Enclosing git commit; resolve remote branch and file history",
+  "completed": ["Fresh main inspected; isolated worktree created", "wg-easy v15.4.0 upstream configuration reviewed"],
+  "tests": "NOT RUN",
+  "deployment": "HOLD",
+  "host_access": "NOT VERIFIED",
+  "independent_review": "NOT RUN",
+  "next_actions": ["Implement offline Compose renderer with safe defaults and mutation tests", "Review generated config and host admission runbook", "Save verified source and open draft PR"],
+  "rollback": "No host changes; remove candidate branch artifacts only",
+  "remote_save": "NOT VERIFIED until branch readback",
+  "restrictions": ["No production changes", "No server access or new paid resources", "No AUREX secrets in VPN", "n3n and training deferred"]
+}
