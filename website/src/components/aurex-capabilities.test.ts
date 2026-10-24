@@ -64,6 +64,9 @@ describe("AUREX service adapter fails closed", () => {
     expect(
       (await checkAurexService({ url: "https://aurex.example.com", token: "short" })).state,
     ).toBe("NOT_CONFIGURED");
+    expect(
+      (await checkAurexService({ url: "https://aurex.example.com", token: "x".repeat(16) })).state,
+    ).toBe("NOT_CONFIGURED");
   });
   it("is OFFLINE on errors, bad status or malformed body", async () => {
     const env = { url: "https://aurex.example.com", token };
@@ -77,13 +80,51 @@ describe("AUREX service adapter fails closed", () => {
     expect((await checkAurexService(env, ok({}, 503))).state).toBe("OFFLINE");
     expect((await checkAurexService(env, ok({ status: "ok" }))).state).toBe("OFFLINE");
   });
-  it("is HEALTHY only with valid body, filtering bad capability ids", async () => {
-    const r = await checkAurexService(
-      { url: "https://aurex.example.com", token },
-      ok({ status: "ok", capabilities: ["memory-graph", "<x>", 3] }),
-    );
+  it("checks the documented routes and only connects evidence-backed capabilities", async () => {
+    const calls: string[] = [];
+    const fetcher = (async (input: URL, init: RequestInit) => {
+      calls.push(String(input));
+      expect(new Headers(init.headers).get("Authorization")).toBe("Bearer " + token);
+      const body =
+        input.pathname === "/v1/health"
+          ? { status: "ok", version: "0.1.0", time: new Date().toISOString() }
+          : input.pathname === "/v1/capabilities"
+            ? {
+                capabilities: [
+                  { id: "memory-graph", available: true, evidenceId: "ev-1", verifiedAt: null },
+                  { id: "evidence-vault", available: true, evidenceId: "ev-2", verifiedAt: null },
+                ],
+              }
+            : {
+                evidence: [
+                  {
+                    id: "ev-1",
+                    capabilityId: "memory-graph",
+                    kind: "test_run",
+                    collectedAt: new Date().toISOString(),
+                    sha256: "a".repeat(64),
+                    summary: "verified fixture",
+                  },
+                  {
+                    id: "ev-2",
+                    capabilityId: "evidence-vault",
+                    kind: "test_run",
+                    collectedAt: new Date(Date.now() - 8 * 86400_000).toISOString(),
+                    sha256: "b".repeat(64),
+                    summary: "expired fixture",
+                  },
+                ],
+              };
+      return new Response(JSON.stringify(body));
+    }) as unknown as typeof fetch;
+    const r = await checkAurexService({ url: "https://aurex.example.com", token }, fetcher);
     expect(r.state).toBe("HEALTHY");
     expect(r.checks.serviceCapabilities).toEqual(["memory-graph"]);
+    expect(calls).toEqual([
+      "https://aurex.example.com/v1/health",
+      "https://aurex.example.com/v1/capabilities",
+      "https://aurex.example.com/v1/evidence",
+    ]);
   });
 });
 
