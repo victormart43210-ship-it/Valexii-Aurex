@@ -1,0 +1,218 @@
+{
+  "schema": "kusanagi-cxxxiv-inventory-shard-v1",
+  "source": "GitHub PR metadata and changed-file APIs",
+  "snapshot_date": "2026-10-22 America/Chicago",
+  "total_open_prs_at_snapshot": 78,
+  "shard": 5,
+  "entries": [
+    {
+      "number": 76,
+      "title": "KUSANAGI LXXXII: capture AUREX/OX daily evidence and release gates",
+      "base": "main",
+      "base_sha": "df0654390049118a142ec3b3356f0f40b4789fe4",
+      "head": "docs/kusanagi-lxxxii-daily-evidence-ledger",
+      "head_sha": "2b1c57166eb55943c7216a21868bec6707a87f8a",
+      "draft": true,
+      "mergeable_observed": true,
+      "commits": 6,
+      "updated_at": "2026-10-17T21:48:08Z",
+      "changed_files": 5,
+      "paths": [
+        "docs/convergence/2026-10-17-LXXXV-IRON-CONNECTION.md",
+        "docs/convergence/2026-10-17.md",
+        "docs/convergence/TEMPLATE.md",
+        "docs/convergence/WORKFLOW_CAPTURE.md",
+        "docs/convergence/snapshots/2026-10-17.json"
+      ],
+      "disposition": "REVIEW_REQUIRED",
+      "verification": "NOT_VERIFIED"
+    },
+    {
+      "number": 73,
+      "title": "AUREX/OX: lock Speed, Altitude, Depth, Range outcome framework",
+      "base": "main",
+      "base_sha": "df0654390049118a142ec3b3356f0f40b4789fe4",
+      "head": "docs/kusanagi-four-dimensions-lock-20261017",
+      "head_sha": "aa95564e07ad9feb7edf4ea6d84acf298328c34d",
+      "draft": true,
+      "mergeable_observed": true,
+      "commits": 2,
+      "updated_at": "2026-10-17T15:27:17Z",
+      "changed_files": 1,
+      "paths": [
+        "docs/AUREX_OX_FOUR_DIMENSIONS_LOCK.md"
+      ],
+      "disposition": "REVIEW_REQUIRED",
+      "verification": "NOT_VERIFIED"
+    },
+    {
+      "number": 72,
+      "title": "KUSANAGI LXXVI — cross-bridge v1 contract replay and four integration gates",
+      "base": "main",
+      "base_sha": "df0654390049118a142ec3b3356f0f40b4789fe4",
+      "head": "fix/kusanagi-lxxvi-five-gate-contract",
+      "head_sha": "a490cbe820de7577b1767924998f81b3193d70a7",
+      "draft": true,
+      "mergeable_observed": true,
+      "commits": 12,
+      "updated_at": "2026-10-17T17:27:19Z",
+      "changed_files": 8,
+      "paths": [
+        ".github/workflows/railway-image.yml",
+        "aurex/api.py",
+        "docs/KUSANAGI_LXXVI_FOUR_GATE_BRIDGE.md",
+        "scripts/verify_live_bridge.py",
+        "tests/test_bridge_security_adversarial.py",
+        "tests/test_kusanagi_workflow.py",
+        "tests/test_website_bridge_contract_replay.py",
+        "website/docs/aurex-api/openapi.yaml"
+      ],
+      "disposition": "REVIEW_REQUIRED",
+      "verification": "NOT_VERIFIED"
+    },
+    {
+      "number": 70,
+      "title": "KUSANAGI 9.9: financial pilot evaluation and commercial target lock",
+      "base": "main",
+      "base_sha": "df0654390049118a142ec3b3356f0f40b4789fe4",
+      "head": "work/kusanagi-99-financial-commercial-proof",
+      "head_sha": "e17aaccc801060993fe1b1082a9d4deacc97b9da",
+      "draft": true,
+      "mergeable_observed": true,
+      "commits": 5,
+      "updated_at": "2026-10-17T07:46:36Z",
+      "changed_files": 5,
+      "paths": [
+        "aurex/commercial/__init__.py",
+        "aurex/commercial/pilot_gate.py",
+        "docs/FINANCIAL_9_9_TARGET_LOCK.md",
+        "scripts/check_financial_pilots.py",
+        "tests/test_financial_pilot_gate.py"
+      ],
+      "disposition": "REVIEW_REQUIRED",
+      "verification": "NOT_VERIFIED"
+    },
+    {
+      "number": 67,
+      "title": "KUSANAGI financial-engine convergence: source-only Chromebook preflight",
+      "base": "main",
+      "base_sha": "df0654390049118a142ec3b3356f0f40b4789fe4",
+      "head": "work/kusanagi-financial-source-convergence-intake",
+      "head_sha": "df7ff0911b80fef4767ddadafa9cd284b06c7a1f",
+      "draft": true,
+      "mergeable_observed": true,
+      "commits": 5,
+      "updated_at": "2026-10-17T07:24:34Z",
+      "changed_files": 3,
+      "paths": [
+        "docs/KUSANAGI_FINANCIAL_CONVERGENCE.md",
+        "scripts/financial_source_preflight.py",
+        "tests/test_financial_source_preflight.py"
+      ],
+      "disposition": "REVIEW_REQUIRED",
+      "verification": "NOT_VERIFIED"
+    },
+    {
+      "number": 66,
+      "title": "KUSANAGI LXXV: fail-closed IRON BRIDGE verifier security remediation",
+      "base": "main",
+      "base_sha": "df0654390049118a142ec3b3356f0f40b4789fe4",
+      "head": "fix/kusanagi-lxxv-bridge-contract-security",
+      "head_sha": "4550359ff623fac359a0a6ac468c90dea50c54b2",
+      "draft": true,
+      "mergeable_observed": true,
+      "commits": 3,
+      "updated_at": "2026-10-17T07:03:41Z",
+      "changed_files": 3,
+      "paths": [
+        "docs/KUSANAGI_LXXV_BRIDGE_REMEDIATION.md",
+        "scripts/verify_live_bridge.py",
+        "tests/test_bridge_security_adversarial.py"
+      ],
+      "disposition": "REVIEW_REQUIRED",
+      "verification": "NOT_VERIFIED"
+    },
+    {
+      "number": 63,
+      "title": "KUSANAGI LXXIII: offline persona-claim diagnostics and fail-closed challenger schema",
+      "base": "main",
+      "base_sha": "df0654390049118a142ec3b3356f0f40b4789fe4",
+      "head": "work/kusanagi-lxxiii-persona-boundary-and-challenger-hardening",
+      "head_sha": "5776763e8ecd3ff19517b75f6d3680cf69d8c26e",
+      "draft": true,
+      "mergeable_observed": true,
+      "commits": 2,
+      "updated_at": "2026-10-17T02:22:17Z",
+      "changed_files": 5,
+      "paths": [
+        "aurex/evals/persona_boundary.py",
+        "aurex/protocol/models.py",
+        "docs/KUSANAGI_LXXIII_PERSONA_BOUNDARY.md",
+        "tests/test_persona_authority_attacks.py",
+        "tests/test_persona_boundary.py"
+      ],
+      "disposition": "REVIEW_REQUIRED",
+      "verification": "NOT_VERIFIED"
+    },
+    {
+      "number": 62,
+      "title": "KUSANAGI LXXII: SHA-pinned offline CI fallback while GitHub-hosted runners fail",
+      "base": "main",
+      "base_sha": "df0654390049118a142ec3b3356f0f40b4789fe4",
+      "head": "work/kusanagi-lxxii-local-ci-fallback",
+      "head_sha": "1d138f32ffad8ef47adf7a9c10ca829ba82ac48b",
+      "draft": true,
+      "mergeable_observed": true,
+      "commits": 2,
+      "updated_at": "2026-10-18T19:32:34Z",
+      "changed_files": 3,
+      "paths": [
+        "docs/KUSANAGI_LXXII_LOCAL_CI_FALLBACK.md",
+        "scripts/offline_preflight.py",
+        "tests/test_offline_preflight.py"
+      ],
+      "disposition": "REVIEW_REQUIRED",
+      "verification": "NOT_VERIFIED"
+    },
+    {
+      "number": 61,
+      "title": "KUSANAGI LXXI: pin website-to-AUREX backend to prevent bearer-token exfiltration",
+      "base": "main",
+      "base_sha": "df0654390049118a142ec3b3356f0f40b4789fe4",
+      "head": "work/kusanagi-lxxi-website-bridge-egress-hardening",
+      "head_sha": "95f251c2f738024cc9dbea73e00695fea6bbdc2e",
+      "draft": true,
+      "mergeable_observed": true,
+      "commits": 2,
+      "updated_at": "2026-10-17T01:30:55Z",
+      "changed_files": 4,
+      "paths": [
+        "aurex/web_adapter.py",
+        "docs/KUSANAGI_LXXI_WEBSITE_EGRESS.md",
+        "pyproject.toml",
+        "tests/test_web_adapter.py"
+      ],
+      "disposition": "REVIEW_REQUIRED",
+      "verification": "NOT_VERIFIED"
+    },
+    {
+      "number": 60,
+      "title": "KUSANAGI LXX: fail-closed bearer authentication for malformed Unicode headers",
+      "base": "main",
+      "base_sha": "df0654390049118a142ec3b3356f0f40b4789fe4",
+      "head": "work/kusanagi-lxx-auth-boundary-safe-comparison",
+      "head_sha": "9df25362828e9afbddbf345c4dfe828998adb192",
+      "draft": true,
+      "mergeable_observed": true,
+      "commits": 2,
+      "updated_at": "2026-10-17T01:25:06Z",
+      "changed_files": 2,
+      "paths": [
+        "aurex/api.py",
+        "tests/test_authentication_boundary.py"
+      ],
+      "disposition": "REVIEW_REQUIRED",
+      "verification": "NOT_VERIFIED"
+    }
+  ]
+}

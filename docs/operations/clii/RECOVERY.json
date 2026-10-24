@@ -1,33 +1,39 @@
 {
   "operation": "KUSANAGI CLII",
-  "checkpoint": 2,
-  "utc": "2026-10-24T16:41:33.003495+00:00",
+  "checkpoint": 3,
+  "utc": "2026-10-24T17:43:30.999011+00:00",
   "repository": "victormart43210-ship-it/Valexii-Aurex",
   "branch": "work/kusanagi-cli-industrial-readiness-synthetic",
   "pr": 133,
-  "source_sha": "9b6095b978b8589039367784a7fb2baf117b2324",
-  "main_sha": "f2db438f0020dbd455bcb5c7b21b7352d133bf2c",
+  "source_sha": "abae7512e9acc91f5c5ce6c468bfc5dfe1a493ef",
+  "main_sha": "d31d93e1c2df78450f5eec05c702f4426e20980f",
   "checkpoint_identity": "Enclosing Git commit; resolve git log -1 --format=%H -- docs/operations/clii/RECOVERY.json",
   "completed": [
     "Refreshed PR133 and main",
     "PR133 CI40111954345, canonical image40111954359 and smoke40111954384 all PASS",
     "Canonical authenticated industrial endpoint with streamed 128-byte selector limit",
-    "Pinned towing/oilfield fixtures and malformed evidence type rejection"
+    "Pinned towing/oilfield fixtures and malformed evidence type rejection",
+    "Checked all recent merges; CLII CP002 now on main through PR134",
+    "Preserved concurrent PR133 security test file",
+    "Added shared frontend, default-off owner proxy and local process sandbox",
+    "Fixed missing foundation type annotations"
   ],
   "local_tests": {
-    "baseline": "316 passed, 1 skipped",
-    "endpoint": "21 passed",
-    "full": "337 passed, 1 skipped, 1 warning",
-    "ruff": "PASS",
-    "mypy": "PASS 69 files"
+    "main_baseline": "380 passed,1 skipped",
+    "main_ruff": "PASS",
+    "expanded_mypy_before": "FAIL 2 missing function annotations; fixed",
+    "expanded_mypy_after": "PASS80 files",
+    "website_tests": "150 passed",
+    "website_build": "PASS",
+    "browser_sandbox": "NOT RUN: browser install in progress"
   },
   "website_revision": "42731ae295377800fb81dd4cc8f1cadb21817750",
   "railway": "NOT VERIFIED this session; no mutations",
   "release": "HOLD",
   "next_actions": [
-    "Complete frontend contract tests and owner RPC",
-    "Exercise real local API via browser sandbox",
-    "Independent review and final regression"
+    "Run local browser/API acceptance",
+    "Fresh independent source/adversarial review",
+    "Final checkpoint and exact-head CI"
   ],
   "blockers": [
     "Canonical PR133 job API accepts only sqlite_roundtrip_v1; industrial persistence not integrated",
@@ -35,5 +41,5 @@
   ],
   "remote_save": "Read enclosing commit back after publication",
   "rollback": "Revert source changes; no deployment or migration",
-  "previous_checkpoint": "8f0d098c857b2ff77b3c05839008d6c83b8e064f"
+  "previous_checkpoint": "e6e9eac452d318cabbbdff53aee02d6d24c8474b"
 }
