@@ -69,3 +69,33 @@ Contract is a **proposal**, not a claim about Onyx's current API response. Map a
 - [ ] Operator explicitly approves staging activation
 
 References: https://github.com/onyx-dot-app/onyx ; https://github.com/onyx-dot-app/onyx/blob/main/LICENSE ; https://github.com/onyx-dot-app/onyx/blob/main/deployment/docker_compose/README.md
+
+## Existing retrieval convergence — repository inspection (2026-10-24)
+Inspected canonical `main` at `f2db438f0020dbd455bcb5c7b21b7352d133bf2c`. Do **not** replace or duplicate these existing capabilities:
+
+| Existing file | Observed behavior | Integration decision |
+| --- | --- | --- |
+| `aurex/governance_math/retrieval.py` | Deterministic, local $0 TF-IDF incident nearest-neighbor search; bounded corpus (1000), description (4096), query (512), deduplicated lineage; each match `CANDIDATE_ONLY_NOT_VERIFIED`. | **Retain** as local/offline incident baseline; no new embedding dependency. |
+| `aurex/governance_math/spine.py` | Read-only `retrieve → plan → test next` combining incident candidates with bounded remediation and information-gain probes. | **Retain** as advisory reasoning path; no automatic effects. |
+| `aurex/web_adapter.py` | Existing website/backend job adapter; not a document search index. | **Reuse existing API/auth conventions**, do not treat as retrieval evidence. |
+| `aurex/adapters/ollama.py` | Existing optional local model adapter. | Potential future embedding/inference provider only after separate benchmark; no automatic model download. |
+
+Search of default-branch code found **no confirmed ChromaDB, FAISS, or Deep Lake integration**. Absence in code search does not prove absence in other repositories, branches, or local worktrees. Audit those separately before adopting dependencies.
+
+### Unified retrieval contract (proposed)
+AUREX calls a single `RetrievalBroker` interface, not a chain of competing agents:
+- **local_incident**: existing TF-IDF `retrieve_incidents` for bounded, admitted incident records.
+- **onyx**: optional external search connector for owner-approved document sources; default disabled.
+- **deeplake**: **NOT ADOPTED**; evaluate only if Onyx's native hybrid index fails measured needs.
+- All sources produce candidate passages with `provider`, `source_id`, `source_uri`, `content_digest`, `retrieved_at`, `source_updated_at`, `access_scope`, `status=CANDIDATE_ONLY_NOT_VERIFIED`, and errors. Local incident matches keep existing immutable fields and are adapted without changing their public API.
+- Broker must never silently combine incompatible relevance scores. Rank within provider, dedupe by source digest and lineage, and expose provenance for independent qualification.
+- Validate allowlisted URI schemes/hosts, deny cross-tenant access, enforce size/query limits and timeouts, redact logs, and refuse external egress by default.
+- All retrieved text is untrusted input. **AUREX alone** determines admissibility; Brain Trust provides independent challenge; XAELI displays explanation. **Hermes deferred by operator**.
+
+### Implementation sequence
+1. Inventory other user-owned GitHub repositories and active PR branches for existing parsers, embeddings, vector indexes, hybrid search and source adapters. Do not claim the canonical-main search covers all of them.
+2. Freeze and test the normalized candidate schema against existing incident search, with no behavior changes.
+3. Add a **disabled** Onyx adapter behind explicit owner-only configuration; synthetic fixture tests only.
+4. Run baseline TF-IDF vs Onyx hybrid retrieval on the same synthetic documents, measure citation coverage, stale-source rejection, latency and resource cost.
+5. Admit a second vector store **only if** Onyx cannot meet measured requirements and licensing/security review approves.
+6. Preserve KUSANAGI CL timestamp/auth fixes and keep production HOLD. Never merge audit branches blindly.
