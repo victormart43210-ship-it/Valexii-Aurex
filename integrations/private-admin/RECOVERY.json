@@ -1,6 +1,6 @@
 {
   "operation": "AUREX private administrator access",
-  "checkpoint": 2,
+  "checkpoint": 3,
   "base_sha": "415dbab72fe00ad65be379979c0ee213059054b5",
   "branch": "work/aurex-private-admin-candidate",
   "checkpoint_identity": "Enclosing git commit; resolve remote branch and file history",
@@ -20,16 +20,16 @@
   },
   "deployment": "HOLD",
   "host_access": "NOT VERIFIED",
-  "independent_review": "IN PROGRESS: separate source-review subagent, not financial verification",
+  "independent_review": "Separate fresh-context source review executed; no draft blocker. Host and financial verification NOT RUN.",
   "next_actions": [
-    "Read separate source review and repair any important defects",
-    "Verify remote checkpoint and draft PR CI",
-    "Obtain host access/identity and complete admission checks before any activation"
+    "Review PR126 and exact-head CI",
+    "Verify intended Hetzner host/console and reviewed image digest without exposing credentials",
+    "Complete documented network/backup/revocation admission tests before activation"
   ],
   "rollback": "No host changes; remove candidate branch artifacts only",
   "remote_save": {
-    "checkpoint_001": "PASS c4273cc392723efb39198a56fa1962d5aeefe178",
-    "current": "NOT VERIFIED until branch readback"
+    "checkpoint_002": "PASS: dea2c6d7ccbbe9caacc84f72f29e25422cfe688c branch readback",
+    "current": "Read back enclosing commit after publication"
   },
   "restrictions": [
     "No production changes",
@@ -37,6 +37,11 @@
     "No AUREX secrets in VPN",
     "n3n and training deferred"
   ],
-  "utc": "2026-10-24T00:20:00.533500+00:00",
-  "source_sha": "c4273cc392723efb39198a56fa1962d5aeefe178"
+  "utc": "2026-10-24T00:20:51.478227+00:00",
+  "source_sha": "dea2c6d7ccbbe9caacc84f72f29e25422cfe688c",
+  "pr": 126,
+  "artifact_sha256": {
+    "integrations/private-admin/render.py": "592eedff942bcb6be7c0bb81540c55cb697e8ba858910d8c4b73cfe0142f3692",
+    "tests/test_private_admin_candidate.py": "51d2b5702176f5fa2e95f7fde4d77627b5db541b48b78f43df77085a0514abbe"
+  }
 }
