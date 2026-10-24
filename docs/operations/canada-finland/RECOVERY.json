@@ -1,6 +1,6 @@
 {
-  "checkpoint": 3,
-  "utc": "2026-10-24T12:12:48.377825+00:00",
+  "checkpoint": 4,
+  "utc": "2026-10-24T12:14:43.920288+00:00",
   "branch": "work/aurex-canada-finland-integration",
   "base_sha": "2ce2f654b0d5d1f21786dd587d9137d77695f420",
   "main_sha": "415dbab72fe00ad65be379979c0ee213059054b5",
@@ -31,7 +31,8 @@
   "remote_save": {
     "checkpoint_001": "PASS: 177df63bc9af89b4a8fd30183bc223af48bb7e32 read back",
     "checkpoint_002": "PASS: 927ea8bbaf437331410049e74b4214e27a08e16c read back",
-    "current": "Resolve enclosing commit and read branch back after publication"
+    "current": "Resolve enclosing commit and read branch back after publication",
+    "checkpoint_003": "PASS: 25bb475514ac905311832fc5556096c66af633c0 read back"
   },
   "next_actions": [
     "Read fresh reviewer report and exact final GitHub checks",
@@ -40,11 +41,12 @@
   ],
   "blockers": [
     "Railway storage isolation and live website owner flow remain NOT VERIFIED",
-    "No Archivematica instance or Tailscale tailnet credentials available"
+    "No Archivematica instance or Tailscale tailnet credentials available",
+    "Main advanced to f2db438f0020dbd455bcb5c7b21b7352d133bf2c; diverges from CXXXII base (main ahead6/behind31). PR127 remains stacked on PR119 to preserve financial dependencies. No merge performed."
   ],
   "rollback": "No infrastructure changes; discard isolated branch",
   "pr": 127,
-  "previous_checkpoint": "927ea8bbaf437331410049e74b4214e27a08e16c",
+  "previous_checkpoint": "25bb475514ac905311832fc5556096c66af633c0",
   "source_sha": "927ea8bbaf437331410049e74b4214e27a08e16c",
   "source_review": "PASS: fresh agent reviewed CP002 equivalent local tree; REVIEW.md",
   "deferred_minors": [
@@ -66,5 +68,6 @@
     "docs/operations/canada-finland/NEXT_AGENT.md",
     "docs/operations/canada-finland/LOCAL_EXPORT_EVIDENCE.json",
     "docs/operations/canada-finland/LOCAL_SYNTHETIC_RECEIPT.json"
-  ]
+  ],
+  "latest_observed_main_sha": "f2db438f0020dbd455bcb5c7b21b7352d133bf2c"
 }
