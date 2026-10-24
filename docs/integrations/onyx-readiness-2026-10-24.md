@@ -165,3 +165,30 @@ This is a proposed boundary envelope, **not an existing API contract**.
 
 ### Integration acceptance
 Freeze the contracts, identify BCXMET private boundary owners, compare against current CL timestamp regression fix, run exact-SHA tests and independent adversarial review. Public repository receives **interfaces and synthetic fixtures only**; private BCXMET code remains private. No merge or deployment without explicit authorization.
+
+
+## OPERATOR ARCHITECTURE DECISION LOCK — 2026-10-24
+
+**Decision:** Preserve the unified BCXMET/AUREX evidence-governed investigation architecture as the approved **design baseline** for subsequent implementation. This lock is a documented product/engineering direction, **not** an independently verified implementation, an approved merge, or a production release.
+
+### Locked design
+1. Single canonical AUREX backend and existing BCXMET authority boundary; no parallel production stack.
+2. XAELI is the user interface and explanation layer; BCXMET Home uses **NOW → CHANGED → NEXT → WHY → PROOF**.
+3. Existing bounded local TF-IDF retrieval remains the free/offline baseline. Onyx is a candidate **optional retrieval provider**, not an authority.
+4. AUREX research spine **retrieve → plan → test next** is an advisory subroutine within the BCXMET UnifiedReasoningSpine; it cannot execute effects.
+5. **Evidence → Qualification → Reality → Authority → Effect** is non-negotiable. AUREX may challenge evidence but **cannot grant BCXMET runtime authority**.
+6. Brain Trust independently challenges claims and exposes disagreement; neither agreement nor LLM self-review substitutes for independent evidence.
+7. Product policy, current lease/freshness/revocation, Sentinel/CUSTOS demote-only oversight, and no-self-witness remain in force.
+8. Orb/comet animations remain presentation-only with **ORB MOTION AUTHORITY = NONE**.
+9. **Hermes and Deep Lake are DEFERRED**; no installation, dependency, spending, deployment, or activation without new explicit operator approval.
+10. No production release, paid external inference, or merge is authorized by this lock. Default $0 external inference budget and release HOLD remain.
+
+### Verification targets (NOT MEASURED)
+- End-to-end synthetic investigation with cited source, explicit unknowns, independent challenge, reverse ROTAS audit, and fail-closed authority.
+- Retrieval quality, provenance/citation coverage, stale/revoked evidence rejection, adversarial prompt injection, latency, cost, and regression metrics.
+- Reproduce exact-SHA CI and independent tests before any readiness claim.
+
+### Qualitative assessment context
+Earlier 9.2/10 architecture and 6.5/10 implementation scores were **subjective estimates**, not benchmark results or certifications. Do not treat them as admission evidence.
+
+**Change control:** Modifications to this design baseline require an explicit versioned decision. Production authority remains separately controlled.
