@@ -125,3 +125,12 @@ def test_future_ed25519_attestation_stays_on_hold(monkeypatch: pytest.MonkeyPatc
         run_complete=True,
     )
     assert decision.status is ResultStatus.HOLD
+
+
+def test_kusanagi_xvi_backend_entrypoint_route_reconciliation() -> None:
+    from integrations.kusanagi_xvi.backend.app import app as staging_app
+    routes = [r.path for r in staging_app.routes]
+    assert "/v1/health" in routes
+    assert "/v1/capabilities" in routes
+    assert "/v1/industrial-audit/readiness" in routes
+    assert "/v1/industrial/audit/demo" in routes

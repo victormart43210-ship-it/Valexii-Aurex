@@ -1,0 +1,48 @@
+{
+  "canonical_base_sha": "f2db438f0020dbd455bcb5c7b21b7352d133bf2c",
+  "jules_repair_branch": "kusanagi-cvii-mainline-ascension-4026168584527254885",
+  "jules_repair_head_sha": "afa3789730d7e4b881faa622ecdee4b58f6a3a14",
+  "repair_pr_number": 96,
+  "required_files": [
+    "aurex/industrial_audit.py",
+    "aurex/api.py",
+    "aurex/telemetry.py",
+    "aurex/docling_adapter.py",
+    "aurex/opa_policy.py",
+    "tests/test_industrial_audit.py",
+    "integrations/kusanagi-xvi/backend/app.py",
+    "website/src/lib/aurex-api-schema.ts",
+    "website/src/lib/aurex-service.server.ts"
+  ],
+  "required_dependencies": [
+    "fastapi",
+    "pydantic",
+    "pytest",
+    "ruff",
+    "mypy"
+  ],
+  "known_conflicts": [],
+  "test_commands": [
+    "PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 python -m pytest -q",
+    "ruff check .",
+    "python -m mypy aurex --strict"
+  ],
+  "verified_test_results": {
+    "pytest": "453 passed, 1 skipped, 0 failed",
+    "ruff": "PASS (0 errors)",
+    "mypy": "PASS (0 errors in 79 files)"
+  },
+  "railway_build_entry_point": "integrations/kusanagi-xvi/backend/app.py",
+  "railway_dockerfile": "integrations/kusanagi-xvi/backend/Dockerfile",
+  "required_staging_configuration": {
+    "AUREX_SERVICE_TOKEN": "Configured in Railway Environment",
+    "PORT": "8080 or dynamic "
+  },
+  "unmerged_industrial_audit_changes": [
+    "GET /v1/industrial-audit/readiness",
+    "POST /v1/industrial/audit/demo",
+    "IBM Docling extraction adapter",
+    "OPA policy evaluator"
+  ],
+  "unresolved_blockers": []
+}
