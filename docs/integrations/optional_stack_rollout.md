@@ -24,9 +24,11 @@ These are source snapshots, not verified dependency versions or approved supply-
 - Isolated resource-limited process, bounded synthetic documents, no network by default.
 - Reject oversize/unsafe files; persist source hashes and parser version.
 
-## Phase D: Hatchet (NOT IMPLEMENTED)
-- Compare existing durable SQLite queue semantics before considering replacement.
-- Avoid two concurrent authorities over the same job.
+## Phase D: Hatchet — DEFERRED
+- Do not install, deploy, or run Hatchet in AUREX.
+- Adapt useful design patterns only: idempotency keys, bounded retries with backoff, concurrency caps, cancellation and durable receipts.
+- Existing SQLite queue remains the sole job engine; any pattern implementation must undergo compatibility review and tests.
+- Upstream references: https://docs.hatchet.run/v1/idempotency.md and https://docs.hatchet.run/v1/retry-policies.md.
 
 ## Acceptance gates
 1. Unit tests pass locally and CI; no inferred PASS.
