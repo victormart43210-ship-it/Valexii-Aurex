@@ -20,6 +20,7 @@ from aurex.database import (
     list_jobs,
 )
 from aurex.fenced_worker import cancel_job, claim_job, finalize_job
+from aurex.governance_math.industrial_api import router as industrial_demo_router
 from aurex.governance_math.research_api import router as research_advice_router
 from aurex.integrations.pilot_policy import review_synthetic_pilot
 from aurex.real_offline_probe import execute_sqlite_roundtrip
@@ -75,6 +76,7 @@ def authenticate(authorization: str | None = Header(default=None)) -> str:
 
 # Opt-in, authenticated, advisory-only mathematics; no capability or authority claims.
 app.include_router(research_advice_router, dependencies=[Depends(authenticate)])
+app.include_router(industrial_demo_router, dependencies=[Depends(authenticate)])
 
 
 class JobCreateRequest(BaseModel):

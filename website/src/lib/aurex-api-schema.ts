@@ -93,7 +93,7 @@ export function evidenceFresh(
 ): boolean {
   if (!e) return false;
   const t = Date.parse(e.collectedAt);
-  return Number.isFinite(t) && t <= now + 60_000 && now - t <= maxAgeMs;
+  return Number.isFinite(t) && t <= now && now - t <= maxAgeMs;
 }
 
 /** A capability is evidence-backed only if available, linked to fresh evidence for the same capability. */

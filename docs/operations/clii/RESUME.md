@@ -1,0 +1,8 @@
+# CLII execution ledger and resume
+User handoff is the specification. Continue PR133, never merge or publish without explicit session authorization.
+Local isolated worktree clii; remote branch work/kusanagi-cli-industrial-readiness-synthetic. Base 9b6095b978b8589039367784a7fb2baf117b2324.
+Owned files: industrial_readiness.py, industrial_demo.py, canonical api.py, new industrial router, tests/test_clii*, website industrial component/adapter/tests and docs/operations/clii. No parallel implementation writers; one fresh reviewer after implementation.
+Ruling: extend PR133 as explicitly requested rather than fork unrelated main implementation. Cost: preserve branch dependency until authorized integration.
+Ruling: initial endpoint stateless, as user explicitly permits when persistence is not safely integrated. Existing canonical job/worker path accepts only sqlite_roundtrip_v1, and recovered CXXXII receipt worker is not in this branch. Do not duplicate database/schema/receipt authority. Cost: end-to-end database acceptance remains NOT VERIFIED.
+Plan: baseline CI/local tests; malformed-input negatives; fixed towing then oilfield fixture; authenticated bounded endpoint returning NOW/CHANGED/NEXT/WHY/PROOF; temporary local process sandbox; server-only owner/origin-gated website proxy and existing-style component; adversarial review; checkpoint.
+Production and live website unchanged. No paid models, real records, credentials in source, regulatory certification, merge or publication. No independent financial authority.
