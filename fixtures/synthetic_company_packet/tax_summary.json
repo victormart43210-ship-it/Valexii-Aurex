@@ -1,0 +1,8 @@
+{
+  "company_id": "fictional_northstar_001",
+  "id": "TAX-1001",
+  "period": "2026-09",
+  "reported_expense_usd": "42000.00",
+  "tax_jurisdiction": "US_SYNTHETIC",
+  "type": "tax_summary"
+}
