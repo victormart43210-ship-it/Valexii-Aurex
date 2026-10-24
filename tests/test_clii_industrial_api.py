@@ -25,6 +25,30 @@ def call(client, body='{"fixture":"towing_v1"}', **kwargs):
                                 'Content-Type': 'application/json'}, **kwargs)
 
 
+def test_readiness_requires_authentication(client):
+    assert client.get('/v1/industrial-audit/readiness').status_code == 401
+
+
+def test_readiness_fails_closed_until_tenant_and_receipt_controls_exist(client):
+    response = client.get(
+        '/v1/industrial-audit/readiness',
+        headers={'Authorization': 'Bearer ' + TOKEN},
+    )
+    assert response.status_code == 503
+    assert response.headers['cache-control'] == 'no-store'
+    body = response.json()
+    assert body['status'] == 'NOT_VERIFIED'
+    assert body['authority'] == 'ADVISORY_ONLY_NO_CERTIFICATION'
+    assert {item['control'] for item in body['now']} == {
+        'tenant_mapping', 'tenant_scoped_persistence', 'receipt_verification',
+    }
+    assert {item['control'] for item in body['next']} == {
+        'tenant_mapping', 'tenant_scoped_persistence', 'receipt_verification',
+    }
+    assert body['changed'] == 'NOT_VERIFIED_NO_PRIOR_SNAPSHOT'
+    assert body['proof']['status'] == 'NOT_VERIFIED'
+
+
 def test_authenticated_demo_is_deterministic_and_advisory(client):
     first, second = call(client), call(client)
     assert first.status_code == 200

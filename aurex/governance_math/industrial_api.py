@@ -21,6 +21,29 @@ def unique_object(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
     return result
 
 
+@router.get('/v1/industrial-audit/readiness')
+async def industrial_readiness(response: Response) -> dict[str, object]:
+    response.status_code = 503
+    response.headers['Cache-Control'] = 'no-store'
+    response.headers['X-Content-Type-Options'] = 'nosniff'
+    controls = ('tenant_mapping', 'tenant_scoped_persistence', 'receipt_verification')
+    return {
+        'status': 'NOT_VERIFIED',
+        'authority': 'ADVISORY_ONLY_NO_CERTIFICATION',
+        'now': [{'control': control, 'status': 'NOT_VERIFIED'} for control in controls],
+        'changed': 'NOT_VERIFIED_NO_PRIOR_SNAPSHOT',
+        'next': [
+            {'control': control, 'action': 'IMPLEMENT_AND_INDEPENDENTLY_VERIFY'}
+            for control in controls
+        ],
+        'why': 'Tenant mapping, tenant-scoped persistence, and evidence receipt verification are not established.',
+        'proof': {
+            'status': 'NOT_VERIFIED',
+            'reason': 'No independently verified tenant-scoped evidence receipt is available.',
+        },
+    }
+
+
 @router.post('/v1/industrial/audit/demo')
 async def industrial_demo(request: Request, response: Response) -> dict[str, object]:
     if (os.environ.get('AUREX_ENABLE_INDUSTRIAL_DEMO') != '1'
