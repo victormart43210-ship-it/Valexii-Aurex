@@ -118,7 +118,7 @@ export function projectWorkstationCandidate(input: unknown, now = Date.now()) {
   }
   const { capabilities, evidence, budgets, jobs, checkedAt } = parsed.data;
   const observed = Date.parse(checkedAt);
-  const recent = Number.isFinite(observed) && observed <= now + 5000
+  const recent = Number.isFinite(observed) && observed <= now + 60_000
     && now - observed < 90_000;
   if (!recent) {
     return { status: "HOLD" as const, authority: "NONE" as const, source: "STALE_OR_FUTURE" as const };

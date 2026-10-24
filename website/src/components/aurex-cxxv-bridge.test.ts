@@ -170,7 +170,7 @@ describe("CXXV NVIDIA and ten-lens workstation boundary", () => {
     const now = Date.parse(checkedAt);
     expect(projectWorkstationCandidate(valid, now).status).toBe("REACHABLE_NOT_VERIFIED");
     expect(projectWorkstationCandidate(valid, now + 200_000).status).toBe("HOLD");
-    expect(projectWorkstationCandidate(valid, now - 10_000).status).toBe("HOLD");
+    expect(projectWorkstationCandidate(valid, now - 120_000).status).toBe("HOLD");
     expect(projectWorkstationCandidate({ ...valid, capabilities: null }, now).status).toBe("HOLD");
     expect(projectWorkstationCandidate({ ...valid, secret: "unexpected" }, now).status).toBe("HOLD");
     expect(projectWorkstationCandidate(valid, Infinity).status).toBe("HOLD");

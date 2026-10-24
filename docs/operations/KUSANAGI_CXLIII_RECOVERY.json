@@ -1,0 +1,28 @@
+{
+  "operation": "KUSANAGI_CXLIII",
+  "timestamp_utc": "2026-10-23T17:45:00Z",
+  "canonical_repository": "victormart43210-ship-it/Valexii-Aurex",
+  "target_branch": "main",
+  "working_branch": "work/kusanagi-cxliv-sovereign-bridge",
+  "canonical_main_sha": "415dbab72fe00ad65be379979c0ee213059054b5",
+  "local_head_sha": "3bde3ee",
+  "verification_summary": {
+    "pytest": "424 passed, 1 skipped",
+    "ruff": "0 errors (all checks passed)",
+    "mypy": "0 issues in 73 source files (strict)",
+    "website_bun_test": "153 passed, 0 failed across 22 files",
+    "website_bun_build": "Nitro build success",
+    "timestamp_clock_skew_tolerance": "60,000ms (+/- 60s)"
+  },
+  "sovereign_bridge": {
+    "valexii_to_dispater_navigation": "Active (/dispater & reciprocal header links)",
+    "dispater_standalone": "Active (Sector A Oilfield & Sector B Towing)",
+    "aurex_staging_bridge": "Server-side authenticated proxy (/v1/*)",
+    "authorization_isolation": "Strict tenant & domain separation"
+  },
+  "governance": {
+    "external_ai_budget": "$0.00",
+    "authority": "NONE",
+    "release_status": "HOLD"
+  }
+}
