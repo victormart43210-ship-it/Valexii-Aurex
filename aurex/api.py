@@ -20,15 +20,21 @@ from aurex.database import (
     list_jobs,
 )
 from aurex.fenced_worker import cancel_job, claim_job, finalize_job
+from aurex.governance_math.industrial_api import router as industrial_demo_router
 from aurex.governance_math.research_api import router as research_advice_router
+from aurex.integrations.pilot_policy import review_synthetic_pilot
 from aurex.real_offline_probe import execute_sqlite_roundtrip
 from aurex.workflows.budget import BudgetGuard
+from aurex_foundation.correlation import CorrelationMiddleware
+from aurex_foundation.opa import evaluate_policy
 
 app = FastAPI(
     title="VALEXII-AUREX",
     version="0.1.0a1",
     description="External evidence and challenge engine. AUREX never grants product authority.",
 )
+
+app.add_middleware(CorrelationMiddleware)
 
 budget_guard = BudgetGuard(limit_usd=Decimal("0.00"))
 
@@ -70,6 +76,7 @@ def authenticate(authorization: str | None = Header(default=None)) -> str:
 
 # Opt-in, authenticated, advisory-only mathematics; no capability or authority claims.
 app.include_router(research_advice_router, dependencies=[Depends(authenticate)])
+app.include_router(industrial_demo_router, dependencies=[Depends(authenticate)])
 
 
 class JobCreateRequest(BaseModel):
@@ -227,6 +234,31 @@ def create_job_endpoint(
         raise HTTPException(status_code=422, detail="Unsupported probe")
     if not idempotency_key or len(idempotency_key) > 128:
         raise HTTPException(status_code=422, detail="Idempotency-Key required")
+    if os.environ.get("AUREX_OPA_PILOT_ENABLED") == "1":
+        if os.environ.get("AUREX_OPA_OPERATOR_APPROVED") != "1":
+            raise HTTPException(status_code=503, detail="Policy approval required")
+
+        if os.environ.get("AUREX_OPA_SYNTHETIC_ONLY") != "1":
+            raise HTTPException(status_code=503, detail="Synthetic-only policy gate required")
+
+        policy = evaluate_policy({
+            "kind": canonical_kind,
+            "synthetic": True,
+            "probe": "sqlite_roundtrip_v1",
+            "max_cost_usd": 0,
+        })
+
+        decision = review_synthetic_pilot(
+            synthetic=True,
+            explicit_operator_approval=True,
+            policy_response={
+                "result": {"allow": policy.disposition == "QUALIFIED"}
+            },
+        )
+
+        if not decision.permitted_for_review:
+            raise HTTPException(status_code=503, detail="Policy review HOLD")
+
     try:
         job = create_job(
             DEFAULT_DB_PATH, f"job-{secrets.token_hex(12)}", canonical_kind,
