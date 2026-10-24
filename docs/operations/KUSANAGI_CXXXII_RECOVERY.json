@@ -1,0 +1,175 @@
+{
+  "operation": "KUSANAGI CXXXII",
+  "checkpoint": 8,
+  "utc": "2026-10-24T00:09:37.824122+00:00",
+  "branch": "work/kusanagi-cxxxii-sovereign-activation",
+  "source_sha": "5896153b04702e3844a2edf1c2e56e3515e91919",
+  "checkpoint_sha_rule": "Enclosing Git commit is checkpoint identity; source_sha is inspected parent. Resolve git log -1 --format=%H -- this file.",
+  "pr": 119,
+  "completed": [
+    "Merged concurrent CP005 strict schema guards without overwriting work",
+    "Actual backend.app selects canonical runtime only with staging opt-in",
+    "Supervised HTTP financial audit, persisted receipt, restart replay and killed worker shutdown tested",
+    "Legacy CXXVIII modules preserved; canonical database refuses legacy schema",
+    "TypeScript server adapter reproduces Python persisted receipt digest",
+    "TypeScript adapter submitted and retrieved real local supervised worker audit over HTTP",
+    "Default-off owner/origin-gated RPC and separate staging UI source added; mount patch prepared against current Lovable revision",
+    "Full repository Ruff repaired recovered legacy formatting",
+    "Preserved concurrent CI python -m pytest repair at 5896153",
+    "Strict financial adapter rejects malformed enum types even with recomputed digest",
+    "Verifier test loads by path without requiring scripts package"
+  ],
+  "tests": [
+    {
+      "command": "pytest -q",
+      "result": "PASS: 478 passed, 1 skipped, 1 warning in 12.42s; includes TypeScript-to-supervised-backend HTTP audit"
+    },
+    {
+      "command": "node --experimental-strip-types --test website/tests/cxxxii-financial.test.ts",
+      "result": "PASS: 6 tests"
+    },
+    {
+      "command": "ruff check .",
+      "result": "PASS"
+    },
+    {
+      "command": "mypy aurex",
+      "result": "PASS:77 source files"
+    },
+    {
+      "command": "esbuild touched UI/RPC transpile",
+      "result": "PASS syntax only; NOT full typecheck/build"
+    },
+    {
+      "command": "CP006 GitHub CI",
+      "result": "FAIL: full Ruff legacy agent formatting; repaired locally"
+    },
+    {
+      "command": "CP006 canonical image + independent runner smoke workflows",
+      "result": "PASS: workflow conclusions; not independent financial review"
+    },
+    {
+      "command": "focused staging runtime pytest",
+      "result": "PASS: 4 passed in 5.73s"
+    },
+    {
+      "command": "Node financial adapter tests",
+      "result": "PASS: 8 passed"
+    },
+    {
+      "command": "CP007 staging image workflow 39911680793",
+      "result": "PASS: Docker build, non-root boot, HTTP adapter receipt and volume restart"
+    }
+  ],
+  "railway": {
+    "service": {
+      "id": "2b51dfe6-2175-4cb0-aac2-eb40ecbc3a1d",
+      "name": "aurex-api"
+    },
+    "environment": {
+      "id": "98c103eb-a1af-46b6-948e-19c80e4d720d",
+      "name": "aurex-staging"
+    },
+    "config": {
+      "source": {
+        "repo": "victormart43210-ship-it/Valexii-Aurex",
+        "branch": "work/kusanagi-xxiv-cxxviii-convergence",
+        "commitSha": "d22e06e9412a07e06ab8bd597e0e5ebf5b8c125c",
+        "rootDirectory": "/integrations/kusanagi-xvi/backend"
+      },
+      "networking": {
+        "serviceDomains": {
+          "aurex-api-aurex-staging.up.railway.app": {}
+        }
+      },
+      "build": {
+        "builder": "DOCKERFILE",
+        "buildEnvironment": "V3",
+        "dockerfilePath": "Dockerfile"
+      },
+      "deploy": {
+        "restartPolicyMaxRetries": 3,
+        "useLegacyStacker": false,
+        "ipv6EgressEnabled": false,
+        "runtime": "V2",
+        "multiRegionConfig": {
+          "sfo": {
+            "numReplicas": 1
+          }
+        }
+      },
+      "volumeMounts": {
+        "4d23b1e6-3625-4def-aa97-82e10859f04d": {
+          "mountPath": "/data"
+        }
+      }
+    },
+    "variableNames": [
+      "AUREX_DB_PATH",
+      "AUREX_ENABLE_OFFLINE_LAB",
+      "AUREX_LLM_ALLOW_BILLING",
+      "AUREX_LLM_ENABLED",
+      "AUREX_OBSERVER_ENABLED",
+      "AUREX_REQUIRED_VOLUME",
+      "AUREX_SERVICE_TOKEN",
+      "AUREX_STAGING_PERSISTENCE_PROBE",
+      "RAILWAY_RUN_UID"
+    ],
+    "staged": null
+  },
+  "website_revision": "5b6caa16ee506ac57120cb693e2d04c637cb1a73",
+  "security": [
+    "Actual storage instance isolation NOT VERIFIED",
+    "No production, real financial data, paid inference or main merge authorized"
+  ],
+  "next_actions": [
+    "Read latest exact-head CI; preserve concurrent work",
+    "Resolve Lovable INVALID_ARGUMENT and apply narrow existing-workbench patch then run full website checks",
+    "Verify Railway backing storage instances and backup before deployment"
+  ],
+  "rollback": "No infrastructure changes; staging d22e06e9412a07e06ab8bd597e0e5ebf5b8c125c unchanged",
+  "release": "HOLD",
+  "remote_save": {
+    "checkpoint_007": "PASS: 2c6a638a5beba8035c96f2474ed3abbf308c7594 read back",
+    "current": "Read back enclosing commit after publication"
+  },
+  "independent_review": "NOT RUN",
+  "credit_operations": [
+    {
+      "service": "Lovable",
+      "attempts": 3,
+      "result": "FAIL INVALID_ARGUMENT, no task ID",
+      "cost": "NOT VERIFIED: no cost returned"
+    }
+  ],
+  "blockers": [
+    "Railway actual storage instance isolation and backups NOT VERIFIED",
+    "Docker build NOT RUN: Docker unavailable",
+    "Independent review NOT RUN",
+    "Lovable send_message rejects INVALID_ARGUMENT; live UI unchanged",
+    "Full website typecheck/build and browser owner flow NOT RUN",
+    "New Dockerfile.cxxxii CI added, execution NOT RUN until remote workflow"
+  ],
+  "modified_files": [
+    "Dockerfile.cxxxii",
+    "aurex/staging_runtime.py",
+    "docs/verification/KUSANAGI_CXXXI_CONTRACT_MATRIX.md",
+    "integrations/kusanagi-xvi/backend/Dockerfile",
+    "integrations/kusanagi-xvi/backend/agent.py",
+    "integrations/kusanagi-xvi/backend/app.py",
+    "integrations/kusanagi-xvi/backend/boot.py",
+    "integrations/kusanagi-xvi/backend/entrypoint.sh",
+    "integrations/kusanagi-xvi/backend/evaluation_science.py",
+    "integrations/kusanagi-xvi/backend/evidence_science.py",
+    "integrations/kusanagi-xvi/backend/lab.py",
+    "integrations/kusanagi-xvi/backend/llm.py",
+    "integrations/kusanagi-xvi/backend/nvidia_research.py",
+    "integrations/kusanagi-xvi/backend/qa_probe.py",
+    "integrations/kusanagi-xvi/backend/requirements.txt",
+    "integrations/kusanagi-xvi/backend/research_api.py",
+    "integrations/kusanagi-xvi/backend/staging_probe.py",
+    "integrations/kusanagi-xvi/backend/supervisor.py",
+    "tests/test_cxxviii_unix_worker_labs.py",
+    "tests/test_cxxxii_staging_runtime.py"
+  ]
+}

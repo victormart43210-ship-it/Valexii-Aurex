@@ -1,0 +1,12 @@
+import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
+import { financialRequest } from '../src/lib/aurex-financial.server.ts';
+const local = process.argv[2];
+const file = process.argv[3];
+assert.ok(local && /^http:\/\/127\.0\.0\.1:[0-9]+$/.test(local) && file);
+const prior = JSON.parse(readFileSync(file, 'utf8'));
+const cfg = { enabled: 'true', url: 'https://aurex-api-aurex-staging.up.railway.app', token: 'z'.repeat(40) };
+const result = await financialRequest(cfg, prior.jobId, (url, init) => fetch(local + url.slice(cfg.url.length), init));
+assert.equal(result.state, 'STAGING_EXECUTION');
+assert.equal(result.receipt?.sha256, prior.sha256);
+console.log('PASS: persisted receipt retrieved and recomputed after container restart');

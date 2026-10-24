@@ -1,0 +1,42 @@
+name: CXXXII staging image offline integration
+on:
+  pull_request:
+    paths:
+      - Dockerfile.cxxxii
+      - aurex/**
+      - integrations/kusanagi-xvi/backend/**
+      - website/src/lib/aurex-financial.server.ts
+      - website/tests/cxxxii-*
+      - .github/workflows/cxxxii-staging-image.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  synthetic-container:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - run: docker build -f Dockerfile.cxxxii -t aurex-cxxxii:ci .
+      - name: Boot, worker, TypeScript receipt and restart on disposable volume
+        shell: bash
+        run: |
+          set -euo pipefail
+          docker volume create cxxxii-ci
+          trap 'docker logs cxxxii-ci; docker rm -f cxxxii-ci; docker volume rm cxxxii-ci' EXIT
+          docker run -d --name cxxxii-ci -p 18081:8080 -v cxxxii-ci:/data \
+            -e PORT=8080 -e RAILWAY_ENVIRONMENT_NAME=aurex-staging \
+            -e AUREX_REQUIRED_VOLUME=true -e AUREX_ENABLE_SYNTHETIC_FIELD_AUDIT=1 \
+            -e AUREX_SERVICE_TOKEN=zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz aurex-cxxxii:ci
+          for i in $(seq 1 30); do
+            if curl -fsS -H 'Authorization: Bearer zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz' http://127.0.0.1:18081/v1/health; then break; fi
+            sleep 1
+          done
+          docker exec cxxxii-ci python -c 'from pathlib import Path; s=Path("/proc/1/status").read_text(); assert "Uid:\t10001\t10001\t10001\t10001" in s'
+          node --experimental-strip-types website/tests/cxxxii-live-adapter.ts http://127.0.0.1:18081 > /tmp/cxxxii-container-proof.json
+          docker restart cxxxii-ci
+          sleep 3
+          node --experimental-strip-types website/tests/cxxxii-restart-adapter.ts http://127.0.0.1:18081 /tmp/cxxxii-container-proof.json

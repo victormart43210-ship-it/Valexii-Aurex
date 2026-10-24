@@ -1,0 +1,19 @@
+........................................................................ [ 15%]
+........................................................................ [ 30%]
+........................................................................ [ 45%]
+........................................................................ [ 60%]
+........................................................................ [ 75%]
+........................................................................ [ 90%]
+..............................................                           [100%]
+=============================== warnings summary ===============================
+../aurex/.venv/lib/python3.12/site-packages/fastapi/testclient.py:1
+  /workspace/scratch/d7e61ee41c42/aurex/.venv/lib/python3.12/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+478 passed, 1 skipped, 1 warning in 11.18s
+
+ruff check aurex tests scripts: PASS
+mypy aurex: PASS 77 files
+Docker: NOT RUN
+Independent review: NOT RUN
