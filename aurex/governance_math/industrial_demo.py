@@ -6,7 +6,6 @@ No network, secrets, customer data, or regulatory certification.
 from __future__ import annotations
 
 import json
-from dataclasses import asdict
 from datetime import date, timedelta
 
 from .industrial_readiness import EvidenceRecord, assess_readiness
