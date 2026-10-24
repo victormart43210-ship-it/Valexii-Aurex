@@ -1,0 +1,30 @@
+{
+  "operation": "KUSANAGI CLII",
+  "checkpoint": 1,
+  "utc": "2026-10-24T16:38:13.330886+00:00",
+  "repository": "victormart43210-ship-it/Valexii-Aurex",
+  "branch": "work/kusanagi-cli-industrial-readiness-synthetic",
+  "pr": 133,
+  "source_sha": "9b6095b978b8589039367784a7fb2baf117b2324",
+  "main_sha": "f2db438f0020dbd455bcb5c7b21b7352d133bf2c",
+  "checkpoint_identity": "Enclosing Git commit; resolve git log -1 --format=%H -- docs/operations/clii/RECOVERY.json",
+  "completed": [
+    "Refreshed PR133 and main",
+    "PR133 CI40111954345, canonical image40111954359 and smoke40111954384 all PASS"
+  ],
+  "local_tests": "NOT RUN: baseline in progress",
+  "website_revision": "42731ae295377800fb81dd4cc8f1cadb21817750",
+  "railway": "NOT VERIFIED this session; no mutations",
+  "release": "HOLD",
+  "next_actions": [
+    "Bound malformed classifier inputs and pin server-owned fixtures",
+    "Add authenticated stateless route in canonical app and sandbox tests",
+    "Prepare owner-only frontend adapter and component; independent review"
+  ],
+  "blockers": [
+    "Canonical PR133 job API accepts only sqlite_roundtrip_v1; industrial persistence not integrated",
+    "Lovable credits not exposed by get_project; prior exhausted-credit report not disproven"
+  ],
+  "remote_save": "Read enclosing commit back after publication",
+  "rollback": "Revert source changes; no deployment or migration"
+}
