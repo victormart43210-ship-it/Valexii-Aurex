@@ -21,6 +21,7 @@ aurex = "aurex.cli:main"
 
 [project.optional-dependencies]
 dev = [
+  "bagit==1.9.0", # optional-integration format tests only
   "pytest>=8,<9",
   "ruff>=0.8,<1",
   "mypy>=1.13,<2",
