@@ -8,3 +8,5 @@ Contract: existing canonical receipts/jobs unchanged. Synthetic-only offline arc
 Plan: (1) Robot acceptance keywords use the real backend/worker with temporary SQLite. (2) Export a verified fixed-fixture receipt as a standard BagIt transfer folder for Archivematica, excluding all other data. (3) Generate Tailscale policy for one explicit operator and staging host/port, no enrollment/network writes. (4) full tests, fresh source review, remote checkpoint.
 No production, paid inference, model downloads, customer data, main merge or automatic deployment. Keep wg-easy candidate intact; do not run competing VPNs.
 Live website, Archivematica ingest, Tailscale enforcement, Railway isolation: NOT VERIFIED. Recovery and reviewed source are the deliverables until infrastructure admission gates pass.
+
+Checkpoint 002: optional tools and Robot suites implemented. 18 new tests and 3 Robot tests passed; full suite needs proxy-free rerun (2 existing httpx SOCKS import errors). Next: fresh review, regression, checkpoint. No live activation.

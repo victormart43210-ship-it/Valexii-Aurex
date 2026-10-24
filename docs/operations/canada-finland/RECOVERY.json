@@ -1,25 +1,40 @@
 {
-  "checkpoint": 1,
-  "utc": "2026-10-24T00:45:19.843031+00:00",
+  "checkpoint": 2,
+  "utc": "2026-10-24T12:10:04.453434+00:00",
   "branch": "work/aurex-canada-finland-integration",
   "base_sha": "2ce2f654b0d5d1f21786dd587d9137d77695f420",
   "main_sha": "415dbab72fe00ad65be379979c0ee213059054b5",
   "commit_identity": "Enclosing Git commit; resolve git log -1 --format=%H -- docs/operations/canada-finland/RECOVERY.json",
   "completed": [
-    "Refreshed main and PR119; read CXXXII CP008 and agent instructions"
+    "Refreshed main and PR119; read CXXXII CP008 and agent instructions",
+    "Implemented exact-fixture BagIt export and bounded Tailscale policy generator",
+    "Added Robot local acceptance groups and gated manual website suite",
+    "New tests RED: 18 failed before implementation; GREEN: 18 passed"
   ],
-  "tests": "NOT RUN",
+  "tests": {
+    "integration": "18 passed",
+    "robot": "3 passed",
+    "ruff": "PASS",
+    "mypy": "PASS: 77 files",
+    "full_suite": "FAIL: 2 HTTP adapter tests SOCKS proxy ImportError; 494 passed, 1 skipped, 1 warning. Clean environment rerun pending.",
+    "browser_gate": "Expected FAIL before navigation: admission unset",
+    "live_browser": "NOT RUN",
+    "archivematica_ingest": "NOT RUN",
+    "tailscale_enforcement": "NOT RUN"
+  },
   "deployment": "HOLD",
   "independent_verification": "NOT VERIFIED",
   "remote_save": "Read back enclosing commit after publication",
   "next_actions": [
-    "Implement Robot acceptance suite against canonical local backend",
-    "Implement synthetic-only BagIt export for Archivematica",
-    "Prepare least-privilege Tailscale candidate without enrollment"
+    "Complete clean-environment full regression run",
+    "Fresh source review and repair meaningful defects",
+    "Verify remote checkpoint and latest CI"
   ],
   "blockers": [
     "Railway storage isolation and live website owner flow remain NOT VERIFIED",
     "No Archivematica instance or Tailscale tailnet credentials available"
   ],
-  "rollback": "No infrastructure changes; discard isolated branch"
+  "rollback": "No infrastructure changes; discard isolated branch",
+  "pr": 127,
+  "previous_checkpoint": "177df63bc9af89b4a8fd30183bc223af48bb7e32"
 }
