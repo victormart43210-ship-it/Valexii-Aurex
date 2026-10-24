@@ -1,0 +1,25 @@
+{
+  "checkpoint": 1,
+  "utc": "2026-10-24T00:45:19.843031+00:00",
+  "branch": "work/aurex-canada-finland-integration",
+  "base_sha": "2ce2f654b0d5d1f21786dd587d9137d77695f420",
+  "main_sha": "415dbab72fe00ad65be379979c0ee213059054b5",
+  "commit_identity": "Enclosing Git commit; resolve git log -1 --format=%H -- docs/operations/canada-finland/RECOVERY.json",
+  "completed": [
+    "Refreshed main and PR119; read CXXXII CP008 and agent instructions"
+  ],
+  "tests": "NOT RUN",
+  "deployment": "HOLD",
+  "independent_verification": "NOT VERIFIED",
+  "remote_save": "Read back enclosing commit after publication",
+  "next_actions": [
+    "Implement Robot acceptance suite against canonical local backend",
+    "Implement synthetic-only BagIt export for Archivematica",
+    "Prepare least-privilege Tailscale candidate without enrollment"
+  ],
+  "blockers": [
+    "Railway storage isolation and live website owner flow remain NOT VERIFIED",
+    "No Archivematica instance or Tailscale tailnet credentials available"
+  ],
+  "rollback": "No infrastructure changes; discard isolated branch"
+}
