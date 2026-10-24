@@ -1,1 +1,4 @@
 aurex
+aurex_workflows
+training
+workstation

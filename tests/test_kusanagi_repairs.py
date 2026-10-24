@@ -143,3 +143,13 @@ def test_kusanagi_xvi_backend_entrypoint_route_reconciliation() -> None:
     assert "/v1/capabilities" in routes
     assert "/v1/industrial-audit/readiness" in routes
     assert "/v1/industrial/audit/demo" in routes
+
+
+def test_dockerfile_packaging_contains_aurex_copy_and_pip_install() -> None:
+    import os
+    for dockerfile_path in ["Dockerfile", "integrations/kusanagi-xvi/backend/Dockerfile"]:
+        assert os.path.exists(dockerfile_path), f"{dockerfile_path} missing"
+        with open(dockerfile_path) as f:
+            content = f.read()
+        assert "COPY aurex" in content or "COPY . ." in content or "COPY . ./" in content, f"{dockerfile_path} missing aurex copy"
+        assert "pip install" in content, f"{dockerfile_path} missing pip install"
