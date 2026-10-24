@@ -132,7 +132,8 @@ class BudgetResponse(BaseModel):
     period: str = "month"
 
 
-@app.get("/v1/health")
+# Infrastructure probe stays public; v1 application health requires service authentication.
+@app.get("/v1/health", dependencies=[Depends(authenticate)])
 @app.get("/health")
 def health() -> dict[str, str]:
     return {
