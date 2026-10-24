@@ -298,6 +298,41 @@ function Home() {
             </div>
           </div>
         </section>
+                <section className="home-band border-y border-border bg-card/10">
+          <div className="site-grid grid items-center gap-10 lg:grid-cols-2">
+            <div>
+              <Eyebrow>Operations Intelligence Platform</Eyebrow>
+              <h2 className="font-display text-3xl sm:text-4xl">DISPATER.AI</h2>
+              <p className="mt-2 text-lg font-semibold text-gold">Oilfield &amp; Towing Operations</p>
+              <p className="mt-4 text-sm leading-7 text-muted-foreground">
+                Bring dispatch, field documentation, equipment tracking, and invoice preparation into
+                one connected operational view. Designed for oilfield service contractors and towing fleets
+                to accelerate billing cycles and eliminate rate disputes.
+              </p>
+              <div className="mt-6">
+                <Button asChild variant="gold">
+                  <Link to="/dispater">
+                    Explore DISPATER.AI <ArrowRight />
+                  </Link>
+                </Button>
+              </div>
+            </div>
+            <figure className="rounded-xl overflow-hidden border border-border shadow-xl">
+              <img
+                src="/assets/dispater-oilfield-dashboard.svg"
+                alt="DISPATER.AI Oilfield Operations Control Dashboard Concept Preview"
+                width={1200}
+                height={675}
+                loading="lazy"
+                className="w-full h-auto"
+              />
+              <figcaption className="p-2 text-center text-xs text-muted-foreground bg-card">
+                CONCEPT PREVIEW — FICTIONAL DATA — NOT LIVE • Oilfield Control Dashboard
+              </figcaption>
+            </figure>
+          </div>
+        </section>
+
         <section className="home-band">
           <div className="site-grid">
             <SectionHeading
@@ -329,8 +364,8 @@ function Home() {
                   {
                     n: "DISPATER.AI",
                     to: "/dispater",
-                    s: "Industrial / resource · Future direction",
-                    c: "Explore bounded operational decision support.",
+                    s: "Oilfield & Towing Operations",
+                    c: "Bring dispatch, field documentation, equipment tracking, and invoice preparation into one connected operational view.",
                     I: Factory,
                   },
                   {

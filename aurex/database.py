@@ -24,6 +24,12 @@ def _now_iso() -> str:
 def get_db(db_path: str = DEFAULT_DB_PATH) -> sqlite3.Connection:
     conn = sqlite3.connect(db_path)
     conn.row_factory = sqlite3.Row
+    cursor = conn.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='jobs'")
+    if cursor.fetchone():
+        cols = [r["name"] for r in conn.execute("PRAGMA table_info(jobs)").fetchall()]
+        if "params" in cols and "params_json" not in cols:
+            conn.close()
+            raise ValueError("Legacy database schema detected; canonical engine requires updated schema")
     with conn:
         conn.execute(
             """

@@ -1,0 +1,28 @@
+{
+  "operation": "KUSANAGI_CXLV",
+  "timestamp_utc": "2026-10-23T18:15:00Z",
+  "canonical_repository": "victormart43210-ship-it/Valexii-Aurex",
+  "target_branch": "main",
+  "working_branch": "work/kusanagi-cxlv-sovereign-intelligence",
+  "canonical_main_sha": "415dbab72fe00ad65be379979c0ee213059054b5",
+  "local_head_sha": "239fa45",
+  "verification_summary": {
+    "pytest": "440 passed, 1 skipped",
+    "ruff": "0 errors (all checks passed)",
+    "mypy": "0 issues in 76 source files (strict)",
+    "website_bun_test": "157 passed, 0 failed across 23 files",
+    "website_bun_build": "Nitro build success",
+    "docling_extraction_accuracy": "100.0% on synthetic industrial fixtures"
+  },
+  "sovereign_intelligence_waves": {
+    "wave_1_sovereign_bridge": "Verified reciprocal navigation and +/-60s clock skew window",
+    "wave_2_opentelemetry": "Integrated W3C request tracing and secret redaction (aurex/telemetry.py)",
+    "wave_3_ibm_docling": "Integrated industrial document extraction adapter (aurex/docling_adapter.py)",
+    "wave_4_opa_policy": "Integrated feature-gated Rego authorization policy gate (aurex/opa_policy.py)"
+  },
+  "governance": {
+    "external_ai_budget": "$0.00",
+    "authority": "NONE",
+    "release_status": "HOLD"
+  }
+}

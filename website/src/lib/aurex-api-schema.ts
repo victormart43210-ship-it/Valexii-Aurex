@@ -15,7 +15,7 @@ export const HealthSchema = z
 
 export const CapabilitySchema = z
   .object({
-    id: z.string().regex(/^[a-z-]{1,64}$/),
+    id: z.string().regex(/^[a-z][a-z0-9_-]{0,63}$/),
     available: z.boolean(),
     evidenceId: id.nullable(),
     verifiedAt: iso.nullable(),
@@ -53,11 +53,50 @@ export const JobCreateSchema = z
   })
   .strict();
 
+/** A receipt proves local persisted bytes only: never model efficacy or authority. */
+const probeSha = z.string().regex(/^[0-9a-f]{64}$/);
+export const PipelineObservationSchema = z.discriminatedUnion("probe", [
+  z.object({
+    probe: z.literal("sqlite_roundtrip_v1"),
+    executed: z.literal(true),
+    passed: z.literal(true),
+    sha256: probeSha,
+    verification: z.literal("NOT VERIFIED"),
+  }).strict(),
+  z.object({
+    probe: z.literal("synthetic_field_audit_v1"),
+    synthetic: z.literal(true),
+    suite_sha256: probeSha,
+    case_count: z.number().int().min(0).max(100),
+    exact_case_matches: z.number().int().min(0).max(100),
+    finding_labels: z.number().int().min(0).max(100),
+    false_positive_flags: z.number().int().min(0).max(100),
+    false_negative_flags: z.number().int().min(0).max(100),
+    result: z.enum(["PASS", "HOLD", "FAIL"]),
+    independent_verification: z.literal("NOT_VERIFIED"),
+    real_document_accuracy: z.literal("NOT_MEASURED"),
+    authority: z.literal("HOLD"),
+    effect: z.literal("NONE"),
+    production_release: z.literal("HOLD"),
+  }).strict(),
+]);
+export const PipelineReceiptSchema = z.object({
+  jobId: id,
+  state: z.literal("succeeded"),
+  evidenceId: id,
+  sha256: probeSha,
+  observation: PipelineObservationSchema,
+  integrity: z.literal("RECORDED"),
+  verification: z.literal("NOT VERIFIED"),
+  authority: z.literal("NONE"),
+  release: z.literal("HOLD"),
+}).strict();
+
 export const EvidenceSchema = z
   .object({
     id,
-    capabilityId: z.string().regex(/^[a-z-]{1,64}$/),
-    kind: z.enum(["test_run", "health_probe", "benchmark_record"]),
+    capabilityId: z.string().regex(/^[a-z][a-z0-9_-]{0,63}$/),
+    kind: z.enum(["test_run", "health_probe", "benchmark_record", "offline_probe"]),
     collectedAt: iso,
     sha256: z.string().regex(/^[0-9a-f]{64}$/),
     summary: z.string().max(500),
@@ -81,6 +120,7 @@ export const ErrorSchema = z
 export type Health = z.infer<typeof HealthSchema>;
 export type Job = z.infer<typeof JobSchema>;
 export type JobCreate = z.infer<typeof JobCreateSchema>;
+export type PipelineReceipt = z.infer<typeof PipelineReceiptSchema>;
 export type Evidence = z.infer<typeof EvidenceSchema>;
 export type Budget = z.infer<typeof BudgetSchema>;
 
