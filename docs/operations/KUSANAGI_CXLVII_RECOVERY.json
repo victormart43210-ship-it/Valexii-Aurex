@@ -1,0 +1,28 @@
+{
+  "operation": "KUSANAGI_CXLVII",
+  "timestamp_utc": "2026-10-23T19:15:00Z",
+  "canonical_repository": "victormart43210-ship-it/Valexii-Aurex",
+  "target_branch": "main",
+  "working_branch": "work/kusanagi-cxlvii-mainline-convergence",
+  "canonical_main_sha": "415dbab72fe00ad65be379979c0ee213059054b5",
+  "local_head_sha": "388debd",
+  "verification_summary": {
+    "pytest": "440 passed, 1 skipped",
+    "ruff": "0 errors (all checks passed)",
+    "mypy": "0 issues in 76 source files (strict)",
+    "website_bun_test": "157 passed, 0 failed across 23 files",
+    "website_bun_build": "Nitro build success",
+    "health_probes": "Reconciled /v1/health capabilities field across canonical FastAPI & Railway bridge"
+  },
+  "sovereign_mainline_pathways": {
+    "valexii_to_dispater_bridge": "Connected & verified (/dispater reciprocal links)",
+    "aurex_staging_bridge": "Server-side authenticated proxy (/v1/*)",
+    "nvidia_inference_adapter": "Verified offline stubs (nvidia/nemotron-3.5-lightning-30b-a3b, $0.00 budget)",
+    "xaeli_explanation_contract": "Owner-only staging pipeline; all AI self-declarations return authority: NONE"
+  },
+  "governance": {
+    "external_ai_budget": "$0.00",
+    "authority": "NONE",
+    "release_status": "HOLD"
+  }
+}

@@ -48,7 +48,7 @@ export async function checkAurexService(
     if (body.status !== "ok" || !Array.isArray(body.capabilities))
       return { state: "OFFLINE", checks: NO_BACKEND };
     const caps = body.capabilities.filter(
-      (c): c is string => typeof c === "string" && /^[a-z-]{1,64}$/.test(c),
+      (c): c is string => typeof c === "string" && /^[a-z-_]{1,64}$/.test(c),
     );
     return { state: "HEALTHY", checks: { serviceHealthy: true, serviceCapabilities: caps } };
   } catch {

@@ -127,11 +127,13 @@ class BudgetResponse(BaseModel):
 
 @app.get("/v1/health")
 @app.get("/health")
-def health() -> dict[str, str]:
+def health() -> dict[str, Any]:
+    caps = ["regression_scan"] if os.environ.get("AUREX_ENABLE_OFFLINE_LAB") == "1" else []
     return {
         "status": "ok",
         "version": "0.1.0a1",
         "time": datetime.now(UTC).isoformat(),
+        "capabilities": caps,
     }
 
 
