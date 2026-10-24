@@ -128,7 +128,16 @@ def test_future_ed25519_attestation_stays_on_hold(monkeypatch: pytest.MonkeyPatc
 
 
 def test_kusanagi_xvi_backend_entrypoint_route_reconciliation() -> None:
-    from integrations.kusanagi_xvi.backend.app import app as staging_app
+    import importlib.util
+    import os
+
+    app_path = os.path.abspath("integrations/kusanagi-xvi/backend/app.py")
+    spec = importlib.util.spec_from_file_location("kusanagi_staging_app", app_path)
+    assert spec is not None and spec.loader is not None
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    staging_app = mod.app
+
     routes = [r.path for r in staging_app.routes]
     assert "/v1/health" in routes
     assert "/v1/capabilities" in routes
