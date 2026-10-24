@@ -23,12 +23,15 @@ from aurex.fenced_worker import cancel_job, claim_job, finalize_job
 from aurex.governance_math.research_api import router as research_advice_router
 from aurex.real_offline_probe import execute_sqlite_roundtrip
 from aurex.workflows.budget import BudgetGuard
+from aurex_foundation.correlation import CorrelationMiddleware
 
 app = FastAPI(
     title="VALEXII-AUREX",
     version="0.1.0a1",
     description="External evidence and challenge engine. AUREX never grants product authority.",
 )
+
+app.add_middleware(CorrelationMiddleware)
 
 budget_guard = BudgetGuard(limit_usd=Decimal("0.00"))
 
