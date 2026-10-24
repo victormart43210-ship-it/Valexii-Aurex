@@ -20,6 +20,7 @@ from aurex.database import (
     list_jobs,
 )
 from aurex.fenced_worker import cancel_job, claim_job, finalize_job
+from aurex.industrial_audit import IndustrialEvidenceRecord, evaluate_tenant_audit_readiness
 from aurex.governance_math.research_api import router as research_advice_router
 from aurex.real_offline_probe import execute_sqlite_roundtrip
 from aurex.workflows.budget import BudgetGuard
@@ -325,3 +326,29 @@ def get_budgets(_: str = Depends(authenticate)) -> BudgetResponse:
         spentUsd=float(budget_guard.spent_usd),
         period="month",
     )
+
+
+@app.get("/v1/industrial-audit/readiness")
+def get_industrial_audit_readiness(
+    sector: str = "oilfield",
+    tenant_id: str = "default_tenant",
+    _: str = Depends(authenticate),
+) -> dict[str, Any]:
+    if sector not in ("oilfield", "towing"):
+        raise HTTPException(status_code=400, detail="Sector must be 'oilfield' or 'towing'")
+
+    # Sample synthetic evidence records for demonstration
+    sample_records = [
+        IndustrialEvidenceRecord(
+            record_id="REC-001",
+            tenant_id=tenant_id,
+            sector=sector,
+            category="field_tickets" if sector == "oilfield" else "dispatch_service_records",
+            title="Digital Field Ticket #FT-2026-9041",
+            content_payload="Sample digital ticket payload",
+            observed_at="2026-10-20T12:00:00Z",
+            expires_at="2027-10-20T12:00:00Z",
+        ),
+    ]
+
+    return evaluate_tenant_audit_readiness(tenant_id, sector, sample_records)
