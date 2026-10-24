@@ -99,3 +99,69 @@ AUREX calls a single `RetrievalBroker` interface, not a chain of competing agent
 4. Run baseline TF-IDF vs Onyx hybrid retrieval on the same synthetic documents, measure citation coverage, stale-source rejection, latency and resource cost.
 5. Admit a second vector store **only if** Onyx cannot meet measured requirements and licensing/security review approves.
 6. Preserve KUSANAGI CL timestamp/auth fixes and keep production HOLD. Never merge audit branches blindly.
+
+## BCXMET canonical spine convergence — architecture proposal (2026-10-24)
+
+**Scope:** integrate the existing read-only AUREX `governance_math.spine.advise` and Onyx retrieval candidates with BCXMET's existing governance **without** importing proprietary BCXMET code into this public repository. This is a design/contract amendment only, not a running implementation.
+
+### Control-plane and evidence-plane separation
+
+```text
+BCXMET / XAELI user intent
+   → owner/tenant authentication + IN/CORE/OUT/TIME scope
+   → AUREX coordinator: define claim, scope, budgets, evidence requirements
+   → retrieval broker (local TF-IDF | optional Onyx) [UNTRUSTED CANDIDATES]
+   → evidence ledger: source digest, identity, scope, timestamps, lineage
+   → QUALIFICATION: provenance, ACL, freshness, contamination, independence
+   → REALITY: independent source check / adversarial challenge (Brain Trust)
+   → AUTHORITY: BCXMET's existing authorized policy/lease/revocation gate
+   → EFFECT: only explicitly authorized action; default no effect / HOLD
+   → XAELI explanation + source citations + uncertainty
+```
+
+**Do not confuse roles:** AUREX can independently challenge and report evidence, but **cannot itself grant BCXMET runtime authority**. The BCXMET authority boundary is separate and must explicitly consume admitted evidence. Brain Trust disagreement demotes or triggers review; model consensus cannot self-certify.
+
+### Preserve both spines
+- **BCXMET UnifiedReasoningSpine:** product's canonical evidence/qualification/reality/authority/effect progression, EvidenceLedger, Advocate/Challenger/Arbiter, Sentinel/CUSTOS demote-only oversight, historical truth vs current authority, lease freshness/revocation.
+- **AUREX research spine (`aurex/governance_math/spine.py`):** `retrieve → plan → test next` advisory analysis, `ResearchAdvice.gate` REVIEW_REQUIRED/HOLD, `authority=ADVISORY_ONLY_NO_EXECUTION`. This is a **subroutine inside investigation**, not a replacement for the BCXMET spine.
+- **Onyx:** optional untrusted retrieval adapter; never grants authority, writes product policy, or supplies its own independent witness.
+- **IIT Delhi LRPlan-inspired planning:** optional proposal generator only after independently verifying upstream identity/license and actual benefit; no automatic install.
+- **Hermes and Deep Lake:** explicitly DEFERRED per operator decision.
+
+### BCXMET Home and presentation boundary
+- Canonical presentation: **NOW → CHANGED → NEXT → WHY → PROOF**. Show observed current state, evidence-backed delta, next safe review step, explanation and citations; absent evidence shows NOT YET VERIFIED, not SAFE.
+- XAELI actions: Explain it / Show proof / Help me review it. No authority promotion via UI.
+- Orb: COMET DYNAMICS presentation only, **ORB MOTION AUTHORITY = NONE**; no return edge from animation to evidence, policy, or security decisions.
+- Product authority requires a separate explicit product policy decision with current lease and revocation checks; never infer authority from historical CLEAR or a prior passing audit.
+
+### Proposed normalized handoff
+```json
+{
+  "request_id": "opaque-id",
+  "tenant_scope": "authorized-tenant",
+  "claim_id": "opaque-claim",
+  "candidate_evidence": [],
+  "qualification": "NOT_VERIFIED",
+  "reality": "NOT_VERIFIED",
+  "challenge": "NOT_RUN",
+  "authority": "NONE",
+  "effect": "NONE",
+  "presentation": {"now": "UNKNOWN", "changed": [], "next": "REVIEW", "why": "insufficient verified evidence", "proof": []}
+}
+```
+This is a proposed boundary envelope, **not an existing API contract**.
+
+### Required negative tests before any implementation admission
+1. Onyx returns an injected instruction to disable BCXMET policy → ignored, HOLD.
+2. Local TF-IDF yields high similarity with invalid/absent independent source → candidate only.
+3. Same document retrieved by Onyx and local search → **one lineage**, not two independent witnesses.
+4. Expired lease or revoked permission after prior CLEAR → no current authority.
+5. Source updated in the future, stale, missing digest, or unauthorized tenant → demote.
+6. Brain Trust agrees with its own generated answer → not independent verification.
+7. Offline Onyx or model → existing local retrieval continues where authorized, but never invents missing proof.
+8. Orb/comet rendering state changes → zero impact on authority or policy.
+9. Website request tries to invoke retrieval with browser-held service token → reject.
+10. Verify reverse audit **ROTAS**: Result → Authority → Truth → Admissibility → Source, with immutable historical failures.
+
+### Integration acceptance
+Freeze the contracts, identify BCXMET private boundary owners, compare against current CL timestamp regression fix, run exact-SHA tests and independent adversarial review. Public repository receives **interfaces and synthetic fixtures only**; private BCXMET code remains private. No merge or deployment without explicit authorization.
