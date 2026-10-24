@@ -118,7 +118,8 @@ def test_prompt_injection_safety_in_content_payload() -> None:
     assert res["verification_status"] == "NOT_VERIFIED"
 
 
-def test_unauthenticated_api_readiness_endpoint_fails_closed() -> None:
+def test_unauthenticated_api_readiness_endpoint_fails_closed(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("AUREX_SERVICE_TOKEN", "a" * 32)
     client = TestClient(app)
     response = client.get("/v1/industrial-audit/readiness")
     assert response.status_code == 401
