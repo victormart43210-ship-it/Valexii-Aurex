@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { createRoot } from "react-dom/client";
-import * as Tabs from "@radix-ui/react-tabs";
+import { MantineProvider, Tabs as MantineTabs, Paper, Badge as MantineBadge, Button as MantineButton, Select as MantineSelect } from "@mantine/core";
+import "@mantine/core/styles.css";
 import { FIXTURES, audit, reviewFinding } from "./audit.mjs";
 
 const cls=(...a)=>a.filter(Boolean).join(" ");
-const Card=({children,className=""})=><div className={cls("shad-card",className)}>{children}</div>;
-const Badge=({children,tone=""})=><span className={cls("shad-badge",tone)}>{children}</span>;
-const Button=({children,onClick,disabled=false,variant="primary",label})=><button type="button" onClick={onClick} disabled={disabled} aria-label={label} className={cls("shad-button",variant)}>{children}</button>;
+const Card=({children,className=""})=><Paper radius="md" className={cls("shad-card",className)}>{children}</Paper>;
+const Badge=({children,tone=""})=><MantineBadge variant="light" radius="sm" className={cls("shad-badge",tone)}>{children}</MantineBadge>;
+const Button=({children,onClick,disabled=false,variant="primary",label})=><MantineButton type="button" onClick={onClick} disabled={disabled} aria-label={label} variant={variant==="subtle"?"subtle":"filled"} className={cls("shad-button",variant)}>{children}</MantineButton>;
 const titleCase=s=>s.replaceAll("_"," ").toLowerCase().replace(/\b\w/g,c=>c.toUpperCase());
 const INDEXES={
   irs:[
@@ -156,19 +157,19 @@ function App(){
      <Stat label="IRS evidence" value="UNREVIEWED" foot="Supporting categories only" tone="small"/>
      <Stat label="DOT applicability" value="UNKNOWN" foot="Jurisdiction and scope unassessed" tone="small"/>
    </div>
-   <Tabs.Root value={tab} onValueChange={setTab} className="shad-tabs">
-    <Tabs.List className="shad-tab-list" aria-label="Audit readiness sections">
-      <Tabs.Trigger value="revenue">REVENUE AUDIT</Tabs.Trigger>
-      <Tabs.Trigger value="irs">IRS EVIDENCE</Tabs.Trigger>
-      <Tabs.Trigger value="dot">DOT / FMCSA EVIDENCE</Tabs.Trigger>
-    </Tabs.List>
-    <Tabs.Content value="revenue" className="shad-tab-content"><RevenuePane sector={sector} report={report} onRun={()=>setReport(audit(sector))} onExport={()=>Download(report,sector)} onDisposition={setDisposition}/></Tabs.Content>
-    <Tabs.Content value="irs" className="shad-tab-content"><IndexPane kind="irs" sector={sector}/></Tabs.Content>
-    <Tabs.Content value="dot" className="shad-tab-content"><IndexPane kind="dot" sector={sector}/></Tabs.Content>
-   </Tabs.Root>
+   <MantineTabs value={tab} onChange={setTab} className="shad-tabs">
+    <MantineTabs.List className="shad-tab-list" aria-label="Audit readiness sections">
+      <MantineTabs.Tab value="revenue">REVENUE AUDIT</MantineTabs.Tab>
+      <MantineTabs.Tab value="irs">IRS EVIDENCE</MantineTabs.Tab>
+      <MantineTabs.Tab value="dot">DOT / FMCSA EVIDENCE</MantineTabs.Tab>
+    </MantineTabs.List>
+    <MantineTabs.Panel value="revenue" className="shad-tab-content"><RevenuePane sector={sector} report={report} onRun={()=>setReport(audit(sector))} onExport={()=>Download(report,sector)} onDisposition={setDisposition}/></MantineTabs.Panel>
+    <MantineTabs.Panel value="irs" className="shad-tab-content"><IndexPane kind="irs" sector={sector}/></MantineTabs.Panel>
+    <MantineTabs.Panel value="dot" className="shad-tab-content"><IndexPane kind="dot" sector={sector}/></MantineTabs.Panel>
+   </MantineTabs>
    <div className="shad-runtime-foot"><span>FICTIONAL RECORDS ONLY · NO LIVE CLIENT ACCOUNTS</span><span>INFERENCE: NOT RUN · FINANCIAL AUTHORITY: NONE</span></div>
   </div>
  </div>;
 }
 const node=document.getElementById("audit-dashboard-root");
-if(node)createRoot(node).render(<App/>);
+if(node)createRoot(node).render(<MantineProvider theme={{primaryColor:"green",defaultRadius:"md",colors:{sovereign:["#eaf7eb","#d5e9d5","#c1dfb9","#a9d0ae","#83bc91","#69a889","#317b59","#27694d","#1b503c","#102d23"]}}} defaultColorScheme="dark"><App/></MantineProvider>);
