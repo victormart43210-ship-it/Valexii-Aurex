@@ -1,0 +1,17 @@
+{
+  "operation": "KUSANAGI_CLXIII",
+  "project": "IRON_CONVERGENCE",
+  "status": "VERIFIED_END_TO_END",
+  "canonical_repository": "victormart43210-ship-it/Valexii-Aurex",
+  "target_branch": "main",
+  "working_branch": "kusanagi-cvii-mainline-ascension-4026168584527254885",
+  "current_sha": "4ebfca632409aa875805d8878cbe7c95f7133a7b",
+  "backend_tests": "455 passed, 1 skipped, 0 failed (pytest)",
+  "linter_checks": "PASS (ruff check .)",
+  "type_checks": "PASS (mypy aurex --strict)",
+  "frontend_tests": "157 passed (bun test in website/)",
+  "railway_staging": {
+    "status": "HEALTHY (200 OK /v1/health)",
+    "endpoint": "https://aurex-api-aurex-staging.up.railway.app"
+  }
+}
