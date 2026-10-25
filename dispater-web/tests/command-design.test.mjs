@@ -28,9 +28,9 @@ test("both decorative 3D models remain present in their intended separate sectio
  for(const word of ["PSI","BPM","WELL PRESSURE","SIMULATED","8,450"]){assert.ok(!markup.includes(word),"unexpected telemetry "+word);}
  assert.ok(html.includes('src="/dual-equipment.js"'));
 });
-test("shadcn-style dashboard includes IRS, DOT, and revenue evidence paths",async()=>{
+test("Mantine dashboard includes IRS, DOT, and revenue evidence paths",async()=>{
  const jsx=await read("audit-dashboard.jsx");
- for(const word of ['@radix-ui/react-tabs','Revenue Audit','IRS Evidence','DOT / FMCSA Evidence','APPROVED','NOT REVIEWED','HUMAN_REVIEW_REQUIRED']){
+ for(const word of ['@mantine/core','Revenue Audit','IRS Evidence','DOT / FMCSA Evidence','APPROVED','NOT REVIEWED','HUMAN_REVIEW_REQUIRED']){
   assert.ok(word==="APPROVED"||word==="HUMAN_REVIEW_REQUIRED"||jsx.includes(word),word);
  }
  assert.ok(jsx.includes('audit(sector)'));
@@ -39,13 +39,13 @@ test("shadcn-style dashboard includes IRS, DOT, and revenue evidence paths",asyn
  const css=await read("launch.css");
  assert.ok(css.includes(".shad-shell")&&css.includes(".shad-tab-list"));
 });
-test("build ships actual React/Radix dashboard and two GPU models, no external CDN",async()=>{
+test("build ships actual React/Mantine dashboard and two GPU models, no external CDN",async()=>{
  const build=await read("build.mjs");
  const pkg=JSON.parse(await read("package.json"));
  assert.ok(build.includes("audit-dashboard.jsx"));
  assert.ok(build.includes("dual-equipment.mjs"));
  assert.ok(build.includes("launch.css"));
- assert.ok(pkg.dependencies.react&&pkg.dependencies["react-dom"]&&pkg.dependencies["@radix-ui/react-tabs"]&&pkg.dependencies.three);
+ assert.ok(pkg.dependencies.react&&pkg.dependencies["react-dom"]&&pkg.dependencies["@mantine/core"]&&pkg.dependencies.three);
  assert.ok(!build.includes("approved-hero.png")&&!build.includes("industrial-companion.png"));
  const html=await read("index.html");
  assert.ok(!html.includes('<input type="file"'));
