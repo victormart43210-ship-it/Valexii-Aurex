@@ -369,3 +369,19 @@ body>header,body>main,body>footer,body>.skip{position:relative;z-index:1}
 .shad-guide-actions{display:flex;justify-content:space-between;gap:12px;margin:21px 0}.shad-guide-foot{font-size:11px;line-height:1.6;color:#afc3d0}
 .shad-guide-panel button:focus-visible{outline:3px solid #e6cba0;outline-offset:3px}
 @media(max-width:600px){.shad-guide-backdrop{padding:9px;align-items:flex-start}.shad-guide-panel{padding:17px;max-height:96vh}.shad-guide-detail{padding:16px;min-height:230px}.shad-guide-progress{gap:4px}.shad-guide-progress button{min-height:58px}}
+
+
+/* DISPATER quick navigation: contemporary SaaS UX informed by Linear/Magic UI/Aceternity, original styling. */
+.dispater-menu-toggle{display:none}
+.dispater-quickbar{width:min(1180px,calc(100% - 36px));margin:24px auto 0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;position:relative;z-index:3}
+.dispater-quickbar-label{grid-column:1/-1;font-size:10px;font-weight:750;letter-spacing:.19em;color:#c7dce8;display:flex;gap:9px;align-items:center}
+.dispater-quickbar-label span{color:#70f4e4}
+.dispater-quickbar>a{position:relative;border-radius:14px;min-height:106px;padding:17px 16px;border:1px solid #50858c80;background:linear-gradient(140deg,#111b2be8,#101b2bd8);display:flex;flex-direction:column;gap:5px;color:#f4fcff;text-decoration:none;box-shadow:0 9px 28px #0004;transition:transform .2s ease,border-color .2s ease,background .2s ease}
+.dispater-quickbar>a>span{font-size:11px;font-weight:800;letter-spacing:.15em;color:#85f1de}
+.dispater-quickbar>a strong{font-size:14px;line-height:1.3}.dispater-quickbar>a small{font-size:11px;line-height:1.4;color:#b6ccda}
+.dispater-quickbar>a:hover,.dispater-quickbar>a:focus-visible{transform:translateY(-3px);border-color:#a1ffeb;background:linear-gradient(140deg,#183c43,#1e2440)}
+.dispater-quickbar>a:focus-visible,.dispater-menu-toggle:focus-visible{outline:3px solid #e9c78d;outline-offset:3px}
+@media(max-width:920px){.dispater-menu-toggle{display:inline-flex;align-items:center;gap:7px;min-height:44px;padding:8px 13px;border-radius:9px;background:#153441;color:#fff;border:1px solid #70dace;font-size:12px;font-weight:800;letter-spacing:.06em;cursor:pointer}.launch-header-inner{position:relative}.launch-header .dispater-nav{display:none;position:absolute;top:calc(100% - 1px);left:0;right:0;z-index:90;padding:16px;background:#061824;border:1px solid #4baab9;border-radius:0 0 14px 14px;box-shadow:0 22px 45px #000b;flex-direction:column;align-items:stretch;gap:3px}.launch-header .dispater-nav.dispater-nav-open{display:flex}.launch-header .dispater-nav a{padding:13px;min-height:44px;display:flex;align-items:center;border-radius:8px}.launch-header .dispater-nav a:hover{background:#173c49}}
+@media(max-width:700px){.dispater-quickbar{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:16px}.dispater-quickbar>a{padding:13px;min-height:100px}.dispater-quickbar>a strong{font-size:12px}.dispater-quickbar>a small{font-size:10px}}
+@media(max-width:420px){.launch-header-inner{gap:8px}.dispater-quickbar{width:calc(100% - 20px)}.dispater-quickbar>a{min-height:105px}.launch-header-cta{padding:10px;font-size:9px}}
+@media(prefers-reduced-motion:reduce){.dispater-quickbar>a{transition:none}.dispater-quickbar>a:hover{transform:none}}
