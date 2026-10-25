@@ -4,6 +4,8 @@ on:
   pull_request:
     paths:
       - "integrations/kusanagi-xvi/backend/**"
+      - "integrations/sovereign_intake/**"
+      - "tests/test_clxx_intake_adapter.py"
       - "tests/test_cxxviii_unix_worker_labs.py"
       - "tests/test_cxxviii_staging_persistence.py"
       - ".github/workflows/cxxviii-unix-labs.yml"
@@ -41,7 +43,10 @@ jobs:
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
-      - run: docker build -f integrations/kusanagi-xvi/backend/Dockerfile -t aurex-unix-lab:ci integrations/kusanagi-xvi/backend
+      - run: docker build -f integrations/kusanagi-xvi/backend/Dockerfile -t aurex-unix-lab:ci .
+      - name: Verify canonical R13 package in container
+        run: |
+          docker run --rm --entrypoint python aurex-unix-lab:ci -c "from sovereign_intake import storage; from backend import intake_adapter; print('R13 container imports PASS')"
       - name: Test opt-in bounded Unix worker + observer in ephemeral container
         run: |
           set -eu
