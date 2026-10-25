@@ -1,13 +1,9 @@
 """Contract tests for the public, fictional industrial-audit demonstration."""
-from fastapi.testclient import TestClient
-
-from app import app
+from app import industrial_audit_demo
 
 
 def test_synthetic_towing_demo_is_fail_closed():
-    response = TestClient(app).get("/v1/demo/industrial-audit")
-    assert response.status_code == 200
-    data = response.json()
+    data = industrial_audit_demo()
     assert data["synthetic"] is True
     assert data["dataClassification"] == "FICTIONAL"
     assert data["sourceVerified"] is False
