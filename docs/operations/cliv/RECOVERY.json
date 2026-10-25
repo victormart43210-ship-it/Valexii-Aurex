@@ -1,6 +1,6 @@
 {
   "operation": "KUSANAGI CLIV IRON BRIDGE",
-  "checkpoint": 2,
+  "checkpoint": 3,
   "source_base": "c531661b9a1554fd80a2fa24540c9b69430f1081",
   "branch": "work/kusanagi-cliv-iron-bridge",
   "checkpoint_sha": "Resolve enclosing Git commit; self-referential SHA cannot be embedded",
@@ -12,10 +12,12 @@
     "Default-off server-only owner proxy and separate staging panel prepared"
   ],
   "tests": {
-    "python": "397 passed, 1 skipped before schema guards; 16 focused passed after guards",
+    "python": "PASS 405 passed,1 skipped; proxy env removed for local tests",
     "ruff": "PASS",
     "mypy": "PASS 76 files",
-    "frontend": "5 proxy/receipt tests PASS; full suite blocked missing three dependency"
+    "frontend": "PASS 25 tests; build PASS",
+    "live_authenticated_audit": "NOT RUN",
+    "nvidia_inference": "NOT RUN"
   },
   "railway": {
     "deployment": "8fe3f398-4e6f-4bfa-8c79-da1b84ccefb4",
@@ -25,15 +27,17 @@
     "rollback_available": true
   },
   "findings": [
-    "PR140 endpoint lacks authentication",
-    "Staging root runs read-only app:app, not aurex.api:app",
-    "Main has no NVIDIA adapter or durable industrial receipt route",
-    "Vercel supplied project lookup returned 404; scope discovery pending"
+    "PR140 public route not adopted",
+    "Railway still legacy app at f2db438; root candidate not deployed",
+    "Actual volume-instance isolation, backup, schema and UID access NOT VERIFIED",
+    "Railway OAuth secrets redacted; authenticated live request unavailable",
+    "Vercel team scope resolved; production unchanged",
+    "Owner-session cookie/login integration absent in DISPATER; default-off adapter fails closed"
   ],
   "next": [
-    "Run full tests and independent review of candidate",
-    "Verify owner-session integration and provider volume instance/backup metadata",
-    "Deploy only after credentials/isolation/CI gates pass"
+    "Inspect exact-head CI of PR141 and resolve any source failures",
+    "Obtain supported read-only volume-instance/backup/schema and secure staging credential access",
+    "Implement owner-session provisioning against existing identity provider before staging/browser acceptance"
   ],
   "restrictions": [
     "No production change",
@@ -42,7 +46,8 @@
     "No customer data"
   ],
   "release": "HOLD",
-  "utc": "2026-10-25T12:18:57.919699+00:00",
-  "prior_checkpoint": "54212ea7e672f3819b17f180ceeb035082602ed7",
-  "pr": 141
+  "utc": "2026-10-25T12:23:17.313159+00:00",
+  "prior_checkpoint": "8b852c0537dbc488b87c7b7cc89f9d347b301889",
+  "pr": 141,
+  "independent_review": "Separate agents reviewed base and CP002; integrity findings repaired RED to GREEN by coordinator; final repair independent retest NOT RUN"
 }

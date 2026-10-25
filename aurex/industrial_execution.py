@@ -11,6 +11,7 @@ import os
 import re
 import secrets
 import sqlite3
+from datetime import datetime
 from decimal import Decimal
 from pathlib import Path
 from typing import Any
@@ -103,23 +104,30 @@ def _receipt(path: str, job_id: str) -> dict[str, Any]:
         raise HTTPException(409, 'NOT_VERIFIED: receipt corruption')
     observed = result.get('observation')
     expected = observation()
-    expected_digest = hashlib.sha256(json.dumps(expected, sort_keys=True).encode()).hexdigest()
+    stored_canonical = json.dumps(observed, sort_keys=True, allow_nan=False)
+    expected_canonical = json.dumps(expected, sort_keys=True, allow_nan=False)
+    expected_digest = hashlib.sha256(stored_canonical.encode()).hexdigest()
     conn = get_db(path)
     try:
         evidence = conn.execute('SELECT * FROM evidence_records WHERE id=?', (row['evidence_id'],)).fetchone()
     finally:
         conn.close()
     if (row['kind'] != 'regression_scan' or row['params'] != PARAMS
-            or observed != expected or not evidence or evidence['sha256'] != expected_digest
+            or stored_canonical != expected_canonical or not evidence or evidence['sha256'] != expected_digest
             or result.get('evidence_id') != row['evidence_id']
             or row['evidence_id'] != 'evidence_' + job_id
+            or evidence['collected_at'] != row['updated_at']
+            or evidence['capability_id'] != 'regression_scan'
+            or evidence['kind'] != 'offline_probe'
             or evidence['integrity_status'] != 'RECORDED'
             or evidence['verification_status'] != 'UNVERIFIED'
             or row['lease_token'] is not None or row['lease_expires_at'] is not None):
         raise HTTPException(409, 'NOT_VERIFIED: receipt integrity mismatch')
+    if datetime.fromisoformat(evidence['collected_at']).tzinfo is None:
+        raise HTTPException(409, 'NOT_VERIFIED: receipt timestamp corruption')
     return {'job_id': job_id, 'state': row['state'], 'evidence_id': evidence['id'],
             'recorded_at': evidence['collected_at'], 'sha256': expected_digest,
-            'observation_canonical': json.dumps(expected, sort_keys=True),
+            'observation_canonical': stored_canonical,
             'serialization': 'json.dumps(sort_keys=True), UTF-8', 'observation': observed,
             'integrity': 'CONSISTENT', 'verification': 'NOT_VERIFIED', 'review': 'NOT_REVIEWED',
             'authority': 'NONE', 'release': 'HOLD',

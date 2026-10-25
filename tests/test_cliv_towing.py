@@ -109,3 +109,42 @@ def test_legacy_schema_is_not_mutated(sandbox):
     assert submit(client).status_code == 503
     with sqlite3.connect(path) as db:
         assert db.execute("select name from sqlite_master where type='table'").fetchall() == [('jobs',)]
+
+
+def test_receipt_survives_separate_python_process(sandbox):
+    import os
+    import subprocess
+    import sys
+    client, path = sandbox
+    receipt = submit(client).json()
+    code = '''import json,sys
+from fastapi.testclient import TestClient
+from aurex.api import app
+r=TestClient(app).get('/v1/industrial/audit/towing/'+sys.argv[1]+'/receipt',headers={'Authorization':'Bearer '+'s'*40})
+assert r.status_code==200, r.text
+print(json.dumps(r.json()))
+'''
+    environment = {k: v for k, v in os.environ.items() if 'proxy' not in k.lower()}
+    environment['AUREX_DB_PATH'] = path
+    output = subprocess.run([sys.executable, '-c', code, receipt['job_id']],
+                            env=environment, capture_output=True, text=True, timeout=15, check=True)
+    assert json.loads(output.stdout) == receipt
+
+
+def test_boolean_cannot_impersonate_numeric_observation(sandbox):
+    client, path = sandbox
+    receipt = submit(client).json()
+    with sqlite3.connect(path) as db:
+        result=json.loads(db.execute('select result_json from jobs').fetchone()[0])
+        result['observation']['charges'][0]['quantity']=True
+        db.execute('update jobs set result_json=?',(json.dumps(result),))
+    assert client.get(f"{URL}/{receipt['job_id']}/receipt", headers=HEADERS).status_code == 409
+
+
+@pytest.mark.parametrize('column,value', [('collected_at','forged-date'),('kind','other'),('capability_id','other')])
+def test_evidence_metadata_binding(sandbox,column,value):
+    client,path=sandbox
+    receipt=submit(client).json()
+    with sqlite3.connect(path) as db:
+        db.execute('update evidence_records set '+column+'=?',(value,))
+    assert client.get(f"{URL}/{receipt['job_id']}/receipt",headers=HEADERS).status_code==409
