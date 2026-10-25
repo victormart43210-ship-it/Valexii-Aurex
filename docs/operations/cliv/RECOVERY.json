@@ -1,0 +1,37 @@
+{
+  "operation": "KUSANAGI CLIV IRON BRIDGE",
+  "checkpoint": 1,
+  "source_base": "c531661b9a1554fd80a2fa24540c9b69430f1081",
+  "branch": "work/kusanagi-cliv-iron-bridge",
+  "checkpoint_sha": "Resolve enclosing Git commit; self-referential SHA cannot be embedded",
+  "completed": [
+    "Refreshed main, PR133/135/136/140, Railway staging config and rollback"
+  ],
+  "tests": "NOT RUN",
+  "railway": {
+    "deployment": "8fe3f398-4e6f-4bfa-8c79-da1b84ccefb4",
+    "sha": "f2db438f0020dbd455bcb5c7b21b7352d133bf2c",
+    "status": "SUCCESS platform only",
+    "root": "/integrations/kusanagi-xvi/backend",
+    "rollback_available": true
+  },
+  "findings": [
+    "PR140 endpoint lacks authentication",
+    "Staging root runs read-only app:app, not aurex.api:app",
+    "Main has no NVIDIA adapter or durable industrial receipt route",
+    "Vercel supplied project lookup returned 404; scope discovery pending"
+  ],
+  "next": [
+    "Implement fixed-fixture reconciliation through canonical fenced SQLite engine",
+    "Verify schema/isolation before staging mutation",
+    "Resolve DISPATER source and server proxy scope"
+  ],
+  "restrictions": [
+    "No production change",
+    "No live credential rotation",
+    "No paid inference",
+    "No customer data"
+  ],
+  "release": "HOLD",
+  "utc": "2026-10-25T12:12:32.289273+00:00"
+}

@@ -1,0 +1,8 @@
+# KUSANAGI CLIV — IRON BRIDGE
+Resume from the latest remote commit on work/kusanagi-cliv-iron-bridge. Read RECOVERY.json and inspect remote head before editing. Base main c531661b9a1554fd80a2fa24540c9b69430f1081. PR133/135/136/140 remain open; main includes PR137 contract tests. Do not overwrite those branches.
+
+Authoritative application selected: aurex.api:app, root Dockerfile. Current staging instead runs the small legacy app:app under integrations/kusanagi-xvi/backend. Root contains canonical SQLite jobs/evidence and fenced finalization; industrial readiness route is stateless. PR140 public demo cannot satisfy authentication or durable receipts and will not be copied as a second financial authority.
+
+Coordinator owns new aurex industrial execution adapter, tests, and docs only. Separate cliv_architecture_review agent is read-only. Contract: fixed server-owned fictional selector, exact-cent reconciliation using existing dispater_pilot, canonical jobs/evidence, authenticated receipt retrieval. No review approval mutation will be enabled under a shared service bearer. Source edits reversible by reverting this branch; staging rollback reference is deployment 8fe3f398-4e6f-4bfa-8c79-da1b84ccefb4 and previous root/config. Database backup/isolation NOT VERIFIED, so deployment HOLD.
+
+First unfinished task: add failing canonical API integration tests. No test PASS yet in this checkpoint. NVIDIA live inference is NOT RUN; variables alone are not connectivity evidence. Website project lookup returned 404; discover correct team before retry. Never publish, merge main, rotate credentials, or mutate production.
