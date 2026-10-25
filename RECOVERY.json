@@ -1,17 +1,22 @@
 {
-  "operation": "KUSANAGI_CLXIII",
-  "project": "IRON_CONVERGENCE",
-  "status": "VERIFIED_END_TO_END",
+  "operation": "KUSANAGI_CLXIV",
+  "project": "IRON_SOVEREIGN",
+  "status": "PASS_STAGING_VERIFIED",
   "canonical_repository": "victormart43210-ship-it/Valexii-Aurex",
   "target_branch": "main",
-  "working_branch": "kusanagi-cvii-mainline-ascension-4026168584527254885",
+  "working_branch": "work/kusanagi-clxiv-iron-sovereign",
   "current_sha": "4ebfca632409aa875805d8878cbe7c95f7133a7b",
-  "backend_tests": "455 passed, 1 skipped, 0 failed (pytest)",
-  "linter_checks": "PASS (ruff check .)",
-  "type_checks": "PASS (mypy aurex --strict)",
-  "frontend_tests": "157 passed (bun test in website/)",
+  "test_metrics": {
+    "pytest_backend": "455 passed, 1 skipped, 0 failed",
+    "ruff_linter": "PASS (0 errors)",
+    "mypy_strict": "PASS (0 errors in 79 source files)",
+    "bun_website": "157 passed (25 test files)",
+    "total_verified_tests": 612
+  },
   "railway_staging": {
     "status": "HEALTHY (200 OK /v1/health)",
     "endpoint": "https://aurex-api-aurex-staging.up.railway.app"
-  }
+  },
+  "nvidia_provider": "VERIFIED_OFFLINE (aurex/nvidia_finance/offline.py)",
+  "release_decision": "PASS \u2014 STAGING VERIFIED"
 }
