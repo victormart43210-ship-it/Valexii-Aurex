@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { createRoot } from "react-dom/client";
 import * as Tabs from "@radix-ui/react-tabs";
 import { FIXTURES, audit, reviewFinding } from "./audit.mjs";
@@ -98,6 +98,10 @@ function App(){
  const [tab,setTab]=useState("revenue");
  const [guideOpen,setGuideOpen]=useState(false);
  const [guideStep,setGuideStep]=useState(0);
+ const [backendStatus,setBackendStatus]=useState("NOT CHECKED");
+ const [backendCheckedAt,setBackendCheckedAt]=useState(null);
+ const checkBackend=async()=>{setBackendStatus("CHECKING");try{const controller=new AbortController();const timer=setTimeout(()=>controller.abort(),6000);let response;try{response=await fetch("/api/aurex-health",{cache:"no-store",signal:controller.signal,credentials:"omit",headers:{"Accept":"application/json"}})}finally{clearTimeout(timer)}if(!response.ok)throw Error("unavailable");const data=await response.json();if(!data||typeof data!=="object"||Array.isArray(data))throw Error("unexpected");setBackendStatus("REACHABLE · HEALTH ONLY")}catch{setBackendStatus("NOT VERIFIED")}setBackendCheckedAt(new Date().toLocaleTimeString())};
+ useEffect(()=>{checkBackend()},[]);
  const f=FIXTURES[sector];
  const counts=report?.counts||{jobs:f.jobs.length,invoices:f.invoices.length,findings:"—"};
  const records=f.jobs.length+f.invoices.length+f.payments.length+f.rates.length+f.evidence.length;
@@ -145,6 +149,7 @@ function App(){
      <button type="button" aria-pressed={sector==="towing"} onClick={()=>changeSector("towing")}>Towing &amp; Recovery</button>
      <button type="button" aria-pressed={sector==="oilfield"} onClick={()=>changeSector("oilfield")}>Oilfield Operations</button>
    </div></div><span className="shad-powered">AUREX/OX · SOURCE-BASED REVIEW MODEL</span></div>
+   <div className="shad-backend-status" role="status" aria-live="polite"><div><strong>AUREX/OX STAGING CONNECTION</strong><span>{backendStatus}</span><small>Read-only backend health check · Audit runtime NOT CONNECTED · No customer data sent · Authority NONE{backendCheckedAt?" · Checked "+backendCheckedAt:""}</small></div><Button variant="subtle" onClick={checkBackend} disabled={backendStatus==="CHECKING"}>CHECK CONNECTION ↻</Button></div>
    <div className="shad-stats-grid">
      <Stat label="Source records" value={String(records)} foot="Fictional indexed records" tone="cyan"/>
      <Stat label="Candidate exceptions" value={String(counts.findings)} foot="Review required, not findings of noncompliance"/>
