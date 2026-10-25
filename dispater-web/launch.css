@@ -465,3 +465,12 @@ body{background:var(--lux-bg);color:var(--lux-ink);-webkit-font-smoothing:antial
  .shad-tab-list{scrollbar-width:thin}
 }
 @media(max-width:360px){.launch-brand{font-size:18px}.launch-emblem{width:29px;height:29px}.launch-hero h1{font-size:clamp(43px,12.7vw,52px)}}
+
+
+/* VALEXII-family ambient checker matrix: quiet, stationary, behind all content. */
+body{position:relative;isolation:isolate;background-color:#070f19}
+body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;background-image:linear-gradient(90deg,#00d4e70c 1px,transparent 1px),linear-gradient(#00d4e70c 1px,transparent 1px),linear-gradient(90deg,#e9c78f08 1px,transparent 1px),linear-gradient(#e9c78f08 1px,transparent 1px);background-size:46px 46px,46px 46px,184px 184px,184px 184px;background-position:center top;mask-image:linear-gradient(180deg,#000d,#0009 60%,#0008);opacity:.85}
+main{position:relative;isolation:isolate}
+main::before{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;background-image:linear-gradient(90deg,#4be9ed10 1px,transparent 1px),linear-gradient(#4be9ed10 1px,transparent 1px);background-size:46px 46px;background-position:center top;mask-image:linear-gradient(180deg,#0009,transparent 95%)}
+.launch-hero{background-color:#070f19;background-image:radial-gradient(ellipse at 50% 8%,#0e53604d,transparent 53%),radial-gradient(ellipse at 12% 88%,#39245b38,transparent 50%),linear-gradient(165deg,#030a13d9,#081a28df 60%,#060e1ad9),linear-gradient(90deg,#8fe8ee0d 1px,transparent 1px),linear-gradient(#8fe8ee0d 1px,transparent 1px);background-size:auto,auto,auto,46px 46px,46px 46px}
+@media(max-width:700px){body::before{background-size:36px 36px,36px 36px,144px 144px,144px 144px;opacity:.68}main::before{background-size:36px 36px}.launch-hero{background-size:auto,auto,auto,36px 36px,36px 36px}}
