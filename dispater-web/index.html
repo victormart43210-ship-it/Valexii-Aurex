@@ -16,12 +16,20 @@
 <a class="skip" href="#main">Skip to content</a>
 <header class="launch-header"><div class="wrap launch-header-inner">
   <a href="/" class="launch-brand" aria-label="DISPATER.AI home"><span class="launch-emblem" aria-hidden="true">✣</span><span>DISPATER<span class="launch-accent">.AI</span></span></a>
-  <nav aria-label="Main navigation">
-    <a href="#audit">AUDIT READINESS</a><a href="#process">HOW IT WORKS</a><a href="#industries">INDUSTRIES</a><a href="#services">SERVICES</a><a href="https://valexii.com">VALEXII.AI ↗</a>
+  <nav class="dispater-nav" id="dispater-nav" aria-label="Main navigation">
+    <a href="#audit">AUDIT DEMO</a><a href="#process">HOW IT WORKS</a><a href="#industries">INDUSTRIES</a><a href="#services">SERVICES</a><a href="https://valexii.com">VALEXII.AI ↗</a>
   </nav>
+  <button type="button" class="dispater-menu-toggle" id="dispater-menu-toggle" aria-label="Open site menu" aria-controls="dispater-nav" aria-expanded="false"><span aria-hidden="true">☰</span> MENU</button>
   <a href="https://valexii.com/contact?service=dispater-audit" class="launch-header-cta">REQUEST A REVIEW <span aria-hidden="true">↗</span></a>
 </div></header>
 <main id="main">
+<div class="dispater-quickbar" aria-label="Fast navigation">
+  <span class="dispater-quickbar-label">START HERE <span aria-hidden="true">◈</span></span>
+  <a href="#audit"><span aria-hidden="true">01</span><strong>Try the audit demo</strong><small>Explore example findings</small></a>
+  <a href="#process"><span aria-hidden="true">02</span><strong>See how it works</strong><small>Five-stage evidence flow</small></a>
+  <a href="#industries"><span aria-hidden="true">03</span><strong>Pick your industry</strong><small>Towing or oilfield</small></a>
+  <a href="https://valexii.com/contact?service=dispater-audit"><span aria-hidden="true">↗</span><strong>Talk to us</strong><small>Request an audit review</small></a>
+</div>
 <section class="launch-hero" aria-labelledby="launch-title">
   <div class="wrap launch-hero-content">
     <p class="launch-overline"><span class="launch-indicator" aria-hidden="true"></span> SOVEREIGN OPERATIONS &nbsp; / &nbsp; EVIDENCE-FIRST INTELLIGENCE</p>
@@ -200,5 +208,16 @@
 ["04 / AUTHORITY","Require an authorized reviewer","Present the evidence trail, caveats and source links to a human reviewer. The reviewer must verify contractual terms, performed work and billing eligibility before any action.","Human approval required","AI cannot approve its own finding or act as its sole witness."],
 ["05 / EFFECT","Act only after approval","In a future connected system, an authorized operator could request a corrected invoice, follow up on documentation or close the exception. This public demo performs none of those actions.","Effect boundary: CLOSED","No billing, dispatch, external write or customer-data operation is performed."]
 ];function show(i){const x=data[i];document.getElementById("audit-3d-label").textContent=x[0];document.getElementById("audit-3d-heading").textContent=x[1];document.getElementById("audit-3d-detail").textContent=x[2];document.getElementById("audit-3d-gate-text").textContent=x[3];document.getElementById("audit-3d-boundary").textContent=x[4];nodes.forEach((n,j)=>{n.classList.toggle("is-active",j===i);n.setAttribute("aria-pressed",String(j===i))})}nodes.forEach((n,i)=>{n.addEventListener("click",()=>show(i));n.addEventListener("keydown",e=>{if(e.key==="ArrowRight"||e.key==="ArrowLeft"){e.preventDefault();const j=(i+(e.key==="ArrowRight"?1:4))%5;nodes[j].focus();show(j)}})});show(0)})();
+</script>
+<script>
+(function(){
+ const toggle=document.getElementById("dispater-menu-toggle"),nav=document.getElementById("dispater-nav");
+ if(!toggle||!nav)return;
+ const close=()=>{nav.classList.remove("dispater-nav-open");toggle.setAttribute("aria-expanded","false");toggle.setAttribute("aria-label","Open site menu");};
+ toggle.addEventListener("click",()=>{const open=nav.classList.toggle("dispater-nav-open");toggle.setAttribute("aria-expanded",String(open));toggle.setAttribute("aria-label",open?"Close site menu":"Open site menu");});
+ nav.addEventListener("click",e=>{if(e.target.closest("a"))close();});
+ document.addEventListener("keydown",e=>{if(e.key==="Escape")close();});
+ document.addEventListener("click",e=>{if(!nav.contains(e.target)&&!toggle.contains(e.target))close();});
+})();
 </script>
 </body></html>
