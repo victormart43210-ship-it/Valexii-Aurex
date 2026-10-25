@@ -23,6 +23,8 @@
   <a href="https://valexii.com/contact?service=dispater-audit" class="launch-header-cta">REQUEST A REVIEW <span aria-hidden="true">↗</span></a>
 </div></header>
 <main id="main">
+<div class="dispater-command-wrap"><button class="dispater-command-launch" id="dispater-command-launch" type="button" aria-haspopup="dialog" aria-controls="dispater-command-dialog" aria-keyshortcuts="Control+k Meta+k"><span aria-hidden="true">⌕</span> Find anything on DISPATER <kbd>⌘ K</kbd></button><span class="dispater-command-hint">EXPLORE · REVIEW · UNDERSTAND</span></div>
+<div class="dispater-command-overlay" id="dispater-command-overlay" hidden><div class="dispater-command-dialog" id="dispater-command-dialog" role="dialog" aria-modal="true" aria-labelledby="dispater-command-title"><div class="dispater-command-head"><label id="dispater-command-title" for="dispater-command-search">Where would you like to go?</label><button type="button" id="dispater-command-close" aria-label="Close search">✕</button></div><input id="dispater-command-search" type="search" autocomplete="off" placeholder="Search audit, towing, oilfield, evidence…" aria-controls="dispater-command-results"><div id="dispater-command-results" role="listbox" aria-label="Navigation results"></div><p>Navigation only · no customer data or backend commands</p></div></div>
 <div class="dispater-quickbar" aria-label="Fast navigation">
   <span class="dispater-quickbar-label">START HERE <span aria-hidden="true">◈</span></span>
   <a href="#audit"><span aria-hidden="true">01</span><strong>Try the audit demo</strong><small>Explore example findings</small></a>
@@ -218,6 +220,26 @@
  nav.addEventListener("click",e=>{if(e.target.closest("a"))close();});
  document.addEventListener("keydown",e=>{if(e.key==="Escape")close();});
  document.addEventListener("click",e=>{if(!nav.contains(e.target)&&!toggle.contains(e.target))close();});
+})();
+</script>
+<script>
+(function(){
+ const overlay=document.getElementById("dispater-command-overlay"),openBtn=document.getElementById("dispater-command-launch"),closeBtn=document.getElementById("dispater-command-close"),input=document.getElementById("dispater-command-search"),results=document.getElementById("dispater-command-results");
+ if(!overlay||!openBtn||!input||!results)return;
+ const links=[
+ ["Audit workspace","Explore synthetic financial findings","#audit","audit revenue financial dashboard"],
+ ["3D audit flow","Five stages of evidence governance","#audit-3d-showcase","evidence qualification reality authority effect 3d"],
+ ["Towing operations tour","Dispatch, equipment and billing","#command-experience","towing tow truck dispatch recovery"],
+ ["Oilfield and towing","Choose your industry","#industries","oilfield frac tree towing industries"],
+ ["Services and pilots","See industrial capabilities","#services","pricing services operations pilot"],
+ ["Integration overview","See how components fit together","#integrations","backend integration AUREX"],
+ ["Request a review","Talk to the team","https://valexii.com/contact?service=dispater-audit","contact sales pilot"]
+ ];
+ let previous=null;
+ const close=()=>{overlay.hidden=true;document.body.classList.remove("dispater-command-active");previous?.focus();};
+ const render=()=>{const q=input.value.trim().toLowerCase();const found=links.filter(x=>(x[0]+" "+x[1]+" "+x[3]).toLowerCase().includes(q));results.replaceChildren();for(const [title,desc,href] of found){const a=document.createElement("a");a.href=href;a.setAttribute("role","option");a.className="dispater-command-result";const strong=document.createElement("strong"),small=document.createElement("small");strong.textContent=title;small.textContent=desc;a.append(strong,small);a.addEventListener("click",close);results.append(a);}if(!found.length){const empty=document.createElement("p");empty.textContent="No matching page. Try audit, towing, or evidence.";results.append(empty);}};
+ const open=()=>{previous=document.activeElement;overlay.hidden=false;document.body.classList.add("dispater-command-active");input.value="";render();input.focus();};
+ openBtn.addEventListener("click",open);closeBtn.addEventListener("click",close);input.addEventListener("input",render);overlay.addEventListener("mousedown",e=>{if(e.target===overlay)close()});document.addEventListener("keydown",e=>{if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==="k"){e.preventDefault();overlay.hidden?open():close()}if(e.key==="Escape"&&!overlay.hidden){e.preventDefault();close()}if(e.key==="Enter"&&!overlay.hidden&&document.activeElement===input){e.preventDefault();results.querySelector("a")?.click()}if(e.key==="Tab"&&!overlay.hidden){const focusable=[input,...results.querySelectorAll("a"),closeBtn];const i=focusable.indexOf(document.activeElement);if(e.shiftKey&&i===0){e.preventDefault();closeBtn.focus()}else if(!e.shiftKey&&i===focusable.length-1){e.preventDefault();input.focus()}}});
 })();
 </script>
 </body></html>
