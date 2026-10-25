@@ -96,6 +96,25 @@
         <img class="pair-fallback" src="/tow-recovery.svg" alt="Illustrated tow truck" width="500" height="335" loading="lazy">
       </div>
     </div>
+    <div class="command-experience" id="command-experience" aria-labelledby="command-title">
+      <p class="launch-overline">INTERACTIVE OPERATIONS TOUR · FICTIONAL DATA ONLY</p>
+      <h3 id="command-title">One recovery. <em>Every decision traceable.</em></h3>
+      <p class="command-intro">Rotate the truck above, then follow one fictional towing job from dispatch to a human-reviewed invoice. Explore the actual information flow we intend to build—not a connected customer system.</p>
+      <div class="command-steps" role="group" aria-label="Explore towing operations workflow">
+        <button class="command-step is-active" type="button" data-step="0" aria-pressed="true"><span>01</span> Dispatch</button>
+        <button class="command-step" type="button" data-step="1" aria-pressed="false"><span>02</span> Equipment</button>
+        <button class="command-step" type="button" data-step="2" aria-pressed="false"><span>03</span> Evidence</button>
+        <button class="command-step" type="button" data-step="3" aria-pressed="false"><span>04</span> Billing</button>
+        <button class="command-step" type="button" data-step="4" aria-pressed="false"><span>05</span> Human review</button>
+      </div>
+      <div class="command-console" aria-live="polite" aria-atomic="true">
+        <div class="command-console-head"><span id="command-phase">01 / DISPATCH</span><span class="command-synthetic">SYNTHETIC DEMONSTRATION · NOT LIVE</span></div>
+        <div class="command-console-body"><div><h4 id="command-record-title">Recovery request received</h4><p id="command-record-desc">A fictional roadside recovery request enters the queue. An operator checks location, equipment fit, and driver availability before assigning the job.</p></div><dl class="command-facts" id="command-facts"><div><dt>Example ticket</dt><dd>TOW-DEMO-042</dd></div><div><dt>Job status</dt><dd>Awaiting assignment</dd></div><div><dt>Decision authority</dt><dd>Human dispatcher</dd></div></dl></div>
+        <div class="command-evidence"><span>PROPOSED AUREX/OX PATH</span><strong>Evidence → Qualification → Reality → Authority → Effect</strong><small id="command-proof">No real customer records, live dispatch, financial execution, or independent verification.</small></div>
+        <div class="command-controls"><button id="command-prev" type="button" disabled>← Previous</button><button id="command-next" type="button">Next: Equipment →</button></div>
+      </div>
+      <p class="command-boundary">CONCEPT ONLY · NO TELEMETRY · NO CUSTOMER DATA · NO FINANCIAL AUTHORITY · HUMAN APPROVAL REQUIRED</p>
+    </div>
     <p class="launch-overline">ONE STRAIGHTFORWARD PROCESS</p><h2 id="process-title">From scattered records <em>to review-ready evidence.</em></h2>
     <div class="launch-steps">
       <article><span>01</span><h3>Map your records</h3><p>Identify the tickets, invoices, rate sheets and documents your team already maintains. Determine which sources are relevant to the requested review.</p></article>
@@ -140,4 +159,19 @@
 </div></section>
 </main>
 <footer><div class="wrap foot-content"><b>DISPATER<span class="cyan">.AI</span></b><span>© 2026 VALEXII.AI · EVIDENCE FIRST · HUMAN-REVIEWED</span><a href="https://valexii.com/privacy">PRIVACY ↗</a></div></footer>
+<script>
+/* Public synthetic narrative only. No network calls, persistence, or operational authority. */
+(()=>{
+ const steps=[
+ ["01 / DISPATCH","Recovery request received","A fictional roadside recovery request enters the queue. An operator checks location, equipment fit, and driver availability before assigning the job.",["Example ticket","TOW-DEMO-042","Job status","Awaiting assignment","Decision authority","Human dispatcher"],"Source: fictional request. No live dispatch connection."],
+ ["02 / EQUIPMENT","Truck and operator readiness","The proposed equipment view associates a tow truck with inspection history, recovery gear, operator qualification, and maintenance records. The rotating 3D truck above is illustrative, not a live digital twin.",["Example unit","TRUCK-DEMO-07","Inspection","Sample checklist present","Equipment status","Not independently verified"],"Source: invented equipment checklist; unknown condition is never treated as safe."],
+ ["03 / EVIDENCE","Documents linked to the job","A fictional dispatch note, tow ticket, timestamps, and supporting photographs are grouped into a traceable record. Missing documentation is flagged for a person to review.",["Example record","EVD-DEMO-118","Missing item","Customer signature","Evidence state","Incomplete"],"Source: simulated artifacts. No evidence ledger connection or cryptographic attestation claimed."],
+ ["04 / BILLING","Potential rate mismatch detected","A sample invoice line differs from the fictional contracted rate. DISPATER would surface the exception and supporting documents without changing an invoice or charging anyone.",["Example invoice","INV-DEMO-042","Illustrative difference","$35.00","Financial authority","NONE"],"Source: synthetic rate and invoice comparison. No financial runtime connected."],
+ ["05 / HUMAN REVIEW","Reviewer makes the final call","A human reviewer can inspect the proposed evidence trail, request missing records, and approve or reject next steps. The system must not authorize itself or present an unverified finding as certified.",["Review state","Pending human decision","Independent verification","NOT VERIFIED","System authority","NONE"],"Result: illustrative workflow only. Nothing was approved, submitted, billed, or certified."]
+ ];
+ const buttons=[...document.querySelectorAll(".command-step")],prev=document.getElementById("command-prev"),next=document.getElementById("command-next");let index=0;
+ const render=()=>{const s=steps[index];document.getElementById("command-phase").textContent=s[0];document.getElementById("command-record-title").textContent=s[1];document.getElementById("command-record-desc").textContent=s[2];document.getElementById("command-facts").replaceChildren(...[0,2,4].map(i=>{const row=document.createElement("div"),dt=document.createElement("dt"),dd=document.createElement("dd");dt.textContent=s[3][i];dd.textContent=s[3][i+1];row.append(dt,dd);return row}));document.getElementById("command-proof").textContent=s[4];buttons.forEach((b,i)=>{b.classList.toggle("is-active",i===index);b.setAttribute("aria-pressed",String(i===index))});prev.disabled=index===0;next.disabled=index===steps.length-1;next.textContent=index===steps.length-1?"Tour complete":'Next: '+buttons[index+1].textContent.trim().replace(/^\\d+\\s*/, "")+" →"};
+ buttons.forEach((b,i)=>b.addEventListener("click",()=>{index=i;render()}));prev.addEventListener("click",()=>{index=Math.max(0,index-1);render()});next.addEventListener("click",()=>{index=Math.min(steps.length-1,index+1);render()});render();
+})();
+</script>
 </body></html>
