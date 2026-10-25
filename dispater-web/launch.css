@@ -501,3 +501,15 @@ main::before{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none
 .audit-3d-node.is-active{border-color:#e4b5ff;box-shadow:inset 3px 0 #d69bff,0 6px 22px #aa64ce55}
 .audit-3d-node .audit-3d-index{color:#dcb2ff}
 @media(max-width:760px){.audit-3d-node.is-active{border-color:#e4b5ff;box-shadow:inset 3px 0 #d69bff,0 6px 22px #aa64ce55}}
+
+
+/* ROSE POMPADOUR · rare 18th-century-inspired pink, paired with Tyrian purple. */
+:root{--rare-rose:#ed7a9b;--rare-rose-light:#ffc0ce;--rare-puce:#ae647e}
+.launch-header-cta,.launch-btn.launch-primary{background:linear-gradient(118deg,#e4b9ff 0%,#d39aeb 42%,#ed7a9b 100%);border-color:#f4b4cb;color:#291129;box-shadow:0 9px 34px #b64d8450}
+.launch-header-cta:hover,.launch-btn.launch-primary:hover{background:linear-gradient(118deg,#f1d5ff,#f8abc2);color:#291129}
+.shad-badge.cyan{background:#491b3a;color:#ffc0ce;border-color:#be6589}
+.shad-toggle button[aria-pressed=true]{background:linear-gradient(120deg,#51204f,#75304f);color:#ffd3de;box-shadow:inset 0 2px #ed7a9b}
+.shad-toggle button:hover{background:#673052}
+.dispater-quickbar>a:nth-of-type(4) strong{color:#ffc0ce}
+.dispater-quickbar>a:nth-of-type(4):hover{border-color:#ed7a9b}
+.shad-topline .shad-badge.cyan{box-shadow:0 0 0 1px #ed7a9b30}
