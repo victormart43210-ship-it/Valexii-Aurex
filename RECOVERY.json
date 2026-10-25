@@ -1,0 +1,18 @@
+{
+  "checkpoints": [
+    {
+      "operation": "KUSANAGI_CLXXI",
+      "baseline_sha": "1c05a95f9c8a54854d31657c315864d93931d848",
+      "status": "PARTIAL",
+      "production": "HOLD",
+      "notes": "Prior CLXVIII-CLXX artifacts absent at baseline; not fabricated."
+    },
+    {
+      "operation": "KUSANAGI_CLXXII",
+      "baseline_sha": "1c05a95f9c8a54854d31657c315864d93931d848",
+      "status": "COMPLETED",
+      "production": "HOLD",
+      "notes": "Project Iron Convergence completed; DISPATER customer workflow connected; OpenShell policy contracts verified; 10/12 acceptance gates PASS (Gate I NOT RUN, Gate J NOT CONFIGURED)."
+    }
+  ]
+}
