@@ -174,3 +174,22 @@ def test_short_server_token_config_fails_closed(monkeypatch: pytest.MonkeyPatch)
     headers = {"Authorization": "Bearer too_short"}
     response = client.get("/v1/industrial-audit/readiness", headers=headers)
     assert response.status_code == 500
+
+
+def test_explicit_sector_audit_endpoints_succeed(monkeypatch: pytest.MonkeyPatch) -> None:
+    test_token = "a" * 32
+    monkeypatch.setenv("AUREX_SERVICE_TOKEN", test_token)
+    client = TestClient(app)
+    headers = {"Authorization": f"Bearer {test_token}"}
+
+    resp_towing = client.post("/v1/industrial/audit/towing", headers=headers)
+    assert resp_towing.status_code == 200
+    data_towing = resp_towing.json()
+    assert data_towing["sector"] == "towing"
+    assert data_towing["authority"] == "NONE"
+
+    resp_oilfield = client.post("/v1/industrial/audit/oilfield", headers=headers)
+    assert resp_oilfield.status_code == 200
+    data_oilfield = resp_oilfield.json()
+    assert data_oilfield["sector"] == "oilfield"
+    assert data_oilfield["authority"] == "NONE"
