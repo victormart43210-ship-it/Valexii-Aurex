@@ -1,0 +1,21 @@
+/* DISPATER Sovereign 2026: editorial UAE AI inspiration, original styling.
+   Progressive enhancement only: preserves existing imagery, functionality and governance. */
+:root{--sovereign-obsidian:#040d16;--sovereign-malachite:#317b59;--sovereign-verdigris:#69a889;--sovereign-celadon:#c1dfb9;--sovereign-gold:#e6bd74;--sovereign-line:rgba(105,168,137,.28)}
+.launch-hero{background:radial-gradient(ellipse at 50% 2%,rgba(49,123,89,.17),transparent 56%),radial-gradient(ellipse at 84% 64%,rgba(74,41,80,.17),transparent 52%),linear-gradient(180deg,#040d16,#071824 75%,#081b23)}
+.launch-hero:before{background:linear-gradient(90deg,transparent 49.95%,rgba(193,223,185,.045) 50%,transparent 50.05%),repeating-linear-gradient(90deg,transparent 0 109px,rgba(105,168,137,.045) 110px),repeating-linear-gradient(0deg,transparent 0 109px,rgba(105,168,137,.045) 110px)}
+.launch-overline{letter-spacing:.18em}
+.launch-hero h1{letter-spacing:.035em;text-wrap:balance}
+.launch-hero h2,.launch-section-head h2,.ai-externalized h2{text-wrap:balance}
+.launch-hero .launch-lead{max-width:850px;margin-inline:auto}
+.launch-header{border-bottom-color:var(--sovereign-line)}
+.launch-header-cta,.launch-btn.launch-primary{background:linear-gradient(115deg,#d4e9c8 0%,#9dcc9e 40%,#317b59 100%);color:#0b2618;border:1px solid #a5d6a7;box-shadow:0 8px 30px rgba(49,123,89,.24)}
+.launch-header-cta:hover,.launch-btn.launch-primary:hover{background:linear-gradient(115deg,#e2f0d6,#a9d6aa 50%,#49946d);color:#0b2618}
+.launch-btn,.launch-header-cta,.dispater-quickbar a{transition:transform .2s ease,box-shadow .2s ease,border-color .2s ease}
+.launch-btn:hover,.launch-header-cta:hover{transform:translateY(-2px)}
+.dispater-quickbar a:hover{transform:translateY(-2px);border-color:var(--sovereign-verdigris)}
+.sovereign-proof-ribbon{border-color:var(--sovereign-line)}
+.audit-3d-node.is-active{border-color:var(--sovereign-verdigris);box-shadow:inset 3px 0 var(--sovereign-malachite),0 8px 24px rgba(49,123,89,.2)}
+.audit-3d-node .audit-3d-index{color:var(--sovereign-celadon)}
+:where(a,button,input,select,[tabindex]):focus-visible{outline:3px solid var(--sovereign-celadon);outline-offset:4px}
+@media (prefers-reduced-motion:reduce){.launch-btn,.launch-header-cta,.dispater-quickbar a{transition:none}.launch-btn:hover,.launch-header-cta:hover,.dispater-quickbar a:hover{transform:none}}
+@media(max-width:760px){.launch-hero h1{letter-spacing:0}.launch-hero{padding-top:clamp(62px,12vw,92px)}}
