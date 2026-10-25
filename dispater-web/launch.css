@@ -303,12 +303,9 @@ body>header,body>main,body>footer,body>.skip{position:relative;z-index:1}
 @media(prefers-reduced-motion:reduce){body::before,body::after{animation:none!important}html{scroll-behavior:auto}}
 
 
-/* Relocated 3D tow truck: full-width interactive display before process heading. */
-.equipment-pair-grid:has(> .sovereign-art-stage){grid-template-columns:minmax(0,1fr) minmax(225px,.78fr)}
-.launch-process .process-truck-placement{max-width:860px;margin:0 auto clamp(42px,6vw,76px);position:relative}
-.launch-process .process-truck-placement .equipment-pair-stage{width:100%;height:clamp(340px,48vw,520px);border-color:#ca80e96b;background:radial-gradient(ellipse at 50% 45%,#20527a55,transparent 72%),#0b1028cc}
-.launch-process .process-truck-placement .equipment-pair-stage canvas{touch-action:none}
-@media(max-width:760px){.equipment-pair-grid:has(> .sovereign-art-stage){grid-template-columns:1fr}.launch-process .process-truck-placement{margin-bottom:44px}.launch-process .process-truck-placement .equipment-pair-stage{height:clamp(290px,82vw,420px)}}
+/* Keep the deployed frac tree, original artwork, and tow-truck hero together. */
+.equipment-pair-grid:has(> .sovereign-art-stage){grid-template-columns:minmax(0,1fr) minmax(225px,.78fr) minmax(0,1fr)}
+@media(max-width:760px){.equipment-pair-grid:has(> .sovereign-art-stage){grid-template-columns:1fr}}
 
 
 /* DISPATER externalized synthetic operations journey. */
