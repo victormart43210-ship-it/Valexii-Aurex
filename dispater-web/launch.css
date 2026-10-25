@@ -503,24 +503,13 @@ main::before{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none
 @media(max-width:760px){.audit-3d-node.is-active{border-color:#e4b5ff;box-shadow:inset 3px 0 #d69bff,0 6px 22px #aa64ce55}}
 
 
-/* ROSE POMPADOUR · rare 18th-century-inspired pink, paired with Tyrian purple. */
-:root{--rare-rose:#d21f3c;--rare-rose-light:#83e0a2;--rare-puce:#167a55}
-.launch-header-cta,.launch-btn.launch-primary{background:linear-gradient(118deg,#83e0a2 0%,#25a66b 42%,#d21f3c 100%);border-color:#d94557;color:#091b13;box-shadow:0 9px 34px #a31d3550}
-.launch-header-cta:hover,.launch-btn.launch-primary:hover{background:linear-gradient(118deg,#a2edb7,#e4515f);color:#091b13}
-.shad-badge.cyan{background:#123b2c;color:#83e0a2;border-color:#39b77b}
-.shad-toggle button[aria-pressed=true]{background:linear-gradient(120deg,#124a35,#812336);color:#eafff0;box-shadow:inset 0 2px #d21f3c}
-.shad-toggle button:hover{background:#74313b}
-.dispater-quickbar>a:nth-of-type(4) strong{color:#83e0a2}
-.dispater-quickbar>a:nth-of-type(4):hover{border-color:#d21f3c}
-.shad-topline .shad-badge.cyan{box-shadow:0 0 0 1px #d21f3c30}
-
-/* IMPERIAL EMERALD / CRIMSON — definitive replacement for pink highlights. */
-:root{--rare-rose:#d21f3c;--rare-rose-light:#83e0a2;--rare-puce:#167a55;--imperial-emerald:#13875c;--imperial-crimson:#b91f37}
-.launch-header-cta,.launch-btn.launch-primary{background:linear-gradient(115deg,#9ceab5 0%,#2eb778 43%,#c9233e 100%);border-color:#d84b59;color:#071b14;box-shadow:0 9px 34px #b91f3750}
-.launch-header-cta:hover,.launch-btn.launch-primary:hover{background:linear-gradient(115deg,#b3f3c6,#42cb88 46%,#e44a5d);color:#071b14}
-.shad-badge.cyan{background:#123e2e;color:#b9f5cf;border-color:#2eaa73}
-.shad-toggle button[aria-pressed=true]{background:linear-gradient(120deg,#11553b,#742335);color:#f5fff7;box-shadow:inset 0 2px #46c58a}
-.shad-toggle button:hover{background:#254d3a}
-.dispater-quickbar>a:nth-of-type(4) strong{color:#e65b69}
-.dispater-quickbar>a:nth-of-type(4):hover{border-color:#c9233e}
-.shad-topline .shad-badge.cyan{box-shadow:0 0 0 1px #2eaa7330}
+/* MALACHITE VERDIGRIS — rare mineral green, without pink or crimson. */
+:root{--rare-rose:#257b58;--rare-rose-light:#b4e3b9;--rare-puce:#315d43;--imperial-emerald:#317b59;--imperial-crimson:#317b59;--malachite:#317b59;--verdigris:#69a889;--celadon:#c1dfb9}
+.launch-header-cta,.launch-btn.launch-primary{background:linear-gradient(120deg,#c1dfb9 0%,#83bc91 48%,#317b59 100%);border-color:#a5d6a7;color:#10291c;box-shadow:0 9px 34px #317b5955}
+.launch-header-cta:hover,.launch-btn.launch-primary:hover{background:linear-gradient(120deg,#d8eacb,#9acda3 52%,#46926b);color:#10291c}
+.shad-badge.cyan{background:#153c2e;color:#c1dfb9;border-color:#69a889}
+.shad-toggle button[aria-pressed=true]{background:linear-gradient(120deg,#1e543c,#317b59);color:#e9f8e8;box-shadow:inset 0 2px #83bc91}
+.shad-toggle button:hover{background:#285640}
+.dispater-quickbar>a:nth-of-type(4) strong{color:#b4e3b9}
+.dispater-quickbar>a:nth-of-type(4):hover{border-color:#69a889}
+.shad-topline .shad-badge.cyan{box-shadow:0 0 0 1px #69a88930}
