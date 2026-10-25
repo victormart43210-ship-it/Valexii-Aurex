@@ -51,6 +51,18 @@ def initialize(path: str) -> None:
         CREATE TABLE IF NOT EXISTS workers (
           worker_id TEXT PRIMARY KEY, last_seen TEXT NOT NULL
         );
+        CREATE TABLE IF NOT EXISTS intake_records (
+          id TEXT PRIMARY KEY,
+          tenant_id TEXT NOT NULL,
+          source_label TEXT NOT NULL,
+          content_sha256 TEXT NOT NULL,
+          size_bytes INTEGER NOT NULL,
+          status TEXT NOT NULL CHECK(status = 'QUARANTINED'),
+          authority TEXT NOT NULL CHECK(authority = 'NONE'),
+          idempotency_key TEXT NOT NULL,
+          created_at TEXT NOT NULL,
+          UNIQUE(tenant_id, idempotency_key)
+        );
         """)
 
 
