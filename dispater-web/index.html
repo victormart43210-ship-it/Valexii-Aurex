@@ -96,6 +96,24 @@
         <img class="pair-fallback" src="/tow-recovery.svg" alt="Illustrated tow truck" width="500" height="335" loading="lazy">
       </div>
     </div>
+    <section class="audit-3d-showcase" id="audit-3d-showcase" aria-labelledby="audit-3d-title">
+      <p class="launch-overline">THE AUDIT PROCESS · VISUALIZED IN 3D</p>
+      <h3 id="audit-3d-title">From scattered records to <em>defensible decisions.</em></h3>
+      <p class="audit-3d-intro">Explore a proposed evidence-first workflow using a fictional $3,850 heavy-recovery billing exception. Select any node to see what it checks, what it cannot prove, and who controls the next action.</p>
+      <div class="audit-3d-stage" role="group" aria-label="Interactive five-stage three-dimensional audit workflow">
+        <div class="audit-3d-rail" aria-hidden="true"></div>
+        <div class="audit-3d-nodes">
+          <button type="button" class="audit-3d-node is-active" data-audit-node="0" aria-pressed="true"><span class="audit-3d-index">01</span><strong>EVIDENCE</strong><small>Dispatch · ticket</small></button>
+          <button type="button" class="audit-3d-node" data-audit-node="1" aria-pressed="false"><span class="audit-3d-index">02</span><strong>QUALIFY</strong><small>Source · integrity</small></button>
+          <button type="button" class="audit-3d-node" data-audit-node="2" aria-pressed="false"><span class="audit-3d-index">03</span><strong>REALITY</strong><small>Reconcile · compare</small></button>
+          <button type="button" class="audit-3d-node" data-audit-node="3" aria-pressed="false"><span class="audit-3d-index">04</span><strong>AUTHORITY</strong><small>Human decision</small></button>
+          <button type="button" class="audit-3d-node" data-audit-node="4" aria-pressed="false"><span class="audit-3d-index">05</span><strong>EFFECT</strong><small>Approved action</small></button>
+        </div>
+      </div>
+      <div class="audit-3d-readout" aria-live="polite" aria-atomic="true"><div><span id="audit-3d-label">01 / EVIDENCE</span><h4 id="audit-3d-heading">Find the source records</h4><p id="audit-3d-detail">Locate the fictional dispatch ticket, completion record, rate sheet and billing export. A missing invoice is a candidate exception—not proof of lost revenue.</p></div><div class="audit-3d-gate"><span>GOVERNANCE GATE</span><strong id="audit-3d-gate-text">Source provenance required</strong><small id="audit-3d-boundary">No live records connected. Evidence authenticity NOT VERIFIED.</small></div></div>
+      <div class="audit-3d-comparison" aria-label="Illustrative workflow comparison"><div><span>FRAGMENTED MANUAL WORKFLOW</span><p>Search separate systems → manually cross-reference tickets and invoices → reconstruct what happened → seek approval.</p></div><div><span>DISPATER PROPOSED WORKFLOW</span><p>Link sources → qualify evidence → flag a candidate mismatch → preserve the explanation → route to an authorized reviewer.</p></div></div>
+      <p class="audit-3d-note">Illustrative comparison of workflows, not a measured competitor benchmark. No verified time savings, detection advantage, autonomous decisions, or completed customer audits are claimed. 3D visualization is presentation-only and cannot authorize actions.</p>
+    </section>
     <div class="command-experience" id="command-experience" aria-labelledby="command-title">
       <p class="launch-overline">INTERACTIVE OPERATIONS TOUR · FICTIONAL DATA ONLY</p>
       <h3 id="command-title">One recovery. <em>Every decision traceable.</em></h3>
@@ -173,5 +191,14 @@
  const render=()=>{const s=steps[index];document.getElementById("command-phase").textContent=s[0];document.getElementById("command-record-title").textContent=s[1];document.getElementById("command-record-desc").textContent=s[2];document.getElementById("command-facts").replaceChildren(...[0,2,4].map(i=>{const row=document.createElement("div"),dt=document.createElement("dt"),dd=document.createElement("dd");dt.textContent=s[3][i];dd.textContent=s[3][i+1];row.append(dt,dd);return row}));document.getElementById("command-proof").textContent=s[4];buttons.forEach((b,i)=>{b.classList.toggle("is-active",i===index);b.setAttribute("aria-pressed",String(i===index))});prev.disabled=index===0;next.disabled=index===steps.length-1;next.textContent=index===steps.length-1?"Tour complete":'Next: '+buttons[index+1].textContent.trim().replace(/^\\d+\\s*/, "")+" →"};
  buttons.forEach((b,i)=>b.addEventListener("click",()=>{index=i;render()}));prev.addEventListener("click",()=>{index=Math.max(0,index-1);render()});next.addEventListener("click",()=>{index=Math.min(steps.length-1,index+1);render()});render();
 })();
+</script>
+<script>
+(()=>{const nodes=[...document.querySelectorAll("[data-audit-node]")];if(!nodes.length)return;const data=[
+["01 / EVIDENCE","Find the source records","Locate the fictional dispatch ticket, completion record, rate sheet and billing export. A missing invoice is a candidate exception—not proof of lost revenue.","Source provenance required","No live records connected. Evidence authenticity NOT VERIFIED."],
+["02 / QUALIFICATION","Check what can be trusted","Check record identity, timestamps, completeness and source relationships. Missing or conflicting inputs remain unresolved rather than being marked as passing.","Unknown is not safe","No independent verification of synthetic records is implied."],
+["03 / REALITY","Reconcile the $3,850 candidate","Compare the fictional completed heavy-recovery job against invoice exports and the example rate sheet: $2,500 + $900 + $450 = $3,850. An unmatched record is a review item, not confirmed collectible revenue.","Discrepancy is a hypothesis","Sample charges are invented, not validated industry rates."],
+["04 / AUTHORITY","Require an authorized reviewer","Present the evidence trail, caveats and source links to a human reviewer. The reviewer must verify contractual terms, performed work and billing eligibility before any action.","Human approval required","AI cannot approve its own finding or act as its sole witness."],
+["05 / EFFECT","Act only after approval","In a future connected system, an authorized operator could request a corrected invoice, follow up on documentation or close the exception. This public demo performs none of those actions.","Effect boundary: CLOSED","No billing, dispatch, external write or customer-data operation is performed."]
+];function show(i){const x=data[i];document.getElementById("audit-3d-label").textContent=x[0];document.getElementById("audit-3d-heading").textContent=x[1];document.getElementById("audit-3d-detail").textContent=x[2];document.getElementById("audit-3d-gate-text").textContent=x[3];document.getElementById("audit-3d-boundary").textContent=x[4];nodes.forEach((n,j)=>{n.classList.toggle("is-active",j===i);n.setAttribute("aria-pressed",String(j===i))})}nodes.forEach((n,i)=>{n.addEventListener("click",()=>show(i));n.addEventListener("keydown",e=>{if(e.key==="ArrowRight"||e.key==="ArrowLeft"){e.preventDefault();const j=(i+(e.key==="ArrowRight"?1:4))%5;nodes[j].focus();show(j)}})});show(0)})();
 </script>
 </body></html>
