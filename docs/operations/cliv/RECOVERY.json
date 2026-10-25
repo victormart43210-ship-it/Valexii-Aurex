@@ -1,13 +1,22 @@
 {
   "operation": "KUSANAGI CLIV IRON BRIDGE",
-  "checkpoint": 1,
+  "checkpoint": 2,
   "source_base": "c531661b9a1554fd80a2fa24540c9b69430f1081",
   "branch": "work/kusanagi-cliv-iron-bridge",
   "checkpoint_sha": "Resolve enclosing Git commit; self-referential SHA cannot be embedded",
   "completed": [
-    "Refreshed main, PR133/135/136/140, Railway staging config and rollback"
+    "Canonical authenticated fixed towing execution, existing fenced worker and evidence_records",
+    "Idempotency and separately retrieved digest-checked receipt",
+    "Malformed bearer repaired, unknown legacy schema rejected before writes",
+    "Existing DISPATER source restored from deployed 3ba378e1805568b16fa39590d55bb578cb4c4a3e with assets preserved",
+    "Default-off server-only owner proxy and separate staging panel prepared"
   ],
-  "tests": "NOT RUN",
+  "tests": {
+    "python": "397 passed, 1 skipped before schema guards; 16 focused passed after guards",
+    "ruff": "PASS",
+    "mypy": "PASS 76 files",
+    "frontend": "5 proxy/receipt tests PASS; full suite blocked missing three dependency"
+  },
   "railway": {
     "deployment": "8fe3f398-4e6f-4bfa-8c79-da1b84ccefb4",
     "sha": "f2db438f0020dbd455bcb5c7b21b7352d133bf2c",
@@ -22,9 +31,9 @@
     "Vercel supplied project lookup returned 404; scope discovery pending"
   ],
   "next": [
-    "Implement fixed-fixture reconciliation through canonical fenced SQLite engine",
-    "Verify schema/isolation before staging mutation",
-    "Resolve DISPATER source and server proxy scope"
+    "Run full tests and independent review of candidate",
+    "Verify owner-session integration and provider volume instance/backup metadata",
+    "Deploy only after credentials/isolation/CI gates pass"
   ],
   "restrictions": [
     "No production change",
@@ -33,5 +42,7 @@
     "No customer data"
   ],
   "release": "HOLD",
-  "utc": "2026-10-25T12:12:32.289273+00:00"
+  "utc": "2026-10-25T12:18:57.919699+00:00",
+  "prior_checkpoint": "54212ea7e672f3819b17f180ceeb035082602ed7",
+  "pr": 141
 }

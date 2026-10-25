@@ -1,0 +1,74 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="700" height="760" viewBox="0 0 700 760" role="img" aria-labelledby="title desc">
+<title id="title">Oilfield fracturing tree wellhead</title>
+<desc id="desc">Stylized high-pressure oilfield frac tree with stacked valves, gauges, twin wing valves, steel flanges, and connected frac iron piping.</desc>
+<defs>
+<linearGradient id="steel" x1="0" x2="1"><stop stop-color="#071822"/><stop offset=".21" stop-color="#5f8895"/><stop offset=".40" stop-color="#1b4654"/><stop offset=".64" stop-color="#94b8be"/><stop offset="1" stop-color="#0c2934"/></linearGradient>
+<linearGradient id="pipe" x1="0" x2="1"><stop stop-color="#133542"/><stop offset=".49" stop-color="#48b6cb"/><stop offset="1" stop-color="#153039"/></linearGradient>
+<radialGradient id="back"><stop stop-color="#164d5c" stop-opacity=".56"/><stop offset=".75" stop-color="#0b2738" stop-opacity=".16"/><stop offset="1" stop-color="#06101a" stop-opacity="0"/></radialGradient>
+<filter id="glow"><feGaussianBlur stdDeviation="5"/></filter>
+</defs>
+<ellipse cx="350" cy="490" rx="285" ry="245" fill="url(#back)"/>
+<path d="M60 645H640" stroke="#19bed4" stroke-opacity=".35" stroke-width="2"/>
+<g stroke="#6bdeed" stroke-opacity=".4" fill="none">
+<path d="M85 640V600H190L255 550M615 640V595H500L445 550" stroke-width="14" stroke-linecap="round"/>
+<path d="M85 640V600H190L255 550M615 640V595H500L445 550" stroke="#0c2635" stroke-width="8" stroke-linecap="round"/>
+</g>
+<g fill="url(#steel)" stroke="#152c38" stroke-width="5">
+<rect x="271" y="570" width="158" height="80" rx="4"/>
+<rect x="252" y="616" width="198" height="28" rx="4"/>
+<rect x="276" y="530" width="148" height="46" rx="6"/>
+<rect x="300" y="264" width="100" height="270" rx="10"/>
+<rect x="292" y="280" width="116" height="24" rx="3"/>
+<rect x="292" y="352" width="116" height="26" rx="3"/>
+<rect x="292" y="432" width="116" height="24" rx="3"/>
+<rect x="292" y="505" width="116" height="25" rx="3"/>
+<rect x="304" y="219" width="92" height="53" rx="7"/>
+<rect x="297" y="202" width="106" height="18" rx="2"/>
+<rect x="314" y="167" width="72" height="37" rx="6"/>
+<rect x="333" y="128" width="34" height="42" rx="4"/>
+</g>
+<g stroke="#61b4c1" stroke-width="2" opacity=".65">
+<path d="M317 283V524M383 283V524M308 294H392M308 365H392M308 446H392M306 519H394"/>
+</g>
+<g fill="url(#steel)" stroke="#12313c" stroke-width="6">
+<rect x="174" y="360" width="118" height="72" rx="7"/>
+<rect x="408" y="360" width="118" height="72" rx="7"/>
+<rect x="145" y="376" width="36" height="43" rx="4"/>
+<rect x="520" y="376" width="36" height="43" rx="4"/>
+<rect x="119" y="389" width="36" height="17" rx="4"/>
+<rect x="548" y="389" width="33" height="17" rx="4"/>
+</g>
+<g stroke="#a1dde5" fill="none" stroke-width="11">
+<circle cx="192" cy="331" r="39"/><circle cx="508" cy="331" r="39"/>
+<circle cx="350" cy="149" r="40"/>
+<circle cx="350" cy="316" r="39"/>
+<circle cx="350" cy="403" r="36"/>
+</g>
+<g stroke="#54d8ed" stroke-width="7" stroke-linecap="round">
+<path d="M192 291V371M153 331H231M163 302L221 360M163 360L221 302"/>
+<path d="M508 291V371M468 331H548M480 303L536 359M480 359L536 303"/>
+<path d="M310 149H390M350 109V189M322 121L378 177M322 177L378 121"/>
+<path d="M311 316H389M350 277V355M324 289L376 342M324 342L376 289"/>
+<path d="M314 403H386M350 367V439M325 377L375 429M325 429L375 377"/>
+</g>
+<g stroke="#b4e3eb" stroke-width="4">
+<path d="M192 369V374M508 369V374M350 189V206M350 440V447"/>
+</g>
+<g fill="#0b2735" stroke="#d2b47a" stroke-width="3">
+<circle cx="270" cy="252" r="29"/><circle cx="430" cy="252" r="29"/>
+</g>
+<g fill="none" stroke="#2bd7e7" stroke-width="4" stroke-linecap="round">
+<path d="M270 252l-9-12M430 252l12-10"/>
+</g>
+<path d="M270 282v25h26M430 282v25h-27" stroke="url(#pipe)" fill="none" stroke-width="11" stroke-linecap="round"/>
+<g fill="#0b2c3b" stroke="#2f8e9e" stroke-width="3">
+<circle cx="350" cy="593" r="14"/><circle cx="350" cy="621" r="14"/>
+<circle cx="285" cy="625" r="9"/><circle cx="416" cy="625" r="9"/>
+</g>
+<g fill="#e4bc7a"><circle cx="270" cy="252" r="3"/><circle cx="430" cy="252" r="3"/></g>
+<g opacity=".65" fill="none" stroke="#09d0dc" stroke-width="1.2"><path d="M150 530H250M450 530H550M215 520V541M484 520V541"/></g>
+<g opacity=".85" fill="#a9f5f9" font-family="Arial,sans-serif" font-size="15" letter-spacing="2">
+<text x="350" y="694" text-anchor="middle">HIGH-PRESSURE FRAC TREE</text>
+<text x="350" y="718" fill="#e4bc7a" text-anchor="middle" font-size="11">CONCEPT VISUAL · NOT LIVE TELEMETRY</text>
+</g>
+</svg>
