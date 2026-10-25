@@ -431,3 +431,37 @@ body{background:var(--lux-bg);color:var(--lux-ink);-webkit-font-smoothing:antial
 .shad-guide-backdrop{backdrop-filter:blur(12px)}
 @media(max-width:760px){.shad-backend-status{flex-direction:column;align-items:stretch}.shad-backend-status button{width:100%}.shad-shell{border-radius:13px}.launch-header{position:sticky}}
 @media(prefers-reduced-motion:reduce){.launch-header-cta,.launch-btn.launch-primary,.shad-card,.shad-button{transition:none!important}.launch-header-cta:hover,.launch-btn.launch-primary:hover,.shad-button:hover{transform:none!important}}
+
+
+/* MOBILE TYPOGRAPHY SIGNATURE · imperial champagne / platinum / aurora mint.
+   Distinctive colored lettering without sacrificing readability. */
+:root{--letter-platinum:#f6f3ec;--letter-champagne:#f2cb91;--letter-aurora:#a7fff0;--letter-orchid:#c5b4ff}
+.launch-brand>span:last-child{color:var(--letter-platinum)}.launch-brand .launch-accent{color:var(--letter-champagne);text-shadow:0 0 16px #e7bb7760}
+.launch-hero h1{color:var(--letter-platinum);background:linear-gradient(112deg,#fffaf0 5%,#cbd9e8 39%,#f6d59b 66%,#fff6e4 90%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;text-shadow:none;filter:drop-shadow(0 8px 22px #0009)}
+.launch-hero h1 span{background:linear-gradient(125deg,#f9d59c,#a8fff1 62%,#b4b8ff);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.launch-hero h2{color:var(--letter-platinum)}.launch-hero h2 em{color:var(--letter-champagne);font-style:italic;text-shadow:0 0 22px #e7b86a35}
+.launch-overline{color:var(--letter-aurora);letter-spacing:.16em}
+.launch-section-head h2,.ai-externalized h2,.launch-process h2,.launch-industries h2,.launch-services h2{color:var(--letter-platinum)}
+.launch-section-head h2 em,.ai-externalized h2 em,.launch-process h2 em{color:var(--letter-champagne)}
+.dispater-quickbar>a strong{color:#f9f5eb}.dispater-quickbar>a:nth-of-type(2) strong{color:var(--letter-aurora)}.dispater-quickbar>a:nth-of-type(3) strong{color:var(--letter-champagne)}.dispater-quickbar>a:nth-of-type(4) strong{color:#ddd1ff}
+.shad-topline h3,.shad-pane-header h4{color:var(--letter-platinum)}.shad-side-brand{color:var(--letter-champagne)}.shad-stat-value{color:var(--letter-aurora)}
+@media(max-width:700px){
+ .launch-header-inner{min-height:66px}
+ .launch-brand{font-size:clamp(19px,5.4vw,25px);letter-spacing:.035em;gap:7px}
+ .launch-emblem{width:33px;height:33px;font-size:21px;border-color:#e8c488;color:#f1d19a}
+ .launch-hero{padding-top:52px}
+ .launch-hero h1{font-size:clamp(48px,13.1vw,79px);letter-spacing:-.065em;line-height:1.04;margin:18px 0 20px}
+ .launch-hero h2{font-size:clamp(29px,7.8vw,45px);line-height:1.12;letter-spacing:-.03em}
+ .launch-overline{font-size:10px;letter-spacing:.13em}
+ .launch-lead{color:#d4e1e9;line-height:1.8}
+ .launch-value-pills span{color:#f0d8b1}
+ .dispater-quickbar>a{background:linear-gradient(145deg,#152a3b,#0a1828);border-color:#6f9aab8c}
+ .dispater-quickbar>a strong{font-size:13px;line-height:1.35;letter-spacing:.005em}
+ .dispater-quickbar>a>span{color:#d5baff}
+ .dispater-command-launch{border-color:#d6b67c9e;color:#f5ebdc}
+ .dispater-command-launch>span{color:#e9c78f}
+ .shad-topline h3{font-size:clamp(21px,5.4vw,28px);letter-spacing:-.02em}
+ .shad-breadcrumb,.shad-side-section{color:#c6b7e8}
+ .shad-tab-list{scrollbar-width:thin}
+}
+@media(max-width:360px){.launch-brand{font-size:18px}.launch-emblem{width:29px;height:29px}.launch-hero h1{font-size:clamp(43px,12.7vw,52px)}}
