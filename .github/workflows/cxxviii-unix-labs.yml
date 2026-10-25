@@ -33,6 +33,8 @@ jobs:
         run: ruff check integrations/kusanagi-xvi/backend/{store,worker,supervisor,lab,staging_probe}.py tests/test_cxxviii_unix_worker_labs.py tests/test_cxxviii_staging_persistence.py
       - name: Test Unix failure/restart fencing and Python labs
         run: python -m pytest -q tests/test_cxxviii_unix_worker_labs.py tests/test_cxxviii_staging_persistence.py
+      - name: Verify R13 tenant isolation and idempotency
+        run: python -m unittest discover -s tests -p 'test_clxx_intake_adapter.py' -v
       - name: Confirm offline labs never auto-execute
         run: |
           PYTHONPATH=integrations/kusanagi-xvi python -m backend.lab
