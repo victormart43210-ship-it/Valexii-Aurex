@@ -1,0 +1,1996 @@
+{
+  "schema": "kusanagi-cxxxiv-file-overlap-v1",
+  "snapshot_date": "2026-10-22 America/Chicago",
+  "source_shards": 8,
+  "pr_count": 78,
+  "total_pr_file_mentions": 981,
+  "distinct_paths": 422,
+  "file_overlap_is_not_merge_conflict": true,
+  "path_hotspots": [
+    {
+      "path": "aurex/api.py",
+      "pr_count": 22,
+      "prs": [
+        118,
+        117,
+        109,
+        104,
+        97,
+        96,
+        95,
+        94,
+        83,
+        72,
+        60,
+        44,
+        41,
+        39,
+        38,
+        36,
+        32,
+        30,
+        29,
+        28,
+        27,
+        20
+      ]
+    },
+    {
+      "path": "aurex/database.py",
+      "pr_count": 11,
+      "prs": [
+        119,
+        97,
+        44,
+        41,
+        39,
+        38,
+        32,
+        30,
+        29,
+        28,
+        20
+      ]
+    },
+    {
+      "path": "website/docs/aurex-api/openapi.yaml",
+      "pr_count": 11,
+      "prs": [
+        117,
+        109,
+        108,
+        104,
+        97,
+        96,
+        93,
+        72,
+        30,
+        29,
+        28
+      ]
+    },
+    {
+      "path": "website/src/lib/aurex-client.server.ts",
+      "pr_count": 10,
+      "prs": [
+        117,
+        109,
+        104,
+        97,
+        96,
+        93,
+        84,
+        30,
+        29,
+        28
+      ]
+    },
+    {
+      "path": "website/src/lib/aurex-api-schema.ts",
+      "pr_count": 9,
+      "prs": [
+        117,
+        109,
+        108,
+        104,
+        97,
+        84,
+        30,
+        29,
+        28
+      ]
+    },
+    {
+      "path": "website/src/lib/aurex-service.server.ts",
+      "pr_count": 9,
+      "prs": [
+        117,
+        104,
+        97,
+        96,
+        93,
+        84,
+        30,
+        29,
+        28
+      ]
+    },
+    {
+      "path": "tests/test_kusanagi_workflow.py",
+      "pr_count": 7,
+      "prs": [
+        96,
+        95,
+        72,
+        30,
+        29,
+        28,
+        20
+      ]
+    },
+    {
+      "path": "aurex/experiments/admission.py",
+      "pr_count": 6,
+      "prs": [
+        30,
+        29,
+        28,
+        20,
+        5,
+        3
+      ]
+    },
+    {
+      "path": "aurex/fenced_worker.py",
+      "pr_count": 6,
+      "prs": [
+        117,
+        104,
+        97,
+        96,
+        83,
+        44
+      ]
+    },
+    {
+      "path": "integrations/kusanagi-xvi/backend/app.py",
+      "pr_count": 6,
+      "prs": [
+        117,
+        112,
+        111,
+        110,
+        106,
+        97
+      ]
+    },
+    {
+      "path": "pyproject.toml",
+      "pr_count": 6,
+      "prs": [
+        96,
+        82,
+        61,
+        5,
+        4,
+        3
+      ]
+    },
+    {
+      "path": "aurex/adapters/openai_compatible.py",
+      "pr_count": 5,
+      "prs": [
+        30,
+        29,
+        28,
+        5,
+        3
+      ]
+    },
+    {
+      "path": "aurex/folio_index.py",
+      "pr_count": 5,
+      "prs": [
+        117,
+        99,
+        97,
+        89,
+        88
+      ]
+    },
+    {
+      "path": "integrations/kusanagi-xvi/backend/Dockerfile",
+      "pr_count": 5,
+      "prs": [
+        117,
+        112,
+        110,
+        106,
+        97
+      ]
+    },
+    {
+      "path": "tests/test_folio_index.py",
+      "pr_count": 5,
+      "prs": [
+        117,
+        99,
+        97,
+        89,
+        88
+      ]
+    },
+    {
+      "path": "website/src/components/aurex-capabilities.test.ts",
+      "pr_count": 5,
+      "prs": [
+        96,
+        93,
+        30,
+        29,
+        28
+      ]
+    },
+    {
+      "path": ".github/workflows/railway-image.yml",
+      "pr_count": 4,
+      "prs": [
+        96,
+        95,
+        72,
+        56
+      ]
+    },
+    {
+      "path": "aurex/adapters/execution.py",
+      "pr_count": 4,
+      "prs": [
+        30,
+        29,
+        28,
+        3
+      ]
+    },
+    {
+      "path": "aurex/audit_challenge.py",
+      "pr_count": 4,
+      "prs": [
+        117,
+        99,
+        97,
+        89
+      ]
+    },
+    {
+      "path": "aurex/audit_pilot.py",
+      "pr_count": 4,
+      "prs": [
+        117,
+        99,
+        97,
+        89
+      ]
+    },
+    {
+      "path": "aurex/field_reconciliation.py",
+      "pr_count": 4,
+      "prs": [
+        117,
+        104,
+        99,
+        97
+      ]
+    },
+    {
+      "path": "aurex/pipeline_receipts.py",
+      "pr_count": 4,
+      "prs": [
+        118,
+        117,
+        109,
+        97
+      ]
+    },
+    {
+      "path": "aurex/real_offline_probe.py",
+      "pr_count": 4,
+      "prs": [
+        44,
+        41,
+        39,
+        38
+      ]
+    },
+    {
+      "path": "aurex/request_limits.py",
+      "pr_count": 4,
+      "prs": [
+        30,
+        29,
+        28,
+        20
+      ]
+    },
+    {
+      "path": "aurex/sovereign_studio.py",
+      "pr_count": 4,
+      "prs": [
+        44,
+        41,
+        39,
+        36
+      ]
+    },
+    {
+      "path": "docs/KUSANAGI_XCVIII_SYNTHETIC_COMPANY_AUDIT_REPLAY.md",
+      "pr_count": 4,
+      "prs": [
+        117,
+        99,
+        97,
+        89
+      ]
+    },
+    {
+      "path": "docs/kusanagi-xiii/00-executive-status.md",
+      "pr_count": 4,
+      "prs": [
+        30,
+        29,
+        28,
+        20
+      ]
+    },
+    {
+      "path": "docs/kusanagi-xiii/01-repository-inventory.md",
+      "pr_count": 4,
+      "prs": [
+        30,
+        29,
+        28,
+        20
+      ]
+    },
+    {
+      "path": "docs/kusanagi-xiii/02-agent-convergence.md",
+      "pr_count": 4,
+      "prs": [
+        30,
+        29,
+        28,
+        20
+      ]
+    },
+    {
+      "path": "docs/kusanagi-xiii/03-canonical-architecture.md",
+      "pr_count": 4,
+      "prs": [
+        30,
+        29,
+        28,
+        20
+      ]
+    },
+    {
+      "path": "docs/kusanagi-xiii/04-api-contract.md",
+      "pr_count": 4,
+      "prs": [
+        30,
+        29,
+        28,
+        20
+      ]
+    },
+    {
+      "path": "docs/kusanagi-xiii/05-authentication-security.md",
+      "pr_count": 4,
+      "prs": [
+        30,
+        29,
+        28,
+        20
+      ]
+    },
+    {
+      "path": "docs/kusanagi-xiii/06-website-integration.md",
+      "pr_count": 4,
+      "prs": [
+        30,
+        29,
+        28,
+        20
+      ]
+    },
+    {
+      "path": "docs/kusanagi-xiii/07-linux-qwen-connectivity.md",
+      "pr_count": 4,
+      "prs": [
+        30,
+        29,
+        28,
+        20
+      ]
+    },
+    {
+      "path": "docs/kusanagi-xiii/08-test-matrix.md",
+      "pr_count": 4,
+      "prs": [
+        30,
+        29,
+        28,
+        20
+      ]
+    },
+    {
+      "path": "docs/kusanagi-xiii/09-adversarial-findings.md",
+      "pr_count": 4,
+      "prs": [
+        30,
+        29,
+        28,
+        20
+      ]
+    },
+    {
+      "path": "docs/kusanagi-xiii/10-deployment-readiness.md",
+      "pr_count": 4,
+      "prs": [
+        30,
+        29,
+        28,
+        20
+      ]
+    },
+    {
+      "path": "docs/kusanagi-xiii/11-final-evidence-report.md",
+      "pr_count": 4,
+      "prs": [
+        30,
+        29,
+        28,
+        20
+      ]
+    },
+    {
+      "path": "docs/kusanagi-xiii/evidence/adversarial-before.txt",
+      "pr_count": 4,
+      "prs": [
+        30,
+        29,
+        28,
+        20
+      ]
+    },
+    {
+      "path": "docs/kusanagi-xiii/evidence/baseline-mypy.txt",
+      "pr_count": 4,
+      "prs": [
+        30,
+        29,
+        28,
+        20
+      ]
+    },
+    {
+      "path": "docs/kusanagi-xiii/evidence/baseline-pytest.txt",
+      "pr_count": 4,
+      "prs": [
+        30,
+        29,
+        28,
+        20
+      ]
+    },
+    {
+      "path": "docs/kusanagi-xiii/evidence/baseline-ruff.txt",
+      "pr_count": 4,
+      "prs": [
+        30,
+        29,
+        28,
+        20
+      ]
+    },
+    {
+      "path": "docs/kusanagi-xiii/evidence/branch-inventory.json",
+      "pr_count": 4,
+      "prs": [
+        30,
+        29,
+        28,
+        20
+      ]
+    },
+    {
+      "path": "docs/kusanagi-xiii/evidence/final-mypy.txt",
+      "pr_count": 4,
+      "prs": [
+        30,
+        29,
+        28,
+        20
+      ]
+    },
+    {
+      "path": "docs/kusanagi-xiii/evidence/final-pytest.txt",
+      "pr_count": 4,
+      "prs": [
+        30,
+        29,
+        28,
+        20
+      ]
+    },
+    {
+      "path": "docs/kusanagi-xiii/evidence/final-ruff.txt",
+      "pr_count": 4,
+      "prs": [
+        30,
+        29,
+        28,
+        20
+      ]
+    },
+    {
+      "path": "docs/kusanagi-xiii/evidence/intermediate-pytest.txt",
+      "pr_count": 4,
+      "prs": [
+        30,
+        29,
+        28,
+        20
+      ]
+    },
+    {
+      "path": "docs/kusanagi-xiii/evidence/pr-inventory.json",
+      "pr_count": 4,
+      "prs": [
+        30,
+        29,
+        28,
+        20
+      ]
+    },
+    {
+      "path": "docs/kusanagi-xiii/evidence/python-environment.txt",
+      "pr_count": 4,
+      "prs": [
+        30,
+        29,
+        28,
+        20
+      ]
+    },
+    {
+      "path": "docs/kusanagi-xiii/evidence/verified-source-manifest.json",
+      "pr_count": 4,
+      "prs": [
+        30,
+        29,
+        28,
+        20
+      ]
+    },
+    {
+      "path": "docs/kusanagi-xiii/evidence/wheel-build.txt",
+      "pr_count": 4,
+      "prs": [
+        30,
+        29,
+        28,
+        20
+      ]
+    },
+    {
+      "path": "fixtures/synthetic_company_packet/bank_statement.json",
+      "pr_count": 4,
+      "prs": [
+        117,
+        99,
+        97,
+        89
+      ]
+    },
+    {
+      "path": "fixtures/synthetic_company_packet/dot_checklist.json",
+      "pr_count": 4,
+      "prs": [
+        117,
+        99,
+        97,
+        89
+      ]
+    },
+    {
+      "path": "fixtures/synthetic_company_packet/field_ticket.json",
+      "pr_count": 4,
+      "prs": [
+        117,
+        99,
+        97,
+        89
+      ]
+    },
+    {
+      "path": "fixtures/synthetic_company_packet/general_ledger.json",
+      "pr_count": 4,
+      "prs": [
+        117,
+        99,
+        97,
+        89
+      ]
+    },
+    {
+      "path": "fixtures/synthetic_company_packet/insurance_certificate.json",
+      "pr_count": 4,
+      "prs": [
+        117,
+        99,
+        97,
+        89
+      ]
+    },
+    {
+      "path": "fixtures/synthetic_company_packet/invoice.json",
+      "pr_count": 4,
+      "prs": [
+        117,
+        99,
+        97,
+        89
+      ]
+    },
+    {
+      "path": "fixtures/synthetic_company_packet/manifest.json",
+      "pr_count": 4,
+      "prs": [
+        117,
+        99,
+        97,
+        89
+      ]
+    },
+    {
+      "path": "fixtures/synthetic_company_packet/payment.json",
+      "pr_count": 4,
+      "prs": [
+        117,
+        99,
+        97,
+        89
+      ]
+    },
+    {
+      "path": "fixtures/synthetic_company_packet/purchase_order.json",
+      "pr_count": 4,
+      "prs": [
+        117,
+        99,
+        97,
+        89
+      ]
+    },
+    {
+      "path": "fixtures/synthetic_company_packet/tax_summary.json",
+      "pr_count": 4,
+      "prs": [
+        117,
+        99,
+        97,
+        89
+      ]
+    },
+    {
+      "path": "integrations/kusanagi-xvi/backend/boot.py",
+      "pr_count": 4,
+      "prs": [
+        119,
+        112,
+        110,
+        97
+      ]
+    },
+    {
+      "path": "integrations/kusanagi-xvi/backend/requirements.txt",
+      "pr_count": 4,
+      "prs": [
+        117,
+        110,
+        106,
+        97
+      ]
+    },
+    {
+      "path": "integrations/kusanagi-xvi/backend/store.py",
+      "pr_count": 4,
+      "prs": [
+        119,
+        111,
+        110,
+        97
+      ]
+    },
+    {
+      "path": "integrations/kusanagi-xvi/backend/supervisor.py",
+      "pr_count": 4,
+      "prs": [
+        119,
+        111,
+        110,
+        97
+      ]
+    },
+    {
+      "path": "integrations/kusanagi-xvi/backend/worker.py",
+      "pr_count": 4,
+      "prs": [
+        119,
+        111,
+        110,
+        97
+      ]
+    },
+    {
+      "path": "tests/test_api_sqlite_contract.py",
+      "pr_count": 4,
+      "prs": [
+        118,
+        117,
+        104,
+        97
+      ]
+    },
+    {
+      "path": "tests/test_api.py",
+      "pr_count": 4,
+      "prs": [
+        30,
+        29,
+        28,
+        20
+      ]
+    },
+    {
+      "path": "tests/test_audit_pilot.py",
+      "pr_count": 4,
+      "prs": [
+        117,
+        99,
+        97,
+        89
+      ]
+    },
+    {
+      "path": "tests/test_field_audit_beta_gate.py",
+      "pr_count": 4,
+      "prs": [
+        117,
+        104,
+        99,
+        97
+      ]
+    },
+    {
+      "path": "tests/test_field_audit_beta_pipeline.py",
+      "pr_count": 4,
+      "prs": [
+        117,
+        104,
+        99,
+        97
+      ]
+    },
+    {
+      "path": "tests/test_kusanagi_repairs.py",
+      "pr_count": 4,
+      "prs": [
+        30,
+        29,
+        28,
+        20
+      ]
+    },
+    {
+      "path": "tests/test_kusanagi_xiii.py",
+      "pr_count": 4,
+      "prs": [
+        30,
+        29,
+        28,
+        20
+      ]
+    },
+    {
+      "path": "tests/test_real_offline_probe.py",
+      "pr_count": 4,
+      "prs": [
+        44,
+        41,
+        39,
+        38
+      ]
+    },
+    {
+      "path": "website/examples/aurex-backend/app.py",
+      "pr_count": 4,
+      "prs": [
+        30,
+        29,
+        28,
+        27
+      ]
+    }
+  ],
+  "top_pr_pairs": [
+    {
+      "pr_a": 30,
+      "pr_b": 29,
+      "shared_file_count": 93,
+      "examples": [
+        ".github/workflows/website.yml",
+        "aurex/adapters/execution.py",
+        "aurex/adapters/openai_compatible.py",
+        "aurex/analytics.py",
+        "aurex/api.py",
+        "aurex/database.py",
+        "aurex/experiments/admission.py"
+      ]
+    },
+    {
+      "pr_a": 30,
+      "pr_b": 28,
+      "shared_file_count": 90,
+      "examples": [
+        ".github/workflows/website.yml",
+        "aurex/adapters/execution.py",
+        "aurex/adapters/openai_compatible.py",
+        "aurex/analytics.py",
+        "aurex/api.py",
+        "aurex/database.py",
+        "aurex/experiments/admission.py"
+      ]
+    },
+    {
+      "pr_a": 29,
+      "pr_b": 28,
+      "shared_file_count": 90,
+      "examples": [
+        ".github/workflows/website.yml",
+        "aurex/adapters/execution.py",
+        "aurex/adapters/openai_compatible.py",
+        "aurex/analytics.py",
+        "aurex/api.py",
+        "aurex/database.py",
+        "aurex/experiments/admission.py"
+      ]
+    },
+    {
+      "pr_a": 117,
+      "pr_b": 97,
+      "shared_file_count": 62,
+      "examples": [
+        ".github/workflows/cxxv-website-bridge.yml",
+        ".github/workflows/cxxvi-pipeline.yml",
+        "Dockerfile.aurex",
+        "aurex/api.py",
+        "aurex/audit_challenge.py",
+        "aurex/audit_pilot.py",
+        "aurex/fenced_worker.py"
+      ]
+    },
+    {
+      "pr_a": 30,
+      "pr_b": 20,
+      "shared_file_count": 33,
+      "examples": [
+        "aurex/api.py",
+        "aurex/database.py",
+        "aurex/experiments/admission.py",
+        "aurex/request_limits.py",
+        "docs/kusanagi-xiii/00-executive-status.md",
+        "docs/kusanagi-xiii/01-repository-inventory.md",
+        "docs/kusanagi-xiii/02-agent-convergence.md"
+      ]
+    },
+    {
+      "pr_a": 29,
+      "pr_b": 20,
+      "shared_file_count": 33,
+      "examples": [
+        "aurex/api.py",
+        "aurex/database.py",
+        "aurex/experiments/admission.py",
+        "aurex/request_limits.py",
+        "docs/kusanagi-xiii/00-executive-status.md",
+        "docs/kusanagi-xiii/01-repository-inventory.md",
+        "docs/kusanagi-xiii/02-agent-convergence.md"
+      ]
+    },
+    {
+      "pr_a": 28,
+      "pr_b": 20,
+      "shared_file_count": 33,
+      "examples": [
+        "aurex/api.py",
+        "aurex/database.py",
+        "aurex/experiments/admission.py",
+        "aurex/request_limits.py",
+        "docs/kusanagi-xiii/00-executive-status.md",
+        "docs/kusanagi-xiii/01-repository-inventory.md",
+        "docs/kusanagi-xiii/02-agent-convergence.md"
+      ]
+    },
+    {
+      "pr_a": 117,
+      "pr_b": 99,
+      "shared_file_count": 28,
+      "examples": [
+        "aurex/audit_challenge.py",
+        "aurex/audit_pilot.py",
+        "aurex/field_assurance.py",
+        "aurex/field_reconciliation.py",
+        "aurex/folio_index.py",
+        "docs/AUREX_GLOBAL_ASSURANCE_LONDON_NYC.md",
+        "docs/FIELD_AUDIT_BETA_ACCEPTANCE.md"
+      ]
+    },
+    {
+      "pr_a": 99,
+      "pr_b": 97,
+      "shared_file_count": 28,
+      "examples": [
+        "aurex/audit_challenge.py",
+        "aurex/audit_pilot.py",
+        "aurex/field_assurance.py",
+        "aurex/field_reconciliation.py",
+        "aurex/folio_index.py",
+        "docs/AUREX_GLOBAL_ASSURANCE_LONDON_NYC.md",
+        "docs/FIELD_AUDIT_BETA_ACCEPTANCE.md"
+      ]
+    },
+    {
+      "pr_a": 5,
+      "pr_b": 3,
+      "shared_file_count": 21,
+      "examples": [
+        "aurex/adapters/base.py",
+        "aurex/adapters/ollama.py",
+        "aurex/adapters/openai_compatible.py",
+        "aurex/engine.py",
+        "aurex/evals/hle_gate.py",
+        "aurex/evidence.py",
+        "aurex/experiments/__init__.py"
+      ]
+    },
+    {
+      "pr_a": 117,
+      "pr_b": 104,
+      "shared_file_count": 17,
+      "examples": [
+        "aurex/api.py",
+        "aurex/fenced_worker.py",
+        "aurex/field_reconciliation.py",
+        "docs/KUSANAGI_CXVIII_PAYMENT_ACTIVATION_RUNBOOK.md",
+        "docs/KUSANAGI_CXVII_CONTRACT_PROOF.md",
+        "tests/test_api_sqlite_contract.py",
+        "tests/test_field_audit_beta_gate.py"
+      ]
+    },
+    {
+      "pr_a": 117,
+      "pr_b": 89,
+      "shared_file_count": 17,
+      "examples": [
+        "aurex/audit_challenge.py",
+        "aurex/audit_pilot.py",
+        "aurex/folio_index.py",
+        "docs/KUSANAGI_XCVIII_SYNTHETIC_COMPANY_AUDIT_REPLAY.md",
+        "fixtures/synthetic_company_packet/bank_statement.json",
+        "fixtures/synthetic_company_packet/dot_checklist.json",
+        "fixtures/synthetic_company_packet/field_ticket.json"
+      ]
+    },
+    {
+      "pr_a": 104,
+      "pr_b": 97,
+      "shared_file_count": 17,
+      "examples": [
+        "aurex/api.py",
+        "aurex/fenced_worker.py",
+        "aurex/field_reconciliation.py",
+        "docs/KUSANAGI_CXVIII_PAYMENT_ACTIVATION_RUNBOOK.md",
+        "docs/KUSANAGI_CXVII_CONTRACT_PROOF.md",
+        "tests/test_api_sqlite_contract.py",
+        "tests/test_field_audit_beta_gate.py"
+      ]
+    },
+    {
+      "pr_a": 99,
+      "pr_b": 89,
+      "shared_file_count": 17,
+      "examples": [
+        "aurex/audit_challenge.py",
+        "aurex/audit_pilot.py",
+        "aurex/folio_index.py",
+        "docs/KUSANAGI_XCVIII_SYNTHETIC_COMPANY_AUDIT_REPLAY.md",
+        "fixtures/synthetic_company_packet/bank_statement.json",
+        "fixtures/synthetic_company_packet/dot_checklist.json",
+        "fixtures/synthetic_company_packet/field_ticket.json"
+      ]
+    },
+    {
+      "pr_a": 97,
+      "pr_b": 89,
+      "shared_file_count": 17,
+      "examples": [
+        "aurex/audit_challenge.py",
+        "aurex/audit_pilot.py",
+        "aurex/folio_index.py",
+        "docs/KUSANAGI_XCVIII_SYNTHETIC_COMPANY_AUDIT_REPLAY.md",
+        "fixtures/synthetic_company_packet/bank_statement.json",
+        "fixtures/synthetic_company_packet/dot_checklist.json",
+        "fixtures/synthetic_company_packet/field_ticket.json"
+      ]
+    },
+    {
+      "pr_a": 119,
+      "pr_b": 97,
+      "shared_file_count": 12,
+      "examples": [
+        "aurex/database.py",
+        "docs/operations/KUSANAGI_CXXXII_CP005.md",
+        "docs/operations/KUSANAGI_CXXXII_NEXT_AGENT.md",
+        "docs/operations/KUSANAGI_CXXXII_RECOVERY.json",
+        "docs/operations/KUSANAGI_CXXXII_RESUME.md",
+        "integrations/kusanagi-xvi/backend/__init__.py",
+        "integrations/kusanagi-xvi/backend/boot.py"
+      ]
+    },
+    {
+      "pr_a": 118,
+      "pr_b": 97,
+      "shared_file_count": 10,
+      "examples": [
+        "aurex/api.py",
+        "aurex/offline_probes.py",
+        "aurex/offline_worker.py",
+        "aurex/pipeline_receipts.py",
+        "docs/operations/KUSANAGI_CXXIX_NEXT_AGENT_HANDOFF.md",
+        "docs/operations/KUSANAGI_CXXIX_RECOVERY.json",
+        "docs/operations/KUSANAGI_CXXIX_RESUME.md"
+      ]
+    },
+    {
+      "pr_a": 117,
+      "pr_b": 109,
+      "shared_file_count": 10,
+      "examples": [
+        ".github/workflows/cxxvi-pipeline.yml",
+        "Dockerfile.aurex",
+        "aurex/api.py",
+        "aurex/pipeline_receipts.py",
+        "docs/KUSANAGI_CXXVI_PIPELINE_REPAIR.md",
+        "tests/test_cxxvi_pipeline_receipts.py",
+        "website/docs/aurex-api/openapi.yaml"
+      ]
+    },
+    {
+      "pr_a": 109,
+      "pr_b": 97,
+      "shared_file_count": 10,
+      "examples": [
+        ".github/workflows/cxxvi-pipeline.yml",
+        "Dockerfile.aurex",
+        "aurex/api.py",
+        "aurex/pipeline_receipts.py",
+        "docs/KUSANAGI_CXXVI_PIPELINE_REPAIR.md",
+        "tests/test_cxxvi_pipeline_receipts.py",
+        "website/docs/aurex-api/openapi.yaml"
+      ]
+    },
+    {
+      "pr_a": 112,
+      "pr_b": 110,
+      "shared_file_count": 9,
+      "examples": [
+        "integrations/kusanagi-xvi/backend/Dockerfile",
+        "integrations/kusanagi-xvi/backend/app.py",
+        "integrations/kusanagi-xvi/backend/boot.py",
+        "integrations/kusanagi-xvi/backend/evaluation_science.py",
+        "integrations/kusanagi-xvi/backend/evidence_science.py",
+        "integrations/kusanagi-xvi/backend/nvidia_research.py",
+        "integrations/kusanagi-xvi/backend/qa_probe.py"
+      ]
+    },
+    {
+      "pr_a": 110,
+      "pr_b": 97,
+      "shared_file_count": 8,
+      "examples": [
+        "integrations/kusanagi-xvi/backend/Dockerfile",
+        "integrations/kusanagi-xvi/backend/__init__.py",
+        "integrations/kusanagi-xvi/backend/app.py",
+        "integrations/kusanagi-xvi/backend/boot.py",
+        "integrations/kusanagi-xvi/backend/requirements.txt",
+        "integrations/kusanagi-xvi/backend/store.py",
+        "integrations/kusanagi-xvi/backend/supervisor.py"
+      ]
+    },
+    {
+      "pr_a": 96,
+      "pr_b": 94,
+      "shared_file_count": 8,
+      "examples": [
+        "aurex/api.py",
+        "aurex/orca_r8_sync.py",
+        "docs/KUSANAGI_CIV_ORCA_R8_OWNER_TELEMETRY.md",
+        "tests/test_orca_r8_sync.py",
+        "website/src/components/orca-r8-owner-panel.tsx",
+        "website/src/lib/orca-r8-owner.functions.ts",
+        "website/src/routes/admin.aurex-control.tsx"
+      ]
+    },
+    {
+      "pr_a": 117,
+      "pr_b": 108,
+      "shared_file_count": 7,
+      "examples": [
+        ".github/workflows/cxxv-website-bridge.yml",
+        "docs/KUSANAGI_CXXV_CONTRACT_MATRIX.md",
+        "tests/test_cxxv_contract_inventory.py",
+        "website/docs/aurex-api/openapi.yaml",
+        "website/src/components/aurex-cxxv-bridge.test.ts",
+        "website/src/lib/aurex-api-schema.ts",
+        "website/src/lib/aurex-cxxv-bridge.ts"
+      ]
+    },
+    {
+      "pr_a": 108,
+      "pr_b": 97,
+      "shared_file_count": 7,
+      "examples": [
+        ".github/workflows/cxxv-website-bridge.yml",
+        "docs/KUSANAGI_CXXV_CONTRACT_MATRIX.md",
+        "tests/test_cxxv_contract_inventory.py",
+        "website/docs/aurex-api/openapi.yaml",
+        "website/src/components/aurex-cxxv-bridge.test.ts",
+        "website/src/lib/aurex-api-schema.ts",
+        "website/src/lib/aurex-cxxv-bridge.ts"
+      ]
+    },
+    {
+      "pr_a": 96,
+      "pr_b": 93,
+      "shared_file_count": 7,
+      "examples": [
+        "docs/KUSANAGI_CIII_FRONTEND_BACKEND_CONTRACT_REPAIR.md",
+        "integrations/kusanagi-xvi/tests/test_five_get_frontend_contract.py",
+        "website/docs/aurex-api/openapi.yaml",
+        "website/src/components/aurex-capabilities.test.ts",
+        "website/src/lib/aurex-client.server.test.ts",
+        "website/src/lib/aurex-client.server.ts",
+        "website/src/lib/aurex-service.server.ts"
+      ]
+    },
+    {
+      "pr_a": 97,
+      "pr_b": 30,
+      "shared_file_count": 6,
+      "examples": [
+        "aurex/api.py",
+        "aurex/database.py",
+        "website/docs/aurex-api/openapi.yaml",
+        "website/src/lib/aurex-api-schema.ts",
+        "website/src/lib/aurex-client.server.ts",
+        "website/src/lib/aurex-service.server.ts"
+      ]
+    },
+    {
+      "pr_a": 97,
+      "pr_b": 29,
+      "shared_file_count": 6,
+      "examples": [
+        "aurex/api.py",
+        "aurex/database.py",
+        "website/docs/aurex-api/openapi.yaml",
+        "website/src/lib/aurex-api-schema.ts",
+        "website/src/lib/aurex-client.server.ts",
+        "website/src/lib/aurex-service.server.ts"
+      ]
+    },
+    {
+      "pr_a": 97,
+      "pr_b": 28,
+      "shared_file_count": 6,
+      "examples": [
+        "aurex/api.py",
+        "aurex/database.py",
+        "website/docs/aurex-api/openapi.yaml",
+        "website/src/lib/aurex-api-schema.ts",
+        "website/src/lib/aurex-client.server.ts",
+        "website/src/lib/aurex-service.server.ts"
+      ]
+    },
+    {
+      "pr_a": 96,
+      "pr_b": 83,
+      "shared_file_count": 6,
+      "examples": [
+        "aurex/api.py",
+        "aurex/fenced_worker.py",
+        "docs/research-commercial-reliability/README.md",
+        "docs/research-commercial-reliability/review.md",
+        "docs/research-commercial-reliability/verification.txt",
+        "tests/test_worker_failure_persistence.py"
+      ]
+    },
+    {
+      "pr_a": 96,
+      "pr_b": 30,
+      "shared_file_count": 6,
+      "examples": [
+        "aurex/api.py",
+        "tests/test_kusanagi_workflow.py",
+        "website/docs/aurex-api/openapi.yaml",
+        "website/src/components/aurex-capabilities.test.ts",
+        "website/src/lib/aurex-client.server.ts",
+        "website/src/lib/aurex-service.server.ts"
+      ]
+    },
+    {
+      "pr_a": 96,
+      "pr_b": 29,
+      "shared_file_count": 6,
+      "examples": [
+        "aurex/api.py",
+        "tests/test_kusanagi_workflow.py",
+        "website/docs/aurex-api/openapi.yaml",
+        "website/src/components/aurex-capabilities.test.ts",
+        "website/src/lib/aurex-client.server.ts",
+        "website/src/lib/aurex-service.server.ts"
+      ]
+    },
+    {
+      "pr_a": 96,
+      "pr_b": 28,
+      "shared_file_count": 6,
+      "examples": [
+        "aurex/api.py",
+        "tests/test_kusanagi_workflow.py",
+        "website/docs/aurex-api/openapi.yaml",
+        "website/src/components/aurex-capabilities.test.ts",
+        "website/src/lib/aurex-client.server.ts",
+        "website/src/lib/aurex-service.server.ts"
+      ]
+    },
+    {
+      "pr_a": 119,
+      "pr_b": 110,
+      "shared_file_count": 5,
+      "examples": [
+        "integrations/kusanagi-xvi/backend/__init__.py",
+        "integrations/kusanagi-xvi/backend/boot.py",
+        "integrations/kusanagi-xvi/backend/store.py",
+        "integrations/kusanagi-xvi/backend/supervisor.py",
+        "integrations/kusanagi-xvi/backend/worker.py"
+      ]
+    },
+    {
+      "pr_a": 117,
+      "pr_b": 107,
+      "shared_file_count": 5,
+      "examples": [
+        "aurex/nvidia_finance/__init__.py",
+        "aurex/nvidia_finance/offline.py",
+        "docs/KUSANAGI_CXXII_NVIDIA_FINANCIAL_FOUR.md",
+        "tests/test_nvidia_finance_offline.py",
+        "workstation/nvidia_fsi_lab.py"
+      ]
+    },
+    {
+      "pr_a": 117,
+      "pr_b": 106,
+      "shared_file_count": 5,
+      "examples": [
+        "integrations/kusanagi-xvi/backend/Dockerfile",
+        "integrations/kusanagi-xvi/backend/app.py",
+        "integrations/kusanagi-xvi/backend/doc_intelligence.py",
+        "integrations/kusanagi-xvi/backend/requirements.txt",
+        "integrations/kusanagi-xvi/backend/tests/test_document_bridge.py"
+      ]
+    },
+    {
+      "pr_a": 117,
+      "pr_b": 96,
+      "shared_file_count": 5,
+      "examples": [
+        "aurex/api.py",
+        "aurex/fenced_worker.py",
+        "website/docs/aurex-api/openapi.yaml",
+        "website/src/lib/aurex-client.server.ts",
+        "website/src/lib/aurex-service.server.ts"
+      ]
+    },
+    {
+      "pr_a": 117,
+      "pr_b": 30,
+      "shared_file_count": 5,
+      "examples": [
+        "aurex/api.py",
+        "website/docs/aurex-api/openapi.yaml",
+        "website/src/lib/aurex-api-schema.ts",
+        "website/src/lib/aurex-client.server.ts",
+        "website/src/lib/aurex-service.server.ts"
+      ]
+    },
+    {
+      "pr_a": 117,
+      "pr_b": 29,
+      "shared_file_count": 5,
+      "examples": [
+        "aurex/api.py",
+        "website/docs/aurex-api/openapi.yaml",
+        "website/src/lib/aurex-api-schema.ts",
+        "website/src/lib/aurex-client.server.ts",
+        "website/src/lib/aurex-service.server.ts"
+      ]
+    },
+    {
+      "pr_a": 117,
+      "pr_b": 28,
+      "shared_file_count": 5,
+      "examples": [
+        "aurex/api.py",
+        "website/docs/aurex-api/openapi.yaml",
+        "website/src/lib/aurex-api-schema.ts",
+        "website/src/lib/aurex-client.server.ts",
+        "website/src/lib/aurex-service.server.ts"
+      ]
+    },
+    {
+      "pr_a": 111,
+      "pr_b": 110,
+      "shared_file_count": 5,
+      "examples": [
+        "integrations/kusanagi-xvi/backend/agent.py",
+        "integrations/kusanagi-xvi/backend/app.py",
+        "integrations/kusanagi-xvi/backend/store.py",
+        "integrations/kusanagi-xvi/backend/supervisor.py",
+        "integrations/kusanagi-xvi/backend/worker.py"
+      ]
+    },
+    {
+      "pr_a": 107,
+      "pr_b": 97,
+      "shared_file_count": 5,
+      "examples": [
+        "aurex/nvidia_finance/__init__.py",
+        "aurex/nvidia_finance/offline.py",
+        "docs/KUSANAGI_CXXII_NVIDIA_FINANCIAL_FOUR.md",
+        "tests/test_nvidia_finance_offline.py",
+        "workstation/nvidia_fsi_lab.py"
+      ]
+    },
+    {
+      "pr_a": 106,
+      "pr_b": 97,
+      "shared_file_count": 5,
+      "examples": [
+        "integrations/kusanagi-xvi/backend/Dockerfile",
+        "integrations/kusanagi-xvi/backend/app.py",
+        "integrations/kusanagi-xvi/backend/doc_intelligence.py",
+        "integrations/kusanagi-xvi/backend/requirements.txt",
+        "integrations/kusanagi-xvi/backend/tests/test_document_bridge.py"
+      ]
+    },
+    {
+      "pr_a": 104,
+      "pr_b": 99,
+      "shared_file_count": 5,
+      "examples": [
+        "aurex/field_reconciliation.py",
+        "tests/test_field_audit_beta_gate.py",
+        "tests/test_field_audit_beta_pipeline.py",
+        "workstation/field_audit_beta_gate.py",
+        "workstation/field_audit_beta_pipeline.py"
+      ]
+    },
+    {
+      "pr_a": 104,
+      "pr_b": 96,
+      "shared_file_count": 5,
+      "examples": [
+        "aurex/api.py",
+        "aurex/fenced_worker.py",
+        "website/docs/aurex-api/openapi.yaml",
+        "website/src/lib/aurex-client.server.ts",
+        "website/src/lib/aurex-service.server.ts"
+      ]
+    },
+    {
+      "pr_a": 104,
+      "pr_b": 30,
+      "shared_file_count": 5,
+      "examples": [
+        "aurex/api.py",
+        "website/docs/aurex-api/openapi.yaml",
+        "website/src/lib/aurex-api-schema.ts",
+        "website/src/lib/aurex-client.server.ts",
+        "website/src/lib/aurex-service.server.ts"
+      ]
+    },
+    {
+      "pr_a": 104,
+      "pr_b": 29,
+      "shared_file_count": 5,
+      "examples": [
+        "aurex/api.py",
+        "website/docs/aurex-api/openapi.yaml",
+        "website/src/lib/aurex-api-schema.ts",
+        "website/src/lib/aurex-client.server.ts",
+        "website/src/lib/aurex-service.server.ts"
+      ]
+    },
+    {
+      "pr_a": 104,
+      "pr_b": 28,
+      "shared_file_count": 5,
+      "examples": [
+        "aurex/api.py",
+        "website/docs/aurex-api/openapi.yaml",
+        "website/src/lib/aurex-api-schema.ts",
+        "website/src/lib/aurex-client.server.ts",
+        "website/src/lib/aurex-service.server.ts"
+      ]
+    },
+    {
+      "pr_a": 97,
+      "pr_b": 96,
+      "shared_file_count": 5,
+      "examples": [
+        "aurex/api.py",
+        "aurex/fenced_worker.py",
+        "website/docs/aurex-api/openapi.yaml",
+        "website/src/lib/aurex-client.server.ts",
+        "website/src/lib/aurex-service.server.ts"
+      ]
+    },
+    {
+      "pr_a": 44,
+      "pr_b": 41,
+      "shared_file_count": 5,
+      "examples": [
+        "aurex/api.py",
+        "aurex/database.py",
+        "aurex/real_offline_probe.py",
+        "aurex/sovereign_studio.py",
+        "tests/test_real_offline_probe.py"
+      ]
+    },
+    {
+      "pr_a": 44,
+      "pr_b": 39,
+      "shared_file_count": 5,
+      "examples": [
+        "aurex/api.py",
+        "aurex/database.py",
+        "aurex/real_offline_probe.py",
+        "aurex/sovereign_studio.py",
+        "tests/test_real_offline_probe.py"
+      ]
+    },
+    {
+      "pr_a": 41,
+      "pr_b": 39,
+      "shared_file_count": 5,
+      "examples": [
+        "aurex/api.py",
+        "aurex/database.py",
+        "aurex/real_offline_probe.py",
+        "aurex/sovereign_studio.py",
+        "tests/test_real_offline_probe.py"
+      ]
+    },
+    {
+      "pr_a": 14,
+      "pr_b": 13,
+      "shared_file_count": 5,
+      "examples": [
+        "workstation/app.py",
+        "workstation/hle_practice.py",
+        "workstation/local_diagnostics.py",
+        "workstation/model_client.py",
+        "workstation/tests/test_hle_practice.py"
+      ]
+    },
+    {
+      "pr_a": 111,
+      "pr_b": 97,
+      "shared_file_count": 4,
+      "examples": [
+        "integrations/kusanagi-xvi/backend/app.py",
+        "integrations/kusanagi-xvi/backend/store.py",
+        "integrations/kusanagi-xvi/backend/supervisor.py",
+        "integrations/kusanagi-xvi/backend/worker.py"
+      ]
+    },
+    {
+      "pr_a": 109,
+      "pr_b": 104,
+      "shared_file_count": 4,
+      "examples": [
+        "aurex/api.py",
+        "website/docs/aurex-api/openapi.yaml",
+        "website/src/lib/aurex-api-schema.ts",
+        "website/src/lib/aurex-client.server.ts"
+      ]
+    },
+    {
+      "pr_a": 109,
+      "pr_b": 30,
+      "shared_file_count": 4,
+      "examples": [
+        "aurex/api.py",
+        "website/docs/aurex-api/openapi.yaml",
+        "website/src/lib/aurex-api-schema.ts",
+        "website/src/lib/aurex-client.server.ts"
+      ]
+    },
+    {
+      "pr_a": 109,
+      "pr_b": 29,
+      "shared_file_count": 4,
+      "examples": [
+        "aurex/api.py",
+        "website/docs/aurex-api/openapi.yaml",
+        "website/src/lib/aurex-api-schema.ts",
+        "website/src/lib/aurex-client.server.ts"
+      ]
+    },
+    {
+      "pr_a": 109,
+      "pr_b": 28,
+      "shared_file_count": 4,
+      "examples": [
+        "aurex/api.py",
+        "website/docs/aurex-api/openapi.yaml",
+        "website/src/lib/aurex-api-schema.ts",
+        "website/src/lib/aurex-client.server.ts"
+      ]
+    },
+    {
+      "pr_a": 96,
+      "pr_b": 95,
+      "shared_file_count": 4,
+      "examples": [
+        ".github/workflows/railway-image.yml",
+        "aurex/api.py",
+        "docs/KUSANAGI_CV_RAILWAY_HETZNER_RECOVERY.md",
+        "tests/test_kusanagi_workflow.py"
+      ]
+    },
+    {
+      "pr_a": 96,
+      "pr_b": 92,
+      "shared_file_count": 4,
+      "examples": [
+        "ci/hetzner/gitlab-verify-pr.yml",
+        "ci/hetzner/read_only_preflight.sh",
+        "docs/KUSANAGI_C_HETZNER_GITLAB_CI_BRIDGE.md",
+        "docs/KUSANAGI_C_ORCA_ARCHIFY_VISUAL_CONVERGENCE.md"
+      ]
+    },
+    {
+      "pr_a": 96,
+      "pr_b": 84,
+      "shared_file_count": 4,
+      "examples": [
+        "website/src/lib/aurex-client.server.test.ts",
+        "website/src/lib/aurex-client.server.ts",
+        "website/src/lib/aurex-service.server.ts",
+        "website/src/routes/admin.aurex-control.tsx"
+      ]
+    },
+    {
+      "pr_a": 96,
+      "pr_b": 82,
+      "shared_file_count": 4,
+      "examples": [
+        "docs/convergence/2026-10-17-LXXXVII-IRON-PROOF.md",
+        "pyproject.toml",
+        "scripts/aurex_readonly_probe.py",
+        "tests/test_aurex_readonly_probe.py"
+      ]
+    },
+    {
+      "pr_a": 96,
+      "pr_b": 72,
+      "shared_file_count": 4,
+      "examples": [
+        ".github/workflows/railway-image.yml",
+        "aurex/api.py",
+        "tests/test_kusanagi_workflow.py",
+        "website/docs/aurex-api/openapi.yaml"
+      ]
+    },
+    {
+      "pr_a": 96,
+      "pr_b": 61,
+      "shared_file_count": 4,
+      "examples": [
+        "aurex/web_adapter.py",
+        "docs/KUSANAGI_LXXI_WEBSITE_EGRESS.md",
+        "pyproject.toml",
+        "tests/test_web_adapter.py"
+      ]
+    },
+    {
+      "pr_a": 93,
+      "pr_b": 30,
+      "shared_file_count": 4,
+      "examples": [
+        "website/docs/aurex-api/openapi.yaml",
+        "website/src/components/aurex-capabilities.test.ts",
+        "website/src/lib/aurex-client.server.ts",
+        "website/src/lib/aurex-service.server.ts"
+      ]
+    },
+    {
+      "pr_a": 93,
+      "pr_b": 29,
+      "shared_file_count": 4,
+      "examples": [
+        "website/docs/aurex-api/openapi.yaml",
+        "website/src/components/aurex-capabilities.test.ts",
+        "website/src/lib/aurex-client.server.ts",
+        "website/src/lib/aurex-service.server.ts"
+      ]
+    },
+    {
+      "pr_a": 93,
+      "pr_b": 28,
+      "shared_file_count": 4,
+      "examples": [
+        "website/docs/aurex-api/openapi.yaml",
+        "website/src/components/aurex-capabilities.test.ts",
+        "website/src/lib/aurex-client.server.ts",
+        "website/src/lib/aurex-service.server.ts"
+      ]
+    },
+    {
+      "pr_a": 44,
+      "pr_b": 38,
+      "shared_file_count": 4,
+      "examples": [
+        "aurex/api.py",
+        "aurex/database.py",
+        "aurex/real_offline_probe.py",
+        "tests/test_real_offline_probe.py"
+      ]
+    },
+    {
+      "pr_a": 41,
+      "pr_b": 38,
+      "shared_file_count": 4,
+      "examples": [
+        "aurex/api.py",
+        "aurex/database.py",
+        "aurex/real_offline_probe.py",
+        "tests/test_real_offline_probe.py"
+      ]
+    },
+    {
+      "pr_a": 39,
+      "pr_b": 38,
+      "shared_file_count": 4,
+      "examples": [
+        "aurex/api.py",
+        "aurex/database.py",
+        "aurex/real_offline_probe.py",
+        "tests/test_real_offline_probe.py"
+      ]
+    },
+    {
+      "pr_a": 30,
+      "pr_b": 27,
+      "shared_file_count": 4,
+      "examples": [
+        "aurex/api.py",
+        "aurex/scientific_evidence.py",
+        "tests/test_scientific_evidence.py",
+        "website/examples/aurex-backend/app.py"
+      ]
+    },
+    {
+      "pr_a": 29,
+      "pr_b": 27,
+      "shared_file_count": 4,
+      "examples": [
+        "aurex/api.py",
+        "aurex/scientific_evidence.py",
+        "tests/test_scientific_evidence.py",
+        "website/examples/aurex-backend/app.py"
+      ]
+    },
+    {
+      "pr_a": 14,
+      "pr_b": 12,
+      "shared_file_count": 4,
+      "examples": [
+        "workstation/app.py",
+        "workstation/hle_practice.py",
+        "workstation/model_client.py",
+        "workstation/tests/test_hle_practice.py"
+      ]
+    },
+    {
+      "pr_a": 13,
+      "pr_b": 12,
+      "shared_file_count": 4,
+      "examples": [
+        "workstation/app.py",
+        "workstation/hle_practice.py",
+        "workstation/model_client.py",
+        "workstation/tests/test_hle_practice.py"
+      ]
+    },
+    {
+      "pr_a": 120,
+      "pr_b": 119,
+      "shared_file_count": 3,
+      "examples": [
+        "docs/operations/KUSANAGI_CXXXII_NEXT_AGENT.md",
+        "docs/operations/KUSANAGI_CXXXII_RECOVERY.json",
+        "docs/operations/KUSANAGI_CXXXII_RESUME.md"
+      ]
+    },
+    {
+      "pr_a": 120,
+      "pr_b": 97,
+      "shared_file_count": 3,
+      "examples": [
+        "docs/operations/KUSANAGI_CXXXII_NEXT_AGENT.md",
+        "docs/operations/KUSANAGI_CXXXII_RECOVERY.json",
+        "docs/operations/KUSANAGI_CXXXII_RESUME.md"
+      ]
+    },
+    {
+      "pr_a": 119,
+      "pr_b": 111,
+      "shared_file_count": 3,
+      "examples": [
+        "integrations/kusanagi-xvi/backend/store.py",
+        "integrations/kusanagi-xvi/backend/supervisor.py",
+        "integrations/kusanagi-xvi/backend/worker.py"
+      ]
+    },
+    {
+      "pr_a": 118,
+      "pr_b": 117,
+      "shared_file_count": 3,
+      "examples": [
+        "aurex/api.py",
+        "aurex/pipeline_receipts.py",
+        "tests/test_api_sqlite_contract.py"
+      ]
+    },
+    {
+      "pr_a": 117,
+      "pr_b": 110,
+      "shared_file_count": 3,
+      "examples": [
+        "integrations/kusanagi-xvi/backend/Dockerfile",
+        "integrations/kusanagi-xvi/backend/app.py",
+        "integrations/kusanagi-xvi/backend/requirements.txt"
+      ]
+    },
+    {
+      "pr_a": 117,
+      "pr_b": 93,
+      "shared_file_count": 3,
+      "examples": [
+        "website/docs/aurex-api/openapi.yaml",
+        "website/src/lib/aurex-client.server.ts",
+        "website/src/lib/aurex-service.server.ts"
+      ]
+    },
+    {
+      "pr_a": 117,
+      "pr_b": 84,
+      "shared_file_count": 3,
+      "examples": [
+        "website/src/lib/aurex-api-schema.ts",
+        "website/src/lib/aurex-client.server.ts",
+        "website/src/lib/aurex-service.server.ts"
+      ]
+    },
+    {
+      "pr_a": 112,
+      "pr_b": 97,
+      "shared_file_count": 3,
+      "examples": [
+        "integrations/kusanagi-xvi/backend/Dockerfile",
+        "integrations/kusanagi-xvi/backend/app.py",
+        "integrations/kusanagi-xvi/backend/boot.py"
+      ]
+    },
+    {
+      "pr_a": 110,
+      "pr_b": 106,
+      "shared_file_count": 3,
+      "examples": [
+        "integrations/kusanagi-xvi/backend/Dockerfile",
+        "integrations/kusanagi-xvi/backend/app.py",
+        "integrations/kusanagi-xvi/backend/requirements.txt"
+      ]
+    },
+    {
+      "pr_a": 109,
+      "pr_b": 96,
+      "shared_file_count": 3,
+      "examples": [
+        "aurex/api.py",
+        "website/docs/aurex-api/openapi.yaml",
+        "website/src/lib/aurex-client.server.ts"
+      ]
+    },
+    {
+      "pr_a": 104,
+      "pr_b": 93,
+      "shared_file_count": 3,
+      "examples": [
+        "website/docs/aurex-api/openapi.yaml",
+        "website/src/lib/aurex-client.server.ts",
+        "website/src/lib/aurex-service.server.ts"
+      ]
+    },
+    {
+      "pr_a": 104,
+      "pr_b": 84,
+      "shared_file_count": 3,
+      "examples": [
+        "website/src/lib/aurex-api-schema.ts",
+        "website/src/lib/aurex-client.server.ts",
+        "website/src/lib/aurex-service.server.ts"
+      ]
+    },
+    {
+      "pr_a": 97,
+      "pr_b": 93,
+      "shared_file_count": 3,
+      "examples": [
+        "website/docs/aurex-api/openapi.yaml",
+        "website/src/lib/aurex-client.server.ts",
+        "website/src/lib/aurex-service.server.ts"
+      ]
+    },
+    {
+      "pr_a": 97,
+      "pr_b": 84,
+      "shared_file_count": 3,
+      "examples": [
+        "website/src/lib/aurex-api-schema.ts",
+        "website/src/lib/aurex-client.server.ts",
+        "website/src/lib/aurex-service.server.ts"
+      ]
+    },
+    {
+      "pr_a": 97,
+      "pr_b": 44,
+      "shared_file_count": 3,
+      "examples": [
+        "aurex/api.py",
+        "aurex/database.py",
+        "aurex/fenced_worker.py"
+      ]
+    },
+    {
+      "pr_a": 96,
+      "pr_b": 79,
+      "shared_file_count": 3,
+      "examples": [
+        "docs/convergence/2026-10-17-LXXXVII-IRON-PROOF.md",
+        "scripts/aurex_readonly_probe.py",
+        "tests/test_aurex_readonly_probe.py"
+      ]
+    },
+    {
+      "pr_a": 96,
+      "pr_b": 62,
+      "shared_file_count": 3,
+      "examples": [
+        "docs/KUSANAGI_LXXII_LOCAL_CI_FALLBACK.md",
+        "scripts/offline_preflight.py",
+        "tests/test_offline_preflight.py"
+      ]
+    }
+  ],
+  "non_main_base_dependencies": [
+    {
+      "pr": 120,
+      "base": "work/kusanagi-cxxix-staging-convergence",
+      "head": "work/kusanagi-cxxxii-schema-admission"
+    },
+    {
+      "pr": 119,
+      "base": "work/kusanagi-cxxix-staging-convergence",
+      "head": "work/kusanagi-cxxxii-sovereign-activation"
+    },
+    {
+      "pr": 118,
+      "base": "work/kusanagi-cxxvii-remote-recovery",
+      "head": "work/kusanagi-cxxix-staging-convergence"
+    },
+    {
+      "pr": 115,
+      "base": "work/kusanagi-xxiv-cxxviii-convergence",
+      "head": "work/kusanagi-xxvi-open-source-contract-bridge"
+    },
+    {
+      "pr": 114,
+      "base": "work/kusanagi-xxiv-cxxviii-convergence",
+      "head": "work/kusanagi-xxvi-nvidia-site-draft"
+    },
+    {
+      "pr": 113,
+      "base": "work/kusanagi-xxiv-cxxviii-convergence",
+      "head": "work/xxv-verified-zip-discovery"
+    },
+    {
+      "pr": 112,
+      "base": "work/kusanagi-cxxviii-unix-worker-python-labs",
+      "head": "work/kusanagi-xxiv-cxxviii-convergence"
+    },
+    {
+      "pr": 111,
+      "base": "candidate/aurex-ox-24x7-agent-20261022T162607Z",
+      "head": "work/kusanagi-cxxviii-unix-worker-python-labs"
+    },
+    {
+      "pr": 110,
+      "base": "integration/kusanagi-xvi-railway",
+      "head": "candidate/aurex-ox-24x7-agent-20261022T162607Z"
+    },
+    {
+      "pr": 107,
+      "base": "work/kusanagi-cxvii-contract-sqlite-proof",
+      "head": "work/kusanagi-cxxii-nvidia-finance-four"
+    },
+    {
+      "pr": 86,
+      "base": "feature/kusanagi-xcv-helsinki-delhi-alignment",
+      "head": "feature/kusanagi-xcvi-huruf-llull-document-code"
+    },
+    {
+      "pr": 85,
+      "base": "feature/kusanagi-xciv-local-qwen-fullstack-readiness",
+      "head": "feature/kusanagi-xcv-helsinki-delhi-alignment"
+    },
+    {
+      "pr": 82,
+      "base": "fix/kusanagi-lxxvi-five-gate-contract",
+      "head": "feature/kusanagi-xc-repaired-20261017"
+    },
+    {
+      "pr": 37,
+      "base": "aurex-mainline-convergence-5126581965977077235",
+      "head": "work/kusanagi-xlviii-atomic-claims"
+    },
+    {
+      "pr": 36,
+      "base": "work/kusanagi-xlv-international-eval-adapters",
+      "head": "work/kusanagi-xlvi-sovereign-studio"
+    },
+    {
+      "pr": 14,
+      "base": "feature/aurex-local-inference-hardening-v1",
+      "head": "feature/aurex-independent-ci-evidence-v1"
+    },
+    {
+      "pr": 13,
+      "base": "feature/hle-practice-lab-v1",
+      "head": "feature/aurex-local-inference-hardening-v1"
+    }
+  ]
+}

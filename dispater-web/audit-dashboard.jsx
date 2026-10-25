@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { StagingPanel } from "./staging-panel.jsx";
 import { createRoot } from "react-dom/client";
 import * as Tabs from "@radix-ui/react-tabs";
 import { FIXTURES, audit, reviewFinding } from "./audit.mjs";
@@ -96,6 +97,12 @@ function App(){
  const [sector,setSector]=useState("towing");
  const [report,setReport]=useState(null);
  const [tab,setTab]=useState("revenue");
+ const [guideOpen,setGuideOpen]=useState(false);
+ const [guideStep,setGuideStep]=useState(0);
+ const [backendStatus,setBackendStatus]=useState("NOT CHECKED");
+ const [backendCheckedAt,setBackendCheckedAt]=useState(null);
+ const checkBackend=async()=>{setBackendStatus("CHECKING");try{const controller=new AbortController();const timer=setTimeout(()=>controller.abort(),6000);let response;try{response=await fetch("/api/aurex-health",{cache:"no-store",signal:controller.signal,credentials:"omit",headers:{"Accept":"application/json"}})}finally{clearTimeout(timer)}if(!response.ok)throw Error("unavailable");const data=await response.json();if(!data||typeof data!=="object"||Array.isArray(data))throw Error("unexpected");setBackendStatus("REACHABLE · HEALTH ONLY")}catch{setBackendStatus("NOT VERIFIED")}setBackendCheckedAt(new Date().toLocaleTimeString())};
+ useEffect(()=>{checkBackend()},[]);
  const f=FIXTURES[sector];
  const counts=report?.counts||{jobs:f.jobs.length,invoices:f.invoices.length,findings:"—"};
  const records=f.jobs.length+f.invoices.length+f.payments.length+f.rates.length+f.evidence.length;
@@ -116,11 +123,35 @@ function App(){
     <div className="shad-side-foot"><span>● DEMO MODE</span><strong>HUMAN REVIEW REQUIRED</strong><small>AUREX staging is separate. No IRS/DOT compliance authority.</small></div>
   </aside>
   <div className="shad-main">
-   <div className="shad-topline"><div><span className="shad-breadcrumb">DISPATER / AUDIT COMMAND CENTER</span><h3>Audit Readiness Workspace</h3></div><div className="shad-topline-right"><Badge tone="hold">HOLD</Badge><Badge tone="cyan">FICTIONAL DATA</Badge></div></div>
+   <StagingPanel/>
+   <div className="shad-topline"><div><span className="shad-breadcrumb">DISPATER / AUDIT COMMAND CENTER</span><h3>Audit Readiness Workspace</h3></div><div className="shad-topline-right"><Button variant="subtle" onClick={()=>{setGuideStep(0);setGuideOpen(true)}} label="Open guided audit walkthrough">GUIDED TOUR ◈</Button><Badge tone="hold">HOLD</Badge><Badge tone="cyan">FICTIONAL DATA</Badge></div></div>
+   {guideOpen&&<div className="shad-guide-backdrop" onMouseDown={e=>{if(e.target===e.currentTarget)setGuideOpen(false)}}>
+    <section className="shad-guide-panel" role="dialog" aria-modal="true" aria-labelledby="shad-guide-title" onKeyDown={e=>{if(e.key==="Escape")setGuideOpen(false)}}>
+      <div className="shad-guide-header"><Badge tone="cyan">INTERACTIVE · FICTIONAL</Badge><button type="button" className="shad-guide-close" onClick={()=>setGuideOpen(false)} aria-label="Close guided tour">✕</button></div>
+      <p className="shad-guide-kicker">AUREX/OX · EVIDENCE-FIRST REVIEW</p>
+      <h4 id="shad-guide-title">How DISPATER's audit flow is designed to work</h4>
+      <div className="shad-guide-progress" aria-label={"Step "+(guideStep+1)+" of 5"}>{["Evidence","Qualification","Reality","Authority","Effect"].map((name,i)=><button key={name} type="button" onClick={()=>setGuideStep(i)} aria-current={guideStep===i?"step":undefined} aria-label={"Go to "+name}><span>{String(i+1).padStart(2,"0")}</span><small>{name}</small></button>)}</div>
+      <div className="shad-guide-detail">
+       <span>STEP {guideStep+1} / 05</span>
+       <h5>{["Connect the source","Qualify the records","Reconcile what happened","Put authority with people","Act only when permitted"][guideStep]}</h5>
+       <p>{[
+        "Start with a fictional heavy-recovery dispatch ticket, work record, rate sheet and invoice export. Each source remains identifiable.",
+        "Check timestamps, completeness and source integrity. Missing information is not treated as verified.",
+        "A $3,850 potential unbilled job is identified using invented example charges. This is a candidate for review, not confirmed lost revenue.",
+        "An authorized reviewer validates the work, rate agreement, supporting evidence and any proposed billing action.",
+        "Only a separately authorized production system could perform approved writebacks. This demonstration performs no operational or financial actions."
+       ][guideStep]}</p>
+       <div className="shad-guide-gate"><b>CONTROL GATE</b><span>{["SOURCE PROVENANCE REQUIRED","UNKNOWN ≠ SAFE","NOT VERIFIED ≠ CONFIRMED","HUMAN APPROVAL REQUIRED","FINANCIAL AUTHORITY: NONE"][guideStep]}</span></div>
+      </div>
+      <div className="shad-guide-actions"><Button variant="subtle" disabled={guideStep===0} onClick={()=>setGuideStep(Math.max(0,guideStep-1))}>← BACK</Button><Button onClick={()=>guideStep===4?setGuideOpen(false):setGuideStep(guideStep+1)}>{guideStep===4?"FINISH TOUR":"CONTINUE →"}</Button></div>
+      <p className="shad-guide-foot">Concept demonstration only. No customer data, independent verification, automated decisions, or verified competitor performance claims.</p>
+    </section>
+   </div>}
    <div className="shad-toolbar"><div className="shad-toolbar-left"><span>INDUSTRY DATASET</span><div className="shad-toggle" role="group" aria-label="Select fictional industry dataset">
      <button type="button" aria-pressed={sector==="towing"} onClick={()=>changeSector("towing")}>Towing &amp; Recovery</button>
      <button type="button" aria-pressed={sector==="oilfield"} onClick={()=>changeSector("oilfield")}>Oilfield Operations</button>
    </div></div><span className="shad-powered">AUREX/OX · SOURCE-BASED REVIEW MODEL</span></div>
+   <div className="shad-backend-status" role="status" aria-live="polite"><div><strong>AUREX/OX STAGING CONNECTION</strong><span>{backendStatus}</span><small>Read-only backend health check · Audit runtime NOT CONNECTED · No customer data sent · Authority NONE{backendCheckedAt?" · Checked "+backendCheckedAt:""}</small></div><Button variant="subtle" onClick={checkBackend} disabled={backendStatus==="CHECKING"}>CHECK CONNECTION ↻</Button></div>
    <div className="shad-stats-grid">
      <Stat label="Source records" value={String(records)} foot="Fictional indexed records" tone="cyan"/>
      <Stat label="Candidate exceptions" value={String(counts.findings)} foot="Review required, not findings of noncompliance"/>

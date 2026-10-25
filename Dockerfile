@@ -3,6 +3,7 @@ ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 PIP_NO_CACHE_DIR=1
 WORKDIR /app
 COPY pyproject.toml README.md ./
 COPY aurex/ ./aurex/
+COPY aurex_foundation/ ./aurex_foundation/
 COPY training/ ./training/
 COPY workstation/ ./workstation/
 RUN pip install --no-cache-dir . \
