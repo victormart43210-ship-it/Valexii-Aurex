@@ -385,3 +385,18 @@ body>header,body>main,body>footer,body>.skip{position:relative;z-index:1}
 @media(max-width:700px){.dispater-quickbar{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:16px}.dispater-quickbar>a{padding:13px;min-height:100px}.dispater-quickbar>a strong{font-size:12px}.dispater-quickbar>a small{font-size:10px}}
 @media(max-width:420px){.launch-header-inner{gap:8px}.dispater-quickbar{width:calc(100% - 20px)}.dispater-quickbar>a{min-height:105px}.launch-header-cta{padding:10px;font-size:9px}}
 @media(prefers-reduced-motion:reduce){.dispater-quickbar>a{transition:none}.dispater-quickbar>a:hover{transform:none}}
+
+
+/* Sovereign command palette: calm futuristic UI with high-contrast keyboard navigation */
+.dispater-command-wrap{width:min(1180px,calc(100% - 36px));margin:22px auto 0;display:flex;align-items:center;justify-content:space-between;gap:14px}
+.dispater-command-launch{width:min(510px,100%);min-height:51px;display:flex;align-items:center;gap:12px;padding:11px 15px;border-radius:12px;border:1px solid #668da5;background:linear-gradient(105deg,#101e32,#14273b);color:#e8f4fb;cursor:pointer;font:500 13px/1.3 inherit;text-align:left;box-shadow:inset 0 1px #ffffff13,0 12px 30px #0005}
+.dispater-command-launch>span{font-size:23px;color:#90f4e2}.dispater-command-launch kbd{margin-left:auto;color:#e6d0a8;background:#26374b;border:1px solid #63778d;border-radius:6px;padding:4px 7px;font:600 11px/1.2 monospace}
+.dispater-command-hint{font-size:10px;font-weight:700;letter-spacing:.15em;color:#a6c4d1}
+.dispater-command-overlay[hidden]{display:none!important}.dispater-command-overlay{position:fixed;inset:0;z-index:1500;background:#010814e8;backdrop-filter:blur(12px);display:flex;justify-content:center;align-items:flex-start;padding:clamp(50px,12vh,130px) 16px 20px}
+.dispater-command-dialog{width:min(650px,100%);max-height:75vh;overflow:auto;padding:22px;background:radial-gradient(circle at 90% 0%,#31305a77,transparent 50%),#0b192a;border:1px solid #79c9c4;border-radius:18px;box-shadow:0 30px 100px #000d,0 0 50px #4fd4c529;color:#f3fcff}
+.dispater-command-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:15px}.dispater-command-head label{font:normal 23px/1.2 Georgia,serif}.dispater-command-head button{width:44px;height:44px;border-radius:9px;background:#182e41;border:1px solid #7794a8;color:#fff;cursor:pointer}
+#dispater-command-search{width:100%;min-height:50px;border-radius:10px;border:1px solid #89bdc6;background:#07111f;color:#fff;font-size:16px;padding:12px 15px;outline-offset:3px}
+#dispater-command-results{display:flex;flex-direction:column;gap:5px;margin:15px 0}.dispater-command-result{display:flex;flex-direction:column;gap:5px;padding:13px 15px;border-radius:10px;border:1px solid transparent;color:#fff;text-decoration:none}.dispater-command-result strong{font-size:14px}.dispater-command-result small{color:#b2cbd6;font-size:12px}
+.dispater-command-result:hover,.dispater-command-result:focus-visible{background:#17434b;border-color:#8cf4de}.dispater-command-dialog>p{font-size:11px;color:#a9c3ce}
+.dispater-command-active{overflow:hidden}.dispater-command-launch:focus-visible,.dispater-command-dialog button:focus-visible,#dispater-command-search:focus-visible{outline:3px solid #e7c894;outline-offset:3px}
+@media(max-width:700px){.dispater-command-wrap{width:calc(100% - 20px);margin-top:14px}.dispater-command-hint{display:none}.dispater-command-launch{width:100%}.dispater-command-dialog{padding:16px}.dispater-command-head label{font-size:19px}}
