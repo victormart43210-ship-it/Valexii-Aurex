@@ -29,5 +29,11 @@
         }
       ]
     }
+  ],
+  "rewrites": [
+    {
+      "source": "/api/aurex-health",
+      "destination": "https://aurex-api-aurex-staging.up.railway.app/health"
+    }
   ]
 }
