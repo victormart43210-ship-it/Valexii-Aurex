@@ -1,0 +1,11 @@
+{
+  "rule_id": "FMCSA-EXAMPLE-UNVERIFIED",
+  "jurisdiction": "US",
+  "source_url": null,
+  "effective_date": null,
+  "retrieved_at": null,
+  "reviewer_id": null,
+  "approved": false,
+  "status": "HOLD",
+  "notes": "Never hard-code universal retention period; verify rule applicability."
+}

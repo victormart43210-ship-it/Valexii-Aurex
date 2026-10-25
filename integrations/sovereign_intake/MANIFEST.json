@@ -1,0 +1,46 @@
+{
+  "release": "KUSANAGI_CLXX_R13",
+  "status": "HOLD",
+  "files": {
+    "README.md": {
+      "sha256": "756856a7a5d034efa89d96fbb518da205bbc784571150649658bfe7c647f5f1e",
+      "bytes": 1219
+    },
+    "docs/ARCHITECTURE.md": {
+      "sha256": "ef864c70d3edb0f6f6c577b0f78d7ce063e382368be767f7d6851eaecaab4847",
+      "bytes": 1231
+    },
+    "docs/INTEGRATION.md": {
+      "sha256": "e0e4cda3950d52ccff86b7e2a2d9058aed0d31263b65c20f21b4f150052e084d",
+      "bytes": 1275
+    },
+    "docs/OPEN_SOURCE_CATALOG.md": {
+      "sha256": "8481092206524def7d0fc56fb8fe66512494175b1b67f08b990e89540b4c909c",
+      "bytes": 1628
+    },
+    "docs/REGULATORY_RULE_PACK_SCHEMA.json": {
+      "sha256": "d27d88107fdedd322ca9081418de327f34f72198d50ff03895ccbd44bd245835",
+      "bytes": 288
+    },
+    "scripts/verify_zip.py": {
+      "sha256": "cc78dac7831b0b22104c7612b059f9315c78c6758442d9d5eae21b68e0091450",
+      "bytes": 1017
+    },
+    "src/sovereign_intake/__init__.py": {
+      "sha256": "833529bb3acd00b9f148b0ace7f6fc26b07fafa1d92561a2c461b85139bf1351",
+      "bytes": 69
+    },
+    "src/sovereign_intake/core.py": {
+      "sha256": "d3780b66121f4259bad419f911dc108c546de8e739401ca28e8c33c6b097b87a",
+      "bytes": 2264
+    },
+    "src/sovereign_intake/demo.py": {
+      "sha256": "2ff5282a467e7388e7a81246b1534917f1e149ca5fc181983d2f435ee0877844",
+      "bytes": 752
+    },
+    "tests/test_core.py": {
+      "sha256": "941bc495c05ab7afb63bd69d209e4ceec6c5faa90a1cce41da8da2630e7572fa",
+      "bytes": 1405
+    }
+  }
+}
