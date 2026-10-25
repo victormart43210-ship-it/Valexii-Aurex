@@ -1,0 +1,5 @@
+Resume OPERATION KUSANAGI CXXXII from the exact saved GitHub checkpoint. Read the recovery manifest and resume document first. Do not restart completed waves. Preserve all security and release holds. Continue from the first unfinished executable task.
+
+CP007: inspect exact-head CI/new image workflow; frontend source/tests/mount patch are ready in canonical repo. Lovable rejected writes, so apply only the documented narrow files/patch after verifying its current revision. Do not replace the old website mirror wholesale. Stage deployment remains HOLD pending volume instances, credential isolation, backup and rollback.
+
+CP008 resumes from parent 5896153b04702e3844a2edf1c2e56e3515e91919 plus enclosing commit. Preserve its concurrent CI module-invocation fix. Focused runtime 4 PASS; Node adapter 8 PASS. CP007 Docker staging-image build/HTTP audit/restart workflow PASS, but live infrastructure remains HOLD. VPN/training projects discussed with owner are evaluation ideas only; none installed.

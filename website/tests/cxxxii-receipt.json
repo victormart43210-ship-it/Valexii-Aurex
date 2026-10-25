@@ -1,0 +1,26 @@
+{
+  "authority": "NONE",
+  "evidenceId": "ev-9acb09b97e44c2c3b81ff797",
+  "integrity": "RECORDED",
+  "jobId": "job-1c4c3b3facf4032b8758d565",
+  "observation": {
+    "authority": "HOLD",
+    "case_count": 100,
+    "effect": "NONE",
+    "exact_case_matches": 100,
+    "false_negative_flags": 0,
+    "false_positive_flags": 0,
+    "finding_labels": 70,
+    "independent_verification": "NOT_VERIFIED",
+    "probe": "synthetic_field_audit_v1",
+    "production_release": "HOLD",
+    "real_document_accuracy": "NOT_MEASURED",
+    "result": "SYNTHETIC_GATE_PASS_NOT_BETA_RELEASE",
+    "suite_sha256": "094b41e720481fc01ae42aedad832bd1c072e73c46a5d57f92a4908d7443aa27",
+    "synthetic": true
+  },
+  "release": "HOLD",
+  "sha256": "cfe33bfbbba3731e37e3ce5b84fc76b12727a97de6933728bcbbac4e51d6f2a4",
+  "state": "succeeded",
+  "verification": "NOT VERIFIED"
+}

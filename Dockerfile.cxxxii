@@ -1,0 +1,17 @@
+# Repository-root build context; source-only until staging admission is verified.
+FROM python:3.12-slim
+ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 \
+    AUREX_CANONICAL_STAGING=1 AUREX_JOB_EXECUTION_MODE=queued \
+    AUREX_DB_PATH=/data/aurex-cxxxii-synthetic.sqlite3 \
+    AUREX_ENABLE_OFFLINE_LAB=1 AUREX_ENABLE_SYNTHETIC_FIELD_AUDIT=0 \
+    AUREX_LLM_ENABLED=false AUREX_LLM_ALLOW_BILLING=false AUREX_OBSERVER_ENABLED=false
+WORKDIR /app
+COPY pyproject.toml README.md ./
+COPY aurex ./aurex
+COPY workstation ./workstation
+COPY training ./training
+COPY fixtures ./fixtures
+COPY integrations/kusanagi-xvi/backend ./backend
+RUN pip install --no-cache-dir . && useradd --uid 10001 --create-home aurex && mkdir -p /data
+# Existing boot repairs the dedicated mount path, then drops UID before children.
+CMD ["python", "-m", "backend.boot"]

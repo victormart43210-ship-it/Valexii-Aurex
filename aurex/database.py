@@ -21,9 +21,66 @@ def _now_iso() -> str:
     return datetime.now(UTC).isoformat()
 
 
+
+def _assert_canonical_schema(conn: sqlite3.Connection) -> None:
+    """Reject legacy or incompatible storage before any schema writes."""
+    tables = {
+        row[0] for row in conn.execute(
+            "SELECT name FROM sqlite_master WHERE type='table'"
+        )
+    }
+
+    if "evidence" in tables:
+        raise ValueError("Legacy AUREX evidence schema refused")
+
+    required = {
+        "jobs": {
+            "id", "kind", "state", "idempotency_key",
+            "params_json", "reservation_usd", "created_at",
+            "updated_at", "result_json", "lease_token",
+            "lease_expires_at", "worker_id", "request_id",
+            "trace_id", "evidence_id", "error_json",
+        },
+        "evidence_records": {
+            "id", "capability_id", "kind", "collected_at",
+            "sha256", "summary", "source_ref",
+            "integrity_status", "verification_status",
+        },
+    }
+
+    for table, expected in required.items():
+        if table not in tables:
+            continue
+        actual = {
+            row[1] for row in conn.execute(
+                f'PRAGMA table_info("{table}")'
+            )
+        }
+        if not expected.issubset(actual):
+            raise ValueError(
+                f"Incompatible AUREX {table} schema refused"
+            )
+
+    # Existing storage must be a complete canonical pair, not a partial
+    # database that startup can silently "repair" by creating missing tables.
+    if ("jobs" in tables) != ("evidence_records" in tables):
+        raise ValueError("Partial AUREX schema refused")
+    if "jobs" in tables:
+        jobs_columns = {
+            row[1] for row in conn.execute('PRAGMA table_info("jobs")')
+        }
+        if "params" in jobs_columns:
+            raise ValueError("Mixed legacy/canonical AUREX jobs schema refused")
+
+
 def get_db(db_path: str = DEFAULT_DB_PATH) -> sqlite3.Connection:
     conn = sqlite3.connect(db_path)
     conn.row_factory = sqlite3.Row
+    try:
+        _assert_canonical_schema(conn)
+    except BaseException:
+        conn.close()
+        raise
     with conn:
         conn.execute(
             """

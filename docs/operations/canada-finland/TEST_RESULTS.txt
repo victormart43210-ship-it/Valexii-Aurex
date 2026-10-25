@@ -1,0 +1,13 @@
+Canada / Finland integration, 2026-10-24 UTC
+Source implementation: remote CP002 927ea8bbaf437331410049e74b4214e27a08e16c; local e44e68b (same code tree).
+New tests initial RED: 18 failed (integration module absent).
+python -m pytest -q tests/test_canada_finland.py: 18 passed.
+python -m robot --variable PYTHON:../aurex/.venv/bin/python --outputdir /tmp/aurex-robot acceptance/canada_finland.robot: 3 passed.
+First full pytest: 2 failed, 494 passed, 1 skipped, 1 warning. Failures test_web_adapter.py::test_create_job_and_get_job and ::test_missing_token: inherited SOCKS proxy needs unavailable socksio.
+Full pytest with ALL_PROXY/HTTP_PROXY/HTTPS_PROXY and lowercase unset: 496 passed, 1 skipped, 1 Starlette httpx deprecation warning in 8.44s.
+ruff check .: PASS.
+mypy aurex: PASS, 77 files.
+Manual website admission test with no admission environment flag: expected FAIL in suite setup before Browser import/navigation. Live browser test NOT RUN.
+Local supervised HTTP worker, receipt persistence/restart: 1 passed in 4.86s. Exported resulting receipt (not golden fixture), bagit1.9.0 Bag.validate(): PASS. Identifiers/digests in LOCAL_EXPORT_EVIDENCE.json; exact exported synthetic payload in LOCAL_SYNTHETIC_RECEIPT.json.
+Tailscale CLI JSON rendering: PASS. No policy applied; enforcement NOT RUN.
+GitHub exact CP002: CI40092854694 PASS; Canada Finland acceptance40092854651 PASS; Canonical Railway image40092854679 PASS; independent runner smoke40092854683 PASS. These workflow conclusions do not establish independent financial accuracy or live deployment.
