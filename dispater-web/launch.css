@@ -491,25 +491,36 @@ main::before{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none
 }
 
 /* OBSIDIAN ALCHEMY: Tyrian purple, heliotrope, and amaranth replace teal. */
-:root{--launch-cyan:#d9a5ff;--lux-teal:#d7a7ff;--letter-aurora:#edb7fa}
+:root{--launch-cyan:#d9a5ff;--lux-teal:#d7a7ff;--letter-aurora:#83e0a2}
 .launch-brand .launch-accent{color:#f3c79a}
-.launch-header-cta,.launch-btn.launch-primary{background:linear-gradient(120deg,#eac5ff,#d79bff 50%,#eea8cf);border-color:#efcbff;color:#21112f;box-shadow:0 9px 34px #b16cda45}
+.launch-header-cta,.launch-btn.launch-primary{background:linear-gradient(120deg,#eac5ff,#d79bff 50%,#d94557);border-color:#efcbff;color:#21112f;box-shadow:0 9px 34px #b16cda45}
 .launch-header-cta:hover,.launch-btn.launch-primary:hover{background:linear-gradient(120deg,#f8ddff,#e7b6ff);color:#21112f}
 .dispater-quickbar>a:nth-of-type(2) strong{color:#e3b0ff}
 .dispater-quickbar>a:nth-of-type(3) strong{color:#f2c48d}
-.dispater-quickbar>a:nth-of-type(4) strong{color:#f0a9cf}
+.dispater-quickbar>a:nth-of-type(4) strong{color:#d94557}
 .audit-3d-node.is-active{border-color:#e4b5ff;box-shadow:inset 3px 0 #d69bff,0 6px 22px #aa64ce55}
 .audit-3d-node .audit-3d-index{color:#dcb2ff}
 @media(max-width:760px){.audit-3d-node.is-active{border-color:#e4b5ff;box-shadow:inset 3px 0 #d69bff,0 6px 22px #aa64ce55}}
 
 
 /* ROSE POMPADOUR · rare 18th-century-inspired pink, paired with Tyrian purple. */
-:root{--rare-rose:#ed7a9b;--rare-rose-light:#ffc0ce;--rare-puce:#ae647e}
-.launch-header-cta,.launch-btn.launch-primary{background:linear-gradient(118deg,#e4b9ff 0%,#d39aeb 42%,#ed7a9b 100%);border-color:#f4b4cb;color:#291129;box-shadow:0 9px 34px #b64d8450}
-.launch-header-cta:hover,.launch-btn.launch-primary:hover{background:linear-gradient(118deg,#f1d5ff,#f8abc2);color:#291129}
-.shad-badge.cyan{background:#491b3a;color:#ffc0ce;border-color:#be6589}
-.shad-toggle button[aria-pressed=true]{background:linear-gradient(120deg,#51204f,#75304f);color:#ffd3de;box-shadow:inset 0 2px #ed7a9b}
-.shad-toggle button:hover{background:#673052}
-.dispater-quickbar>a:nth-of-type(4) strong{color:#ffc0ce}
-.dispater-quickbar>a:nth-of-type(4):hover{border-color:#ed7a9b}
-.shad-topline .shad-badge.cyan{box-shadow:0 0 0 1px #ed7a9b30}
+:root{--rare-rose:#d21f3c;--rare-rose-light:#83e0a2;--rare-puce:#167a55}
+.launch-header-cta,.launch-btn.launch-primary{background:linear-gradient(118deg,#83e0a2 0%,#25a66b 42%,#d21f3c 100%);border-color:#d94557;color:#091b13;box-shadow:0 9px 34px #a31d3550}
+.launch-header-cta:hover,.launch-btn.launch-primary:hover{background:linear-gradient(118deg,#a2edb7,#e4515f);color:#091b13}
+.shad-badge.cyan{background:#123b2c;color:#83e0a2;border-color:#39b77b}
+.shad-toggle button[aria-pressed=true]{background:linear-gradient(120deg,#124a35,#812336);color:#eafff0;box-shadow:inset 0 2px #d21f3c}
+.shad-toggle button:hover{background:#74313b}
+.dispater-quickbar>a:nth-of-type(4) strong{color:#83e0a2}
+.dispater-quickbar>a:nth-of-type(4):hover{border-color:#d21f3c}
+.shad-topline .shad-badge.cyan{box-shadow:0 0 0 1px #d21f3c30}
+
+/* IMPERIAL EMERALD / CRIMSON — definitive replacement for pink highlights. */
+:root{--rare-rose:#d21f3c;--rare-rose-light:#83e0a2;--rare-puce:#167a55;--imperial-emerald:#13875c;--imperial-crimson:#b91f37}
+.launch-header-cta,.launch-btn.launch-primary{background:linear-gradient(115deg,#9ceab5 0%,#2eb778 43%,#c9233e 100%);border-color:#d84b59;color:#071b14;box-shadow:0 9px 34px #b91f3750}
+.launch-header-cta:hover,.launch-btn.launch-primary:hover{background:linear-gradient(115deg,#b3f3c6,#42cb88 46%,#e44a5d);color:#071b14}
+.shad-badge.cyan{background:#123e2e;color:#b9f5cf;border-color:#2eaa73}
+.shad-toggle button[aria-pressed=true]{background:linear-gradient(120deg,#11553b,#742335);color:#f5fff7;box-shadow:inset 0 2px #46c58a}
+.shad-toggle button:hover{background:#254d3a}
+.dispater-quickbar>a:nth-of-type(4) strong{color:#e65b69}
+.dispater-quickbar>a:nth-of-type(4):hover{border-color:#c9233e}
+.shad-topline .shad-badge.cyan{box-shadow:0 0 0 1px #2eaa7330}
