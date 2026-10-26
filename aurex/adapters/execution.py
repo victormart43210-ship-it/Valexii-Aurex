@@ -78,6 +78,10 @@ class InferenceClient:
         answer = None
         error = None
         try:
+            # Fail closed until explicit remote inference authorization
+            # and positive budget reservation are implemented.
+            if self.spec.provider == "openai-compatible":
+                raise ExecutionFailure("REMOTE_INFERENCE_DISABLED")
             answer = _answer(self.adapter, prompt, self.spec)
         except ExecutionFailure as exc:
             error = str(exc)
