@@ -4,14 +4,21 @@
   "repository": "victormart43210-ship-it/Valexii-Aurex",
   "main_sha": "551625e5be41ef6fd16e70e7a72404400032f4bc",
   "branch": "work/kusanagi-clxxxiv-inference-guard",
-  "checkpoint": "CP001",
-  "implementation_sha": "551625e5be41ef6fd16e70e7a72404400032f4bc",
+  "checkpoint": "CP002",
+  "implementation_sha": "8c351f11c51816047db6944844e8d35c24dddfd3",
   "remote_save": "NOT VERIFIED until readback",
-  "tests": "NOT RUN",
+  "tests": {
+    "focused": "35 passed",
+    "full": "443 passed, 2 skipped, one existing Starlette warning",
+    "ruff": "PASS",
+    "mypy": "PASS 78 source files"
+  },
   "release": "HOLD",
   "production_authority": "NONE",
   "paid_inference_executed": false,
-  "next_action": "Add remote transport denial regression tests before implementing fail-closed hold",
+  "next_action": "Expand denial/loopback tests; record PR145 conflicts and runner limitations; finish Jules handoff",
   "prior_onyx_checkpoint": "c1d6f3aeb9451c1c5d79dc0bae150512998a51e6",
-  "prior_onyx_pr": 146
+  "prior_onyx_pr": 146,
+  "draft_pr": 150,
+  "prior_remote_save": "PASS"
 }

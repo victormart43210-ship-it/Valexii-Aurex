@@ -16,3 +16,13 @@ Confirmed gap: InferenceClient calls adapter.answer without a budget guard; CLI 
 Owned files: inference policy, OpenAI-compatible transport, execution client, Ollama and CLI compatibility, focused tests and recovery docs. No parallel writers. Acceptance: no remote dispatch, even through direct adapter calls, while durable accounting is unavailable; local loopback behavior survives. No paid positive-path claim. Rollback is main base above; no infrastructure changes. Independent reviewer pending Jules.
 
 PR145, runner, website/Railway, pricing and full DISPATER convergence remain unfinished. No claim of live interoperability, GPU capacity or deployed containment.
+
+## CP002 implementation
+
+Seven tests failed before implementation (remote network attempted; Ollama factory generation TypeError). All seven pass after repair. Focused suite 35 passed; full module-invoked pytest 443 passed, 2 skipped, existing Starlette warning; Ruff PASS; MyPy PASS across 78 source files. Full command removes ambient proxy variables as documented in prior Onyx work.
+
+Central require_local_dispatch is called at both OpenAI-compatible and Ollama transport boundaries. Direct adapter calls cannot bypass remote HOLD. Client records REMOTE_INFERENCE_DISABLED without credential text. No remote enable flag exists; this is a denial boundary, NOT completed durable budget accounting. BudgetGuard unchanged. Ollama factory now accepts generation settings and sends bounded num_predict, seed, temperature; ambient proxies disabled.
+
+PR145 exact merge-tree check found add/add conflicts in aurex/openshell_policy.py and tests/test_openshell_policy.py. New filesystem startswith policy appears to admit tenant-a-other under tenant-a; requires adversarial repair before import. No shared branch overwritten.
+
+PR149 exact-head CI: independent-runner smoke run 40254381225 success; CI 40254381281, CLIV 40254381315, CLII 40254381240 failed. This does not verify the owner's self-hosted runner. Manual headless workflow is absent from main; its branch requires self-hosted/linux/x64/aurex-verification labels. No workflow-dispatch tool is available, and registration/online state remains NOT VERIFIED.

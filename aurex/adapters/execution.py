@@ -8,6 +8,7 @@ from typing import Literal
 from pydantic import BaseModel, ConfigDict, Field
 
 from aurex.adapters.base import GenerationSettings, ModelAdapter, ModelAnswer
+from aurex.adapters.inference_policy import RemoteInferenceDenied
 from aurex.provenance import fingerprint
 
 
@@ -53,6 +54,8 @@ def _answer(adapter: ModelAdapter, prompt: str, spec: ModelSpec) -> ModelAnswer:
         ):
             raise ValueError("Invalid response identity or empty content")
         return answer
+    except RemoteInferenceDenied as exc:
+        raise ExecutionFailure("REMOTE_INFERENCE_DISABLED") from exc
     except Exception as exc:
         # Do not serialize exception text, cause, headers, URLs, or traceback.
         code = "TIMEOUT" if isinstance(exc, TimeoutError) else "PROVIDER_OR_SCHEMA_FAILURE"
