@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "operation": "KUSANAGI_CLXXVI",
+  "repository": "victormart43210-ship-it/Valexii-Aurex",
+  "canonical_main_sha": "551625e5be41ef6fd16e70e7a72404400032f4bc",
+  "feature_branch": "work/kusanagi-clxxvi-onyx-bridge",
+  "implementation_sha": "551625e5be41ef6fd16e70e7a72404400032f4bc",
+  "sha_semantics": "Implementation SHA is prior exact source checkpoint; containing commit is obtained with git rev-parse HEAD. A file cannot contain its own Git hash.",
+  "draft_pr": null,
+  "checkpoints": [
+    {
+      "id": "CP001",
+      "utc": "2026-10-26T00:12:48.022570+00:00",
+      "completed": [
+        "Repository reconciliation",
+        "Pinned Onyx API/license inventory"
+      ],
+      "tests": "NOT RUN",
+      "remote_save": "NOT VERIFIED until push/readback"
+    }
+  ],
+  "deployment": "NOT RUN",
+  "release": "HOLD",
+  "production_authority": "NONE",
+  "independent_verification": "NOT RUN",
+  "next_actions": [
+    "Freeze contract",
+    "Implement disabled typed adapter and synthetic endpoint",
+    "Run tests and preserve Jules continuation"
+  ]
+}
