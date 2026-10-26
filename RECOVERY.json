@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "operation": "KUSANAGI_CLXXXIV",
+  "repository": "victormart43210-ship-it/Valexii-Aurex",
+  "main_sha": "551625e5be41ef6fd16e70e7a72404400032f4bc",
+  "branch": "work/kusanagi-clxxxiv-inference-guard",
+  "checkpoint": "CP001",
+  "implementation_sha": "551625e5be41ef6fd16e70e7a72404400032f4bc",
+  "remote_save": "NOT VERIFIED until readback",
+  "tests": "NOT RUN",
+  "release": "HOLD",
+  "production_authority": "NONE",
+  "paid_inference_executed": false,
+  "next_action": "Add remote transport denial regression tests before implementing fail-closed hold",
+  "prior_onyx_checkpoint": "c1d6f3aeb9451c1c5d79dc0bae150512998a51e6",
+  "prior_onyx_pr": 146
+}
