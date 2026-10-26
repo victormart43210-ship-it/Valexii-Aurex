@@ -46,8 +46,6 @@ def evaluate_egress(url: str, method: str, rules: tuple[EgressRule, ...]) -> Egr
         if path == prefix or (prefix.endswith("/") and path.startswith(prefix)) or path.startswith(prefix.rstrip("/") + "/"):
             return EgressDecision(True, "allowlisted")
     return EgressDecision(False, "default_deny")
-
-
 @dataclass(frozen=True)
 class FilesystemAccessRule:
     allowed_read_paths: tuple[str, ...]

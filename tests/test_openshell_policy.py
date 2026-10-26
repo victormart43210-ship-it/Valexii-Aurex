@@ -34,8 +34,6 @@ def test_default_deny_bad_port():
 
 def test_default_deny_empty_rules():
     assert not evaluate_egress("https://api.example.test/v1/infer", "POST", ()).allowed
-
-
 def test_evaluate_filesystem_access() -> None:
     from aurex.openshell_policy import FilesystemAccessRule, evaluate_filesystem_access
 

@@ -81,7 +81,15 @@ function Consent({ id, children }: { id: string; children: React.ReactNode }) {
 }
 
 /** Contact or partnership inquiry; stored server-side, never a mailto draft. */
-export function InquiryForm({ kind }: { kind: "contact" | "partnership" }) {
+export function InquiryForm({
+  kind,
+  defaultCategory,
+  defaultMessage,
+}: {
+  kind: "contact" | "partnership";
+  defaultCategory?: string;
+  defaultMessage?: string;
+}) {
   const id = useId();
   const send = useServerFn(submitInquiry);
   const started = useRef(Date.now());
@@ -156,7 +164,7 @@ export function InquiryForm({ kind }: { kind: "contact" | "partnership" }) {
         <label htmlFor={`${id}-category`} className={label}>
           {kind === "contact" ? "Inquiry category" : "Partnership type"}
         </label>
-        <select id={`${id}-category`} name="category" required className={field} {...a("category")}>
+        <select id={`${id}-category`} name="category" defaultValue={defaultCategory} required className={field} {...a("category")}>
           {cats.map((c) => (
             <option key={c}>{c}</option>
           ))}
@@ -221,6 +229,7 @@ export function InquiryForm({ kind }: { kind: "contact" | "partnership" }) {
           minLength={10}
           maxLength={4000}
           rows={6}
+          defaultValue={defaultMessage}
           className="w-full rounded-sm border border-input bg-background p-4"
           {...a("message")}
         />
