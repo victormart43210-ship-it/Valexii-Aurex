@@ -2,6 +2,9 @@ import { ReasoningSpine } from "@/components/reasoning-spine";
 import dispaterHero from "../../public/assets/dispater-hero.jpg.asset.json";
 import { createFileRoute } from "@tanstack/react-router";
 import { DomainReasoning } from "@/components/domain-reasoning";
+import { TowingAuditConsole } from "@/components/towing-audit-console";
+import { OfficeWorkQueue } from "@/components/office-work-queue";
+import { DigitalAuditBinder } from "@/components/digital-audit-binder";
 import {
   CTA,
   IndustrialPanel,
@@ -10,6 +13,7 @@ import {
   ProductCard,
   SectionHeading,
 } from "@/components/site";
+
 export const Route = createFileRoute("/dispater")({
   head: () => ({
     meta: [
@@ -33,6 +37,7 @@ export const Route = createFileRoute("/dispater")({
   }),
   component: Dispater,
 });
+
 function Dispater() {
   return (
     <PageShell>
@@ -64,7 +69,23 @@ function Dispater() {
           field capability.
         </p>
       </PageHero>
+
       <ReasoningSpine context="dispater" />
+
+      {/* Commercial Towing & Office Management Suite */}
+      <section className="section-space">
+        <div className="site-grid space-y-12">
+          <SectionHeading
+            eyebrow="Commercial Pilot Operations Suite"
+            title="Synthetic Commercial Towing & Office Audit Suite"
+            copy="Independently verify end-to-end industrial record intake, authenticated backend processing, XAELI findings, office work queue dispositions, and cryptographic audit binder generation."
+          />
+          <TowingAuditConsole />
+          <OfficeWorkQueue />
+          <DigitalAuditBinder />
+        </div>
+      </section>
+
       <section className="section-space">
         <div className="site-grid grid items-center gap-14 lg:grid-cols-2">
           <div>
@@ -91,6 +112,7 @@ function Dispater() {
           <IndustrialPanel />
         </div>
       </section>
+
       <section className="section-space border-y border-border bg-card/25">
         <div className="site-grid">
           <SectionHeading
@@ -121,7 +143,9 @@ function Dispater() {
           </div>
         </div>
       </section>
+
       <DomainReasoning />
+
       <CTA
         title="Collaborate on responsible industrial application."
         copy="DISPATER.AI seeks validation around operational evidence, safe boundaries, and human decision authority."
