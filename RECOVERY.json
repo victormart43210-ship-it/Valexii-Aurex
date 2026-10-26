@@ -4,21 +4,57 @@
   "repository": "victormart43210-ship-it/Valexii-Aurex",
   "main_sha": "551625e5be41ef6fd16e70e7a72404400032f4bc",
   "branch": "work/kusanagi-clxxxiv-inference-guard",
-  "checkpoint": "CP002",
-  "implementation_sha": "8c351f11c51816047db6944844e8d35c24dddfd3",
+  "checkpoint": "CP003",
+  "implementation_sha": "1d99a46e8cab70161fc058f0793aa515cc94be0c",
   "remote_save": "NOT VERIFIED until readback",
   "tests": {
-    "focused": "35 passed",
-    "full": "443 passed, 2 skipped, one existing Starlette warning",
+    "pytest": "449 passed, 2 skipped; both module and installed executable",
     "ruff": "PASS",
-    "mypy": "PASS 78 source files"
+    "mypy": "PASS 78 source files",
+    "dispater_node": "25 passed",
+    "dispater_build": "PASS",
+    "npm_audit_production": "PASS zero reported vulnerabilities",
+    "bun_website": "NOT RUN",
+    "live_nvidia": "NOT RUN",
+    "independent_review": "NOT RUN"
   },
   "release": "HOLD",
   "production_authority": "NONE",
   "paid_inference_executed": false,
-  "next_action": "Expand denial/loopback tests; record PR145 conflicts and runner limitations; finish Jules handoff",
+  "next_action": "Independent review remote HOLD and packaging; repair PR145 sibling-path policy before convergence",
   "prior_onyx_checkpoint": "c1d6f3aeb9451c1c5d79dc0bae150512998a51e6",
   "prior_onyx_pr": 146,
   "draft_pr": 150,
-  "prior_remote_save": "PASS"
+  "prior_remote_save": "PASS",
+  "utc": "2026-10-26T06:06:27.619987+00:00",
+  "known_failures": [
+    "PR145 filesystem policy admits sibling tenant-a-other under tenant-a (reproduced)",
+    "PR145 add/add conflicts in openshell_policy.py and its tests",
+    "CP002 GitHub CI/CLIV/CLII failed; CP003 packaging fixes the reproduced dispater_proof collection defect; remaining exact-head CI must be checked",
+    "Initial pip install --no-build-isolation failed because build backend unavailable; standard isolated editable installation succeeded",
+    "Initial frontend run lacked three; npm ci restored locked dependencies and all 25 tests passed"
+  ],
+  "remaining": [
+    "Durable paid-inference accounting and request authorization: NOT IMPLEMENTED; remote remains unconditionally disabled",
+    "PR145 convergence and separate review",
+    "Owner headless runner registration/dispatch verification",
+    "Railway deployed SHA, volume isolation and authenticated bridge verification",
+    "Live Onyx/ledger wiring from PR146",
+    "Complete tenant-authenticated browser-to-persisted-audit demonstration",
+    "XLSX intake and stricter CSV precision qualification"
+  ],
+  "changed_files": [
+    "aurex/adapters/inference_policy.py",
+    "aurex/adapters/openai_compatible.py",
+    "aurex/adapters/execution.py",
+    "aurex/adapters/ollama.py",
+    "tests/test_remote_inference_hold.py",
+    "pyproject.toml",
+    "docs/verification/CLXXXIV_SYNTHETIC_TOWING_OUTPUT.json",
+    "docs/operations/NVIDIA_LOW_COST_DEPLOYMENT_DECISION.md",
+    "docs/operations/KUSANAGI_CLXXXIV_SOVEREIGN_EXECUTION.md",
+    "RECOVERY.json",
+    "RESUME.md",
+    "docs/handoffs/KUSANAGI_CLXXXIV_WORK_TO_JULES.md"
+  ]
 }
