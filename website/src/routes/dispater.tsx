@@ -1,7 +1,10 @@
 import dispaterHero from "../../public/assets/dispater-hero.jpg.asset.json";
 import { ReasoningSpine } from "@/components/reasoning-spine";
 import { DomainReasoning } from "@/components/domain-reasoning";
-import { CTA, PageHero, PageShell, SectionHeading } from "@/components/site";
+import { TowingAuditConsole } from "@/components/towing-audit-console";
+import { OfficeWorkQueue } from "@/components/office-work-queue";
+import { DigitalAuditBinder } from "@/components/digital-audit-binder";
+import { CTA, IndustrialPanel, PageHero, PageShell, SectionHeading } from "@/components/site";
 import { Button } from "@/components/ui/button";
 import { emitActivation } from "@/lib/activation-events";
 import { createFileRoute } from "@tanstack/react-router";
@@ -103,8 +106,8 @@ function Dispater() {
         <p className="text-gold">Revenue Intelligence & Audit Readiness</p>
         <p>
           Connect the work your business performs to its billing and records. We are developing
-          evidence-led review tools and managed integration services for oilfield contractors
-          and towing companies, without requiring them to replace their existing software.
+          evidence-led review tools and managed integration services for oilfield contractors and
+          towing companies, without requiring them to replace their existing software.
         </p>
         <p className="text-sm text-amber">
           Developmental offering. No live customer CRM, tax service, DOT certification, or
@@ -121,6 +124,47 @@ function Dispater() {
 
       <ReasoningSpine context="dispater" />
 
+      {/* Commercial Towing & Office Management Suite */}
+      <section className="section-space">
+        <div className="site-grid space-y-12">
+          <SectionHeading
+            eyebrow="Commercial Pilot Operations Suite"
+            title="Synthetic Commercial Towing & Office Audit Suite"
+            copy="Independently verify end-to-end industrial record intake, authenticated backend processing, XAELI findings, office work queue dispositions, and cryptographic audit binder generation."
+          />
+          <TowingAuditConsole />
+          <OfficeWorkQueue />
+          <DigitalAuditBinder />
+        </div>
+      </section>
+
+      <section className="section-space">
+        <div className="site-grid grid items-center gap-14 lg:grid-cols-2">
+          <div>
+            <SectionHeading
+              eyebrow="Purpose / Unverified functionality"
+              title="A model is not the ground beneath it."
+              copy="Geological observations, drilling records and production information could help teams review risk. The design keeps measurements, interpretations and recommendations distinct—with uncertainty and human oversight intact."
+            />
+            <p className="mt-6 leading-7 text-muted-foreground">
+              Private repositories exist, as reported by the project owner; their functionality has
+              not been independently verified. This public page is a developmental direction, not
+              proof of deployed oilfield analytics, operational readiness, environmental performance
+              or autonomous control.
+            </p>
+            <p className="mt-4 text-sm leading-7 text-amber">
+              Not independently validated or commercially deployed.
+            </p>
+            <p className="mt-5 text-sm leading-7 text-muted-foreground">
+              Historical name / Dis Pater was a Roman god of the underworld and hidden riches
+              beneath the earth, later associated with Pluto. The name is a cultural reference to
+              what lies below the surface—not evidence of technical capability.
+            </p>
+          </div>
+          <IndustrialPanel />
+        </div>
+      </section>
+
       <section className="section-space border-y border-border bg-card/25">
         <div className="site-grid">
           <SectionHeading
@@ -130,7 +174,10 @@ function Dispater() {
           />
           <div className="mt-10 grid gap-5 md:grid-cols-3">
             {offerings.map(({ title, copy, icon: Icon }) => (
-              <article key={title} className="min-w-0 rounded-xl border border-border bg-background p-6">
+              <article
+                key={title}
+                className="min-w-0 rounded-xl border border-border bg-background p-6"
+              >
                 <Icon aria-hidden="true" className="size-7 text-primary" />
                 <h3 className="mt-5 font-display text-xl">{title}</h3>
                 <p className="mt-3 text-sm leading-7 text-muted-foreground">{copy}</p>
@@ -140,7 +187,11 @@ function Dispater() {
         </div>
       </section>
 
-      <section id="dispater-demo" aria-labelledby="dispater-demo-heading" className="section-space scroll-mt-28">
+      <section
+        id="dispater-demo"
+        aria-labelledby="dispater-demo-heading"
+        className="section-space scroll-mt-28"
+      >
         <div className="site-grid">
           <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-gold">
             CONCEPT PREVIEW · FICTIONAL DATA · NOT LIVE
@@ -149,30 +200,33 @@ function Dispater() {
             See what an evidence-backed review could look like.
           </h2>
           <p className="mt-5 max-w-3xl leading-8 text-muted-foreground">
-            The examples below illustrate the proposed DISPATER workflow. They are not live
-            customer records or connected accounting and dispatch systems; NVIDIA explanations
-            and customer-data processing are not enabled on this public page.
+            The examples below illustrate the proposed DISPATER workflow. They are not live customer
+            records or connected accounting and dispatch systems; NVIDIA explanations and
+            customer-data processing are not enabled on this public page.
           </p>
           <div className="mt-8 grid gap-5 lg:grid-cols-2">
             <article className="rounded-xl border border-primary/40 bg-card p-6">
-              <p className="text-xs font-semibold uppercase text-primary">Towing · Synthetic example</p>
+              <p className="text-xs font-semibold uppercase text-primary">
+                Towing · Synthetic example
+              </p>
               <h3 className="mt-3 font-display text-2xl">Unbilled recovery job</h3>
               <p className="mt-3 leading-7 text-muted-foreground">
-                Fictional tow ticket TOW-101 has a completion record but no matching
-                invoice in the supplied sample. An operator would inspect the original
-                ticket before taking action.
+                Fictional tow ticket TOW-101 has a completion record but no matching invoice in the
+                supplied sample. An operator would inspect the original ticket before taking action.
               </p>
               <p className="mt-5 border-t border-border pt-4 text-sm text-amber">
                 REVIEW REQUIRED · SOURCE-SNAPSHOT MATCH ONLY
               </p>
             </article>
             <article className="rounded-xl border border-gold/40 bg-card p-6">
-              <p className="text-xs font-semibold uppercase text-gold">Oilfield · Synthetic example</p>
+              <p className="text-xs font-semibold uppercase text-gold">
+                Oilfield · Synthetic example
+              </p>
               <h3 className="mt-3 font-display text-2xl">Missing field-ticket invoice</h3>
               <p className="mt-3 leading-7 text-muted-foreground">
-                Fictional flowback field ticket WELL-10-TICKET is present without
-                an invoice in its example dataset. A manager would verify the
-                approved rate, purchase order, and supporting documents.
+                Fictional flowback field ticket WELL-10-TICKET is present without an invoice in its
+                example dataset. A manager would verify the approved rate, purchase order, and
+                supporting documents.
               </p>
               <p className="mt-5 border-t border-border pt-4 text-sm text-amber">
                 REVIEW REQUIRED · NO AUTOMATIC BILLING
@@ -180,9 +234,9 @@ function Dispater() {
             </article>
           </div>
           <p className="mt-5 text-xs leading-6 text-muted-foreground">
-            AUREX prototypes can flag possible discrepancies using fictional records.
-            Record completeness does not establish IRS or DOT compliance. Audit findings
-            require professional assessment and human authorization.
+            AUREX prototypes can flag possible discrepancies using fictional records. Record
+            completeness does not establish IRS or DOT compliance. Audit findings require
+            professional assessment and human authorization.
           </p>
         </div>
       </section>
@@ -195,7 +249,9 @@ function Dispater() {
             title="Bring clarity to your operation."
             copy="Tell us where disconnected tickets, invoices, and records create extra work. We can discuss a scoped discovery audit or managed workflow consultation; proposals and timing are confirmed by a person."
           />
-          <div className="mt-7"><DispaterActions /></div>
+          <div className="mt-7">
+            <DispaterActions />
+          </div>
         </div>
       </section>
       <CTA

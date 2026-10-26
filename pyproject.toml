@@ -28,7 +28,7 @@ dev = [
 ]
 
 [tool.setuptools.packages.find]
-include = ["aurex*", "training", "workstation*"]
+include = ["aurex*", "training", "workstation*", "dispater_proof*"]
 
 [tool.setuptools.package-data]
 training = ["configs/*.json", "requirements.txt", "README.md"]

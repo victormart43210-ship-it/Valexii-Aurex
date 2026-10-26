@@ -55,12 +55,14 @@ export function createAurexClient(cfg: ClientConfig) {
     if (init.body !== undefined) headers["Content-Type"] = "application/json";
     if (init.idempotencyKey) headers["Idempotency-Key"] = init.idempotencyKey;
     let res: Response;
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), timeoutMs);
     try {
       res = await fetcher(new URL(`/v1${path}`, base), {
         method,
         headers,
         redirect: "manual",
-        signal: AbortSignal.timeout(timeoutMs),
+        signal: controller.signal,
         ...(init.body !== undefined ? { body: JSON.stringify(init.body) } : {}),
       });
     } catch (e) {
