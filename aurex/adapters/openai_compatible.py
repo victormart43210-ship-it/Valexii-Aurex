@@ -53,6 +53,12 @@ class OpenAICompatibleAdapter(ModelAdapter):
         self.local_loopback = local_loopback
 
     def answer(self, prompt: str) -> ModelAnswer:
+        # Remote inference is disabled until enforceable spending
+        # authorization and budget reservation are implemented.
+        # Do not trust the provider label as proof of locality.
+        if not self.local_loopback:
+            raise RuntimeError("REMOTE_INFERENCE_DISABLED")
+
         key = None if self.local_loopback else os.environ.get(self.api_key_env)
         if not self.local_loopback and not key:
             raise RuntimeError(f"Missing credential environment variable: {self.api_key_env}")
