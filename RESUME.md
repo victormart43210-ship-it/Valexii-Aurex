@@ -1,31 +1,20 @@
-# OPERATION KUSANAGI CLXXII — RESUME CHECKPOINT
+# OPERATION KUSANAGI CLXXVII — RESUME CHECKPOINT
 
 ## Current Execution State
-- **Operation**: KUSANAGI CLXXII — PROJECT IRON CONVERGENCE
-- **Branch**: `jules-6830210573371464512-3c40ab58`
+- **Operation**: KUSANAGI CLXXVII — PROJECT SOVEREIGN COMMERCIAL READINESS
+- **Branch**: `kusanagi-clxxii-iron-convergence`
 - **Release Authority**: HOLD
 - **Spending Policy**: $0.00 Authorized External Spending (OFF)
 
 ## Verified Benchmarks & Test Suite
-- **Pytest Backend Unit Tests**: 394 PASS
+- **Pytest Backend Unit Tests**: 399 PASS
 - **Ruff Lint Errors**: 0
-- **Mypy Strict Errors**: 0 (76 source files)
+- **Mypy Strict Errors**: 0 (79 source files)
 - **Bun Frontend Unit Tests**: 148 PASS (21 test files)
-- **Total Verified System Tests**: 542 PASS
+- **Total Verified System Tests**: 547 PASS
 
-## Acceptance Gate Status (KUSANAGI CLXXII)
-- Gate A (Baseline reproduced): PASS
-- Gate B (DISPATER browser workflow): PASS
-- Gate C (Authenticated Railway staging): PASS
-- Gate D (Synthetic towing audit): PASS
-- Gate E (Human-review state persistence): PASS
-- Gate F (Report & receipt integrity): PASS
-- Gate G (Tenant isolation): PASS
-- Gate H (OpenShell integration contracts): PASS
-- Gate I (OpenShell runtime containment): NOT RUN (Supervisor binary uninstalled)
-- Gate J (NVIDIA inference status): NOT CONFIGURED
-- Gate K (CI & security regression): PASS
-- Gate L (Adversarial security verification): PASS
+## OpenShell Status
+- `OPENSHELL_RUNTIME_NOT_VERIFIED` (Native daemon uninstalled in sandbox; policy preflight contract verified)
 
 ## Canonical Governing Doctrine
 > AUREX may become more capable without becoming more authoritative.
