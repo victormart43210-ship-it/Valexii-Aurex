@@ -24,6 +24,7 @@ from aurex.governance_math.industrial_api import router as industrial_demo_route
 from aurex.governance_math.research_api import router as research_advice_router
 from aurex.industrial_execution import router as towing_router
 from aurex.integrations.pilot_policy import review_synthetic_pilot
+from aurex.integrations.xaeli_nvidia import router as xaeli_nvidia_router
 from aurex.real_offline_probe import execute_sqlite_roundtrip
 from aurex.workflows.budget import BudgetGuard
 from aurex_foundation.correlation import CorrelationMiddleware
@@ -81,6 +82,7 @@ def authenticate(authorization: str | None = Header(default=None)) -> str:
 app.include_router(research_advice_router, dependencies=[Depends(authenticate)])
 app.include_router(industrial_demo_router, dependencies=[Depends(authenticate)])
 app.include_router(towing_router, dependencies=[Depends(authenticate)])
+app.include_router(xaeli_nvidia_router, dependencies=[Depends(authenticate)])
 
 
 class JobCreateRequest(BaseModel):

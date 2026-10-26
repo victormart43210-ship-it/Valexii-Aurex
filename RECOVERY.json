@@ -1,11 +1,11 @@
 {
   "schema_version": 1,
-  "operation": "KUSANAGI_CLXXXIV",
+  "operation": "KUSANAGI_CLXXXI",
   "repository": "victormart43210-ship-it/Valexii-Aurex",
   "main_sha": "551625e5be41ef6fd16e70e7a72404400032f4bc",
   "branch": "work/kusanagi-clxxxiv-inference-guard",
-  "checkpoint": "CP005_CI_READBACK",
-  "implementation_sha": "dc6ed44c486b94d1723a6d1095f2ff51e20aec09",
+  "checkpoint": "CLXXXI_CP001",
+  "implementation_sha": "5df3290dea3affa20fc2a3fc51eb110c00dcc04f",
   "remote_save": "containing commit requires readback; exact SHA recorded by GitHub",
   "tests": {
     "pytest": "449 passed, 2 skipped; both module and installed executable",
@@ -21,7 +21,7 @@
   "release": "HOLD",
   "production_authority": "NONE",
   "paid_inference_executed": false,
-  "next_action": "Independent review remote HOLD and packaging; repair PR145 sibling-path policy before convergence",
+  "next_action": "Review canonical status/denial contract and sync repaired server helper into current Lovable preview only after compatible RPC/UI review; no publish",
   "prior_onyx_checkpoint": "c1d6f3aeb9451c1c5d79dc0bae150512998a51e6",
   "prior_onyx_pr": 146,
   "draft_pr": 150,
@@ -106,5 +106,15 @@
       "run": 40277912587,
       "cause": "website Vitest two copy assertions: consolidated-editorial.test.ts and domain-directions.test.ts; 148 pass, 2 fail; TypeScript/build not reached"
     }
+  },
+  "previous_operation": "KUSANAGI_CLXXXIV",
+  "clxxxi_tests": {
+    "backend": "454 passed, 1 skipped",
+    "ruff": "PASS",
+    "mypy": "PASS 79 files",
+    "website": "152 passed, 2 failed",
+    "typescript": "FAIL baseline contact-route issues",
+    "live_provider": "NOT RUN",
+    "hosted_end_to_end": "NOT VERIFIED"
   }
 }
