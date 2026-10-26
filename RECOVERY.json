@@ -4,7 +4,7 @@
   "repository": "victormart43210-ship-it/Valexii-Aurex",
   "canonical_main_sha": "551625e5be41ef6fd16e70e7a72404400032f4bc",
   "feature_branch": "work/kusanagi-clxxvi-onyx-bridge",
-  "implementation_sha": "0102628de074bc2cabda9212f5d49b57ef3e47e2",
+  "implementation_sha": "3a7f032f370a6ad58780a539567aa24552292592",
   "sha_semantics": "Implementation SHA is prior exact source checkpoint; containing commit is obtained with git rev-parse HEAD. A file cannot contain its own Git hash.",
   "draft_pr": 146,
   "checkpoints": [
@@ -25,7 +25,17 @@
         "Frozen contract v1"
       ],
       "tests": "NOT RUN",
-      "remote_save": "NOT VERIFIED until push/readback"
+      "remote_save": "PASS",
+      "commit": "3a7f032f370a6ad58780a539567aa24552292592"
+    },
+    {
+      "id": "CP003",
+      "completed": [
+        "Typed disabled-by-default adapter",
+        "Authenticated fixed-fixture demo",
+        "26 synthetic contract tests PASS"
+      ],
+      "remote_save": "NOT VERIFIED until readback"
     }
   ],
   "deployment": "NOT RUN",
@@ -33,11 +43,18 @@
   "production_authority": "NONE",
   "independent_verification": "NOT RUN",
   "next_actions": [
-    "Freeze contract",
-    "Implement disabled typed adapter and synthetic endpoint",
-    "Run tests and preserve Jules continuation"
+    "Full regressions and transport tests",
+    "Deployment assessment",
+    "Exact-SHA Jules handoff"
   ],
   "known_failures": [
     "Baseline: 2 web adapter tests fail due to ambient SOCKS proxy and absent socksio; 434 passed, 2 skipped. Rerun with proxy env removed."
+  ],
+  "test_commands": [
+    "pytest -q tests/test_onyx_bridge.py --tb=short"
+  ],
+  "test_results": [
+    "RED: missing adapter assertion and missing route assertion failed; other tests failed on missing module.",
+    "GREEN: 26 passed, 1 existing Starlette deprecation warning."
   ]
 }
