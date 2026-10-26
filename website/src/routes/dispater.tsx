@@ -121,6 +121,20 @@ function Dispater() {
 
       <ReasoningSpine context="dispater" />
 
+      <section className="section-space">
+        <div className="site-grid">
+          <SectionHeading
+            eyebrow="Concept / History is not evidence"
+            title="Intelligence Beneath the Surface"
+            copy="DISPATER takes inspiration from Dis Pater and Pluto as historical symbolism, not scientific evidence. Proposed discovery work concerns drilling, completions, and production records."
+          />
+          <p className="mt-5 max-w-3xl leading-7 text-muted-foreground">
+            Private repositories exist, as reported by the project owner; their functionality has
+            not been independently verified. Not independently validated or commercially deployed.
+          </p>
+        </div>
+      </section>
+
       <section className="section-space border-y border-border bg-card/25">
         <div className="site-grid">
           <SectionHeading
