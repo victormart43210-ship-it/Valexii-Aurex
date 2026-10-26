@@ -1,0 +1,66 @@
+{
+  "demo": true,
+  "authority": "ADVISORY_ONLY_NO_CERTIFICATION",
+  "operator": "Permian Recovery Services (fictional)",
+  "as_of": "2026-10-24",
+  "now": [
+    {
+      "category": "driver_qualification",
+      "status": "PRESENT_NOT_VERIFIED",
+      "record_ids": [
+        "demo-driver-01"
+      ]
+    },
+    {
+      "category": "vehicle_inspection",
+      "status": "EXPIRED",
+      "record_ids": [
+        "demo-vehicle-01"
+      ]
+    },
+    {
+      "category": "maintenance",
+      "status": "CONFLICTING",
+      "record_ids": [
+        "demo-maint-01",
+        "demo-maint-02"
+      ]
+    },
+    {
+      "category": "service_ticket",
+      "status": "NOT_VERIFIED",
+      "record_ids": [
+        "demo-ticket-01"
+      ]
+    },
+    {
+      "category": "incident_register",
+      "status": "MISSING",
+      "record_ids": []
+    }
+  ],
+  "changed": "NOT_VERIFIED_NO_PRIOR_SNAPSHOT",
+  "next": [
+    {
+      "category": "vehicle_inspection",
+      "action": "HUMAN_REVIEW_REQUIRED"
+    },
+    {
+      "category": "maintenance",
+      "action": "HUMAN_REVIEW_REQUIRED"
+    },
+    {
+      "category": "service_ticket",
+      "action": "HUMAN_REVIEW_REQUIRED"
+    },
+    {
+      "category": "incident_register",
+      "action": "HUMAN_REVIEW_REQUIRED"
+    }
+  ],
+  "why": "Synthetic inventory-only demonstration; regulatory applicability not evaluated",
+  "proof": {
+    "status": "NOT_VERIFIED",
+    "reason": "No authenticated evidence-ledger receipt or independent verifier in demo"
+  }
+}
