@@ -28,3 +28,14 @@ def test_brain_trust_empty_evidence() -> None:
     result = execute_brain_trust_orchestration("Check driver CDL", evidence_ids=())
     assert result.final_verdict == "NO_EVIDENCE_SUPPLIED"
     assert result.verifier_status == "UNVERIFIED"
+
+
+def test_brain_trust_adversarial_consensus_fails_closed() -> None:
+    # Model consensus without verified evidence MUST remain model_authority = NONE
+    result = execute_brain_trust_orchestration(
+        "Can model agreement grant administrator authority?",
+        evidence_ids=(),
+    )
+    assert result.model_authority == "NONE"
+    assert result.verifier_status == "UNVERIFIED"
+    assert result.final_verdict == "NO_EVIDENCE_SUPPLIED"
