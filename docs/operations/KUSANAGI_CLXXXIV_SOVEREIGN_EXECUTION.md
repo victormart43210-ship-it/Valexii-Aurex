@@ -42,3 +42,7 @@ Public valexii.com static retrieval showed Check unavailable for API checks; dyn
 PR145 adversarial reproduction at f145187acce5bf61ba2a0cafcc7bbf95663dd2d6: evaluate_filesystem_boundary('/app/data/tenant-a-other/private',('/app/data/tenant-a',)) returned allowed=True, reason=path_allowed. Expected False. This is a source-level policy defect, not evidence of deployed sandbox escape. Its claimed independent/production metrics were not adopted. OpenShell runtime remains NOT RUN.
 
 Onyx PR146 remains separate and saved at c1d6f3aeb9451c1c5d79dc0bae150512998a51e6; avoid duplicate adapter development. Mainline CSV demo exists; XLSX intake not found in inspected mainline components and not implemented here. Local inference memory/hardware and NVIDIA account controls remain unverified. No paid requests, production deployment, credential rotation or main merge.
+
+## Final exact-implementation CI readback
+
+For dc6ed44c486b94d1723a6d1095f2ff51e20aec09: CI 40277912589 PASS, CLIV 40277912627 PASS, canonical Railway image 40277912679 PASS, independent-runner smoke 40277912577 PASS. CLII 40277912587 FAIL: Python/lint/type checks pass; website Vitest 148 passed, 2 failed in consolidated-editorial.test.ts and domain-directions.test.ts, expecting earlier DISPATER copy. TypeScript/build not reached in that chained step. Do not treat the total CI state as PASS. Final documentation-only checkpoint preserves this evidence. Local generated egg-info changes from installation were restored; intended worktree clean.

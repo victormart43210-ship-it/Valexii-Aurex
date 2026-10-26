@@ -71,3 +71,7 @@ Removing ambient proxy variables was only for the local test process, not produc
 ## Stop conditions
 
 No production, merge, paid requests, credentials rotation or real customer records. If tools/time expire, checkpoint source and recovery docs, publish with expected-head protection, verify remote SHA and report actual failures. Keep remote inference disabled. Roll back source to inspected main only through a reviewed branch/revert; no deployed rollback was needed. No automatic Jules background execution has been started.
+
+## Final exact-implementation CI readback
+
+For dc6ed44c486b94d1723a6d1095f2ff51e20aec09: CI 40277912589 PASS, CLIV 40277912627 PASS, canonical Railway image 40277912679 PASS, independent-runner smoke 40277912577 PASS. CLII 40277912587 FAIL: Python/lint/type checks pass; website Vitest 148 passed, 2 failed in consolidated-editorial.test.ts and domain-directions.test.ts, expecting earlier DISPATER copy. TypeScript/build not reached in that chained step. Do not treat the total CI state as PASS. Final documentation-only checkpoint preserves this evidence. Local generated egg-info changes from installation were restored; intended worktree clean.

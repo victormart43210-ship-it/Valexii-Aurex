@@ -4,7 +4,7 @@
   "repository": "victormart43210-ship-it/Valexii-Aurex",
   "main_sha": "551625e5be41ef6fd16e70e7a72404400032f4bc",
   "branch": "work/kusanagi-clxxxiv-inference-guard",
-  "checkpoint": "CP004_CONTINUATION",
+  "checkpoint": "CP005_CI_READBACK",
   "implementation_sha": "dc6ed44c486b94d1723a6d1095f2ff51e20aec09",
   "remote_save": "containing commit requires readback; exact SHA recorded by GitHub",
   "tests": {
@@ -76,6 +76,35 @@
       "id": "CP003",
       "sha": "dc6ed44c486b94d1723a6d1095f2ff51e20aec09",
       "remote_save": "PASS"
+    },
+    {
+      "id": "CP004",
+      "sha": "c509533c6b5983682305512e4436d7e43b884b12",
+      "remote_save": "PASS"
     }
-  ]
+  ],
+  "exact_implementation_ci": {
+    "sha": "dc6ed44c486b94d1723a6d1095f2ff51e20aec09",
+    "CI": {
+      "status": "PASS",
+      "run": 40277912589
+    },
+    "CLIV": {
+      "status": "PASS",
+      "run": 40277912627
+    },
+    "Railway_image": {
+      "status": "PASS",
+      "run": 40277912679
+    },
+    "runner_smoke": {
+      "status": "PASS",
+      "run": 40277912577
+    },
+    "CLII": {
+      "status": "FAIL",
+      "run": 40277912587,
+      "cause": "website Vitest two copy assertions: consolidated-editorial.test.ts and domain-directions.test.ts; 148 pass, 2 fail; TypeScript/build not reached"
+    }
+  }
 }
