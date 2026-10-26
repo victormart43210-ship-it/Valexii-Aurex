@@ -4,9 +4,9 @@
   "repository": "victormart43210-ship-it/Valexii-Aurex",
   "main_sha": "551625e5be41ef6fd16e70e7a72404400032f4bc",
   "branch": "work/kusanagi-clxxxiv-inference-guard",
-  "checkpoint": "CP003",
-  "implementation_sha": "1d99a46e8cab70161fc058f0793aa515cc94be0c",
-  "remote_save": "NOT VERIFIED until readback",
+  "checkpoint": "CP004_CONTINUATION",
+  "implementation_sha": "dc6ed44c486b94d1723a6d1095f2ff51e20aec09",
+  "remote_save": "containing commit requires readback; exact SHA recorded by GitHub",
   "tests": {
     "pytest": "449 passed, 2 skipped; both module and installed executable",
     "ruff": "PASS",
@@ -56,5 +56,26 @@
     "RECOVERY.json",
     "RESUME.md",
     "docs/handoffs/KUSANAGI_CLXXXIV_WORK_TO_JULES.md"
+  ],
+  "implementation_remote_save": "PASS",
+  "handoff": "docs/handoffs/KUSANAGI_CLXXXIV_WORK_TO_JULES.md",
+  "independent_review": "NOT RUN",
+  "working_tree_at_checkpoint": "all intended source/docs committed; verify status on resume",
+  "checkpoints": [
+    {
+      "id": "CP001",
+      "sha": "8c351f11c51816047db6944844e8d35c24dddfd3",
+      "remote_save": "PASS"
+    },
+    {
+      "id": "CP002",
+      "sha": "1d99a46e8cab70161fc058f0793aa515cc94be0c",
+      "remote_save": "PASS"
+    },
+    {
+      "id": "CP003",
+      "sha": "dc6ed44c486b94d1723a6d1095f2ff51e20aec09",
+      "remote_save": "PASS"
+    }
   ]
 }
