@@ -26,6 +26,7 @@ from aurex.industrial_execution import router as towing_router
 from aurex.integrations.pilot_policy import review_synthetic_pilot
 from aurex.real_offline_probe import execute_sqlite_roundtrip
 from aurex.workflows.budget import BudgetGuard
+from aurex.xaeli.api import router as xaeli_router
 from aurex_foundation.correlation import CorrelationMiddleware
 from aurex_foundation.opa import evaluate_policy
 
@@ -36,6 +37,7 @@ app = FastAPI(
 )
 
 app.add_middleware(CorrelationMiddleware)
+app.include_router(xaeli_router)
 
 budget_guard = BudgetGuard(limit_usd=Decimal("0.00"))
 

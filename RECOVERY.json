@@ -1,0 +1,1 @@
+{"operation":"KUSANAGI_CLXXXIX","status":"STAGED_NOT_MERGED_NOT_DEPLOYED","start_sha":"551625e5be41ef6fd16e70e7a72404400032f4bc","doc":"docs/operations/KUSANAGI_CLXXXIX_XAELI_DUAL_INTELLIGENCE.md","production":"HOLD","paid_inference":"OFF","next":["per-tenant auth","ONYX adapter","persistent ledger","verify Cloudflare free tier","frontend wiring"]}
