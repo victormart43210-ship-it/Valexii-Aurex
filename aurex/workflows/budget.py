@@ -52,6 +52,19 @@ class BudgetGuard:
         self.reserved_usd += estimate
         return estimate
 
+    def authorize_paid_inference(
+        self, estimated_max_usd: str | int | Decimal
+    ) -> Decimal:
+        """Require a positive reservation for potentially billable inference.
+
+        This is an in-memory validation primitive, not permission
+        to dispatch remote requests.
+        """
+        estimate = _amount(estimated_max_usd)
+        if estimate <= 0:
+            raise BudgetDenied("Paid inference requires a positive reservation")
+        return self.reserve(estimate)
+
     def settle(
         self, reserved_usd: str | int | Decimal, actual_spend_usd: str | int | Decimal
     ) -> None:
