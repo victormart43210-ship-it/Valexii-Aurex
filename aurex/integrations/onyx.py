@@ -263,7 +263,10 @@ class OnyxAdapter:
         try:
             if len(raw) > MAX_BYTES:
                 raise ValueError("response exceeds limit")
-            wire = _WireResponse.model_validate(json.loads(raw, object_pairs_hook=_unique_keys))
+            decoded = json.loads(raw, object_pairs_hook=_unique_keys)
+            if config.token in json.dumps(decoded, ensure_ascii=False):
+                raise ValueError("credential reflected by provider")
+            wire = _WireResponse.model_validate(decoded)
             candidates: list[Candidate] = []
             seen: set[tuple[str | None, str]] = set()
             for row in wire.results:

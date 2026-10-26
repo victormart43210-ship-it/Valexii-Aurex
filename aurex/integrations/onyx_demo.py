@@ -1,15 +1,34 @@
 """Authenticated fixed-fixture demo; no Onyx process, DB write or external calls."""
 
+from collections.abc import Callable, Coroutine
 from datetime import UTC, datetime
 from typing import Any, Literal
 
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException, Request, Response
+from fastapi.routing import APIRoute
 from pydantic import BaseModel, ConfigDict
 
 from aurex.dispater_pilot import audit_synthetic
 from aurex.integrations.onyx import OnyxAdapter, OnyxConfig, Principal
 
-router = APIRouter(prefix="/v1/retrieval/onyx")
+
+class BoundedDemoRoute(APIRoute):
+    def get_route_handler(self) -> Callable[[Request], Coroutine[Any, Any, Response]]:
+        original = super().get_route_handler()
+
+        async def bounded(request: Request) -> Response:
+            body = bytearray()
+            async for chunk in request.stream():
+                if len(body) + len(chunk) > 2048:
+                    raise HTTPException(status_code=413, detail="Synthetic demo request too large")
+                body.extend(chunk)
+            request._body = bytes(body)
+            return await original(request)
+
+        return bounded
+
+
+router = APIRouter(prefix="/v1/retrieval/onyx", route_class=BoundedDemoRoute)
 
 
 class DemoRequest(BaseModel):

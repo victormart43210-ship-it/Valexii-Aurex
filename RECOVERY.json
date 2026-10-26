@@ -4,7 +4,7 @@
   "repository": "victormart43210-ship-it/Valexii-Aurex",
   "canonical_main_sha": "551625e5be41ef6fd16e70e7a72404400032f4bc",
   "feature_branch": "work/kusanagi-clxxvi-onyx-bridge",
-  "implementation_sha": "3a7f032f370a6ad58780a539567aa24552292592",
+  "implementation_sha": "0fbf956df03e0b702713291eb817911f2d96dd51",
   "sha_semantics": "Implementation SHA is prior exact source checkpoint; containing commit is obtained with git rev-parse HEAD. A file cannot contain its own Git hash.",
   "draft_pr": 146,
   "checkpoints": [
@@ -35,7 +35,19 @@
         "Authenticated fixed-fixture demo",
         "26 synthetic contract tests PASS"
       ],
-      "remote_save": "NOT VERIFIED until readback"
+      "remote_save": "PASS",
+      "commit": "0fbf956df03e0b702713291eb817911f2d96dd51"
+    },
+    {
+      "id": "CP004",
+      "utc": "2026-10-26T00:23:18.893699+00:00",
+      "completed": [
+        "39 adapter/security tests",
+        "475 passed, 3 skipped full Python suite",
+        "Real local HTTP authenticated demo",
+        "Private deployment assessment"
+      ],
+      "remote_save": "NOT VERIFIED until remote readback"
     }
   ],
   "deployment": "NOT RUN",
@@ -43,18 +55,52 @@
   "production_authority": "NONE",
   "independent_verification": "NOT RUN",
   "next_actions": [
-    "Full regressions and transport tests",
-    "Deployment assessment",
-    "Exact-SHA Jules handoff"
+    "Inspect CP004 exact-head CI",
+    "Finish and commit Jules continuation package",
+    "Independent review and authorized private Onyx admission remain required"
   ],
   "known_failures": [
-    "Baseline: 2 web adapter tests fail due to ambient SOCKS proxy and absent socksio; 434 passed, 2 skipped. Rerun with proxy env removed."
+    "Existing CI and CLIV pytest executable cannot import dispater_proof; python -m pytest succeeds. Packaging excludes dispater_proof.",
+    "Existing CLII website tests: 148 passed, 2 failed on expected website copy changed by previous work.",
+    "Ambient SOCKS proxy requires absent socksio for existing web-adapter tests; local regression run removed proxy environment variables."
   ],
   "test_commands": [
-    "pytest -q tests/test_onyx_bridge.py --tb=short"
+    "python -m ruff check .",
+    "python -m mypy aurex",
+    "env -u ALL_PROXY -u HTTPS_PROXY -u HTTP_PROXY -u all_proxy -u https_proxy -u http_proxy python -m pytest -q --tb=short"
   ],
   "test_results": [
-    "RED: missing adapter assertion and missing route assertion failed; other tests failed on missing module.",
-    "GREEN: 26 passed, 1 existing Starlette deprecation warning."
+    "PASS: Ruff",
+    "PASS: MyPy, 79 source files",
+    "PASS: 475 passed, 3 skipped, one existing Starlette warning",
+    "PASS: real local Uvicorn HTTP demo: unauthorized 401, authorized 200, six candidates, no admitted evidence",
+    "NOT RUN: optional live Onyx test"
+  ],
+  "security_verification_status": {
+    "synthetic_tests": "PASS",
+    "live_tenant_isolation": "NOT VERIFIED",
+    "multi_tenant_deployment": "BLOCKED",
+    "independent_review": "NOT RUN"
+  },
+  "external_dependencies": [
+    "Authorized isolated private Onyx with local-only inference",
+    "Verified owner identity and deployment isolation",
+    "Hetzner server specifications and available capacity",
+    "Independent Jules review"
+  ],
+  "modified_files": [
+    "aurex/api.py",
+    "aurex/integrations/onyx.py",
+    "aurex/integrations/onyx_demo.py",
+    "tests/test_onyx_bridge.py",
+    "tests/test_onyx_live.py",
+    ".github/workflows/onyx-bridge.yml",
+    "docs/integrations/ONYX_CAPABILITY_MATRIX.md",
+    "docs/integrations/ONYX_AUREX_CONTRACT.md",
+    "docs/deployment/ONYX_PRIVATE_DEPLOYMENT_PLAN.md",
+    "docs/verification/ONYX_SYNTHETIC_HTTP.json",
+    "docs/verification/ONYX_BRIDGE_VERIFICATION.md",
+    "RECOVERY.json",
+    "RESUME.md"
   ]
 }
