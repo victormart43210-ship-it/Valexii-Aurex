@@ -1,12 +1,12 @@
 {
   "schema_version": 1,
-  "operation": "KUSANAGI_CLXXXI",
+  "operation": "KUSANAGI_CLXXXIII",
   "repository": "victormart43210-ship-it/Valexii-Aurex",
   "main_sha": "551625e5be41ef6fd16e70e7a72404400032f4bc",
   "branch": "work/kusanagi-clxxxiv-inference-guard",
-  "checkpoint": "CLXXXI_CP001",
-  "implementation_sha": "5df3290dea3affa20fc2a3fc51eb110c00dcc04f",
-  "remote_save": "containing commit requires readback; exact SHA recorded by GitHub",
+  "checkpoint": "CLXXXIII_CP001",
+  "implementation_sha": "0ed9af05ff23e38cfa4c2862471caedde18270e2",
+  "remote_save": "NOT VERIFIED for containing checkpoint until branch readback",
   "tests": {
     "pytest": "449 passed, 2 skipped; both module and installed executable",
     "ruff": "PASS",
@@ -21,12 +21,12 @@
   "release": "HOLD",
   "production_authority": "NONE",
   "paid_inference_executed": false,
-  "next_action": "Review canonical status/denial contract and sync repaired server helper into current Lovable preview only after compatible RPC/UI review; no publish",
+  "next_action": "Run TypeScript and focused lint including loopback test; verify storage limitations and save final report",
   "prior_onyx_checkpoint": "c1d6f3aeb9451c1c5d79dc0bae150512998a51e6",
   "prior_onyx_pr": 146,
   "draft_pr": 150,
   "prior_remote_save": "PASS",
-  "utc": "2026-10-26T06:06:27.619987+00:00",
+  "utc": "2026-10-26T18:48:48.549425+00:00",
   "known_failures": [
     "PR145 filesystem policy admits sibling tenant-a-other under tenant-a (reproduced)",
     "PR145 add/add conflicts in openshell_policy.py and its tests",
@@ -41,7 +41,8 @@
     "Railway deployed SHA, volume isolation and authenticated bridge verification",
     "Live Onyx/ledger wiring from PR146",
     "Complete tenant-authenticated browser-to-persisted-audit demonstration",
-    "XLSX intake and stricter CSV precision qualification"
+    "XLSX intake and stricter CSV precision qualification",
+    "Lovable send_message rejected: workspace out of credits; preview remains unchanged"
   ],
   "changed_files": [
     "aurex/adapters/inference_policy.py",
@@ -107,7 +108,7 @@
       "cause": "website Vitest two copy assertions: consolidated-editorial.test.ts and domain-directions.test.ts; 148 pass, 2 fail; TypeScript/build not reached"
     }
   },
-  "previous_operation": "KUSANAGI_CLXXXIV",
+  "previous_operation": "KUSANAGI_CLXXXI",
   "clxxxi_tests": {
     "backend": "454 passed, 1 skipped",
     "ruff": "PASS",
@@ -116,5 +117,12 @@
     "typescript": "FAIL baseline contact-route issues",
     "live_provider": "NOT RUN",
     "hosted_end_to_end": "NOT VERIFIED"
+  },
+  "clxxxiii_tests": {
+    "website": "155 passed including real local HTTP adapter/API test",
+    "typescript": "PASS before optional loopback test; recheck pending",
+    "build": "PASS before optional loopback test",
+    "live_website": "NOT VERIFIED",
+    "independent_review": "NOT RUN"
   }
 }
