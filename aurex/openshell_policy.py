@@ -36,6 +36,11 @@ def evaluate_egress(url: str, method: str, rules: tuple[EgressRule, ...]) -> Egr
         return EgressDecision(False, "unsupported_destination")
     if not method or method.upper() != method:
         return EgressDecision(False, "invalid_method")
+    path = target.path or "/"
+    if ("%" in path or "\\" in path or "//" in path
+            or any(part in (".", "..") for part in path.split("/"))
+            or any(ord(char) < 32 for char in url)):
+        return EgressDecision(False, "ambiguous_path")
     for rule in rules:
         if not rule.host or rule.host != host or not rule.path_prefix.startswith("/"):
             continue

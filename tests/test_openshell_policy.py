@@ -70,3 +70,8 @@ def test_filesystem_policy_rejects_sibling_and_invalid_roots():
     for root in ("", "relative", "/app/../etc", "/app/./data", "/app//data"):
         invalid = FilesystemAccessRule((root,), ())
         assert not evaluate_filesystem_access("/etc/passwd", "read", invalid).allowed
+
+
+def test_egress_rejects_ambiguous_path_segments():
+    for path in ("/v1/infer/../admin", "/v1/infer/%2e%2e/admin", "/v1/infer/%252e%252e/admin", "/v1/infer/./admin", "/v1/infer//admin", "/v1/infer/\\admin"):
+        assert not evaluate_egress("https://api.example.test" + path, "POST", RULES).allowed

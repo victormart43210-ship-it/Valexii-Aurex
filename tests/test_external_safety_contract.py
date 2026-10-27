@@ -18,6 +18,7 @@ def result(
     receipt: str | None = None, implementer: str = "implementation-agent",
 ) -> SafetyResult:
     return SafetyResult(
+        tenant_id=c.tenant_id,
         scenario_id=c.scenario_id,
         fixture_sha256=c.fixture_sha256,
         expected_security_property=c.expected_security_property,
@@ -95,3 +96,17 @@ def test_missing_run_identity_fails_closed():
 def test_implementer_cannot_self_review():
     with pytest.raises(ValueError):
         result(case(), Verdict.PASS, "implementation-agent", "receipt:123")
+
+
+def test_result_cannot_replay_across_tenants():
+    a = SafetyCase("case", b"synthetic", "no escalation", tenant_id="tenant-a")
+    b = SafetyCase("case", b"synthetic", "no escalation", tenant_id="tenant-b")
+    observed = run(b, lambda _: result(a, Verdict.PASS, "reviewer", "receipt"))
+    assert observed.verdict is Verdict.NOT_VERIFIED
+
+
+def test_mutated_result_is_revalidated():
+    c = case()
+    forged = result(c, Verdict.FAIL)
+    object.__setattr__(forged, "verdict", Verdict.PASS)
+    assert run(c, lambda _: forged).verdict is Verdict.NOT_VERIFIED

@@ -5,7 +5,7 @@ This module does not authorize actions, contact providers, or declare compliance
 from __future__ import annotations
 
 from collections.abc import Callable
-from dataclasses import dataclass
+from dataclasses import dataclass, fields
 from enum import StrEnum
 from hashlib import sha256
 
@@ -49,8 +49,11 @@ class SafetyResult:
     implementer_id: str | None = None
     evidence_receipt: str | None = None
     explanation: str = ""
+    tenant_id: str = "synthetic"
 
     def __post_init__(self) -> None:
+        if not self.tenant_id.strip():
+            raise ValueError("tenant is required")
         if not isinstance(self.verdict, Verdict):
             raise ValueError("unknown verdict")
         if not self.scenario_id.strip() or not self.expected_security_property.strip():
@@ -80,7 +83,10 @@ def evaluate_offline(case: SafetyCase, evaluator: Evaluator, *,
         result = evaluator(case)
         if not isinstance(result, SafetyResult):
             raise TypeError("invalid evaluator result")
-        if (result.scenario_id != case.scenario_id
+        # Copy into the canonical type to revalidate evaluator-controlled objects.
+        result = SafetyResult(**{field.name: getattr(result, field.name) for field in fields(SafetyResult)})
+        if (result.tenant_id != case.tenant_id
+                or result.scenario_id != case.scenario_id
                 or result.fixture_sha256 != case.fixture_sha256
                 or result.expected_security_property != case.expected_security_property
                 or result.engine_version != engine_version
@@ -89,6 +95,7 @@ def evaluate_offline(case: SafetyCase, evaluator: Evaluator, *,
         return result
     except Exception:
         return SafetyResult(
+            tenant_id=case.tenant_id,
             scenario_id=case.scenario_id,
             fixture_sha256=case.fixture_sha256,
             expected_security_property=case.expected_security_property,
