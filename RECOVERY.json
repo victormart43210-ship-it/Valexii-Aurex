@@ -54,7 +54,14 @@
       "baseline_sha": "1c05a95f9c8a54854d31657c315864d93931d848",
       "status": "COMPLETED",
       "production": "HOLD",
-      "notes": "Project Sovereign Owner Decision Gate completed; Owner Decision Package assembled in docs/operations/KUSANAGI_CLXXXVII_OWNER_DECISION_PACKAGE.md; fresh timestamped verification run verified; submitted for Product Owner review."
+      "notes": "Project Sovereign Owner Decision Gate completed; Owner Decision Package assembled in docs/operations/KUSANAGI_CLXXXVII_OWNER_DECISION_PACKAGE.md."
+    },
+    {
+      "operation": "KUSANAGI_CLXXXVIII",
+      "baseline_sha": "1c05a95f9c8a54854d31657c315864d93931d848",
+      "status": "COMPLETED",
+      "production": "HOLD",
+      "notes": "Project Sovereign Mainline Ascension completed; GO recommendation issued for PR #154 candidate; awaiting explicit Product Owner merge signature."
     }
   ]
 }
