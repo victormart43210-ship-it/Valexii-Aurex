@@ -42,3 +42,19 @@ Staging API still mounts evidence volume `4d23b1e6-3625-4def-aa97-82e10859f04d` 
 Gate A private reachability: NOT VERIFIED. Gate B generation: NOT RUN. Gate C live AUREX result: NOT RUN. Gate D dedicated mocked security tests: PASS at this checkpoint. Gate E XAELI consumption: NOT RUN. Gate F live website: NOT RUN. Gate G no secret exposure: source-tested only, hosted NOT VERIFIED. Gate H production authority NONE: preserved in source and no production mutation.
 
 Independent review: pending. Production release HOLD. External paid inference OFF. Existing source-only PR154 convergence work is separate and was not overwritten. Do not describe this report as completion of CXCV.
+
+## CP002: independent repair and retest
+
+Implementation remote SHA: `e5e5cf82dd9a6ec43b12d7bcdaf51217d1125bd4`. Equivalent local implementation commit: `ab527411450eafab841cdc027b9caf4e49f35366`.
+
+Separate read-only reviewer `/root/cxcv_review` reproduced three defects: truncated HTTP response and deeply nested JSON returned 500; malformed non-ASCII bearer also returned 500. Repairs catch HTTP parser/depth exceptions and compare UTF-8 bearer bytes in constant time. Retest: 38 dedicated tests PASS; independent manual truncated response, bad status line and nested JSON each sanitized 502; malformed bearer denied 401. Full backend rerun: 487 PASS, 2 skipped, 5 subtests PASS. Ruff PASS. No source behavior changed after this retest.
+
+Reviewed SHA-256 files:
+- app.py: `9a7a7592820002fd3d65ffe8b984bd09975964291a2599ccc1eeb904d32ffef0`
+- tests/test_qwen_private_bridge.py: `e82ac58ffc3ff57266508f9639617cf1647e56c8851847b380811e398ab22598`
+
+This separate-agent review is source/mock evidence, not external certification or live validation. Socket timeouts are per operation, not an absolute wall-clock bound; concurrency lock is per process. Wider activation remains HOLD.
+
+Exact implementation CI observed: runner smoke 40511472819 PASS; CI 40511472591, CLII 40511472654, CLIV 40511472687 IN PROGRESS. Do not mark required CI PASS until terminal results are read.
+
+No Railway mutations were performed during CXCV. Existing private model loading is verified from logs; actual model ID, key enforcement and inference remain unverified. The requested live response has not been produced. Frontend changes are deliberately pending the first live backend gate and existing source reconciliation; no website publication occurred.
