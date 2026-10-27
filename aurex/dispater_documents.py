@@ -42,6 +42,30 @@ class DocumentExtractionResult(BaseModel):
     unsupported_modalities: list[str] = Field(default_factory=list)
     audit_event_ref: str
 
+    def index_in_onyx(self, onyx_adapter: Any) -> int:
+        """Indexes extracted document fields into Onyx knowledge store with source provenance."""
+        passages = []
+        for field in self.extracted_fields:
+            passages.append({
+                "text": f"{field.field_name}: {field.raw_value} (Normalized: {field.normalized_value})",
+                "page_number": field.page_number,
+                "score": field.confidence_score,
+            })
+        if not passages:
+            passages.append({
+                "text": f"Document {self.filename} processed successfully. SHA-256: {self.document_sha256}",
+                "page_number": 1,
+                "score": 1.0,
+            })
+        return int(onyx_adapter.index_document_passages(
+            tenant_id=self.tenant_id,
+            document_id=self.document_id,
+            source_title=self.filename,
+            document_sha256=self.document_sha256,
+            passages=passages,
+        ))
+
+
 
 class DocumentIntelligenceEngine:
     @staticmethod
@@ -70,6 +94,9 @@ class DocumentIntelligenceEngine:
                 extraction_status="FAILED_OVERSIZED",
                 audit_event_ref=f"EVD-DOC-{document_id}",
             )
+
+
+
 
         extracted_fields: list[ExtractedDocumentField] = []
         extracted_records: dict[str, list[dict[str, Any]]] = {
@@ -182,6 +209,9 @@ class DocumentIntelligenceEngine:
                 unsupported_modalities=unsupported,
                 audit_event_ref=f"EVD-DOC-{document_id}",
             )
+
+
+
 
         except Exception as exc:
             return DocumentExtractionResult(

@@ -104,6 +104,13 @@
       "status": "COMPLETED",
       "production": "HOLD",
       "notes": "Project Sovereign Convergence completed; Document Intelligence Engine (aurex/dispater_documents.py) built, cross-document reconciliation connected, E2E synthetic demonstration verified (tests/test_dispater_e2e_workflow.py), integrated test matrix evaluated, and 417 pytest / 149 Bun tests verified."
+    },
+    {
+      "operation": "KUSANAGI_CXCVII",
+      "baseline_sha": "1c05a95f9c8a54854d31657c315864d93931d848",
+      "status": "COMPLETED",
+      "production": "HOLD",
+      "notes": "Project ONYX Bridge completed; Onyx Knowledge Retrieval Adapter (aurex/integrations/onyx.py) implemented, document extraction indexing connected, /v1/dispater/knowledge endpoint exposed, tenant isolation verified, and 421 pytest / 149 Bun tests verified."
     }
   ]
 }

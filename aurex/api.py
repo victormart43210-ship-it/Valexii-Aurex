@@ -28,6 +28,7 @@ from aurex.dispater_intelligence import (
 from aurex.fenced_worker import cancel_job, claim_job, finalize_job
 from aurex.governance_math.industrial_api import router as industrial_demo_router
 from aurex.governance_math.research_api import router as research_advice_router
+from aurex.integrations.onyx import OnyxKnowledgeAdapter
 from aurex.integrations.pilot_policy import review_synthetic_pilot
 from aurex.real_offline_probe import execute_sqlite_roundtrip
 from aurex.workflows.budget import BudgetGuard
@@ -506,3 +507,18 @@ def dispater_findings_explorer_endpoint(
         "xaeli_findings": [f.model_dump() for f in xaeli_findings],
         "raw_exceptions": [e.model_dump() for e in filtered],
     }
+
+
+# --- Onyx Knowledge Search Endpoint ---
+
+onyx_adapter = OnyxKnowledgeAdapter()
+
+
+@app.get("/v1/dispater/knowledge")
+def dispater_knowledge_search_endpoint(
+    tenant_id: str = "TENANT-COMMERCIAL-01",
+    query: str = "rate sheet",
+    _: str = Depends(authenticate),
+) -> dict[str, Any]:
+    result = onyx_adapter.search_knowledge(tenant_id=tenant_id, query=query)
+    return result.model_dump()
