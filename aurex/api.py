@@ -81,6 +81,8 @@ def authenticate(authorization: str | None = Header(default=None)) -> str:
 app.include_router(research_advice_router, dependencies=[Depends(authenticate)])
 app.include_router(industrial_demo_router, dependencies=[Depends(authenticate)])
 app.include_router(towing_router, dependencies=[Depends(authenticate)])
+from aurex.xaeli_staging import router as xaeli_staging_router
+app.include_router(xaeli_staging_router, dependencies=[Depends(authenticate)])
 
 
 class JobCreateRequest(BaseModel):
