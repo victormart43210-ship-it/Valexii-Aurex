@@ -16,6 +16,6 @@
   "exposure_estimation_error_pct": 16.94,
   "tenant_isolation_leaks": 0,
   "evidence_completeness_pct": 100.0,
-  "total_latency_ms": 74.11,
-  "average_case_latency_ms": 0.0371
+  "total_latency_ms": 72.84,
+  "average_case_latency_ms": 0.0364
 }

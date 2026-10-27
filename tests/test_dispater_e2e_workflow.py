@@ -13,9 +13,9 @@ from aurex.dispater_pilot import CommercialPilotEngine, HumanReviewDecision, Pil
 def test_five_hundred_dollar_equipment_hour_discrepancy_e2e_scenario():
     # 1. Ingest Synthetic Equipment Ticket ($250/hr * 12 hrs = $3,000)
     ticket_file = (
-        "ticket_id,po_id,invoice_id,total_amount,has_signature\n"
-        "FT-E2E-101,PO-E2E-100,INV-E2E-101,3000.0,true"
-    ).encode("utf-8")
+        b"ticket_id,po_id,invoice_id,total_amount,has_signature\n"
+        b"FT-E2E-101,PO-E2E-100,INV-E2E-101,3000.0,true"
+    )
 
     doc_result = DocumentIntelligenceEngine.process_document(
         tenant_id="TENANT-E2E-OILFIELD",
