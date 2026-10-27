@@ -68,7 +68,14 @@
       "baseline_sha": "1c05a95f9c8a54854d31657c315864d93931d848",
       "status": "COMPLETED",
       "production": "HOLD",
-      "notes": "Project DISPATER Sovereign Operational Intelligence completed; 6 revenue leakage rules, fleet maintenance, value calculator, CSV/Teams adapters, and REST endpoints implemented and verified with 407 pytest tests."
+      "notes": "Project DISPATER Sovereign Operational Intelligence completed; 6 revenue leakage rules, fleet maintenance, value calculator, CSV/Teams adapters, and REST endpoints implemented."
+    },
+    {
+      "operation": "KUSANAGI_CXC",
+      "baseline_sha": "1c05a95f9c8a54854d31657c315864d93931d848",
+      "status": "COMPLETED",
+      "production": "HOLD",
+      "notes": "Project DISPATER Sovereign Engine Convergence completed; 10 revenue exception rules, fleet maintenance priority classifications, accounting exports, 5-step XAELI findings, and Scenarios A-H verified with 411 pytest tests."
     }
   ]
 }

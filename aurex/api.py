@@ -393,12 +393,14 @@ def dispater_reconciliation_endpoint(
         is_demo=req.is_demo,
     )
     total_exposure = sum(e.financial_exposure for e in exceptions)
+    xaeli_findings = RevenueLeakageEngine.convert_to_xaeli_findings(exceptions)
     return {
         "tenant_id": req.tenant_id,
         "is_demo": req.is_demo,
         "total_exceptions_count": len(exceptions),
         "total_financial_exposure": round(total_exposure, 2),
         "exceptions": [e.model_dump() for e in exceptions],
+        "xaeli_findings": [f.model_dump() for f in xaeli_findings],
     }
 
 @app.get("/v1/dispater/fleet-maintenance")
