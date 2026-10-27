@@ -26,7 +26,7 @@ def test_maintenance_and_inspection():
 
 def test_tenant_isolation():
     with pytest.raises(ValueError):
-        detect_unbilled_tickets("demo", [row("T1", tenant_id="other")], [])
+        detect_unbilled_tickets("demo", [{**row("T1"), "tenant_id": "other"}], [])
 
 
 def test_exposure_not_double_counted():
