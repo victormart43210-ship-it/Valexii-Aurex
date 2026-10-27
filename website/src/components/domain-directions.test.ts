@@ -10,8 +10,12 @@ describe("public domain and collaboration boundaries", () => {
         expect(source).toContain("Private repositories exist, as reported by the project owner");
         expect(source).toContain("functionality has not been independently verified");
       } else {
-        expect(source).toContain("Developmental offering. No live customer CRM, tax service, DOT certification, or production financial automation is represented here.");
-        expect(source).toContain("A conversation is not a guarantee of deployed service, compliance, savings, or financing.");
+        expect(source).toContain(
+          "Developmental offering. No live customer CRM, tax service, DOT certification, or production financial automation is represented here.",
+        );
+        expect(source).toContain(
+          "A conversation is not a guarantee of deployed service, compliance, savings, or financing.",
+        );
         expect(source).toContain("visual={");
       }
       expect(source).toContain("<DomainReasoning />");

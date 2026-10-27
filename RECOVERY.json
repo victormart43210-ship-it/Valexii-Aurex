@@ -4,9 +4,9 @@
   "repository": "victormart43210-ship-it/Valexii-Aurex",
   "main_sha": "551625e5be41ef6fd16e70e7a72404400032f4bc",
   "branch": "work/kusanagi-clxxxiv-inference-guard",
-  "checkpoint": "CLXXXIII_CP001",
-  "implementation_sha": "0ed9af05ff23e38cfa4c2862471caedde18270e2",
-  "remote_save": "NOT VERIFIED for containing checkpoint until branch readback",
+  "checkpoint": "CLXXXIII_CP002",
+  "implementation_sha": "edf081138bd73204b29d2337d08db079fb4494c4",
+  "remote_save": "Containing CP002 commit requires remote readback; CP001 PASS",
   "tests": {
     "pytest": "449 passed, 2 skipped; both module and installed executable",
     "ruff": "PASS",
@@ -21,12 +21,12 @@
   "release": "HOLD",
   "production_authority": "NONE",
   "paid_inference_executed": false,
-  "next_action": "Run TypeScript and focused lint including loopback test; verify storage limitations and save final report",
+  "next_action": "Restore Lovable editing availability via owner action; sync reviewed server helper to preview, then verify hosted owner RPC without publishing. In parallel resolve trusted tenant identity and provider backing-volume isolation before any deployment.",
   "prior_onyx_checkpoint": "c1d6f3aeb9451c1c5d79dc0bae150512998a51e6",
   "prior_onyx_pr": 146,
   "draft_pr": 150,
   "prior_remote_save": "PASS",
-  "utc": "2026-10-26T18:48:48.549425+00:00",
+  "utc": "2026-10-26T18:52:46.734105+00:00",
   "known_failures": [
     "PR145 filesystem policy admits sibling tenant-a-other under tenant-a (reproduced)",
     "PR145 add/add conflicts in openshell_policy.py and its tests",
@@ -82,6 +82,11 @@
       "id": "CP004",
       "sha": "c509533c6b5983682305512e4436d7e43b884b12",
       "remote_save": "PASS"
+    },
+    {
+      "id": "CLXXXIII_CP001",
+      "sha": "edf081138bd73204b29d2337d08db079fb4494c4",
+      "remote_save": "PASS"
     }
   ],
   "exact_implementation_ci": {
@@ -120,9 +125,16 @@
   },
   "clxxxiii_tests": {
     "website": "155 passed including real local HTTP adapter/API test",
-    "typescript": "PASS before optional loopback test; recheck pending",
-    "build": "PASS before optional loopback test",
+    "typescript": "PASS",
+    "build": "PASS",
     "live_website": "NOT VERIFIED",
-    "independent_review": "NOT RUN"
+    "independent_review": "NOT RUN",
+    "focused_eslint": "PASS after23 formatting errors repaired",
+    "backend": "454 passed,1 skipped",
+    "ruff": "PASS",
+    "mypy": "PASS79 files",
+    "dispater_node": "25 passed",
+    "dispater_build": "PASS",
+    "tenant_isolation": "FAIL: shared-bearer requests ignore tenant headers"
   }
 }
