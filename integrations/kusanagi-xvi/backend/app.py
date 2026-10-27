@@ -103,7 +103,7 @@ def qwen_synthetic_probe():
         raise HTTPException(503, "INVALID_QWEN_PORT")
 
     payload = json.dumps({
-        "model": os.environ.get("AUREX_QWEN_MODEL", "qwen"),
+        "model": os.environ.get("AUREX_QWEN_MODEL", "bartowski/Qwen2.5-0.5B-Instruct-GGUF"),
         "messages": [
             {"role": "system", "content": "Synthetic connectivity test only. No authority. Reply with the single word READY."},
             {"role": "user", "content": "Synthetic test: respond READY."},
