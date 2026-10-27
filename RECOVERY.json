@@ -20,5 +20,13 @@
     "remote_save": "Implementation pushed; final documentation commit requires remote readback",
     "release": "HOLD",
     "implementation_sha": "e5e5cf82dd9a6ec43b12d7bcdaf51217d1125bd4"
+  },
+  "cxcviii": {
+    "checkpoint": "CXCVIII_CP001",
+    "reviewed_deploy_sha": "d2e55319f3261f51b2239350e44952e96b7db074",
+    "qwen_deployment": "2e8a0944-592b-4e7f-a53f-73b04de12a39",
+    "patch": "89057db4-9bb5-4390-be04-f63ffdd687b0",
+    "next_action": "Apply reviewed seven-change staging-only patch after remote checkpoint; verify production unchanged and staging has no mounted data. Then authenticated model discovery.",
+    "release": "HOLD"
   }
 }
