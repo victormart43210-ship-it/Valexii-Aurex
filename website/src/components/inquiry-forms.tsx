@@ -164,7 +164,14 @@ export function InquiryForm({
         <label htmlFor={`${id}-category`} className={label}>
           {kind === "contact" ? "Inquiry category" : "Partnership type"}
         </label>
-        <select id={`${id}-category`} name="category" defaultValue={defaultCategory} required className={field} {...a("category")}>
+        <select
+          id={`${id}-category`}
+          name="category"
+          defaultValue={defaultCategory}
+          required
+          className={field}
+          {...a("category")}
+        >
           {cats.map((c) => (
             <option key={c}>{c}</option>
           ))}

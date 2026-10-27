@@ -6,9 +6,7 @@ import { PageHero, PageShell } from "@/components/site";
 export const Route = createFileRoute("/contact")({
   validateSearch: (search: Record<string, unknown>) => {
     const service = search["service"];
-    return service === "dispater-audit" || service === "dispater-consultation"
-      ? { service }
-      : {};
+    return service === "dispater-audit" || service === "dispater-consultation" ? { service } : {};
   },
   head: () => ({
     meta: [
@@ -46,7 +44,12 @@ function Contact() {
     : {};
   return (
     <PageShell>
-      <PageHero eyebrow="Contact" title={isDispater ? "Discuss a DISPATER.AI pilot" : "What would you like to help make clearer?"}>
+      <PageHero
+        eyebrow="Contact"
+        title={
+          isDispater ? "Discuss a DISPATER.AI pilot" : "What would you like to help make clearer?"
+        }
+      >
         <p>
           {isDispater
             ? "Tell us about your oilfield or towing operations. This is a human-led discovery conversation, not a completed audit or confirmed appointment."
@@ -88,11 +91,7 @@ function Contact() {
               .
             </p>
           </div>
-          <InquiryForm
-            key={service ?? "general"}
-            kind="contact"
-            {...inquiryDefaults}
-          />
+          <InquiryForm key={service ?? "general"} kind="contact" {...inquiryDefaults} />
         </div>
       </section>
     </PageShell>
