@@ -19,6 +19,12 @@ from aurex.database import (
     list_evidence,
     list_jobs,
 )
+from aurex.dispater_intelligence import (
+    CalculatorAssumptions,
+    FleetMaintenanceEngine,
+    OperationalValueCalculator,
+    RevenueLeakageEngine,
+)
 from aurex.fenced_worker import cancel_job, claim_job, finalize_job
 from aurex.governance_math.industrial_api import router as industrial_demo_router
 from aurex.governance_math.research_api import router as research_advice_router
@@ -355,3 +361,101 @@ def get_budgets(_: str = Depends(authenticate)) -> BudgetResponse:
         spentUsd=float(budget_guard.spent_usd),
         period="month",
     )
+
+
+# --- DISPATER Sovereign Operational Intelligence Endpoints ---
+
+
+
+class DispaterReconciliationRequest(BaseModel):
+    tenant_id: str = "TENANT-COMMERCIAL-01"
+    field_tickets: list[dict[str, Any]] = Field(default_factory=list)
+    invoices: list[dict[str, Any]] = Field(default_factory=list)
+    purchase_orders: list[dict[str, Any]] = Field(default_factory=list)
+    rate_sheets: list[dict[str, Any]] = Field(default_factory=list)
+    is_demo: bool = True
+
+class DispaterValueCalculatorRequest(BaseModel):
+    tenant_id: str = "TENANT-COMMERCIAL-01"
+    assumptions: CalculatorAssumptions = Field(default_factory=CalculatorAssumptions)
+
+@app.post("/v1/dispater/reconciliation")
+def dispater_reconciliation_endpoint(
+    req: DispaterReconciliationRequest,
+    _: str = Depends(authenticate),
+) -> dict[str, Any]:
+    exceptions = RevenueLeakageEngine.evaluate_records(
+        tenant_id=req.tenant_id,
+        field_tickets=req.field_tickets,
+        invoices=req.invoices,
+        purchase_orders=req.purchase_orders,
+        rate_sheets=req.rate_sheets,
+        is_demo=req.is_demo,
+    )
+    total_exposure = sum(e.financial_exposure for e in exceptions)
+    return {
+        "tenant_id": req.tenant_id,
+        "is_demo": req.is_demo,
+        "total_exceptions_count": len(exceptions),
+        "total_financial_exposure": round(total_exposure, 2),
+        "exceptions": [e.model_dump() for e in exceptions],
+    }
+
+@app.get("/v1/dispater/fleet-maintenance")
+def dispater_fleet_maintenance_endpoint(
+    tenant_id: str = "TENANT-COMMERCIAL-01",
+    _: str = Depends(authenticate),
+) -> dict[str, Any]:
+    # Default synthetic fleet dataset
+    synthetic_fleet = [
+        {
+            "equipment_id": "RIG-UNIT-104",
+            "equipment_name": "Heavy Winch Rig 104",
+            "operating_hours": 280.5,
+            "last_service_hours": 0.0,
+            "current_mileage": 12500.0,
+            "last_service_mileage": 2000.0,
+            "has_inspection_record": True,
+            "detected_defects": ["Hydraulic pressure variance"],
+        },
+        {
+            "equipment_id": "TOW-BED-202",
+            "equipment_name": "Rotator Wrecker 202",
+            "operating_hours": 190.0,
+            "last_service_hours": 0.0,
+            "current_mileage": 8900.0,
+            "last_service_mileage": 0.0,
+            "has_inspection_record": True,
+            "detected_defects": [],
+        },
+    ]
+    records = FleetMaintenanceEngine.evaluate_fleet(tenant_id, synthetic_fleet, is_demo=True)
+    return {
+        "tenant_id": tenant_id,
+        "total_units": len(records),
+        "fleet_records": [r.model_dump() for r in records],
+    }
+
+@app.post("/v1/dispater/value-calculator")
+def dispater_value_calculator_endpoint(
+    req: DispaterValueCalculatorRequest,
+    _: str = Depends(authenticate),
+) -> dict[str, Any]:
+    result = OperationalValueCalculator.calculate_value(req.tenant_id, req.assumptions)
+    return result.model_dump()
+
+@app.get("/v1/dispater/dashboard")
+def dispater_dashboard_endpoint(
+    tenant_id: str = "TENANT-COMMERCIAL-01",
+    _: str = Depends(authenticate),
+) -> dict[str, Any]:
+    return {
+        "tenant_id": tenant_id,
+        "data_classification": "SYNTHETIC_STAGING_DEMONSTRATION",
+        "active_jobs_count": 12,
+        "unbilled_tickets_count": 3,
+        "revenue_exposure_usd": 18250.00,
+        "maintenance_alerts_count": 2,
+        "human_approval_queue_count": 4,
+        "evidence_provenance_valid": True,
+    }

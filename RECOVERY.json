@@ -61,7 +61,14 @@
       "baseline_sha": "1c05a95f9c8a54854d31657c315864d93931d848",
       "status": "COMPLETED",
       "production": "HOLD",
-      "notes": "Project Sovereign Mainline Ascension completed; GO recommendation issued for PR #154 candidate; awaiting explicit Product Owner merge signature."
+      "notes": "Project Sovereign Mainline Ascension completed; GO recommendation issued for PR #154 candidate."
+    },
+    {
+      "operation": "KUSANAGI_CLXXXIX",
+      "baseline_sha": "1c05a95f9c8a54854d31657c315864d93931d848",
+      "status": "COMPLETED",
+      "production": "HOLD",
+      "notes": "Project DISPATER Sovereign Operational Intelligence completed; 6 revenue leakage rules, fleet maintenance, value calculator, CSV/Teams adapters, and REST endpoints implemented and verified with 407 pytest tests."
     }
   ]
 }
