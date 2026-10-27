@@ -40,7 +40,14 @@
       "baseline_sha": "1c05a95f9c8a54854d31657c315864d93931d848",
       "status": "COMPLETED",
       "production": "HOLD",
-      "notes": "Project XAELI Sovereign Bridge completed; Lovable XAELI frontend-to-AUREX server bridge verified; 402 pytest tests, 149 Bun tests, 0 linter/mypy errors, website production build verified."
+      "notes": "Project XAELI Sovereign Bridge completed; Lovable XAELI frontend-to-AUREX server bridge verified."
+    },
+    {
+      "operation": "KUSANAGI_CLXXXVI",
+      "baseline_sha": "1c05a95f9c8a54854d31657c315864d93931d848",
+      "status": "COMPLETED",
+      "production": "HOLD",
+      "notes": "Project Sovereign Merge Witness completed; evidence gaps dispositioned; security review of aurex-cxxv-bridge.ts verified; candidate submitted for owner merge review."
     }
   ]
 }
