@@ -25,8 +25,8 @@ from aurex.governance_math.research_api import router as research_advice_router
 from aurex.industrial_execution import router as towing_router
 from aurex.integrations.pilot_policy import review_synthetic_pilot
 from aurex.real_offline_probe import execute_sqlite_roundtrip
-from aurex.xaeli_staging import router as xaeli_staging_router
 from aurex.workflows.budget import BudgetGuard
+from aurex.xaeli_staging import router as xaeli_staging_router
 from aurex_foundation.correlation import CorrelationMiddleware
 from aurex_foundation.opa import evaluate_policy
 
