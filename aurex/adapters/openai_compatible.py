@@ -7,6 +7,7 @@ from urllib.parse import urlsplit
 from urllib.request import HTTPRedirectHandler, ProxyHandler, Request, build_opener
 
 from aurex.adapters.base import GenerationSettings, ModelAdapter, ModelAnswer
+from aurex.adapters.inference_policy import require_local_dispatch
 
 
 class _NoRedirect(HTTPRedirectHandler):
@@ -53,6 +54,7 @@ class OpenAICompatibleAdapter(ModelAdapter):
         self.local_loopback = local_loopback
 
     def answer(self, prompt: str) -> ModelAnswer:
+        require_local_dispatch(self.base_url, local_requested=self.local_loopback)
         key = None if self.local_loopback else os.environ.get(self.api_key_env)
         if not self.local_loopback and not key:
             raise RuntimeError(f"Missing credential environment variable: {self.api_key_env}")

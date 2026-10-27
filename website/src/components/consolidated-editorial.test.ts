@@ -30,15 +30,15 @@ describe("consolidated public editorial boundaries", () => {
     expect(text).toContain("Independence must be demonstrated");
     expect(text).not.toMatch(/Aurix|V7\.2|<img/i);
   });
-  it("keeps industrial history and research symbolism outside evidence authority", () => {
+  it("keeps industrial demonstrations and research symbolism outside evidence authority", () => {
     const industrial = read("src/routes/dispater.tsx");
     for (const text of [
-      "Intelligence Beneath the Surface",
-      "drilling",
-      "completions",
-      "production",
-      "Pluto",
-      "Not independently validated or commercially deployed",
+      "Revenue Intelligence & Audit Readiness",
+      "CONCEPT PREVIEW · FICTIONAL DATA · NOT LIVE",
+      "Conceptual artwork — not product UI or field data.",
+      "NVIDIA explanations and customer-data processing are not enabled",
+      "Record completeness does not establish IRS or DOT compliance",
+      "require professional assessment and human authorization",
     ])
       expect(industrial).toContain(text);
     const research = read("src/routes/research.tsx");

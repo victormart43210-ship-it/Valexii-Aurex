@@ -1,0 +1,115 @@
+{
+  "schema": "dispater.synthetic.end_to_end.v1",
+  "sector": "towing",
+  "input_sha256": "4614cc6fe1edae4bb513325e6600d1071b0634b2baf25eebbd9e36430705b318",
+  "status": "HOLD",
+  "dataset_classification": "FICTIONAL_DATA_ONLY",
+  "independent_verification": "NOT VERIFIED",
+  "nvidia_inference": "NOT RUN",
+  "nvidia_reason": "Provider not connected or authorized for this demo.",
+  "revenue_snapshot_sha256": "bfe707848d2d3834aa835deba1b5f506209838c25ec7bfcb5a83a64b93bec18d",
+  "readiness_snapshot_sha256": "462ad2eda12f291fcb00668bd360df389b63b309c612e70de3f6640c8edb0a5c",
+  "reviewer": "DEMO_MANAGER",
+  "counts": {
+    "revenue_findings": 3,
+    "readiness_findings": 2,
+    "reviewed": 0,
+    "awaiting_review": 5
+  },
+  "findings": [
+    {
+      "finding_id": "d4c171e2dca47e732a08c641",
+      "domain": "RECORD_READINESS",
+      "code": "EVIDENCE_MISSING_OR_EXPIRED",
+      "source_evidence": [],
+      "rule_evidence_hash": "b790589759177330a06f10c5ae3b03255c1434340b5f467bd094e95d356b52b4",
+      "subject": "TRUCK-5",
+      "explanation": "Rule metadata requires a human review.",
+      "explanation_provenance": "DETERMINISTIC_RULE_TEXT; NVIDIA_NOT_RUN",
+      "review": {
+        "status": "NOT_REVIEWED"
+      }
+    },
+    {
+      "finding_id": "dcf55530db682677acbe3a73",
+      "domain": "RECORD_READINESS",
+      "code": "EVIDENCE_MISSING_OR_EXPIRED",
+      "source_evidence": [],
+      "rule_evidence_hash": "0db186b1d721e5ee74f06cf7a3ae546d1b4b2f56dcbd41633b655891e6f19cfb",
+      "subject": "FISCAL-2026",
+      "explanation": "Rule metadata requires a human review.",
+      "explanation_provenance": "DETERMINISTIC_RULE_TEXT; NVIDIA_NOT_RUN",
+      "review": {
+        "status": "NOT_REVIEWED"
+      }
+    },
+    {
+      "finding_id": "fde0197b5931b6cff52b94f6",
+      "domain": "REVENUE",
+      "code": "PAID_STATUS_UNRECONCILED",
+      "source_evidence": [
+        {
+          "kind": "invoice",
+          "sha256": "5fcc81a68fcc5b24a083dbfbc2b052c2480066a820769a1d551087a66643cc2a"
+        },
+        {
+          "kind": "payment",
+          "sha256": "6c94ac86f40dbc34f63006193a6d790c52d0c033cc2b7d2de9ce692f280793ea"
+        }
+      ],
+      "rule_evidence_hash": null,
+      "subject": "INV-100",
+      "explanation": "Paid-marked invoice does not reconcile to supplied payment allocations",
+      "explanation_provenance": "DETERMINISTIC_RULE_TEXT; NVIDIA_NOT_RUN",
+      "review": {
+        "status": "NOT_REVIEWED"
+      }
+    },
+    {
+      "finding_id": "d635ae59c678b26a04c75767",
+      "domain": "REVENUE",
+      "code": "RATE_MISMATCH",
+      "source_evidence": [
+        {
+          "kind": "job",
+          "sha256": "64f1edc9cfb580ece16641d1dfeb7cf1a59dab66909fd7e563495d63f846f428"
+        },
+        {
+          "kind": "invoice",
+          "sha256": "5fcc81a68fcc5b24a083dbfbc2b052c2480066a820769a1d551087a66643cc2a"
+        },
+        {
+          "kind": "rate",
+          "sha256": "b8ea406b9af845ae8c45483b6b03ff9298bb9f6bf0b79d1548103327d908ce03"
+        }
+      ],
+      "rule_evidence_hash": null,
+      "subject": "INV-100",
+      "explanation": "Invoice amount differs from uniquely applicable synthetic rate",
+      "explanation_provenance": "DETERMINISTIC_RULE_TEXT; NVIDIA_NOT_RUN",
+      "review": {
+        "status": "NOT_REVIEWED"
+      }
+    },
+    {
+      "finding_id": "dfd457d71480b7e4fc3ac1fa",
+      "domain": "REVENUE",
+      "code": "UNBILLED_JOB",
+      "source_evidence": [
+        {
+          "kind": "job",
+          "sha256": "220a38ca898930af8bccef19f345acfc12a4334921da444bb767d42aa39ea4c3"
+        }
+      ],
+      "rule_evidence_hash": null,
+      "subject": "TOW-101",
+      "explanation": "Completed job has no invoice in supplied snapshot",
+      "explanation_provenance": "DETERMINISTIC_RULE_TEXT; NVIDIA_NOT_RUN",
+      "review": {
+        "status": "NOT_REVIEWED"
+      }
+    }
+  ],
+  "limits": "Not an IRS/DOT audit, tax opinion, regulatory certification, or financial authorization. Applicable legal obligations and source data have not been independently established. No customer uploads, connector writes, payments, dispatch changes, or model calls.",
+  "self_issued_receipt_sha256": "dae6c82ef9f469ab8fec486683545dbab10029e50ccc1cc220a32d17c5cdd824"
+}

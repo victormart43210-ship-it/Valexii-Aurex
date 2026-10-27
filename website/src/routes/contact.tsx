@@ -4,12 +4,12 @@ import { InquiryForm } from "@/components/inquiry-forms";
 import { Button } from "@/components/ui/button";
 import { PageHero, PageShell } from "@/components/site";
 export const Route = createFileRoute("/contact")({
-  validateSearch: (search: Record<string, unknown>) => ({
-    service:
-      search.service === "dispater-audit" || search.service === "dispater-consultation"
-        ? search.service
-        : undefined,
-  }),
+  validateSearch: (
+    search: Record<string, unknown>,
+  ): { service?: "dispater-audit" | "dispater-consultation" } => {
+    const service = search["service"];
+    return service === "dispater-audit" || service === "dispater-consultation" ? { service } : {};
+  },
   head: () => ({
     meta: [
       { title: "Contact — VALEXII.AI" },
@@ -38,7 +38,12 @@ function Contact() {
   const isAudit = service === "dispater-audit";
   return (
     <PageShell>
-      <PageHero eyebrow="Contact" title={isDispater ? "Discuss a DISPATER.AI pilot" : "What would you like to help make clearer?"}>
+      <PageHero
+        eyebrow="Contact"
+        title={
+          isDispater ? "Discuss a DISPATER.AI pilot" : "What would you like to help make clearer?"
+        }
+      >
         <p>
           {isDispater
             ? "Tell us about your oilfield or towing operations. This is a human-led discovery conversation, not a completed audit or confirmed appointment."
@@ -83,12 +88,14 @@ function Contact() {
           <InquiryForm
             key={service ?? "general"}
             kind="contact"
-            defaultCategory={isDispater ? "Commercialization" : undefined}
-            defaultMessage={isDispater
-              ? (isAudit
-                ? "I would like to request a DISPATER.AI revenue and audit-readiness discovery review for my oilfield or towing business. Please contact me about the next steps."
-                : "I would like to request a DISPATER.AI consultation about connecting our oilfield or towing business systems. Please contact me to discuss scheduling.")
-              : undefined}
+            {...(isDispater
+              ? {
+                  defaultCategory: "Commercialization",
+                  defaultMessage: isAudit
+                    ? "I would like to request a DISPATER.AI revenue and audit-readiness discovery review for my oilfield or towing business. Please contact me about the next steps."
+                    : "I would like to request a DISPATER.AI consultation about connecting our oilfield or towing business systems. Please contact me to discuss scheduling.",
+                }
+              : {})}
           />
         </div>
       </section>

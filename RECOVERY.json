@@ -1,0 +1,140 @@
+{
+  "schema_version": 1,
+  "operation": "KUSANAGI_CLXXXIII",
+  "repository": "victormart43210-ship-it/Valexii-Aurex",
+  "main_sha": "551625e5be41ef6fd16e70e7a72404400032f4bc",
+  "branch": "work/kusanagi-clxxxiv-inference-guard",
+  "checkpoint": "CLXXXIII_CP002",
+  "implementation_sha": "edf081138bd73204b29d2337d08db079fb4494c4",
+  "remote_save": "Containing CP002 commit requires remote readback; CP001 PASS",
+  "tests": {
+    "pytest": "449 passed, 2 skipped; both module and installed executable",
+    "ruff": "PASS",
+    "mypy": "PASS 78 source files",
+    "dispater_node": "25 passed",
+    "dispater_build": "PASS",
+    "npm_audit_production": "PASS zero reported vulnerabilities",
+    "bun_website": "NOT RUN",
+    "live_nvidia": "NOT RUN",
+    "independent_review": "NOT RUN"
+  },
+  "release": "HOLD",
+  "production_authority": "NONE",
+  "paid_inference_executed": false,
+  "next_action": "Restore Lovable editing availability via owner action; sync reviewed server helper to preview, then verify hosted owner RPC without publishing. In parallel resolve trusted tenant identity and provider backing-volume isolation before any deployment.",
+  "prior_onyx_checkpoint": "c1d6f3aeb9451c1c5d79dc0bae150512998a51e6",
+  "prior_onyx_pr": 146,
+  "draft_pr": 150,
+  "prior_remote_save": "PASS",
+  "utc": "2026-10-26T18:52:46.734105+00:00",
+  "known_failures": [
+    "PR145 filesystem policy admits sibling tenant-a-other under tenant-a (reproduced)",
+    "PR145 add/add conflicts in openshell_policy.py and its tests",
+    "CP002 GitHub CI/CLIV/CLII failed; CP003 packaging fixes the reproduced dispater_proof collection defect; remaining exact-head CI must be checked",
+    "Initial pip install --no-build-isolation failed because build backend unavailable; standard isolated editable installation succeeded",
+    "Initial frontend run lacked three; npm ci restored locked dependencies and all 25 tests passed"
+  ],
+  "remaining": [
+    "Durable paid-inference accounting and request authorization: NOT IMPLEMENTED; remote remains unconditionally disabled",
+    "PR145 convergence and separate review",
+    "Owner headless runner registration/dispatch verification",
+    "Railway deployed SHA, volume isolation and authenticated bridge verification",
+    "Live Onyx/ledger wiring from PR146",
+    "Complete tenant-authenticated browser-to-persisted-audit demonstration",
+    "XLSX intake and stricter CSV precision qualification",
+    "Lovable send_message rejected: workspace out of credits; preview remains unchanged"
+  ],
+  "changed_files": [
+    "aurex/adapters/inference_policy.py",
+    "aurex/adapters/openai_compatible.py",
+    "aurex/adapters/execution.py",
+    "aurex/adapters/ollama.py",
+    "tests/test_remote_inference_hold.py",
+    "pyproject.toml",
+    "docs/verification/CLXXXIV_SYNTHETIC_TOWING_OUTPUT.json",
+    "docs/operations/NVIDIA_LOW_COST_DEPLOYMENT_DECISION.md",
+    "docs/operations/KUSANAGI_CLXXXIV_SOVEREIGN_EXECUTION.md",
+    "RECOVERY.json",
+    "RESUME.md",
+    "docs/handoffs/KUSANAGI_CLXXXIV_WORK_TO_JULES.md"
+  ],
+  "implementation_remote_save": "PASS",
+  "handoff": "docs/handoffs/KUSANAGI_CLXXXIV_WORK_TO_JULES.md",
+  "independent_review": "NOT RUN",
+  "working_tree_at_checkpoint": "all intended source/docs committed; verify status on resume",
+  "checkpoints": [
+    {
+      "id": "CP001",
+      "sha": "8c351f11c51816047db6944844e8d35c24dddfd3",
+      "remote_save": "PASS"
+    },
+    {
+      "id": "CP002",
+      "sha": "1d99a46e8cab70161fc058f0793aa515cc94be0c",
+      "remote_save": "PASS"
+    },
+    {
+      "id": "CP003",
+      "sha": "dc6ed44c486b94d1723a6d1095f2ff51e20aec09",
+      "remote_save": "PASS"
+    },
+    {
+      "id": "CP004",
+      "sha": "c509533c6b5983682305512e4436d7e43b884b12",
+      "remote_save": "PASS"
+    },
+    {
+      "id": "CLXXXIII_CP001",
+      "sha": "edf081138bd73204b29d2337d08db079fb4494c4",
+      "remote_save": "PASS"
+    }
+  ],
+  "exact_implementation_ci": {
+    "sha": "dc6ed44c486b94d1723a6d1095f2ff51e20aec09",
+    "CI": {
+      "status": "PASS",
+      "run": 40277912589
+    },
+    "CLIV": {
+      "status": "PASS",
+      "run": 40277912627
+    },
+    "Railway_image": {
+      "status": "PASS",
+      "run": 40277912679
+    },
+    "runner_smoke": {
+      "status": "PASS",
+      "run": 40277912577
+    },
+    "CLII": {
+      "status": "FAIL",
+      "run": 40277912587,
+      "cause": "website Vitest two copy assertions: consolidated-editorial.test.ts and domain-directions.test.ts; 148 pass, 2 fail; TypeScript/build not reached"
+    }
+  },
+  "previous_operation": "KUSANAGI_CLXXXI",
+  "clxxxi_tests": {
+    "backend": "454 passed, 1 skipped",
+    "ruff": "PASS",
+    "mypy": "PASS 79 files",
+    "website": "152 passed, 2 failed",
+    "typescript": "FAIL baseline contact-route issues",
+    "live_provider": "NOT RUN",
+    "hosted_end_to_end": "NOT VERIFIED"
+  },
+  "clxxxiii_tests": {
+    "website": "155 passed including real local HTTP adapter/API test",
+    "typescript": "PASS",
+    "build": "PASS",
+    "live_website": "NOT VERIFIED",
+    "independent_review": "NOT RUN",
+    "focused_eslint": "PASS after23 formatting errors repaired",
+    "backend": "454 passed,1 skipped",
+    "ruff": "PASS",
+    "mypy": "PASS79 files",
+    "dispater_node": "25 passed",
+    "dispater_build": "PASS",
+    "tenant_isolation": "FAIL: shared-bearer requests ignore tenant headers"
+  }
+}
