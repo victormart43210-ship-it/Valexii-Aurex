@@ -19,12 +19,14 @@ from aurex.database import (
     list_evidence,
     list_jobs,
 )
+from aurex.dispater_contracts import OperationalRecord
 from aurex.dispater_intelligence import (
     CalculatorAssumptions,
     FleetMaintenanceEngine,
     OperationalValueCalculator,
     RevenueLeakageEngine,
 )
+from aurex.dispater_monitoring import ContinuousMonitoringEngine
 from aurex.fenced_worker import cancel_job, claim_job, finalize_job
 from aurex.governance_math.industrial_api import router as industrial_demo_router
 from aurex.governance_math.research_api import router as research_advice_router
@@ -507,6 +509,150 @@ def dispater_findings_explorer_endpoint(
         "xaeli_findings": [f.model_dump() for f in xaeli_findings],
         "raw_exceptions": [e.model_dump() for e in filtered],
     }
+
+
+# --- Continuous Monitoring API Endpoints ---
+
+monitoring_engine = ContinuousMonitoringEngine()
+
+
+class RecordIngestRequest(BaseModel):
+    record_id: str
+    tenant_id: str = "TENANT-COMMERCIAL-01"
+    source: str = "OILFIELD_FIELD_TICKET"
+    payload: dict[str, Any] = Field(default_factory=dict)
+
+
+class AssignActionRequest(BaseModel):
+    tenant_id: str = "TENANT-COMMERCIAL-01"
+    finding_id: str
+    assigned_to: str
+    due_date: str
+
+
+class SubmitRemediationRequest(BaseModel):
+    tenant_id: str = "TENANT-COMMERCIAL-01"
+    action_id: str
+    remediation_notes: str
+    evidence_payload: dict[str, Any] = Field(default_factory=dict)
+
+
+class IndependentRetestRequest(BaseModel):
+    tenant_id: str = "TENANT-COMMERCIAL-01"
+    action_id: str
+    closed_by_human: str | None = None
+    retest_payload: dict[str, Any] = Field(default_factory=dict)
+
+
+@app.post("/v1/dispater/monitoring/records")
+def ingest_monitoring_record_endpoint(
+    req: RecordIngestRequest,
+    _: str = Depends(authenticate),
+) -> dict[str, Any]:
+    rec = OperationalRecord(
+        record_id=req.record_id,
+        tenant_id=req.tenant_id,
+        source=req.source,
+        payload=req.payload,
+    )
+    obs = monitoring_engine.ingest_record(rec)
+    findings = monitoring_engine.evaluate_tenant_monitoring(req.tenant_id)
+    xaeli_findings = monitoring_engine.convert_findings_to_xaeli(findings)
+
+    return {
+        "tenant_id": req.tenant_id,
+        "observation": obs.model_dump(),
+        "total_findings_count": len(findings),
+        "findings": [f.model_dump() for f in findings],
+        "xaeli_findings": [x.model_dump() for x in xaeli_findings],
+    }
+
+
+@app.get("/v1/dispater/monitoring/observations")
+def get_monitoring_observations_endpoint(
+    tenant_id: str = "TENANT-COMMERCIAL-01",
+    _: str = Depends(authenticate),
+) -> dict[str, Any]:
+    obs_list = monitoring_engine.observations.get(tenant_id, [])
+    return {
+        "tenant_id": tenant_id,
+        "total_observations_count": len(obs_list),
+        "observations": [o.model_dump() for o in obs_list],
+    }
+
+
+@app.get("/v1/dispater/monitoring/readiness")
+def get_monitoring_readiness_endpoint(
+    tenant_id: str = "TENANT-COMMERCIAL-01",
+    _: str = Depends(authenticate),
+) -> dict[str, Any]:
+    assessment = monitoring_engine.evaluate_audit_readiness(tenant_id)
+    return assessment.model_dump()
+
+
+@app.post("/v1/dispater/monitoring/corrective-actions")
+def assign_corrective_action_endpoint(
+    req: AssignActionRequest,
+    _: str = Depends(authenticate),
+) -> dict[str, Any]:
+    ca = monitoring_engine.assign_corrective_action(
+        tenant_id=req.tenant_id,
+        finding_id=req.finding_id,
+        assigned_to=req.assigned_to,
+        due_date=req.due_date,
+    )
+    return ca.model_dump()
+
+
+@app.post("/v1/dispater/monitoring/remediation")
+def submit_remediation_endpoint(
+    req: SubmitRemediationRequest,
+    _: str = Depends(authenticate),
+) -> dict[str, Any]:
+    try:
+        ca = monitoring_engine.submit_remediation_evidence(
+            tenant_id=req.tenant_id,
+            action_id=req.action_id,
+            remediation_notes=req.remediation_notes,
+            evidence_payload=req.evidence_payload,
+        )
+        return ca.model_dump()
+    except ValueError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+
+
+@app.post("/v1/dispater/monitoring/retest")
+def execute_retest_endpoint(
+    req: IndependentRetestRequest,
+    _: str = Depends(authenticate),
+) -> dict[str, Any]:
+    retest_rec = OperationalRecord(
+        record_id=f"RETEST-{req.action_id}",
+        tenant_id=req.tenant_id,
+        source="INDEPENDENT_AUDIT_RETEST",
+        payload=req.retest_payload,
+    )
+    try:
+        ca = monitoring_engine.execute_independent_retest(
+            tenant_id=req.tenant_id,
+            action_id=req.action_id,
+            retest_record=retest_rec,
+            closed_by_human=req.closed_by_human,
+        )
+        return ca.model_dump()
+    except PermissionError as exc:
+        raise HTTPException(status_code=403, detail=str(exc)) from exc
+    except ValueError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+
+
+@app.get("/v1/dispater/monitoring/receipt")
+def get_monitoring_receipt_endpoint(
+    tenant_id: str = "TENANT-COMMERCIAL-01",
+    _: str = Depends(authenticate),
+) -> dict[str, Any]:
+    receipt = monitoring_engine.generate_audit_receipt(tenant_id)
+    return receipt.model_dump()
 
 
 # --- Onyx Knowledge Search Endpoint ---
