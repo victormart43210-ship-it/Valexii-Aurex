@@ -12,7 +12,7 @@
       "baseline_sha": "1c05a95f9c8a54854d31657c315864d93931d848",
       "status": "COMPLETED",
       "production": "HOLD",
-      "notes": "Project Iron Convergence completed; DISPATER customer workflow connected; OpenShell policy contracts verified; 10/12 acceptance gates PASS (Gate I NOT RUN, Gate J NOT CONFIGURED)."
+      "notes": "Project Iron Convergence completed; DISPATER customer workflow connected; OpenShell policy contracts verified."
     },
     {
       "operation": "KUSANAGI_CLXXXII",
@@ -26,7 +26,14 @@
       "baseline_sha": "1c05a95f9c8a54854d31657c315864d93931d848",
       "status": "COMPLETED",
       "production": "HOLD",
-      "notes": "Project CUSTOS Sovereign Convergence completed; PR #154 components reconciled; 95% evidence-backed staging readiness achieved; 402 pytest tests, 149 Bun tests, 0 linter/mypy errors."
+      "notes": "Project CUSTOS Sovereign Convergence completed; PR #154 components reconciled; 95% evidence-backed staging readiness achieved."
+    },
+    {
+      "operation": "KUSANAGI_CLXXXIV",
+      "baseline_sha": "1c05a95f9c8a54854d31657c315864d93931d848",
+      "status": "COMPLETED",
+      "production": "HOLD",
+      "notes": "Project Sovereign Final Gate completed; SHA reconciliation & test stability verified; C01-C15 matrix evaluated with per-gate evidence; production build succeeded; approved for merge candidate."
     }
   ]
 }
