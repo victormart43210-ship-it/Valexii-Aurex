@@ -120,6 +120,7 @@ class ValueCalculationResult(BaseModel):
     monthly_admin_cost_savings: float
     total_estimated_monthly_value: float
     assumptions_json: dict[str, Any]
+    sensitivity_scenarios: dict[str, dict[str, float]] = Field(default_factory=dict)
     projection_disclaimer: str = (
         "PROJECTION ONLY — ALL ASSUMPTIONS ARE EDITABLE. "
         "DOES NOT CONSTITUTE VERIFIED FINANCIAL RECOVERY OR GUARANTEED SAVINGS."
@@ -485,6 +486,25 @@ class OperationalValueCalculator:
 
         total_value = estimated_exposure + monthly_admin_savings
 
+        # Sensitivity Scenarios: Conservative (1.5% leakage, 40% auto), Baseline, Optimistic (5.0% leakage, 80% auto)
+        scenarios = {
+            "conservative": {
+                "estimated_revenue_at_risk": round(monthly_revenue * 0.015, 2),
+                "monthly_admin_cost_savings": round((total_admin_hours * 0.40) * assumptions.hourly_admin_cost, 2),
+                "total_estimated_monthly_value": round((monthly_revenue * 0.015) + ((total_admin_hours * 0.40) * assumptions.hourly_admin_cost), 2),
+            },
+            "baseline": {
+                "estimated_revenue_at_risk": round(estimated_exposure, 2),
+                "monthly_admin_cost_savings": round(monthly_admin_savings, 2),
+                "total_estimated_monthly_value": round(total_value, 2),
+            },
+            "optimistic": {
+                "estimated_revenue_at_risk": round(monthly_revenue * 0.05, 2),
+                "monthly_admin_cost_savings": round((total_admin_hours * 0.80) * assumptions.hourly_admin_cost, 2),
+                "total_estimated_monthly_value": round((monthly_revenue * 0.05) + ((total_admin_hours * 0.80) * assumptions.hourly_admin_cost), 2),
+            },
+        }
+
         return ValueCalculationResult(
             tenant_id=tenant_id,
             monthly_job_volume=assumptions.monthly_job_volume,
@@ -494,6 +514,7 @@ class OperationalValueCalculator:
             monthly_admin_cost_savings=round(monthly_admin_savings, 2),
             total_estimated_monthly_value=round(total_value, 2),
             assumptions_json=assumptions.model_dump(),
+            sensitivity_scenarios=scenarios,
         )
 
 

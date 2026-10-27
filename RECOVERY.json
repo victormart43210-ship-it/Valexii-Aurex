@@ -75,7 +75,14 @@
       "baseline_sha": "1c05a95f9c8a54854d31657c315864d93931d848",
       "status": "COMPLETED",
       "production": "HOLD",
-      "notes": "Project DISPATER Sovereign Engine Convergence completed; 10 revenue exception rules, fleet maintenance priority classifications, accounting exports, 5-step XAELI findings, and Scenarios A-H verified with 411 pytest tests."
+      "notes": "Project DISPATER Sovereign Engine Convergence completed; 10 revenue exception rules, fleet maintenance priority classifications, accounting exports, 5-step XAELI findings, and Scenarios A-H verified."
+    },
+    {
+      "operation": "KUSANAGI_CXCI",
+      "baseline_sha": "1c05a95f9c8a54854d31657c315864d93931d848",
+      "status": "COMPLETED",
+      "production": "HOLD",
+      "notes": "Project DISPATER Sovereign Commercial Validation completed; 1,000-case benchmark executed (1.0 Precision, 1.0 Recall), investor evidence room created, valuation scorecard established (85.0/100 readiness), and pilot package delivered."
     }
   ]
 }
