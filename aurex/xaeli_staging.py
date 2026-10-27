@@ -2,11 +2,13 @@
 import hashlib
 import os
 from typing import Literal
+
 from fastapi import APIRouter, Header, HTTPException
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict
+
 from aurex.adapters.base import GenerationSettings
-from aurex.adapters.llama_cpp import LlamaCppAdapter
 from aurex.adapters.execution import InferenceClient, ModelSpec
+from aurex.adapters.llama_cpp import LlamaCppAdapter
 from aurex.qwen_rag import _reject_unsafe_model_output
 
 router = APIRouter(prefix='/v1/xaeli-staging', tags=['xaeli-staging'])
