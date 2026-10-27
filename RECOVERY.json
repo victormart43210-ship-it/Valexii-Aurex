@@ -2,11 +2,11 @@
   "schema_version": 1,
   "operation": "KUSANAGI_CLXXIX_SOVEREIGN_UNIFICATION",
   "repository": "victormart43210-ship-it/Valexii-Aurex",
-  "main_sha": "551625e5be41ef6fd16e70e7a72404400032f4bc",
+  "main_sha": "585023a09fdbff5ec2349a67cc50ef45a9b6f9fd",
   "branch": "work/kusanagi-clxxix-sovereign-unification",
-  "checkpoint": "CLXXIX_CP003_QWEN_DISCOVERY",
-  "implementation_sha": "889fd95b9a63672801868603adcf410f66e30683",
-  "remote_save": "Current containing commit pending publication; preceding CP002 PASS",
+  "checkpoint": "QWEN_RUNTIME_REPAIR_CP002",
+  "implementation_sha": "30eac28a1ccc565809444dce4190d8c97ec4887a",
+  "remote_save": "NOT VERIFIED for containing commit until remote readback; prior 30eac28a1ccc565809444dce4190d8c97ec4887a verified",
   "tests": {
     "pytest": "449 passed, 2 skipped; both module and installed executable",
     "ruff": "PASS",
@@ -21,12 +21,12 @@
   "release": "HOLD",
   "production_authority": "NONE",
   "paid_inference_executed": false,
-  "next_action": "Verify Qwen model-loading configuration internally; runtime currently router mode with zero models. No external model execution. Keep API migration/storage HOLD.",
+  "next_action": "Using authorized Railway container access, inspect actual process arguments/listening sockets and run the bounded localhost synthetic request documented in QWEN_PRIVATE_RUNTIME_REPAIR.md. Do not infer IPv6 binding from saved settings or expose public endpoint.",
   "prior_onyx_checkpoint": "c1d6f3aeb9451c1c5d79dc0bae150512998a51e6",
   "prior_onyx_pr": 146,
   "draft_pr": 154,
   "prior_remote_save": "PASS",
-  "utc": "2026-10-27T05:50:31.710967+00:00",
+  "utc": "2026-10-27T06:32:08.580455+00:00",
   "known_failures": [
     "PR145 filesystem policy admits sibling tenant-a-other under tenant-a (reproduced)",
     "PR145 add/add conflicts in openshell_policy.py and its tests",
@@ -267,5 +267,19 @@
     "lint": "PASS0errors10warnings after formatting",
     "independent_source_retest": "92passed, separate agent; external certificationNOT RUN"
   },
-  "latest_observed_main": "585023a09fdbff5ec2349a67cc50ef45a9b6f9fd"
+  "latest_observed_main": "585023a09fdbff5ec2349a67cc50ef45a9b6f9fd",
+  "qwen_runtime": {
+    "service": "707e28bb-554c-444c-b669-01ad61da2832",
+    "environment": "98c103eb-a1af-46b6-948e-19c80e4d720d",
+    "previous_deployment": "b5d29764-8194-4a7a-be36-5e9884ece69b",
+    "new_deployment": "8239c124-c77e-47fb-aa0e-425bc28bf1a3",
+    "observed_status": "SUCCESS",
+    "change": "8 LLAMA_ARG variables plus startup --host ::; explicit model URL; existing CPU1/RAM2GB unchanged",
+    "live_synthetic_response": "NOT RUN",
+    "first_model_loaded_deployment": "f9043881-7788-47c8-b5b8-b9fca0fb8ecd",
+    "first_model_loaded_utc": "2026-10-27T06:28:49.429646842Z",
+    "public_access": "NONE",
+    "model_loading": "PASS: model loaded at 2026-10-27T06:31:52.061183649Z",
+    "private_ipv6_binding": "NOT VERIFIED: saved command --host ::, runtime logs still 0.0.0.0:8080"
+  }
 }
