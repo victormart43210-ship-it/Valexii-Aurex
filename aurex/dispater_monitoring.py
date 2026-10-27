@@ -20,7 +20,7 @@ from aurex.dispater_contracts import (
     OperationalRecord,
     compute_sha256,
 )
-from aurex.dispater_intelligence import RevenueException, RevenueLeakageEngine, Xaeli5StepFinding
+from aurex.dispater_intelligence import Xaeli5StepFinding
 from aurex.evidence import EvidenceEnvelope
 
 DEFAULT_AUDIT_RULES: list[AuditRule] = [
@@ -216,7 +216,7 @@ class ContinuousMonitoringEngine:
                 exception_id=f.finding_id,
                 now=f"Operational Audit Finding [{f.severity}]: {f.title}.",
                 changed=f"Discrepancy detected across records: {', '.join(f.source_record_ids)}.",
-                next=f"Assign corrective action to owner for remediation and independent retest.",
+                next="Assign corrective action to owner for remediation and independent retest.",
                 why=f"{f.description} (Governing Reference: {rule_ref}).",
                 proof=f"SHA-256 Digest: {f.evidence_sha256} | Audit Event: {f.audit_event_ref}",
                 exposure_usd=0.0,

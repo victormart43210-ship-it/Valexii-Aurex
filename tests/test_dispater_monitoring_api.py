@@ -2,8 +2,8 @@
 Unit tests for DISPATER Continuous Monitoring REST API Endpoints.
 """
 
-from fastapi.testclient import TestClient
 import pytest
+from fastapi.testclient import TestClient
 
 from aurex.api import app
 

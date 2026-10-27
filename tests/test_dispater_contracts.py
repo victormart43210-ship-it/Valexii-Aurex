@@ -1,13 +1,13 @@
-import pytest
 from aurex.dispater_contracts import (
-    OperationalRecord,
-    MonitoringObservation,
-    AuditRule,
     AuditFinding,
-    CorrectiveAction,
     AuditReadinessAssessment,
+    AuditRule,
     AuditVerificationReceipt,
+    CorrectiveAction,
+    MonitoringObservation,
+    OperationalRecord,
 )
+
 
 def test_contracts_schema_validity():
     rec = OperationalRecord(record_id="REC-1", tenant_id="T1", source="OILFIELD_FIELD_TICKET", payload={"a": 1})

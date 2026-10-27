@@ -2,10 +2,9 @@
 Unit tests for DISPATER Continuous Audit Monitoring Engine and AUREX Governance.
 """
 
-from datetime import UTC, datetime
 import pytest
 
-from aurex.dispater_contracts import OperationalRecord, AuditRule
+from aurex.dispater_contracts import OperationalRecord
 from aurex.dispater_monitoring import ContinuousMonitoringEngine
 
 

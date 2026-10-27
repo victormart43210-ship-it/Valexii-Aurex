@@ -13,8 +13,8 @@ Verifies complete 9-stage sequence:
 9. Cryptographic Audit Receipt Verification
 """
 
-from fastapi.testclient import TestClient
 import pytest
+from fastapi.testclient import TestClient
 
 from aurex.api import app
 
