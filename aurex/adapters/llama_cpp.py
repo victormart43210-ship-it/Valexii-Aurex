@@ -13,8 +13,6 @@ class LlamaCppAdapter(OpenAICompatibleAdapter):
         generation: GenerationSettings | None = None,
         timeout_seconds: float = 60,
     ) -> None:
-        from urllib.parse import urlsplit
-
         private_url = "http://qwen-private-staging.railway.internal:8080/v1"
         private_staging = base_url == private_url
 
