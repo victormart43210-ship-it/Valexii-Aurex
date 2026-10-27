@@ -1,0 +1,72 @@
+{
+  "transport": "real loopback HTTP, uvicorn aurex.api:app",
+  "unauthenticated_status": 401,
+  "authenticated_status": 200,
+  "mode": "SYNTHETIC_CONTRACT_DEMO",
+  "candidate_count": 6,
+  "admissible_evidence": [],
+  "authority": "NONE",
+  "release": "HOLD",
+  "onyx_network": "NOT RUN; injected fixed response",
+  "persistence": "NOT RUN; deliberately no writes",
+  "reconciliation": {
+    "schema": "dispater.synthetic.revenue.v1",
+    "dataset_sha256": "2db314e1534afbed4f0bc558ce30fcf380750b445985f189eecf43fad4af809d",
+    "status": "HOLD",
+    "independent_verification": "NOT VERIFIED",
+    "scope": "FICTIONAL DATA ONLY; SOURCE-SNAPSHOT MATCHING ONLY",
+    "counts": {
+      "jobs": 1,
+      "invoices": 1,
+      "payments": 0,
+      "findings": 3
+    },
+    "findings": [
+      {
+        "code": "ORPHAN_INVOICE",
+        "subject": "INV-101",
+        "detail": "Referenced job is missing from supplied snapshot",
+        "evidence": [
+          {
+            "kind": "invoice",
+            "sha256": "e7c3ff2e2af25b022b085cb37f3961b0608f2448b975bbaecb2ca6064432267c"
+          }
+        ],
+        "authority": "HUMAN_REVIEW_REQUIRED"
+      },
+      {
+        "code": "RATE_UNVERIFIED",
+        "subject": "TOW-101",
+        "detail": "Exactly one effective rate was not established",
+        "evidence": [
+          {
+            "kind": "job",
+            "sha256": "6fb58c877ae0231565f603bb88000e596f92838d677390619db73d7a17dba775"
+          }
+        ],
+        "authority": "HUMAN_REVIEW_REQUIRED"
+      },
+      {
+        "code": "UNBILLED_JOB",
+        "subject": "TOW-101",
+        "detail": "Completed job has no invoice in supplied snapshot",
+        "evidence": [
+          {
+            "kind": "job",
+            "sha256": "6fb58c877ae0231565f603bb88000e596f92838d677390619db73d7a17dba775"
+          }
+        ],
+        "authority": "HUMAN_REVIEW_REQUIRED"
+      }
+    ],
+    "limits": "Missing records are unknown, not proof of a violation. No tax/DOT decisions, writeback, recovery estimates or customer-data admission.",
+    "self_issued_receipt_sha256": "61e4b0901fa54e9e3ee7d13e1b1de23b9214da41f4e2d8372951d5a695f87f7f"
+  },
+  "xaeli": {
+    "NOW": "Unmatched fictional invoice; supporting records are candidates only.",
+    "CHANGED": "NOT_VERIFIED",
+    "NEXT": "Human reviewer must verify source records and approvals.",
+    "WHY": "Retrieved prose cannot authorize charges or establish a reconciliation match.",
+    "PROOF": "Synthetic fixtures and consistency hashes only; Onyx live interoperability NOT RUN."
+  }
+}

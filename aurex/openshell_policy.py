@@ -46,3 +46,38 @@ def evaluate_egress(url: str, method: str, rules: tuple[EgressRule, ...]) -> Egr
         if path == prefix or (prefix.endswith("/") and path.startswith(prefix)) or path.startswith(prefix.rstrip("/") + "/"):
             return EgressDecision(True, "allowlisted")
     return EgressDecision(False, "default_deny")
+@dataclass(frozen=True)
+class FilesystemAccessRule:
+    allowed_read_paths: tuple[str, ...]
+    allowed_write_paths: tuple[str, ...]
+
+
+@dataclass(frozen=True)
+class FilesystemDecision:
+    allowed: bool
+    reason: str
+
+
+def evaluate_filesystem_access(
+    path: str, mode: str, policy: FilesystemAccessRule
+) -> FilesystemDecision:
+    """Advisory filesystem preflight check before supervisor Landlock/OFS enforcement."""
+    if not path or not path.startswith("/") or "\x00" in path or "\\" in path:
+        return FilesystemDecision(False, "relative_or_invalid_path")
+    if ".." in path.split("/"):
+        return FilesystemDecision(False, "path_traversal_attempt")
+    if mode not in ("read", "write"):
+        return FilesystemDecision(False, "invalid_mode")
+
+    targets = policy.allowed_read_paths if mode == "read" else policy.allowed_write_paths
+    if any(
+        not root.startswith("/") or "\x00" in root or "\\" in root
+        or "//" in root or any(part in (".", "..") for part in root.split("/"))
+        for root in targets
+    ):
+        return FilesystemDecision(False, "invalid_policy_path")
+    for allowed_prefix in targets:
+        if path == allowed_prefix or path.startswith(allowed_prefix.rstrip("/") + "/"):
+            return FilesystemDecision(True, "path_allowlisted")
+
+    return FilesystemDecision(False, "default_deny_filesystem")

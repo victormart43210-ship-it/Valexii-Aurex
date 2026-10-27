@@ -3,9 +3,10 @@
 import json
 from typing import Any
 from urllib.parse import urlsplit
-from urllib.request import HTTPRedirectHandler, Request, build_opener
+from urllib.request import HTTPRedirectHandler, ProxyHandler, Request, build_opener
 
-from aurex.adapters.base import ModelAdapter, ModelAnswer
+from aurex.adapters.base import GenerationSettings, ModelAdapter, ModelAnswer
+from aurex.adapters.inference_policy import require_local_dispatch
 
 
 class _NoRedirect(HTTPRedirectHandler):
@@ -21,6 +22,7 @@ class OllamaAdapter(ModelAdapter):
         model: str,
         base_url: str = "http://127.0.0.1:11434",
         timeout_seconds: float = 120.0,
+        generation: GenerationSettings | None = None,
     ) -> None:
         url = urlsplit(base_url)
         if (
@@ -34,19 +36,34 @@ class OllamaAdapter(ModelAdapter):
             or not (0 < timeout_seconds <= 180)
         ):
             raise ValueError("Ollama requires an HTTP loopback endpoint and valid timeout")
+        self.generation = generation or GenerationSettings()
         self.model = model
         self.base_url = base_url.rstrip("/")
         self.timeout_seconds = timeout_seconds
 
     def answer(self, prompt: str) -> ModelAnswer:
-        body = json.dumps({"model": self.model, "prompt": prompt, "stream": False}).encode()
+        require_local_dispatch(self.base_url, local_requested=True)
+        body = json.dumps(
+            {
+                "model": self.model,
+                "prompt": prompt,
+                "stream": False,
+                "options": {
+                    "temperature": self.generation.temperature,
+                    "num_predict": self.generation.max_tokens,
+                    "seed": self.generation.seed,
+                },
+            }
+        ).encode()
         request = Request(
             f"{self.base_url}/api/generate",
             data=body,
             headers={"Content-Type": "application/json"},
             method="POST",
         )
-        with build_opener(_NoRedirect()).open(request, timeout=self.timeout_seconds) as response:
+        with build_opener(_NoRedirect(), ProxyHandler({})).open(
+            request, timeout=self.timeout_seconds
+        ) as response:
             data = response.read(2_000_001)
         if len(data) > 2_000_000:
             raise ValueError("Ollama response exceeds allowed size")

@@ -1,0 +1,4 @@
+# Resume sovereign unification
+Fetch work/kusanagi-clxxix-sovereign-unification, verify remote SHA, read RECOVERY.json and docs/operations/KUSANAGI_CLXXIX_SOVEREIGN_UNIFICATION.md. Main remains551625e5be41ef6fd16e70e7a72404400032f4bc. Do not restart PR150/146 integration.
+Run python -m pytest -q, ruff check ., mypy aurex and pip-audit --skip-editable using project venv. From website run AUREX_TEST_PYTHON=/absolute/venv/bin/python node_modules/.bin/vitest run, node_modules/.bin/tsc --noEmit and npm run build. No Bun runtime installed here; use actual documented results.
+Next: finish dependency retests, exact-head independent review and CI. Do not import PR151 fake offline VERIFIED receipts or browser placeholder bearer. Keep Onyx unqualified candidates and NVIDIA remote denial. No Lovable credits, production deployment, or automatic merge. Qwen/Hetzner live route and tenant storage unresolved.
