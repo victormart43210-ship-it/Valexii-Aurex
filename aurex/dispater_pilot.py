@@ -190,6 +190,24 @@ def verify_self_issued_report(snapshot: dict[str, Any], report: dict[str, Any]) 
 
 # --- Commercial Pilot Engine Models ---
 
+def sanitize_csv_formula_injection(text: str) -> str:
+    """Sanitizes text against CSV formula injection attacks (=, +, -, @, tab, CR)."""
+    if not isinstance(text, str):
+        return str(text)
+    cleaned = text.strip()
+    if cleaned and cleaned[0] in ("=", "+", "-", "@", "\t", "\r"):
+        return "'" + cleaned
+    return cleaned
+
+
+class PilotDataRetentionPolicy(BaseModel):
+    tenant_id: str
+    retention_days: int = 90
+    auto_delete_on_expiry: bool = True
+    authorized_deletion_requested: bool = False
+    data_deleted_at: str | None = None
+
+
 class PilotTenantConfig(BaseModel):
     tenant_id: str
     company_name: str
@@ -321,6 +339,17 @@ class CommercialPilotEngine:
             pending_human_reviews_count=pending_count,
             audit_event_ref=f"PILOT-AUDIT-{batch_id}",
         )
+
+    def purge_tenant_data(self, requested_by: str) -> dict[str, Any]:
+        """Executes authorized data deletion for customer offboarding / retention policy."""
+        if requested_by != self.config.authorized_human_approver:
+            raise ValueError("Unauthorized data deletion request.")
+        self.review_decisions.clear()
+        return {
+            "tenant_id": self.config.tenant_id,
+            "status": "DATA_PURGED_SUCCESSFULLY",
+            "purged_by": requested_by,
+        }
 
     def record_human_decision(self, decision: HumanReviewDecision) -> None:
         """Records a human manager review decision in the pilot queue."""

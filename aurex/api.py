@@ -461,3 +461,48 @@ def dispater_dashboard_endpoint(
         "human_approval_queue_count": 4,
         "evidence_provenance_valid": True,
     }
+
+
+@app.get("/v1/dispater/findings")
+def dispater_findings_explorer_endpoint(
+    tenant_id: str = "TENANT-COMMERCIAL-01",
+    rule_type: str | None = None,
+    min_exposure: float = 0.0,
+    _: str = Depends(authenticate),
+) -> dict[str, Any]:
+    # Default synthetic demonstration findings
+    synthetic_tickets: list[dict[str, Any]] = [
+        {"ticket_id": "FT-DEMO-101", "po_id": None, "invoice_id": None, "total_amount": 12000.0, "has_customer_signature": False},
+        {"ticket_id": "FT-DEMO-102", "po_id": "PO-900", "invoice_id": "INV-900", "total_amount": 7500.0, "has_customer_signature": True},
+    ]
+    synthetic_invoices = [
+        {"invoice_id": "INV-DEMO-201", "vendor_or_customer": "Acme Energy", "total_amount": 3500.0, "line_items": [{"rate_code": "PUMP-HR", "unit_rate": 350.0, "quantity": 10}]},
+        {"invoice_id": "INV-DEMO-202", "vendor_or_customer": "Acme Energy", "total_amount": 3500.0, "line_items": []},
+    ]
+    synthetic_rates = [{"rate_code": "PUMP-HR", "approved_rate": 250.0}]
+
+    exceptions = RevenueLeakageEngine.evaluate_records(
+        tenant_id=tenant_id,
+        field_tickets=synthetic_tickets,
+        invoices=synthetic_invoices,
+        purchase_orders=[],
+        rate_sheets=synthetic_rates,
+        is_demo=True,
+    )
+
+    filtered = [
+        e for e in exceptions
+        if e.financial_exposure >= min_exposure
+        and (not rule_type or e.rule_type == rule_type)
+    ]
+
+    xaeli_findings = RevenueLeakageEngine.convert_to_xaeli_findings(filtered)
+
+    return {
+        "tenant_id": tenant_id,
+        "query_filter": {"rule_type": rule_type, "min_exposure": min_exposure},
+        "total_findings_count": len(filtered),
+        "total_financial_exposure_usd": round(sum(f.exposure_usd for f in xaeli_findings), 2),
+        "xaeli_findings": [f.model_dump() for f in xaeli_findings],
+        "raw_exceptions": [e.model_dump() for e in filtered],
+    }
