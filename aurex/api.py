@@ -26,6 +26,7 @@ from aurex.industrial_execution import router as towing_router
 from aurex.integrations.pilot_policy import review_synthetic_pilot
 from aurex.real_offline_probe import execute_sqlite_roundtrip
 from aurex.workflows.budget import BudgetGuard
+from aurex.xaeli_staging import router as xaeli_staging_router
 from aurex_foundation.correlation import CorrelationMiddleware
 from aurex_foundation.opa import evaluate_policy
 
@@ -81,6 +82,7 @@ def authenticate(authorization: str | None = Header(default=None)) -> str:
 app.include_router(research_advice_router, dependencies=[Depends(authenticate)])
 app.include_router(industrial_demo_router, dependencies=[Depends(authenticate)])
 app.include_router(towing_router, dependencies=[Depends(authenticate)])
+app.include_router(xaeli_staging_router, dependencies=[Depends(authenticate)])
 
 
 class JobCreateRequest(BaseModel):

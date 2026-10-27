@@ -17,8 +17,10 @@ def _reject_unsafe_model_output(text: str) -> bool:
     import re
 
     patterns = (
+        r"\b(?:i|we)\s+(?:(?:am|are)\s+(?:the\s+)?(?:system\s+)?(?:owner|administrator|admin)\s+(?:and\s+)?)?(?:have|hold|possess)\s+(?:(?:the|all|full|necessary|required)\s+)*(?:permissions?|authority|authorization)\s+to\s+(?:approve|authorize|execute|release|deploy)\b",
         r"\b(?:production|deployment|release)\s+(?:is\s+)?(?:approved|authorized|enabled|live)\b",
         r"\b(?:authority|authorization)\s*[:=]\s*(?:approved|granted|yes|true)\b",
+        r"\b(?:i|we)\s+(?:have|hold|possess)\s+(?:the\s+)?(?:authority|authorization|permission)\s+to\s+(?:approve|authorize|execute|release|deploy)\b",
         r"\b(?:independent(?:ly)?\s+verified|verification\s*[:=]\s*passed)\b",
         r"\b(?:transfer|pay|charge|invoice)\s+\$?\d[\d,.]*\b",
         r"\b(?:ignore|override|bypass)\s+(?:all\s+)?(?:previous\s+)?(?:instructions|safety|policy|security|approval)\b",
