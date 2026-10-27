@@ -3,11 +3,21 @@ import { readFileSync } from "node:fs";
 const read = (path: string) =>
   readFileSync(new URL(path, import.meta.url), "utf8").replace(/\s+/g, " ");
 describe("public domain and collaboration boundaries", () => {
-  it("keeps private-repository claims unverified and adds no substitute hero", () => {
+  it("keeps repository and service claims qualified while preserving domain reasoning", () => {
     for (const path of ["../routes/dispater.tsx", "../routes/xaita.tsx"]) {
       const source = read(path);
-      expect(source).toContain("Private repositories exist, as reported by the project owner");
-      expect(source).toContain("functionality has not been independently verified");
+      if (path.endsWith("xaita.tsx")) {
+        expect(source).toContain("Private repositories exist, as reported by the project owner");
+        expect(source).toContain("functionality has not been independently verified");
+      } else {
+        expect(source).toContain(
+          "Developmental offering. No live customer CRM, tax service, DOT certification, or production financial automation is represented here.",
+        );
+        expect(source).toContain(
+          "A conversation is not a guarantee of deployed service, compliance, savings, or financing.",
+        );
+        expect(source).toContain("visual={");
+      }
       expect(source).toContain("<DomainReasoning />");
       expect(source).not.toMatch(/og:image|crystal/i);
     }

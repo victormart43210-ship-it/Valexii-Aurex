@@ -1,0 +1,35 @@
+name: Headless AUREX runner smoke (manual)
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  runner-smoke:
+    # Dedicated labels prevent accidentally scheduling onto an unrelated runner.
+    runs-on: [self-hosted, linux, x64, aurex-verification]
+    timeout-minutes: 10
+    steps:
+      - name: Check out exact revision
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Print safe runner facts
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "Commit: $(git rev-parse HEAD)"
+          echo "Kernel: $(uname -s)"
+          echo "Architecture: $(uname -m)"
+          echo "Runner: ${RUNNER_NAME:-unknown}"
+          command -v python3 || true
+          command -v bun || true
+          command -v docker || true
+          df -h .
+      - name: Verify no production access is required
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f pyproject.toml
+          echo "Source checkout and basic environment verified; no secrets, network integration, or deployments tested."

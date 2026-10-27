@@ -4,7 +4,9 @@ import { InquiryForm } from "@/components/inquiry-forms";
 import { Button } from "@/components/ui/button";
 import { PageHero, PageShell } from "@/components/site";
 export const Route = createFileRoute("/contact")({
-  validateSearch: (search: Record<string, unknown>) => {
+  validateSearch: (
+    search: Record<string, unknown>,
+  ): { service?: "dispater-audit" | "dispater-consultation" } => {
     const service = search["service"];
     return service === "dispater-audit" || service === "dispater-consultation" ? { service } : {};
   },
@@ -34,14 +36,6 @@ function Contact() {
   const { service } = Route.useSearch();
   const isDispater = Boolean(service);
   const isAudit = service === "dispater-audit";
-  const inquiryDefaults = isDispater
-    ? {
-        defaultCategory: "Commercialization",
-        defaultMessage: isAudit
-          ? "I would like to request a DISPATER.AI revenue and audit-readiness discovery review for my oilfield or towing business. Please contact me about the next steps."
-          : "I would like to request a DISPATER.AI consultation about connecting our oilfield or towing business systems. Please contact me to discuss scheduling.",
-      }
-    : {};
   return (
     <PageShell>
       <PageHero
@@ -91,7 +85,18 @@ function Contact() {
               .
             </p>
           </div>
-          <InquiryForm key={service ?? "general"} kind="contact" {...inquiryDefaults} />
+          <InquiryForm
+            key={service ?? "general"}
+            kind="contact"
+            {...(isDispater
+              ? {
+                  defaultCategory: "Commercialization",
+                  defaultMessage: isAudit
+                    ? "I would like to request a DISPATER.AI revenue and audit-readiness discovery review for my oilfield or towing business. Please contact me about the next steps."
+                    : "I would like to request a DISPATER.AI consultation about connecting our oilfield or towing business systems. Please contact me to discuss scheduling.",
+                }
+              : {})}
+          />
         </div>
       </section>
     </PageShell>

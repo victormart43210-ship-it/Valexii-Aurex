@@ -1,0 +1,285 @@
+{
+  "schema_version": 1,
+  "operation": "KUSANAGI_CLXXIX_SOVEREIGN_UNIFICATION",
+  "repository": "victormart43210-ship-it/Valexii-Aurex",
+  "main_sha": "585023a09fdbff5ec2349a67cc50ef45a9b6f9fd",
+  "branch": "work/kusanagi-clxxix-sovereign-unification",
+  "checkpoint": "QWEN_RUNTIME_REPAIR_CP002",
+  "implementation_sha": "30eac28a1ccc565809444dce4190d8c97ec4887a",
+  "remote_save": "NOT VERIFIED for containing commit until remote readback; prior 30eac28a1ccc565809444dce4190d8c97ec4887a verified",
+  "tests": {
+    "pytest": "449 passed, 2 skipped; both module and installed executable",
+    "ruff": "PASS",
+    "mypy": "PASS 78 source files",
+    "dispater_node": "25 passed",
+    "dispater_build": "PASS",
+    "npm_audit_production": "PASS zero reported vulnerabilities",
+    "bun_website": "NOT RUN",
+    "live_nvidia": "NOT RUN",
+    "independent_review": "NOT RUN"
+  },
+  "release": "HOLD",
+  "production_authority": "NONE",
+  "paid_inference_executed": false,
+  "next_action": "Using authorized Railway container access, inspect actual process arguments/listening sockets and run the bounded localhost synthetic request documented in QWEN_PRIVATE_RUNTIME_REPAIR.md. Do not infer IPv6 binding from saved settings or expose public endpoint.",
+  "prior_onyx_checkpoint": "c1d6f3aeb9451c1c5d79dc0bae150512998a51e6",
+  "prior_onyx_pr": 146,
+  "draft_pr": 154,
+  "prior_remote_save": "PASS",
+  "utc": "2026-10-27T06:32:08.580455+00:00",
+  "known_failures": [
+    "PR145 filesystem policy admits sibling tenant-a-other under tenant-a (reproduced)",
+    "PR145 add/add conflicts in openshell_policy.py and its tests",
+    "CP002 GitHub CI/CLIV/CLII failed; CP003 packaging fixes the reproduced dispater_proof collection defect; remaining exact-head CI must be checked",
+    "Initial pip install --no-build-isolation failed because build backend unavailable; standard isolated editable installation succeeded",
+    "Initial frontend run lacked three; npm ci restored locked dependencies and all 25 tests passed"
+  ],
+  "remaining": [
+    "Durable paid-inference accounting and request authorization: NOT IMPLEMENTED; remote remains unconditionally disabled",
+    "PR145 convergence and separate review",
+    "Owner headless runner registration/dispatch verification",
+    "Railway deployed SHA, volume isolation and authenticated bridge verification",
+    "Live Onyx/ledger wiring from PR146",
+    "Complete tenant-authenticated browser-to-persisted-audit demonstration",
+    "XLSX intake and stricter CSV precision qualification",
+    "Lovable send_message rejected: workspace out of credits; preview remains unchanged"
+  ],
+  "changed_files": [
+    "aurex/adapters/inference_policy.py",
+    "aurex/adapters/openai_compatible.py",
+    "aurex/adapters/execution.py",
+    "aurex/adapters/ollama.py",
+    "tests/test_remote_inference_hold.py",
+    "pyproject.toml",
+    "docs/verification/CLXXXIV_SYNTHETIC_TOWING_OUTPUT.json",
+    "docs/operations/NVIDIA_LOW_COST_DEPLOYMENT_DECISION.md",
+    "docs/operations/KUSANAGI_CLXXXIV_SOVEREIGN_EXECUTION.md",
+    "RECOVERY.json",
+    "RESUME.md",
+    "docs/handoffs/KUSANAGI_CLXXXIV_WORK_TO_JULES.md"
+  ],
+  "implementation_remote_save": "PASS",
+  "handoff": "docs/handoffs/KUSANAGI_CLXXXIV_WORK_TO_JULES.md",
+  "independent_review": "NOT RUN",
+  "working_tree_at_checkpoint": "all intended source/docs committed; verify status on resume",
+  "checkpoints": [
+    {
+      "id": "CP001",
+      "sha": "8c351f11c51816047db6944844e8d35c24dddfd3",
+      "remote_save": "PASS"
+    },
+    {
+      "id": "CP002",
+      "sha": "1d99a46e8cab70161fc058f0793aa515cc94be0c",
+      "remote_save": "PASS"
+    },
+    {
+      "id": "CP003",
+      "sha": "dc6ed44c486b94d1723a6d1095f2ff51e20aec09",
+      "remote_save": "PASS"
+    },
+    {
+      "id": "CP004",
+      "sha": "c509533c6b5983682305512e4436d7e43b884b12",
+      "remote_save": "PASS"
+    },
+    {
+      "id": "CLXXXIII_CP001",
+      "sha": "edf081138bd73204b29d2337d08db079fb4494c4",
+      "remote_save": "PASS"
+    },
+    {
+      "id": "CLXXIX_CP002",
+      "sha": "889fd95b9a63672801868603adcf410f66e30683",
+      "remote_save": "PASS"
+    }
+  ],
+  "exact_implementation_ci": {
+    "sha": "dc6ed44c486b94d1723a6d1095f2ff51e20aec09",
+    "CI": {
+      "status": "PASS",
+      "run": 40277912589
+    },
+    "CLIV": {
+      "status": "PASS",
+      "run": 40277912627
+    },
+    "Railway_image": {
+      "status": "PASS",
+      "run": 40277912679
+    },
+    "runner_smoke": {
+      "status": "PASS",
+      "run": 40277912577
+    },
+    "CLII": {
+      "status": "FAIL",
+      "run": 40277912587,
+      "cause": "website Vitest two copy assertions: consolidated-editorial.test.ts and domain-directions.test.ts; 148 pass, 2 fail; TypeScript/build not reached"
+    }
+  },
+  "previous_operation": "KUSANAGI_CLXXXIII",
+  "clxxxi_tests": {
+    "backend": "454 passed, 1 skipped",
+    "ruff": "PASS",
+    "mypy": "PASS 79 files",
+    "website": "152 passed, 2 failed",
+    "typescript": "FAIL baseline contact-route issues",
+    "live_provider": "NOT RUN",
+    "hosted_end_to_end": "NOT VERIFIED"
+  },
+  "clxxxiii_tests": {
+    "website": "155 passed including real local HTTP adapter/API test",
+    "typescript": "PASS",
+    "build": "PASS",
+    "live_website": "NOT VERIFIED",
+    "independent_review": "NOT RUN",
+    "focused_eslint": "PASS after23 formatting errors repaired",
+    "backend": "454 passed,1 skipped",
+    "ruff": "PASS",
+    "mypy": "PASS79 files",
+    "dispater_node": "25 passed",
+    "dispater_build": "PASS",
+    "tenant_isolation": "FAIL: shared-bearer requests ignore tenant headers"
+  },
+  "integrated_recovery": {
+    "onyx": {
+      "schema_version": 1,
+      "operation": "KUSANAGI_CLXXVI",
+      "repository": "victormart43210-ship-it/Valexii-Aurex",
+      "canonical_main_sha": "551625e5be41ef6fd16e70e7a72404400032f4bc",
+      "feature_branch": "work/kusanagi-clxxvi-onyx-bridge",
+      "implementation_sha": "0fbf956df03e0b702713291eb817911f2d96dd51",
+      "sha_semantics": "Implementation SHA is prior exact source checkpoint; containing commit is obtained with git rev-parse HEAD. A file cannot contain its own Git hash.",
+      "draft_pr": 146,
+      "checkpoints": [
+        {
+          "id": "CP001",
+          "utc": "2026-10-26T00:12:48.022570+00:00",
+          "completed": [
+            "Repository reconciliation",
+            "Pinned Onyx API/license inventory"
+          ],
+          "tests": "NOT RUN",
+          "remote_save": "PASS",
+          "commit": "0102628de074bc2cabda9212f5d49b57ef3e47e2"
+        },
+        {
+          "id": "CP002",
+          "completed": [
+            "Frozen contract v1"
+          ],
+          "tests": "NOT RUN",
+          "remote_save": "PASS",
+          "commit": "3a7f032f370a6ad58780a539567aa24552292592"
+        },
+        {
+          "id": "CP003",
+          "completed": [
+            "Typed disabled-by-default adapter",
+            "Authenticated fixed-fixture demo",
+            "26 synthetic contract tests PASS"
+          ],
+          "remote_save": "PASS",
+          "commit": "0fbf956df03e0b702713291eb817911f2d96dd51"
+        },
+        {
+          "id": "CP004",
+          "utc": "2026-10-26T00:23:18.893699+00:00",
+          "completed": [
+            "39 adapter/security tests",
+            "475 passed, 3 skipped full Python suite",
+            "Real local HTTP authenticated demo",
+            "Private deployment assessment"
+          ],
+          "remote_save": "NOT VERIFIED until remote readback"
+        }
+      ],
+      "deployment": "NOT RUN",
+      "release": "HOLD",
+      "production_authority": "NONE",
+      "independent_verification": "NOT RUN",
+      "next_actions": [
+        "Inspect CP004 exact-head CI",
+        "Finish and commit Jules continuation package",
+        "Independent review and authorized private Onyx admission remain required"
+      ],
+      "known_failures": [
+        "Existing CI and CLIV pytest executable cannot import dispater_proof; python -m pytest succeeds. Packaging excludes dispater_proof.",
+        "Existing CLII website tests: 148 passed, 2 failed on expected website copy changed by previous work.",
+        "Ambient SOCKS proxy requires absent socksio for existing web-adapter tests; local regression run removed proxy environment variables."
+      ],
+      "test_commands": [
+        "python -m ruff check .",
+        "python -m mypy aurex",
+        "env -u ALL_PROXY -u HTTPS_PROXY -u HTTP_PROXY -u all_proxy -u https_proxy -u http_proxy python -m pytest -q --tb=short"
+      ],
+      "test_results": [
+        "PASS: Ruff",
+        "PASS: MyPy, 79 source files",
+        "PASS: 475 passed, 3 skipped, one existing Starlette warning",
+        "PASS: real local Uvicorn HTTP demo: unauthorized 401, authorized 200, six candidates, no admitted evidence",
+        "NOT RUN: optional live Onyx test"
+      ],
+      "security_verification_status": {
+        "synthetic_tests": "PASS",
+        "live_tenant_isolation": "NOT VERIFIED",
+        "multi_tenant_deployment": "BLOCKED",
+        "independent_review": "NOT RUN"
+      },
+      "external_dependencies": [
+        "Authorized isolated private Onyx with local-only inference",
+        "Verified owner identity and deployment isolation",
+        "Hetzner server specifications and available capacity",
+        "Independent Jules review"
+      ],
+      "modified_files": [
+        "aurex/api.py",
+        "aurex/integrations/onyx.py",
+        "aurex/integrations/onyx_demo.py",
+        "tests/test_onyx_bridge.py",
+        "tests/test_onyx_live.py",
+        ".github/workflows/onyx-bridge.yml",
+        "docs/integrations/ONYX_CAPABILITY_MATRIX.md",
+        "docs/integrations/ONYX_AUREX_CONTRACT.md",
+        "docs/deployment/ONYX_PRIVATE_DEPLOYMENT_PLAN.md",
+        "docs/verification/ONYX_SYNTHETIC_HTTP.json",
+        "docs/verification/ONYX_BRIDGE_VERIFICATION.md",
+        "RECOVERY.json",
+        "RESUME.md"
+      ]
+    }
+  },
+  "integration_inputs": {
+    "150": "d7b1142ff6bfca9b910dd7feb90b285f57dfb101",
+    "146": "c1d6f3aeb9451c1c5d79dc0bae150512998a51e6",
+    "151": "6e2d0cc262760058d1b7fbe1efbb3c22ad6d2d37",
+    "153": "7d30c17816f05520692dd9fb19be23420a72b4ce",
+    "136": "28239abdd0fdb534c89a2c00504ed9ba4688d662",
+    "149": "0b8b0b282ffa11ec814268a54647fd1769a42537"
+  },
+  "tests_current": {
+    "backend": "525passed2skipped",
+    "ruff": "PASS",
+    "mypy": "PASS83files",
+    "dependency_audit": "PASS no known vulnerabilities in tested environment",
+    "website": "155passed",
+    "lint": "PASS0errors10warnings after formatting",
+    "independent_source_retest": "92passed, separate agent; external certificationNOT RUN"
+  },
+  "latest_observed_main": "585023a09fdbff5ec2349a67cc50ef45a9b6f9fd",
+  "qwen_runtime": {
+    "service": "707e28bb-554c-444c-b669-01ad61da2832",
+    "environment": "98c103eb-a1af-46b6-948e-19c80e4d720d",
+    "previous_deployment": "b5d29764-8194-4a7a-be36-5e9884ece69b",
+    "new_deployment": "8239c124-c77e-47fb-aa0e-425bc28bf1a3",
+    "observed_status": "SUCCESS",
+    "change": "8 LLAMA_ARG variables plus startup --host ::; explicit model URL; existing CPU1/RAM2GB unchanged",
+    "live_synthetic_response": "NOT RUN",
+    "first_model_loaded_deployment": "f9043881-7788-47c8-b5b8-b9fca0fb8ecd",
+    "first_model_loaded_utc": "2026-10-27T06:28:49.429646842Z",
+    "public_access": "NONE",
+    "model_loading": "PASS: model loaded at 2026-10-27T06:31:52.061183649Z",
+    "private_ipv6_binding": "NOT VERIFIED: saved command --host ::, runtime logs still 0.0.0.0:8080"
+  }
+}

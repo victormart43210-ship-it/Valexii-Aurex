@@ -13,7 +13,7 @@ dependencies = [
   "pydantic>=2.9,<3",
   "fastapi>=0.115,<1",
   "uvicorn>=0.32,<1",
-  "cryptography>=46.0.5,<47",
+  "cryptography>=50.0.2,<51",
 ]
 
 [project.scripts]
@@ -21,17 +21,18 @@ aurex = "aurex.cli:main"
 
 [project.optional-dependencies]
 dev = [
-  "pytest>=8,<9",
+  "pytest>=9.0.3,<10",
   "ruff>=0.8,<1",
   "mypy>=1.13,<2",
   "httpx>=0.27,<1",
 ]
 
 [tool.setuptools.packages.find]
-include = ["aurex*", "dispater_proof*", "training", "workstation*"]
+include = ["aurex*", "training", "workstation*", "dispater_proof*"]
 
 [tool.setuptools.package-data]
 training = ["configs/*.json", "requirements.txt", "README.md"]
+dispater_proof = ["fixtures/*.csv"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests", "training/tests", "workstation/tests"]
