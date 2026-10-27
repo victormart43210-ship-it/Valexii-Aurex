@@ -25,17 +25,17 @@ def test_onyx_indexing_and_tenant_isolated_search():
 
     # Index Tenant A document
     doc_a = (
-        "ticket_id,po_id,invoice_id,total_amount,has_signature\n"
-        "FT-ONYX-A1,PO-A100,INV-A100,3500.0,true"
-    ).encode("utf-8")
+        b"ticket_id,po_id,invoice_id,total_amount,has_signature\n"
+        b"FT-ONYX-A1,PO-A100,INV-A100,3500.0,true"
+    )
     doc_res_a = DocumentIntelligenceEngine.process_document("TENANT-A", "DOC-A1", "field_ticket_a.csv", doc_a)
     doc_res_a.index_in_onyx(adapter)
 
     # Index Tenant B document
     doc_b = (
-        "ticket_id,po_id,invoice_id,total_amount,has_signature\n"
-        "FT-ONYX-B1,PO-B200,INV-B200,8900.0,true"
-    ).encode("utf-8")
+        b"ticket_id,po_id,invoice_id,total_amount,has_signature\n"
+        b"FT-ONYX-B1,PO-B200,INV-B200,8900.0,true"
+    )
     doc_res_b = DocumentIntelligenceEngine.process_document("TENANT-B", "DOC-B1", "field_ticket_b.csv", doc_b)
     doc_res_b.index_in_onyx(adapter)
 
@@ -56,9 +56,9 @@ def test_onyx_document_deletion():
     adapter = OnyxKnowledgeAdapter(api_token="TOKEN-12345")
 
     doc_data = (
-        "ticket_id,po_id,invoice_id,total_amount,has_signature\n"
-        "FT-DEL-01,PO-DEL,INV-DEL,1200.0,true"
-    ).encode("utf-8")
+        b"ticket_id,po_id,invoice_id,total_amount,has_signature\n"
+        b"FT-DEL-01,PO-DEL,INV-DEL,1200.0,true"
+    )
     doc_res = DocumentIntelligenceEngine.process_document("TENANT-DEL", "DOC-DEL-01", "del_ticket.csv", doc_data)
     doc_res.index_in_onyx(adapter)
 
