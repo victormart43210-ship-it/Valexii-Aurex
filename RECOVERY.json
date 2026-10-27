@@ -1,0 +1,22 @@
+{
+  "cxcv": {
+    "checkpoint": "CXCV_CP001",
+    "utc": "2026-10-27T13:21:04.867897+00:00",
+    "branch": "work/kusanagi-qwen-private-bridge-20261027",
+    "base_sha": "758448b29be48f86cfcf5f634707f6afe0451346",
+    "main_sha": "585023a09fdbff5ec2349a67cc50ef45a9b6f9fd",
+    "pr": 156,
+    "source_sha_semantics": "Containing commit is exact source; git rev-parse HEAD after remote fetch.",
+    "tests": {
+      "dedicated": "34 passed",
+      "backend": "483 passed, 2 skipped, 5 subtests passed",
+      "ruff": "PASS after import repair",
+      "mypy": "PASS 78 files"
+    },
+    "deployment": "NOT RUN",
+    "live_inference": "NOT RUN",
+    "next_action": "Complete independent source review, inspect exact-head CI, verify private model ID/auth and staging storage isolation before deployment.",
+    "remote_save": "NOT VERIFIED until containing commit readback",
+    "release": "HOLD"
+  }
+}
