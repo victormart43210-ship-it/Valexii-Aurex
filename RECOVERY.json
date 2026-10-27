@@ -90,6 +90,20 @@
       "status": "COMPLETED",
       "production": "HOLD",
       "notes": "Project DISPATER Sovereign Commercial Pilot Convergence completed; CXCI baseline reproduced, Commercial Pilot Engine (aurex/dispater_pilot.py) built, 2,000-case challenge benchmark executed (1.0 Precision, 1.0 Recall), ROI 6-category framework established, and commercial readiness score recalculated to 90.0/100."
+    },
+    {
+      "operation": "KUSANAGI_CXCIII",
+      "baseline_sha": "1c05a95f9c8a54854d31657c315864d93931d848",
+      "status": "COMPLETED",
+      "production": "HOLD",
+      "notes": "Project FIRST CUSTOMER completed; CommercialPilotEngine extended with CSV formula sanitization and data retention policies, customer demo findings explorer created, 8-stage customer pilot journey verified, and customer package delivered in docs/commercial/."
+    },
+    {
+      "operation": "KUSANAGI_CXCVI",
+      "baseline_sha": "1c05a95f9c8a54854d31657c315864d93931d848",
+      "status": "COMPLETED",
+      "production": "HOLD",
+      "notes": "Project Sovereign Convergence completed; Document Intelligence Engine (aurex/dispater_documents.py) built, cross-document reconciliation connected, E2E synthetic demonstration verified (tests/test_dispater_e2e_workflow.py), integrated test matrix evaluated, and 417 pytest / 149 Bun tests verified."
     }
   ]
 }
