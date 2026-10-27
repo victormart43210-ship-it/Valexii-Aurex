@@ -77,3 +77,59 @@ def industrial_audit_demo():
         ],
         "permittedEffects": [],
     }
+
+
+# Owner-only, synthetic-only Qwen connectivity probe. Never accepts user/customer prompts.
+# Deliberately separate from production inference and all financial/security authority.
+@app.post("/v1/staging/qwen/synthetic-probe", dependencies=[Depends(authorize)])
+def qwen_synthetic_probe():
+    import json
+    import urllib.error
+    import urllib.request
+    from urllib.parse import urlsplit
+
+    if os.environ.get("AUREX_QWEN_STAGING_ENABLED") != "true":
+        raise HTTPException(503, "QWEN_STAGING_DISABLED")
+    if os.environ.get("RAILWAY_ENVIRONMENT_NAME") != "aurex-staging":
+        raise HTTPException(503, "STAGING_ONLY")
+
+    base = os.environ.get("AUREX_QWEN_BASE_URL", "").rstrip("/")
+    parsed = urlsplit(base)
+    host = parsed.hostname or ""
+    # Railway's internal DNS only; never forward to a user-supplied URL.
+    if parsed.scheme != "http" or not host.endswith(".railway.internal") or parsed.username or parsed.password or parsed.query or parsed.fragment or parsed.path not in ("", "/"):
+        raise HTTPException(503, "INVALID_PRIVATE_QWEN_ENDPOINT")
+    if parsed.port != 8080:
+        raise HTTPException(503, "INVALID_QWEN_PORT")
+
+    payload = json.dumps({
+        "model": os.environ.get("AUREX_QWEN_MODEL", "qwen"),
+        "messages": [
+            {"role": "system", "content": "Synthetic connectivity test only. No authority. Reply with the single word READY."},
+            {"role": "user", "content": "Synthetic test: respond READY."},
+        ],
+        "max_tokens": 16,
+        "temperature": 0,
+        "stream": False,
+    }).encode("utf-8")
+    req = urllib.request.Request(
+        base + "/v1/chat/completions", data=payload,
+        headers={"Content-Type": "application/json"}, method="POST",
+    )
+    try:
+        with urllib.request.urlopen(req, timeout=15) as response:
+            if response.status != 200:
+                raise HTTPException(502, "QWEN_UPSTREAM_FAILURE")
+            data = json.loads(response.read(32768))
+        answer = data["choices"][0]["message"]["content"]
+        if not isinstance(answer, str) or not answer.strip():
+            raise ValueError("empty response")
+    except (urllib.error.URLError, TimeoutError, OSError, ValueError, KeyError, IndexError, TypeError):
+        raise HTTPException(502, "QWEN_UPSTREAM_UNAVAILABLE") from None
+
+    return {
+        "schema": "aurex.synthetic.qwen_probe.v1",
+        "synthetic": True, "modelResponded": True,
+        "answer": answer[:256], "authority": "NONE",
+        "independentVerification": "NOT_VERIFIED", "release": "HOLD",
+    }
