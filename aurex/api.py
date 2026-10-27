@@ -136,14 +136,20 @@ class BudgetResponse(BaseModel):
     period: str = "month"
 
 
-@app.get("/v1/health")
 @app.get("/health")
 def health() -> dict[str, str]:
+    """Unauthenticated container liveness only; never exposes capabilities or evidence."""
     return {
         "status": "ok",
         "version": "0.1.0a1",
         "time": datetime.now(UTC).isoformat(),
     }
+
+
+@app.get("/v1/health", dependencies=[Depends(authenticate)])
+def authenticated_health() -> dict[str, str]:
+    """Match the published website and legacy bridge: v1 routes require Bearer auth."""
+    return health()
 
 
 @app.get("/v1/capabilities", response_model=CapabilitiesResponse)
