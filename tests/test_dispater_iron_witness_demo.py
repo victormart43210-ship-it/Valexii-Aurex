@@ -17,12 +17,12 @@ Validates the complete 12-stage synthetic oilfield audit scenario:
 12. Generate cryptographic audit receipt proving immutable audit history
 """
 
-from fastapi.testclient import TestClient
 import pytest
-
-from aurex.api import app
 from aurex.dispater_contracts import OperationalRecord
 from aurex.dispater_monitoring import ContinuousMonitoringEngine
+from fastapi.testclient import TestClient
+
+from aurex.api import app
 
 
 @pytest.fixture
