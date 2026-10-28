@@ -2,6 +2,7 @@ import { ReasoningSpine } from "@/components/reasoning-spine";
 import dispaterHero from "../../public/assets/dispater-hero.jpg.asset.json";
 import { createFileRoute } from "@tanstack/react-router";
 import { DomainReasoning } from "@/components/domain-reasoning";
+import { DispaterAuditConsole } from "@/components/dispater-audit-console";
 import {
   CTA,
   IndustrialPanel,
@@ -10,20 +11,21 @@ import {
   ProductCard,
   SectionHeading,
 } from "@/components/site";
+
 export const Route = createFileRoute("/dispater")({
   head: () => ({
     meta: [
-      { title: "DISPATER.AI — Intelligence Beneath the Surface | VALEXII.AI" },
+      { title: "DISPATER.AI — Continuous Industrial Audit & Monitoring | VALEXII.AI" },
       {
         name: "description",
         content:
-          "Developmental industrial intelligence for exploration, drilling, completions, production and risk review. Not independently validated or commercially deployed.",
+          "Continuous industrial audit, evidence qualification, anomaly monitoring and human review workflows for oilfield and towing operations.",
       },
-      { property: "og:title", content: "DISPATER.AI — Intelligence Beneath the Surface" },
+      { property: "og:title", content: "DISPATER.AI — Continuous Industrial Audit & Monitoring" },
       {
         property: "og:description",
         content:
-          "Explore developmental subsurface analytics and bounded industrial reasoning; functionality remains unverified.",
+          "Explore continuous industrial monitoring, evidence ledgers, audit readiness, and XAELI 5-step explanations.",
       },
       { property: "og:url", content: "https://valexii.com/dispater" },
       { property: "og:type", content: "website" },
@@ -33,11 +35,12 @@ export const Route = createFileRoute("/dispater")({
   }),
   component: Dispater,
 });
+
 function Dispater() {
   return (
     <PageShell>
       <PageHero
-        eyebrow="Developmental / Industrial intelligence"
+        eyebrow="Continuous Industrial Audit & Monitoring"
         title="DISPATER.AI"
         visual={
           <figure>
@@ -51,77 +54,91 @@ function Dispater() {
               className="mx-auto w-full max-w-md rounded-2xl"
             />
             <figcaption className="mt-2 text-center text-xs text-muted-foreground">
-              Conceptual artwork — not product UI or field data.
+              Conceptual artwork — not live product UI or physical machinery control.
             </figcaption>
           </figure>
         }
       >
-        <p className="text-gold">Intelligence Beneath the Surface</p>
+        <p className="text-gold">Continuous Evidence & Audit Preparedness</p>
         <p>
-          Decisions beneath the surface depend on evidence above it. DISPATER.AI explores industrial
-          intelligence for exploration, drilling, completions and production—aiming to make
-          operational analysis and risk review clearer. This is research direction, not deployed
-          field capability.
+          Decisions beneath the surface depend on evidence above it. DISPATER.AI provides continuous
+          industrial audit monitoring, evidence ledgers, anomaly detection, and XAELI 5-step explanations
+          for oilfield operations, pressure pumping, towing/recovery, and industrial facilities.
         </p>
       </PageHero>
+
+      <section className="section-space border-b border-border bg-card/10">
+        <div className="site-grid">
+          <SectionHeading
+            eyebrow="Interactive Audit Console"
+            title="Execute Synthetic Industrial Audit & Review Findings"
+            copy="Evaluate synthetic field tickets, telemetry observations, rate sheets, and inspection logs against AUREX evidence governance contracts."
+          />
+          <div className="mt-8">
+            <DispaterAuditConsole />
+          </div>
+        </div>
+      </section>
+
       <ReasoningSpine context="dispater" />
+
       <section className="section-space">
         <div className="site-grid grid items-center gap-14 lg:grid-cols-2">
           <div>
             <SectionHeading
-              eyebrow="Purpose / Unverified functionality"
+              eyebrow="Evidence Governance / Non-Delegable Authority"
               title="A model is not the ground beneath it."
-              copy="Geological observations, drilling records and production information could help teams review risk. The design keeps measurements, interpretations and recommendations distinct—with uncertainty and human oversight intact."
+              copy="Operational records, pressure logs, inspection certificates, and dispatch entries are evaluated against versioned rules. DISPATER keeps measurements, rule evaluations, and recommendations distinct—with uncertainty, human oversight, and cryptographic evidence chains intact."
             />
             <p className="mt-6 leading-7 text-muted-foreground">
-              Private repositories exist, as reported by the project owner; their functionality has
-              not been independently verified. This public page is a developmental direction, not
-              proof of deployed oilfield analytics, operational readiness, environmental performance
-              or autonomous control.
+              AI model self-declarations hold zero authority. Critical and high-severity safety findings
+              require explicit human reviewer identification for closure.
             </p>
             <p className="mt-4 text-sm leading-7 text-amber">
-              Not independently validated or commercially deployed.
+              Model Output Authority = NONE | Industrial Control Authority = NONE | Financial Authority = NONE.
             </p>
             <p className="mt-5 text-sm leading-7 text-muted-foreground">
               Historical name / Dis Pater was a Roman god of the underworld and hidden riches
-              beneath the earth, later associated with Pluto. The name is a cultural reference to
-              what lies below the surface—not evidence of technical capability.
+              beneath the earth. In DISPATER.AI, it represents uncovering hidden evidence and operational risk.
             </p>
           </div>
           <IndustrialPanel />
         </div>
       </section>
+
       <section className="section-space border-y border-border bg-card/25">
         <div className="site-grid">
           <SectionHeading
-            eyebrow="Application themes"
-            title="Keep uncertainty in the operational picture."
+            eyebrow="Application Modules"
+            title="Continuous Audit Preparedness Across Operations."
           />
           <div className="mt-12 grid gap-4 md:grid-cols-3">
             <ProductCard
-              name="Subsurface exploration"
-              label="Context"
-              copy="Explore geological and subsurface evidence with source provenance, model uncertainty and explicit interpretation limits. No resource discovery or reserve estimate is claimed."
+              name="Continuous Operational Monitoring"
+              label="Observation"
+              copy="Ingest field tickets, telemetry, and inspection logs to detect missing records, rate discrepancies, or overdue inspections."
               to="/research"
               accent="amber"
             />
             <ProductCard
-              name="Operations & risk"
-              label="Observation"
-              copy="Study how operational signals and risk assumptions could support reviewable planning. Recommendations never grant permission to control machinery."
+              name="Evidence Ledger & Receipts"
+              label="Provenance"
+              copy="Preserve cryptographic SHA-256 evidence envelopes and generate self-issued audit receipts."
               to="/research"
             />
             <ProductCard
-              name="Sustainability"
-              label="Decision support"
-              copy="Examine environmental constraints, resource use and trade-offs without claiming verified emissions reductions or environmental outcomes."
+              name="Corrective Action Retest"
+              label="Remediation"
+              copy="Track findings through assignment, remediation evidence submission, and independent human retest verification."
               to="/research"
               accent="amber"
             />
           </div>
         </div>
       </section>
+
       <DomainReasoning />
+
       <CTA
         title="Collaborate on responsible industrial application."
         copy="DISPATER.AI seeks validation around operational evidence, safe boundaries, and human decision authority."
