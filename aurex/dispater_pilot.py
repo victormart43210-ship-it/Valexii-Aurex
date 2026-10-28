@@ -1,9 +1,8 @@
-"""
-AUREX DISPATER Commercial Pilot Engine & Historical Revenue Audit Prototype.
+"""DISPATER synthetic-only, deterministic revenue-audit prototype.
 
-Manages synthetic customer onboarding, read-only operational data ingestion,
-multi-record reconciliation, equipment downtime tracking, XAELI 5-step explanations,
-human review queues, and historical deterministic audit checks.
+No I/O, no API routes, no model calls, no customer data authorization. This is
+an illustrative control-plane contract, NOT tax advice, DOT compliance, or an
+independent audit. Treat findings as candidates for human review.
 """
 
 from __future__ import annotations
@@ -16,14 +15,6 @@ from datetime import date
 from decimal import Decimal, InvalidOperation
 from typing import Any
 
-from pydantic import BaseModel
-
-from aurex.dispater_intelligence import (
-    MaintenanceRecord,
-    RevenueLeakageEngine,
-    Xaeli5StepFinding,
-)
-
 SCHEMA = "dispater.synthetic.revenue.v1"
 
 
@@ -35,17 +26,6 @@ def digest(value: object) -> str:
     """Hash a canonical JSON representation; NOT an independent signature."""
     raw = json.dumps(value, sort_keys=True, separators=(",", ":"), allow_nan=False)
     return hashlib.sha256(raw.encode("utf-8")).hexdigest()
-
-
-def _compute_sha256(payload: Any) -> str:
-    """Compute deterministic SHA-256 digest of dict/list/model."""
-    if isinstance(payload, BaseModel):
-        data_str = payload.model_dump_json()
-    elif isinstance(payload, (dict, list)):
-        data_str = json.dumps(payload, sort_keys=True, default=str)
-    else:
-        data_str = str(payload)
-    return hashlib.sha256(data_str.encode("utf-8")).hexdigest()
 
 
 def _rows(snapshot: dict[str, Any], key: str, required: set[str]) -> list[dict[str, Any]]:
@@ -90,7 +70,11 @@ def _date(value: str) -> date:
 
 
 def audit_synthetic(snapshot: dict[str, Any]) -> dict[str, Any]:
-    """Compare synthetic jobs, invoices, rate cards, and payments without writes."""
+    """Compare synthetic jobs, invoices, rate cards, and payments without writes.
+
+    Rate gaps/ambiguity are UNKNOWN, never interpreted as an approved rate.
+    Money amounts are per-job fixed rates for this first contract, not hourly.
+    """
     if snapshot.get("dataset_type") != "SYNTHETIC_ONLY":
         raise InvalidSnapshot("only explicitly labeled synthetic examples are supported")
     jobs = _rows(snapshot, "jobs", {"job_id", "customer_id", "service_code", "date"})
@@ -186,173 +170,3 @@ def audit_synthetic(snapshot: dict[str, Any]) -> dict[str, Any]:
 def verify_self_issued_report(snapshot: dict[str, Any], report: dict[str, Any]) -> bool:
     """Byte-equivalent consistency check; cannot attest to independent truth."""
     return audit_synthetic(snapshot) == report
-
-
-# --- Commercial Pilot Engine Models ---
-
-def sanitize_csv_formula_injection(text: str) -> str:
-    """Sanitizes text against CSV formula injection attacks (=, +, -, @, tab, CR)."""
-    if not isinstance(text, str):
-        return str(text)
-    cleaned = text.strip()
-    if cleaned and cleaned[0] in ("=", "+", "-", "@", "\t", "\r"):
-        return "'" + cleaned
-    return cleaned
-
-
-class PilotDataRetentionPolicy(BaseModel):
-    tenant_id: str
-    retention_days: int = 90
-    auto_delete_on_expiry: bool = True
-    authorized_deletion_requested: bool = False
-    data_deleted_at: str | None = None
-
-
-class PilotTenantConfig(BaseModel):
-    tenant_id: str
-    company_name: str
-    industry_sector: str  # Oilfield Operations or Towing & Recovery
-    onboarded_at: str
-    active: bool = True
-    authorized_human_approver: str
-
-
-class PilotIngestionBatch(BaseModel):
-    batch_id: str
-    tenant_id: str
-    ingested_at: str
-    field_tickets_count: int
-    purchase_orders_count: int
-    invoices_count: int
-    rate_sheets_count: int
-    equipment_records_count: int
-    batch_digest: str
-
-
-class HumanReviewDecision(BaseModel):
-    decision_id: str
-    tenant_id: str
-    exception_id: str
-    review_status: str  # PENDING_REVIEW, APPROVED_CORRECTION, DISPUTED, DISMISSED
-    reviewer_identity: str
-    reviewed_at: str
-    notes: str
-    approved_adjustment_usd: float = 0.0
-    actual_recovered_usd: float = 0.0
-
-
-class CommercialPilotSummary(BaseModel):
-    tenant_id: str
-    company_name: str
-    batch_id: str
-    evaluated_revenue_usd: float
-    potential_exposure_usd: float
-    confirmed_discrepancies_usd: float
-    customer_approved_corrections_usd: float
-    actual_recovered_revenue_usd: float
-    exceptions_count: int
-    xaeli_findings: list[Xaeli5StepFinding]
-    fleet_records: list[MaintenanceRecord]
-    pending_human_reviews_count: int
-    audit_event_ref: str
-
-
-class CommercialPilotEngine:
-    def __init__(self, tenant_config: PilotTenantConfig) -> None:
-        self.config = tenant_config
-        self.review_decisions: dict[str, HumanReviewDecision] = {}
-
-    def process_ingestion_batch(
-        self,
-        batch_id: str,
-        ingested_at: str,
-        field_tickets: list[dict[str, Any]],
-        invoices: list[dict[str, Any]],
-        purchase_orders: list[dict[str, Any]],
-        rate_sheets: list[dict[str, Any]],
-        fleet_data: list[dict[str, Any]],
-    ) -> CommercialPilotSummary:
-        """Executes read-only reconciliation and fleet maintenance analysis for a pilot batch."""
-        batch_payload = {
-            "batch_id": batch_id,
-            "tenant_id": self.config.tenant_id,
-            "ft_count": len(field_tickets),
-            "po_count": len(purchase_orders),
-            "inv_count": len(invoices),
-        }
-        _compute_sha256(batch_payload)
-
-        # 1. Run Revenue Leakage Detection Engine
-        exceptions = RevenueLeakageEngine.evaluate_records(
-            tenant_id=self.config.tenant_id,
-            field_tickets=field_tickets,
-            invoices=invoices,
-            purchase_orders=purchase_orders,
-            rate_sheets=rate_sheets,
-            is_demo=True,
-        )
-
-        # 2. Convert to XAELI 5-Step Findings
-        xaeli_findings = RevenueLeakageEngine.convert_to_xaeli_findings(exceptions)
-
-        # 3. Evaluate Fleet Maintenance
-        from aurex.dispater_intelligence import FleetMaintenanceEngine
-        fleet_records = FleetMaintenanceEngine.evaluate_fleet(
-            tenant_id=self.config.tenant_id,
-            fleet_data=fleet_data,
-            is_demo=True,
-        )
-
-        evaluated_revenue = sum(float(ft.get("total_amount", 0.0)) for ft in field_tickets)
-        potential_exposure = sum(e.financial_exposure for e in exceptions)
-
-        confirmed_discrepancies = 0.0
-        approved_corrections = 0.0
-        actual_recovered = 0.0
-        pending_count = 0
-
-        for exc in exceptions:
-            dec = self.review_decisions.get(exc.exception_id)
-            if dec:
-                if dec.review_status in ("APPROVED_CORRECTION", "DISPUTED"):
-                    confirmed_discrepancies += exc.financial_exposure
-                if dec.review_status == "APPROVED_CORRECTION":
-                    approved_corrections += dec.approved_adjustment_usd
-                    actual_recovered += dec.actual_recovered_usd
-                if dec.review_status == "PENDING_REVIEW":
-                    pending_count += 1
-            else:
-                pending_count += 1
-
-        return CommercialPilotSummary(
-            tenant_id=self.config.tenant_id,
-            company_name=self.config.company_name,
-            batch_id=batch_id,
-            evaluated_revenue_usd=round(evaluated_revenue, 2),
-            potential_exposure_usd=round(potential_exposure, 2),
-            confirmed_discrepancies_usd=round(confirmed_discrepancies, 2),
-            customer_approved_corrections_usd=round(approved_corrections, 2),
-            actual_recovered_revenue_usd=round(actual_recovered, 2),
-            exceptions_count=len(exceptions),
-            xaeli_findings=xaeli_findings,
-            fleet_records=fleet_records,
-            pending_human_reviews_count=pending_count,
-            audit_event_ref=f"PILOT-AUDIT-{batch_id}",
-        )
-
-    def purge_tenant_data(self, requested_by: str) -> dict[str, Any]:
-        """Executes authorized data deletion for customer offboarding / retention policy."""
-        if requested_by != self.config.authorized_human_approver:
-            raise ValueError("Unauthorized data deletion request.")
-        self.review_decisions.clear()
-        return {
-            "tenant_id": self.config.tenant_id,
-            "status": "DATA_PURGED_SUCCESSFULLY",
-            "purged_by": requested_by,
-        }
-
-    def record_human_decision(self, decision: HumanReviewDecision) -> None:
-        """Records a human manager review decision in the pilot queue."""
-        if decision.tenant_id != self.config.tenant_id:
-            raise ValueError("Tenant isolation error: decision tenant mismatch.")
-        self.review_decisions[decision.exception_id] = decision

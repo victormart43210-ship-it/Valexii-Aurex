@@ -4,6 +4,10 @@ import { InquiryForm } from "@/components/inquiry-forms";
 import { Button } from "@/components/ui/button";
 import { PageHero, PageShell } from "@/components/site";
 export const Route = createFileRoute("/contact")({
+  validateSearch: (search: Record<string, unknown>) => {
+    const service = search["service"];
+    return service === "dispater-audit" || service === "dispater-consultation" ? { service } : {};
+  },
   head: () => ({
     meta: [
       { title: "Contact — VALEXII.AI" },
@@ -27,17 +31,35 @@ export const Route = createFileRoute("/contact")({
   component: Contact,
 });
 function Contact() {
+  const { service } = Route.useSearch();
+  const isDispater = Boolean(service);
+  const isAudit = service === "dispater-audit";
+  const inquiryDefaults = isDispater
+    ? {
+        defaultCategory: "Commercialization",
+        defaultMessage: isAudit
+          ? "I would like to request a DISPATER.AI revenue and audit-readiness discovery review for my oilfield or towing business. Please contact me about the next steps."
+          : "I would like to request a DISPATER.AI consultation about connecting our oilfield or towing business systems. Please contact me to discuss scheduling.",
+      }
+    : {};
   return (
     <PageShell>
-      <PageHero eyebrow="Contact" title="What would you like to help make clearer?">
+      <PageHero
+        eyebrow="Contact"
+        title={
+          isDispater ? "Discuss a DISPATER.AI pilot" : "What would you like to help make clearer?"
+        }
+      >
         <p>
-          Ask about BCXMET, evidence-governed AI, independent testing or research collaboration.
+          {isDispater
+            ? "Tell us about your oilfield or towing operations. This is a human-led discovery conversation, not a completed audit or confirmed appointment."
+            : "Ask about BCXMET, evidence-governed AI, independent testing or research collaboration."}
           Messages submitted through this form are stored securely so a person can respond.
         </p>
         <p className="mt-4">
-          Investors welcome. We also welcome universities, grant collaborators and industrial
-          partners exploring reusable reasoning architecture and cross-domain product development.
-          These are invitations, not existing funding or partnership claims.
+          {isDispater
+            ? "We can discuss an initial record-review snapshot, a workflow automation consultation, or a fictional product demonstration. Do not submit confidential financial, tax, driver, payroll or contract records in this public inquiry form."
+            : "Investors welcome. We also welcome universities, grant collaborators and industrial partners exploring reusable reasoning architecture and cross-domain product development. These are invitations, not existing funding or partnership claims."}
         </p>
       </PageHero>
       <ReasoningSpine context="contact" />
@@ -69,7 +91,7 @@ function Contact() {
               .
             </p>
           </div>
-          <InquiryForm kind="contact" />
+          <InquiryForm key={service ?? "general"} kind="contact" {...inquiryDefaults} />
         </div>
       </section>
     </PageShell>

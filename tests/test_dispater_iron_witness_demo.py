@@ -21,7 +21,7 @@ import pytest
 from fastapi.testclient import TestClient
 
 from aurex.api import app
-from aurex.dispater_contracts import OperationalRecord, compute_sha256
+from aurex.dispater_contracts import OperationalRecord
 from aurex.dispater_monitoring import ContinuousMonitoringEngine
 
 

@@ -23,6 +23,9 @@ export const activationEventNames = [
   "page_exit",
   "return_session",
   "support_cta_click",
+  "dispater_request_audit_click",
+  "dispater_book_consultation_click",
+  "dispater_view_demo_click",
 ] as const;
 export type ActivationEventName = (typeof activationEventNames)[number];
 
@@ -32,6 +35,9 @@ export const conversionEventNames: readonly ActivationEventName[] = [
   "quiz_finish",
   "opt_in_request",
   "support_cta_click",
+  "dispater_request_audit_click",
+  "dispater_book_consultation_click",
+  "dispater_view_demo_click",
 ];
 
 export type Attribution = {
@@ -44,7 +50,7 @@ export type Attribution = {
 
 export type ActivationEvent = {
   name: ActivationEventName;
-  page: "home" | "bcxmet" | "xaeli" | "support" | "other";
+  page: "home" | "bcxmet" | "xaeli" | "dispater" | "support" | "other";
   depth?: 25 | 50 | 75 | 100;
   conversion: boolean;
   /** Always "public" for events reaching an adapter; internal-test events are never sent. */
@@ -148,7 +154,9 @@ export function emitActivation(name: ActivationEventName, depth?: 25 | 50 | 75 |
           ? "xaeli"
           : path === "/support"
             ? "support"
-            : "other";
+            : path === "/dispater"
+              ? "dispater"
+              : "other";
   const event: ActivationEvent = {
     name,
     page,

@@ -19,21 +19,14 @@ from aurex.database import (
     list_evidence,
     list_jobs,
 )
-from aurex.dispater_contracts import OperationalRecord
-from aurex.dispater_intelligence import (
-    CalculatorAssumptions,
-    FleetMaintenanceEngine,
-    OperationalValueCalculator,
-    RevenueLeakageEngine,
-)
-from aurex.dispater_monitoring import ContinuousMonitoringEngine
 from aurex.fenced_worker import cancel_job, claim_job, finalize_job
 from aurex.governance_math.industrial_api import router as industrial_demo_router
 from aurex.governance_math.research_api import router as research_advice_router
-from aurex.integrations.onyx import OnyxKnowledgeAdapter
+from aurex.industrial_execution import router as towing_router
 from aurex.integrations.pilot_policy import review_synthetic_pilot
 from aurex.real_offline_probe import execute_sqlite_roundtrip
 from aurex.workflows.budget import BudgetGuard
+from aurex.xaeli_staging import router as xaeli_staging_router
 from aurex_foundation.correlation import CorrelationMiddleware
 from aurex_foundation.opa import evaluate_policy
 
@@ -74,7 +67,9 @@ def authenticate(authorization: str | None = Header(default=None)) -> str:
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Missing or malformed Authorization header",
         )
-    supplied = authorization[7:].strip()
+    supplied = authorization[7:]
+    if not supplied.isascii() or supplied != supplied.strip():
+        raise HTTPException(status_code=401, detail="Malformed authorization credentials")
     if not hmac.compare_digest(supplied, expected):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -86,6 +81,8 @@ def authenticate(authorization: str | None = Header(default=None)) -> str:
 # Opt-in, authenticated, advisory-only mathematics; no capability or authority claims.
 app.include_router(research_advice_router, dependencies=[Depends(authenticate)])
 app.include_router(industrial_demo_router, dependencies=[Depends(authenticate)])
+app.include_router(towing_router, dependencies=[Depends(authenticate)])
+app.include_router(xaeli_staging_router, dependencies=[Depends(authenticate)])
 
 
 class JobCreateRequest(BaseModel):
@@ -364,307 +361,3 @@ def get_budgets(_: str = Depends(authenticate)) -> BudgetResponse:
         spentUsd=float(budget_guard.spent_usd),
         period="month",
     )
-
-
-# --- DISPATER Sovereign Operational Intelligence Endpoints ---
-
-
-
-class DispaterReconciliationRequest(BaseModel):
-    tenant_id: str = "TENANT-COMMERCIAL-01"
-    field_tickets: list[dict[str, Any]] = Field(default_factory=list)
-    invoices: list[dict[str, Any]] = Field(default_factory=list)
-    purchase_orders: list[dict[str, Any]] = Field(default_factory=list)
-    rate_sheets: list[dict[str, Any]] = Field(default_factory=list)
-    is_demo: bool = True
-
-class DispaterValueCalculatorRequest(BaseModel):
-    tenant_id: str = "TENANT-COMMERCIAL-01"
-    assumptions: CalculatorAssumptions = Field(default_factory=CalculatorAssumptions)
-
-@app.post("/v1/dispater/reconciliation")
-def dispater_reconciliation_endpoint(
-    req: DispaterReconciliationRequest,
-    _: str = Depends(authenticate),
-) -> dict[str, Any]:
-    exceptions = RevenueLeakageEngine.evaluate_records(
-        tenant_id=req.tenant_id,
-        field_tickets=req.field_tickets,
-        invoices=req.invoices,
-        purchase_orders=req.purchase_orders,
-        rate_sheets=req.rate_sheets,
-        is_demo=req.is_demo,
-    )
-    total_exposure = sum(e.financial_exposure for e in exceptions)
-    xaeli_findings = RevenueLeakageEngine.convert_to_xaeli_findings(exceptions)
-    return {
-        "tenant_id": req.tenant_id,
-        "is_demo": req.is_demo,
-        "total_exceptions_count": len(exceptions),
-        "total_financial_exposure": round(total_exposure, 2),
-        "exceptions": [e.model_dump() for e in exceptions],
-        "xaeli_findings": [f.model_dump() for f in xaeli_findings],
-    }
-
-@app.get("/v1/dispater/fleet-maintenance")
-def dispater_fleet_maintenance_endpoint(
-    tenant_id: str = "TENANT-COMMERCIAL-01",
-    _: str = Depends(authenticate),
-) -> dict[str, Any]:
-    # Default synthetic fleet dataset
-    synthetic_fleet = [
-        {
-            "equipment_id": "RIG-UNIT-104",
-            "equipment_name": "Heavy Winch Rig 104",
-            "operating_hours": 280.5,
-            "last_service_hours": 0.0,
-            "current_mileage": 12500.0,
-            "last_service_mileage": 2000.0,
-            "has_inspection_record": True,
-            "detected_defects": ["Hydraulic pressure variance"],
-        },
-        {
-            "equipment_id": "TOW-BED-202",
-            "equipment_name": "Rotator Wrecker 202",
-            "operating_hours": 190.0,
-            "last_service_hours": 0.0,
-            "current_mileage": 8900.0,
-            "last_service_mileage": 0.0,
-            "has_inspection_record": True,
-            "detected_defects": [],
-        },
-    ]
-    records = FleetMaintenanceEngine.evaluate_fleet(tenant_id, synthetic_fleet, is_demo=True)
-    return {
-        "tenant_id": tenant_id,
-        "total_units": len(records),
-        "fleet_records": [r.model_dump() for r in records],
-    }
-
-@app.post("/v1/dispater/value-calculator")
-def dispater_value_calculator_endpoint(
-    req: DispaterValueCalculatorRequest,
-    _: str = Depends(authenticate),
-) -> dict[str, Any]:
-    result = OperationalValueCalculator.calculate_value(req.tenant_id, req.assumptions)
-    return result.model_dump()
-
-@app.get("/v1/dispater/dashboard")
-def dispater_dashboard_endpoint(
-    tenant_id: str = "TENANT-COMMERCIAL-01",
-    _: str = Depends(authenticate),
-) -> dict[str, Any]:
-    return {
-        "tenant_id": tenant_id,
-        "data_classification": "SYNTHETIC_STAGING_DEMONSTRATION",
-        "active_jobs_count": 12,
-        "unbilled_tickets_count": 3,
-        "revenue_exposure_usd": 18250.00,
-        "maintenance_alerts_count": 2,
-        "human_approval_queue_count": 4,
-        "evidence_provenance_valid": True,
-    }
-
-
-@app.get("/v1/dispater/findings")
-def dispater_findings_explorer_endpoint(
-    tenant_id: str = "TENANT-COMMERCIAL-01",
-    rule_type: str | None = None,
-    min_exposure: float = 0.0,
-    _: str = Depends(authenticate),
-) -> dict[str, Any]:
-    # Default synthetic demonstration findings
-    synthetic_tickets: list[dict[str, Any]] = [
-        {"ticket_id": "FT-DEMO-101", "po_id": None, "invoice_id": None, "total_amount": 12000.0, "has_customer_signature": False},
-        {"ticket_id": "FT-DEMO-102", "po_id": "PO-900", "invoice_id": "INV-900", "total_amount": 7500.0, "has_customer_signature": True},
-    ]
-    synthetic_invoices = [
-        {"invoice_id": "INV-DEMO-201", "vendor_or_customer": "Acme Energy", "total_amount": 3500.0, "line_items": [{"rate_code": "PUMP-HR", "unit_rate": 350.0, "quantity": 10}]},
-        {"invoice_id": "INV-DEMO-202", "vendor_or_customer": "Acme Energy", "total_amount": 3500.0, "line_items": []},
-    ]
-    synthetic_rates = [{"rate_code": "PUMP-HR", "approved_rate": 250.0}]
-
-    exceptions = RevenueLeakageEngine.evaluate_records(
-        tenant_id=tenant_id,
-        field_tickets=synthetic_tickets,
-        invoices=synthetic_invoices,
-        purchase_orders=[],
-        rate_sheets=synthetic_rates,
-        is_demo=True,
-    )
-
-    filtered = [
-        e for e in exceptions
-        if e.financial_exposure >= min_exposure
-        and (not rule_type or e.rule_type == rule_type)
-    ]
-
-    xaeli_findings = RevenueLeakageEngine.convert_to_xaeli_findings(filtered)
-
-    return {
-        "tenant_id": tenant_id,
-        "query_filter": {"rule_type": rule_type, "min_exposure": min_exposure},
-        "total_findings_count": len(filtered),
-        "total_financial_exposure_usd": round(sum(f.exposure_usd for f in xaeli_findings), 2),
-        "xaeli_findings": [f.model_dump() for f in xaeli_findings],
-        "raw_exceptions": [e.model_dump() for e in filtered],
-    }
-
-
-# --- Continuous Monitoring API Endpoints ---
-
-monitoring_engine = ContinuousMonitoringEngine()
-
-
-class RecordIngestRequest(BaseModel):
-    record_id: str
-    tenant_id: str = "TENANT-COMMERCIAL-01"
-    source: str = "OILFIELD_FIELD_TICKET"
-    payload: dict[str, Any] = Field(default_factory=dict)
-
-
-class AssignActionRequest(BaseModel):
-    tenant_id: str = "TENANT-COMMERCIAL-01"
-    finding_id: str
-    assigned_to: str
-    due_date: str
-
-
-class SubmitRemediationRequest(BaseModel):
-    tenant_id: str = "TENANT-COMMERCIAL-01"
-    action_id: str
-    remediation_notes: str
-    evidence_payload: dict[str, Any] = Field(default_factory=dict)
-
-
-class IndependentRetestRequest(BaseModel):
-    tenant_id: str = "TENANT-COMMERCIAL-01"
-    action_id: str
-    closed_by_human: str | None = None
-    retest_payload: dict[str, Any] = Field(default_factory=dict)
-
-
-@app.post("/v1/dispater/monitoring/records")
-def ingest_monitoring_record_endpoint(
-    req: RecordIngestRequest,
-    _: str = Depends(authenticate),
-) -> dict[str, Any]:
-    rec = OperationalRecord(
-        record_id=req.record_id,
-        tenant_id=req.tenant_id,
-        source=req.source,
-        payload=req.payload,
-    )
-    obs = monitoring_engine.ingest_record(rec)
-    findings = monitoring_engine.evaluate_tenant_monitoring(req.tenant_id)
-    xaeli_findings = monitoring_engine.convert_findings_to_xaeli(findings)
-
-    return {
-        "tenant_id": req.tenant_id,
-        "observation": obs.model_dump(),
-        "total_findings_count": len(findings),
-        "findings": [f.model_dump() for f in findings],
-        "xaeli_findings": [x.model_dump() for x in xaeli_findings],
-    }
-
-
-@app.get("/v1/dispater/monitoring/observations")
-def get_monitoring_observations_endpoint(
-    tenant_id: str = "TENANT-COMMERCIAL-01",
-    _: str = Depends(authenticate),
-) -> dict[str, Any]:
-    obs_list = monitoring_engine.observations.get(tenant_id, [])
-    return {
-        "tenant_id": tenant_id,
-        "total_observations_count": len(obs_list),
-        "observations": [o.model_dump() for o in obs_list],
-    }
-
-
-@app.get("/v1/dispater/monitoring/readiness")
-def get_monitoring_readiness_endpoint(
-    tenant_id: str = "TENANT-COMMERCIAL-01",
-    _: str = Depends(authenticate),
-) -> dict[str, Any]:
-    assessment = monitoring_engine.evaluate_audit_readiness(tenant_id)
-    return assessment.model_dump()
-
-
-@app.post("/v1/dispater/monitoring/corrective-actions")
-def assign_corrective_action_endpoint(
-    req: AssignActionRequest,
-    _: str = Depends(authenticate),
-) -> dict[str, Any]:
-    ca = monitoring_engine.assign_corrective_action(
-        tenant_id=req.tenant_id,
-        finding_id=req.finding_id,
-        assigned_to=req.assigned_to,
-        due_date=req.due_date,
-    )
-    return ca.model_dump()
-
-
-@app.post("/v1/dispater/monitoring/remediation")
-def submit_remediation_endpoint(
-    req: SubmitRemediationRequest,
-    _: str = Depends(authenticate),
-) -> dict[str, Any]:
-    try:
-        ca = monitoring_engine.submit_remediation_evidence(
-            tenant_id=req.tenant_id,
-            action_id=req.action_id,
-            remediation_notes=req.remediation_notes,
-            evidence_payload=req.evidence_payload,
-        )
-        return ca.model_dump()
-    except ValueError as exc:
-        raise HTTPException(status_code=404, detail=str(exc)) from exc
-
-
-@app.post("/v1/dispater/monitoring/retest")
-def execute_retest_endpoint(
-    req: IndependentRetestRequest,
-    _: str = Depends(authenticate),
-) -> dict[str, Any]:
-    retest_rec = OperationalRecord(
-        record_id=f"RETEST-{req.action_id}",
-        tenant_id=req.tenant_id,
-        source="INDEPENDENT_AUDIT_RETEST",
-        payload=req.retest_payload,
-    )
-    try:
-        ca = monitoring_engine.execute_independent_retest(
-            tenant_id=req.tenant_id,
-            action_id=req.action_id,
-            retest_record=retest_rec,
-            closed_by_human=req.closed_by_human,
-        )
-        return ca.model_dump()
-    except PermissionError as exc:
-        raise HTTPException(status_code=403, detail=str(exc)) from exc
-    except ValueError as exc:
-        raise HTTPException(status_code=404, detail=str(exc)) from exc
-
-
-@app.get("/v1/dispater/monitoring/receipt")
-def get_monitoring_receipt_endpoint(
-    tenant_id: str = "TENANT-COMMERCIAL-01",
-    _: str = Depends(authenticate),
-) -> dict[str, Any]:
-    receipt = monitoring_engine.generate_audit_receipt(tenant_id)
-    return receipt.model_dump()
-
-
-# --- Onyx Knowledge Search Endpoint ---
-
-onyx_adapter = OnyxKnowledgeAdapter()
-
-
-@app.get("/v1/dispater/knowledge")
-def dispater_knowledge_search_endpoint(
-    tenant_id: str = "TENANT-COMMERCIAL-01",
-    query: str = "rate sheet",
-    _: str = Depends(authenticate),
-) -> dict[str, Any]:
-    result = onyx_adapter.search_knowledge(tenant_id=tenant_id, query=query)
-    return result.model_dump()
