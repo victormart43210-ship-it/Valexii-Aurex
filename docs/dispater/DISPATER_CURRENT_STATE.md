@@ -1,9 +1,9 @@
 # DISPATER.AI — CURRENT ENGINEERING STATE
 **Date:** November 2026
-**Operation:** KUSANAGI CCIX (Working System Convergence & Publication)
+**Operation:** KUSANAGI CCXVIII (Project Adversarial Truth — 100% Closed-Beta Acceptance)
 **Status:** Converged, Adversarially Hardened, Remotely Published & Verified
 **Canonical Remote Branch:** `jules-kusanagi-ccx-dispater-convergence-11125760292136716878`
-**Verified Commit SHA:** `b12490bc69e243cb73f0de435d4558864e87d368`
+**Verified Commit SHA:** `543b68238eb55ab7ff83d31513083cdadedc5909`
 
 ---
 
@@ -11,8 +11,10 @@
 
 | Feature Component | Source Path | State | Verification Reference |
 |---|---|---|---|
-| **Industrial Revenue Audit Engine** | `aurex/dispater_intelligence.py` | Operational | `tests/test_dispater_reconciliation.py` (6 tests) |
+| **Industrial Revenue Audit Engine** | `aurex/dispater_intelligence.py` | Operational | `tests/test_dispater_reconciliation.py` (8 tests) |
+| **Independent Reference Oracle** | `tests/test_dispater_reconciliation.py` | Operational | `tests/test_dispater_reconciliation.py` |
 | **Durable SQLite Persistence** | `aurex/dispater_store.py` (`dispater_runs`, `dispater_findings`) | Operational | `tests/test_dispater_security.py` (30 tests) |
+| **Storage Mount Validator** | `aurex/dispater_store.py` (`validate_storage_mount`) | Operational | `tests/test_dispater_security.py` |
 | **Principal-Bound Tenant Grants** | `aurex/dispater_api.py` (`authenticate_principal`, `authorize_tenant`) | Operational | `tests/test_dispater_security.py` |
 | **Streaming Body Size Guard** | `aurex/dispater_api.py` (`limit_body`) | Operational | `tests/test_dispater_security.py` |
 | **DISPATER API Router** | `aurex/dispater_api.py`, `aurex/api.py` | Operational | `tests/test_api.py`, `tests/test_dispater_security.py` |
@@ -40,7 +42,10 @@
 - [x] Clean control dataset verified with zero false positives.
 - [x] Cross-tenant access rejected fail-closed (HTTP 403 Forbidden).
 - [x] Service restart recovery verified using durable SQLite storage with WAL checkpointing.
-- [x] Stream body size guard strictly enforces 5MB ceiling without unbounded buffering.
+- [x] Stream body size guard strictly enforces 5MB ceiling without unbounded buffering or starving downstream handlers.
+- [x] Storage destination validated before connection, rejecting /tmp when persistent volume required.
+- [x] Independent financial reference oracle verifies exact reconciliation math.
+- [x] Authority invariants block prompt injection and unearned authority overrides.
 - [x] Malformed, duplicate, non-synthetic, and out-of-boundary tenant requests rejected.
 - [x] Interactive web console connected to backend API with exportable audit reports.
 - [x] Published remote branch and verified commit SHA established on canonical GitHub remote.

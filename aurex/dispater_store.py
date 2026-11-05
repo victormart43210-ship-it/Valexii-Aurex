@@ -59,8 +59,16 @@ class StorageUnavailableError(RuntimeError):
 
 
 def validate_storage_mount(path: str) -> None:
-    """Validate that the target storage path directory exists and is writeable."""
+    """Validate that the target storage path directory exists and is writeable.
+
+    If AUREX_DISPATER_REQUIRE_PERSISTENT is set, rejects ephemeral /tmp directories.
+    """
     directory = os.path.dirname(os.path.abspath(path))
+    if os.environ.get("AUREX_DISPATER_REQUIRE_PERSISTENT") == "1":
+        if directory.startswith("/tmp") or directory == "/tmp":
+            raise StorageUnavailableError(
+                f"Ephemeral storage path '{path}' rejected: persistent volume required by configuration"
+            )
     if not os.path.exists(directory):
         try:
             os.makedirs(directory, exist_ok=True)
@@ -80,13 +88,13 @@ _initialized: set[str] = set()
 
 def _connect() -> sqlite3.Connection:
     path = db_path()
+    validate_storage_mount(path)
     conn = sqlite3.connect(path, timeout=30, isolation_level=None)
     conn.row_factory = sqlite3.Row
     conn.execute("PRAGMA foreign_keys=ON")
     conn.execute("PRAGMA busy_timeout=30000")
     if path not in _initialized:
         with _init_lock:
-            validate_storage_mount(path)
             conn.execute("PRAGMA journal_mode=WAL")
             conn.executescript(_SCHEMA)
             _initialized.add(path)

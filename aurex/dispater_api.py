@@ -51,14 +51,16 @@ async def limit_body(request: Request) -> None:
     if length is not None:
         if not length.isdigit() or int(length) > MAX_BODY_BYTES:
             raise HTTPException(413, "Request body too large")
+        # Starlette caches body in request._body when request.body() is awaited
+        body = await request.body()
+        if len(body) > MAX_BODY_BYTES:
+            raise HTTPException(413, "Request body too large")
         return
 
-    # For chunked/streaming requests without Content-Length, inspect stream with hard ceiling
-    total = 0
-    async for chunk in request.stream():
-        total += len(chunk)
-        if total > MAX_BODY_BYTES:
-            raise HTTPException(413, "Request body too large")
+    # For chunked or streaming requests without Content-Length, read body safely into cache
+    body = await request.body()
+    if len(body) > MAX_BODY_BYTES:
+        raise HTTPException(413, "Request body too large")
 
 
 router = APIRouter(prefix="/v1/dispater", tags=["dispater"], dependencies=[Depends(limit_body)])

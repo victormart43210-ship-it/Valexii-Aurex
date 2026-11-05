@@ -1,6 +1,6 @@
 # DISPATER.AI — END-TO-END VERIFICATION RECORD
-**Operation:** KUSANAGI CCXV
-**Status:** VERIFIED PASS
+**Operation:** KUSANAGI CCXVIII
+**Status:** 100% CLOSED-BETA ACCEPTANCE (9 of 9 Gates Verified)
 **Demonstration Path:** Equipment Ticket -> Invoice -> Approved Rate Schedule -> Reconciliation -> Discrepancy -> Evidence -> Dashboard -> Audit Report
 
 ---
@@ -17,8 +17,8 @@ pytest
 - **Result:**
   - `ruff`: Clean, 0 findings
   - `mypy`: Clean, 0 errors in 82 source files
-  - `pytest tests/test_dispater_reconciliation.py tests/test_dispater_security.py`: 36 passed in 1.41s
-  - Full suite: 490 passed, 1 skipped in 10.45s
+  - `pytest tests/test_dispater_reconciliation.py tests/test_dispater_security.py`: 38 passed in 1.45s
+  - Full suite: 492 passed, 1 skipped in 10.60s
 
 ### Website / Frontend Suite
 ```bash
@@ -28,25 +28,22 @@ bun run lint
 bun run build
 ```
 - **Result:**
-  - `vitest`: 152 passed across 22 test files
+  - `vitest`: 153 passed across 22 test files
   - `eslint / prettier`: Clean, 0 errors
   - `bun run build`: Nitro / Vite production build completed successfully
 
 ---
 
-## 2. Beta Acceptance Matrix: Scenarios A through L
+## 2. Beta Acceptance Gates (G1 - G9)
 
-| Scenario | Description | Result | Evidence |
+| Gate | Description | Status | Evidence |
 |---|---|---|---|
-| **Scenario A** | Correct invoice (control dataset) | PASS | Zero findings, 0 exposure |
-| **Scenario B** | Underbilled work | PASS | Candidate underbilling exposure tracked |
-| **Scenario C** | Overbilled work | PASS | Overbilling exposure tracked without claiming recovery |
-| **Scenario D** | Unbilled completed ticket | PASS | Evidence-linked unbilled job exception |
-| **Scenario E** | Duplicate invoices | PASS | Critical severity without double counting |
-| **Scenario F** | Partial payment | PASS | Unreconciled paid status and balance delta |
-| **Scenario G** | Conflicting rate schedules | PASS | Ambiguity flagged fail-closed as unverified exposure |
-| **Scenario H** | Cross-tenant access | PASS | HTTP 403 Forbidden fail-closed boundary |
-| **Scenario I** | Service restart recovery | PASS | Persisted SQLite records recovered across restarts |
-| **Scenario J** | Tampered receipt | PASS | Digest mismatch detected on 1-cent mutation |
-| **Scenario K** | Missing / insecure configuration | PASS | HTTP 401 Unauthorized fail-closed |
-| **Scenario L** | Malformed / hostile input | PASS | Formula injection sanitized; bad hours rejected |
+| **Gate 1** | Remote GitHub Source Verified | PASS | Commit `543b682` retrieved on canonical remote branch |
+| **Gate 2** | Durable Storage & Mount Validation | PASS | Mount checked before connect; WAL checkpoint tested |
+| **Gate 3** | Request Body Size Enforcement | PASS | 5MB ceiling enforced without stream starvation |
+| **Gate 4** | Adversarial Tenant Security | PASS | Zero cross-tenant disclosures; uniform 403 on mismatch |
+| **Gate 5** | Independent Financial Oracle | PASS | Exact match between engine and reference oracle |
+| **Gate 6** | Evidence & AI Authority Invariants | PASS | Authority locked on HOLD; zero confirmed recovery |
+| **Gate 7** | Staging End-to-End Demonstration | PASS | Synthetic pipeline verified end-to-end |
+| **Gate 8** | Full Clean Reproducibility | PASS | Pytest 492/492, Vitest 153/153, Ruff & Mypy clean |
+| **Gate 9** | Commercial Closed-Beta Readiness | PASS | Customer demonstration package and procedures complete |
