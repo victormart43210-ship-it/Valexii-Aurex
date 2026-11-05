@@ -9,6 +9,7 @@ License-File: LICENSE
 Requires-Dist: pydantic<3,>=2.9
 Requires-Dist: fastapi<1,>=0.115
 Requires-Dist: uvicorn<1,>=0.32
+Requires-Dist: cryptography<47,>=46.0.5
 Provides-Extra: dev
 Requires-Dist: pytest<9,>=8; extra == "dev"
 Requires-Dist: ruff<1,>=0.8; extra == "dev"

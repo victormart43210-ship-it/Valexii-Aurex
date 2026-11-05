@@ -1,0 +1,34 @@
+{
+  "repository": "victormart43210-ship-it/Valexii-Aurex",
+  "branch": "copilot/dispater-global-recon",
+  "base_commit": "99af5fd8a2c1340bcf5d2eda03bb6dbe65e5a661",
+  "final_commit": "see PR head",
+  "stage_completed": "1 (reconnaissance) only",
+  "files_changed": [
+    "docs/dispater/COPILOT_GLOBAL_RECONNAISSANCE.md",
+    "docs/operations/COPILOT_DISPATER_HANDOFF.json"
+  ],
+  "dependencies_introduced": [],
+  "license_decisions": [],
+  "test_commands": [
+    {"cmd": "pytest tests -q", "base": "99af5fd", "result": "433 passed, 1 skipped"},
+    {"cmd": "ruff check .", "base": "99af5fd", "result": "All checks passed"}
+  ],
+  "security_findings": [],
+  "financial_verification_results": "not performed",
+  "known_limitations": [
+    "Engine/store/API/console exist only in unmerged draft PRs #162 and #163",
+    "OSS technology matrix, license review and other required deliverables not produced",
+    "No tests run against PR #162/#163 heads by this session"
+  ],
+  "deployment_status": "none; production HOLD",
+  "open_blockers": [
+    "Merge/retarget decision for #162 and #163",
+    "Owner decisions: duplicate-exposure semantic, RECEIPT_KEYS/ACTIVE_KID, nonce policy"
+  ],
+  "recommended_next_actions": [
+    "Human decides on #162/#163 integration",
+    "Stage 2 contract freeze stacked on result",
+    "Produce OSS matrix with pinned commits and licenses"
+  ]
+}
