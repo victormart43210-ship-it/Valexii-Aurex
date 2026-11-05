@@ -54,3 +54,18 @@ bun run build
 8. **Export Audit-Ready Report:** Download JSON report with cryptographic SHA-256 seal.
 9. **Repeatability Verification:** Re-executing identical input produces identical `receipt_sha256`.
 10. **Clean Control Dataset:** Control dataset produces 0 findings, confirming 0 false positives.
+
+## KUSANAGI CCXIII verification (Copilot, local run)
+
+| Gate | Result |
+|---|---|
+| `python -m pytest -q` | 490 passed, 1 skipped (baseline on PR #159: 459 passed, 2 skipped) |
+| `ruff check .` | All checks passed |
+| `mypy aurex --strict` | no issues in 82 source files |
+| website `vitest run` | 22 files, 153 tests passed (`bun` unavailable; vitest via npm) |
+| website `vite build` | succeeded |
+
+New adversarial coverage: `tests/test_dispater_security.py`, `website/src/lib/dispater.test.ts`
+(cross-tenant read/write, overwrite, restart recovery, idempotent replay, tamper detection, sanitized errors,
+missing config, malformed money, partial payments, formula injection, authority disabled).
+Not run: staging deployment, live-browser/mobile checks, independent clean-checkout CI. Status: NOT VERIFIED independently.

@@ -29,3 +29,22 @@
 ### Input Bounds & Memory Denial of Service
 - **Defense:** Max 2,000 records per category (`jobs`, `invoices`, `rates`, `payments`). Rejects oversized requests fail-closed.
 - **Verification:** `_validate_rows` enforces bound limits and strict key checks.
+
+## KUSANAGI CCXIII additions (Copilot)
+
+- **Tenant authorization (fail closed):** `AUREX_DISPATER_TENANT_GRANTS` is a JSON object mapping
+  the SHA-256 hex of a bearer token to a list of tenant IDs. Missing/malformed config => 503 (all denied).
+  The shared `AUREX_SERVICE_TOKEN` grants no DISPATER tenant access.
+- A request's `tenant_id` is a selector only; unauthorized tenants receive a uniform 403 whether or not they exist.
+  Run lookups are tenant-scoped (cross-tenant run IDs return 404).
+- Inputs bounded: 2000 rows/list, 256 chars/field, 5 MB declared Content-Length, strict tenant pattern.
+  Chunked bodies without Content-Length rely on row/field caps; a reverse-proxy body limit is still recommended.
+- Errors: unexpected exceptions return `Internal DISPATER error`; details are logged server-side only.
+- Integrity: stored reports are re-verified against `receipt_sha256` on every read (mismatch => 500, sanitized).
+- CSV export neutralizes formula-leading characters.
+- Remaining: no token rotation/expiry, no rate limiting, no audit log of access, SQLite single-node only.
+
+### Migration / rollback
+Tables are created idempotently on first use in `AUREX_DISPATER_DB` (default `/tmp/aurex_dispater.db`; set a
+persistent path in staging). Rollback: stop service, drop `dispater_findings` and `dispater_runs` or delete the file.
+Retention: `aurex.dispater_store.purge_tenant(tenant_id, older_than_days=None)` (operator-invoked; no HTTP endpoint).
