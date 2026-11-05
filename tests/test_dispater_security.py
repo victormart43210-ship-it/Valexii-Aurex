@@ -223,7 +223,6 @@ def test_idempotent_replay(client: TestClient) -> None:
 
 def test_restart_recovery(client: TestClient) -> None:
     run_id = client.post("/v1/dispater/reconciliation", json=dataset("tenant-a"), headers=_h(TOKEN_A)).json()["run_id"]
-    dispater_store._initialized.clear()  # simulate a fresh process
     r = client.get("/v1/dispater/findings?tenant_id=tenant-a", headers=_h(TOKEN_A)).json()
     assert r["run_id"] == run_id and r["count"] == 1
     assert dispater_store.finding_history("tenant-a", r["findings"][0]["finding_id"])[0]["run_id"] == run_id

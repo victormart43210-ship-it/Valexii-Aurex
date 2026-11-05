@@ -12,6 +12,7 @@ Rollback: stop the service and drop `dispater_findings`, `dispater_runs`
 from __future__ import annotations
 
 import json
+import logging
 import os
 import sqlite3
 import threading
@@ -21,6 +22,8 @@ from datetime import UTC, datetime, timedelta
 from typing import Any
 
 from aurex.dispater_intelligence import verify_receipt
+
+logger = logging.getLogger("aurex.dispater")
 
 DEFAULT_DISPATER_DB = os.environ.get("AUREX_DISPATER_DB", "/data/aurex_dispater.db" if os.path.isdir("/data") else "/tmp/aurex_dispater.db")
 
@@ -58,17 +61,32 @@ class StorageUnavailableError(RuntimeError):
     """Raised when persistent storage directory is unwriteable or missing when required."""
 
 
-def validate_storage_mount(path: str) -> None:
-    """Validate that the target storage path directory exists and is writeable.
+_EPHEMERAL_ROOTS = ("/tmp", "/var/tmp", "/dev/shm", "/run/shm")
 
-    If AUREX_DISPATER_REQUIRE_PERSISTENT is set, rejects ephemeral /tmp directories.
+
+def persistence_required() -> bool:
+    """Explicit opt-in/out wins; otherwise a Railway runtime requires a durable volume."""
+    explicit = os.environ.get("AUREX_DISPATER_REQUIRE_PERSISTENT")
+    if explicit in ("0", "1"):
+        return explicit == "1"
+    return bool(os.environ.get("RAILWAY_ENVIRONMENT") or os.environ.get("RAILWAY_ENVIRONMENT_NAME"))
+
+
+def _is_ephemeral(directory: str) -> bool:
+    real = os.path.realpath(directory)
+    return any(real == root or real.startswith(root + os.sep) for root in _EPHEMERAL_ROOTS)
+
+
+def validate_storage_mount(path: str) -> None:
+    """Validate that the target storage directory exists and is writeable.
+
+    When persistence is required, ephemeral locations (after symlink resolution) are rejected.
     """
     directory = os.path.dirname(os.path.abspath(path))
-    if os.environ.get("AUREX_DISPATER_REQUIRE_PERSISTENT") == "1":
-        if directory.startswith("/tmp") or directory == "/tmp":
-            raise StorageUnavailableError(
-                f"Ephemeral storage path '{path}' rejected: persistent volume required by configuration"
-            )
+    if persistence_required() and _is_ephemeral(directory):
+        raise StorageUnavailableError(
+            f"Ephemeral storage path '{path}' rejected: persistent volume required by configuration"
+        )
     if not os.path.exists(directory):
         try:
             os.makedirs(directory, exist_ok=True)
@@ -76,6 +94,8 @@ def validate_storage_mount(path: str) -> None:
             raise StorageUnavailableError(f"Persistent storage directory '{directory}' is not accessible") from exc
     if not os.access(directory, os.W_OK):
         raise StorageUnavailableError(f"Persistent storage directory '{directory}' is not writeable")
+    if _is_ephemeral(directory):
+        logger.warning("DISPATER store is on ephemeral storage (%s); records will not survive restarts", directory)
 
 
 def db_path() -> str:
@@ -83,7 +103,6 @@ def db_path() -> str:
 
 
 _init_lock = threading.Lock()
-_initialized: set[str] = set()
 
 
 def _connect() -> sqlite3.Connection:
@@ -93,11 +112,18 @@ def _connect() -> sqlite3.Connection:
     conn.row_factory = sqlite3.Row
     conn.execute("PRAGMA foreign_keys=ON")
     conn.execute("PRAGMA busy_timeout=30000")
-    if path not in _initialized:
+    conn.execute("PRAGMA synchronous=FULL")
+    # No process-level cache: a replaced or recreated file must always be re-validated.
+    mode = conn.execute("PRAGMA journal_mode=WAL").fetchone()[0]
+    if str(mode).lower() != "wal":
+        conn.close()
+        raise StorageUnavailableError(f"SQLite WAL mode unavailable (got '{mode}')")
+    present = conn.execute(
+        "SELECT 1 FROM sqlite_master WHERE type='table' AND name='dispater_runs'"
+    ).fetchone()
+    if present is None:
         with _init_lock:
-            conn.execute("PRAGMA journal_mode=WAL")
             conn.executescript(_SCHEMA)
-            _initialized.add(path)
     return conn
 
 

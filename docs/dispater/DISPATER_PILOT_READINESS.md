@@ -36,3 +36,8 @@ The commercial ROI framework distinguishes:
 | Security Controls | **READY** | Formula injection defenses, stream body bounds & tenant isolation |
 | Live Customer Telemetry | **PENDING AGREEMENT** | Requires counter-signed pilot agreement and API credentials |
 | Production Release | **HOLD** | Requires owner authorization before main deployment |
+
+## CCXIII status
+Beta candidate for independent review only. Blockers before any pilot: independent verification, persistent
+volume + tenant grants provisioned in staging, rate limiting, access audit log, owner approval. Production: HOLD.
+Exposure is split into potential underbilling / potential overbilling / unverified; human-confirmed and recovered stay `0.00`.
