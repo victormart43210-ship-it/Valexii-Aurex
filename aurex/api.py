@@ -19,6 +19,7 @@ from aurex.database import (
     list_evidence,
     list_jobs,
 )
+from aurex.dispater_api import BodyLimitMiddleware
 from aurex.dispater_api import router as dispater_router
 from aurex.fenced_worker import cancel_job, claim_job, finalize_job
 from aurex.governance_math.industrial_api import router as industrial_demo_router
@@ -38,6 +39,7 @@ app = FastAPI(
 )
 
 app.add_middleware(CorrelationMiddleware)
+app.add_middleware(BodyLimitMiddleware)
 
 budget_guard = BudgetGuard(limit_usd=Decimal("0.00"))
 

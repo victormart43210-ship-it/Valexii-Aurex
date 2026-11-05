@@ -1,9 +1,9 @@
 # DISPATER.AI — CURRENT ENGINEERING STATE
 **Date:** November 2026
-**Operation:** KUSANAGI CCXVIII (Project Adversarial Truth — 100% Closed-Beta Acceptance)
+**Operation:** KUSANAGI CCXX (Project Sovereign Mainline — Canonical Recovery & Final Beta Convergence)
 **Status:** Converged, Adversarially Hardened, Remotely Published & Verified
 **Canonical Remote Branch:** `jules-kusanagi-ccx-dispater-convergence-11125760292136716878`
-**Verified Commit SHA:** `543b68238eb55ab7ff83d31513083cdadedc5909`
+**Verified Commit SHA:** `0f96a52c37e54cc69253c3d48103f2364c9d1116`
 
 ---
 
@@ -16,7 +16,7 @@
 | **Durable SQLite Persistence** | `aurex/dispater_store.py` (`dispater_runs`, `dispater_findings`) | Operational | `tests/test_dispater_security.py` (30 tests) |
 | **Storage Mount Validator** | `aurex/dispater_store.py` (`validate_storage_mount`) | Operational | `tests/test_dispater_security.py` |
 | **Principal-Bound Tenant Grants** | `aurex/dispater_api.py` (`authenticate_principal`, `authorize_tenant`) | Operational | `tests/test_dispater_security.py` |
-| **Streaming Body Size Guard** | `aurex/dispater_api.py` (`limit_body`) | Operational | `tests/test_dispater_security.py` |
+| **Raw ASGI Stream Body Limit** | `aurex/dispater_api.py` (`BodyLimitMiddleware`) | Operational | `tests/test_dispater_body_limit.py` (6 tests) |
 | **DISPATER API Router** | `aurex/dispater_api.py`, `aurex/api.py` | Operational | `tests/test_api.py`, `tests/test_dispater_security.py` |
 | **Reconciliation Console** | `website/src/components/dispater-reconciliation-console.tsx` | Operational | `cd website && bun run build` |
 | **Server-Only API Bridge** | `website/src/lib/dispater.server.ts`, `website/src/lib/dispater.functions.ts` | Operational | `cd website && bun run build`, `src/lib/dispater.test.ts` |
@@ -42,7 +42,7 @@
 - [x] Clean control dataset verified with zero false positives.
 - [x] Cross-tenant access rejected fail-closed (HTTP 403 Forbidden).
 - [x] Service restart recovery verified using durable SQLite storage with WAL checkpointing.
-- [x] Stream body size guard strictly enforces 5MB ceiling without unbounded buffering or starving downstream handlers.
+- [x] Raw ASGI stream body limit (`BodyLimitMiddleware`) strictly enforces 5MB ceiling before parsing.
 - [x] Storage destination validated before connection, rejecting /tmp when persistent volume required.
 - [x] Independent financial reference oracle verifies exact reconciliation math.
 - [x] Authority invariants block prompt injection and unearned authority overrides.

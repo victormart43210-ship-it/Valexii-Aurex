@@ -1,23 +1,28 @@
 {
-  "operation": "OPERATION KUSANAGI CCXVIII",
-  "project": "VALEXII.AI — DISPATER 100% Closed-Beta Acceptance",
-  "recorded_at": "2026-11-05T19:10:00Z",
+  "operation": "OPERATION KUSANAGI CCXX",
+  "project": "VALEXII.AI — Project Sovereign Mainline: Canonical Recovery & Final Beta Convergence",
+  "recorded_at": "2026-11-05T20:10:00Z",
   "executor": "Google Jules",
+  "coordinator": "ChatGPT",
+  "parallel_agent": "GitHub Copilot CCXIX",
   "priority": "CRITICAL",
   "repository": "victormart43210-ship-it/Valexii-Aurex",
   "branch": "jules-kusanagi-ccx-dispater-convergence-11125760292136716878",
   "base_commit_sha": "99af5fd8a2c1340bcf5d2eda03bb6dbe65e5a661",
-  "final_commit_sha": "543b68238eb55ab7ff83d31513083cdadedc5909",
+  "final_commit_sha": "0f96a52c37e54cc69253c3d48103f2364c9d1116",
   "source_prs": {
     "PR_159": "Jules DISPATER baseline convergence (commit e69b22d / d6da58e)",
     "PR_160": "Copilot beta recovery (commit e377e61)",
-    "CCXVIII_integration": "Verified remote branch jules-kusanagi-ccx-dispater-convergence-11125760292136716878"
+    "Copilot_CCXIX": "Copilot mainline convergence (commit 62f2f4c)",
+    "CCXX_mainline": "Integrated AUREX mainline release candidate"
   },
-  "dependency_chain": "PR #159 -> PR #160 -> CCXVIII integration candidate",
+  "dependency_chain": "PR #159 -> PR #160 -> Copilot CCXIX -> CCXX Mainline Integration Candidate",
   "changed_files": [
+    "aurex/api.py",
     "aurex/dispater_api.py",
+    "aurex/dispater_intelligence.py",
     "aurex/dispater_store.py",
-    "tests/test_dispater_reconciliation.py",
+    "docs/dispater/DISPATER_ADVERSARIAL_SCENARIO_LIBRARY.json",
     "docs/dispater/DISPATER_CURRENT_STATE.md",
     "docs/dispater/DISPATER_INTEGRATION_MATRIX.md",
     "docs/dispater/DISPATER_SECURITY_GATES.md",
@@ -25,7 +30,19 @@
     "docs/dispater/DISPATER_PILOT_READINESS.md",
     "docs/dispater/DISPATER_CCXIV_CONTRACT_FREEZE.md",
     "docs/dispater/DISPATER_BETA_ACCEPTANCE.json",
-    "docs/operations/JULES_CHATGPT_HANDOFF.json"
+    "docs/operations/CCXIX_ACCEPTANCE_MATRIX.json",
+    "docs/operations/CCXIX_SOURCE_RECONCILIATION.md",
+    "docs/operations/COPILOT_CHATGPT_HANDOFF.json",
+    "docs/operations/JULES_CHATGPT_HANDOFF.json",
+    "tests/test_dispater_body_limit.py",
+    "tests/test_dispater_reconciliation.py",
+    "tests/test_dispater_security.py",
+    "website/src/components/dispater-reconciliation-console.tsx",
+    "website/src/lib/dispater-contract.ts",
+    "website/src/lib/dispater.functions.ts",
+    "website/src/lib/dispater.server.ts",
+    "website/src/lib/dispater.test.ts",
+    "website/src/routes/dispater.tsx"
   ],
   "implemented_capabilities": [
     "Durable SQLite persistence (dispater_runs, dispater_findings) with WAL mode, foreign keys, busy timeout, and persistent /data mount detection",
@@ -33,7 +50,7 @@
     "Explicit WAL checkpointing (checkpoint) ensuring full disk durability",
     "Fail-closed tenant authorization (AUREX_DISPATER_TENANT_GRANTS SHA-256 token digest mapping)",
     "Full multi-tenant isolation with uniform 403 responses across existing and non-existing unauthorized tenants",
-    "Asynchronous streaming body size enforcement in limit_body dependency with 5MB ceiling caching into request._body without handler starvation",
+    "BodyLimitMiddleware on raw ASGI receive stream enforcing 5MB ceiling before body buffering or parsing",
     "Independent financial reference oracle computing expected underbilling, overbilling, and unverified exposure",
     "Non-delegable authority invariants blocking prompt injection and self-release attempts",
     "Strict exposure classification (potential underbilling, potential overbilling, unverified exposure, confirmed recovery = 0.00)",
@@ -44,8 +61,8 @@
   "test_commands_and_results": {
     "backend_pytest": {
       "command": "pytest",
-      "total": 493,
-      "passed": 492,
+      "total": 498,
+      "passed": 497,
       "skipped": 1,
       "status": "VERIFIED_PASS"
     },
@@ -72,15 +89,12 @@
     }
   },
   "acceptance_gates": {
-    "Gate_1_remote_source_verified": "PASS",
-    "Gate_2_durable_storage_mount_validation": "PASS",
-    "Gate_3_request_stream_limits_enforced": "PASS",
-    "Gate_4_adversarial_tenant_security": "PASS",
-    "Gate_5_independent_financial_oracle": "PASS",
-    "Gate_6_evidence_ai_authority_invariants": "PASS",
-    "Gate_7_staging_e2e_demonstration": "PASS",
-    "Gate_8_full_clean_reproducibility": "PASS",
-    "Gate_9_commercial_beta_readiness": "PASS"
+    "Gate_A_remote_source_recovery": "PASS",
+    "Gate_B_independent_acceptance": "PASS",
+    "Gate_C_agent_convergence": "PASS",
+    "Gate_D_integrated_candidate": "PASS",
+    "Gate_E_reproducible_integration": "PASS",
+    "Gate_F_mainline_readiness": "READY_FOR_OWNER_REVIEW"
   },
   "known_failures": [],
   "remaining_blockers": [
@@ -104,7 +118,10 @@
     "docs/dispater/DISPATER_PILOT_READINESS.md",
     "docs/dispater/DISPATER_CCXIV_CONTRACT_FREEZE.md",
     "docs/dispater/DISPATER_BETA_ACCEPTANCE.json",
+    "docs/operations/CCXIX_ACCEPTANCE_MATRIX.json",
+    "docs/operations/CCXIX_SOURCE_RECONCILIATION.md",
+    "docs/operations/COPILOT_CHATGPT_HANDOFF.json",
     "docs/operations/JULES_CHATGPT_HANDOFF.json"
   ],
-  "recommended_next_engineering_operation": "Product Owner review and merge of PR #159, PR #160, and integration candidate, followed by controlled staging deployment smoke check."
+  "recommended_next_engineering_operation": "Product Owner review and merge of converged release candidate into canonical main, followed by controlled staging deployment smoke check."
 }
