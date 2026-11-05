@@ -23,6 +23,12 @@ from decimal import Decimal, InvalidOperation
 from typing import Any
 
 SCHEMA = "dispater.synthetic.revenue_intelligence.v1"
+MAX_FIELD_LEN = 256
+SEVERITY_RANK = {"CRITICAL": 0, "HIGH": 1, "MEDIUM": 2, "LOW": 3}
+# Exposure classes: potential_* and unverified are candidates only; none is recovered revenue.
+UNDERBILLING = "POTENTIAL_UNDERBILLING"
+OVERBILLING = "POTENTIAL_OVERBILLING"
+UNVERIFIED = "UNVERIFIED_EXPOSURE"
 
 
 class InvalidSnapshot(ValueError):
@@ -84,6 +90,8 @@ def _validate_rows(
         for k, v in row.items():
             if not isinstance(v, str):
                 raise InvalidSnapshot(f"'{key}[{idx}].{k}' must be a string")
+            if len(v) > MAX_FIELD_LEN:
+                raise InvalidSnapshot(f"'{key}[{idx}].{k}' exceeds {MAX_FIELD_LEN} characters")
             cleaned[k] = sanitize_formula_field(v.strip())
         cleaned_rows.append(cleaned)
     return cleaned_rows
@@ -173,7 +181,7 @@ class RevenueLeakageEngine:
             by_invoice_payments[p["invoice_id"]].append(p)
 
         findings: list[dict[str, Any]] = []
-        identified_exposure = Decimal("0.00")
+        totals = {UNDERBILLING: Decimal("0.00"), OVERBILLING: Decimal("0.00"), UNVERIFIED: Decimal("0.00")}
 
         job_ids = {j["job_id"] for j in jobs}
         invoice_ids = {inv["invoice_id"] for inv in invoices}
@@ -196,9 +204,10 @@ class RevenueLeakageEngine:
                     and parse_date(r["start"]) <= j_date <= parse_date(r["end"])
                 ]
                 potential_val = parse_money(applicable_rates[0]["amount"]) if len(applicable_rates) == 1 else Decimal("0.00")
-                identified_exposure += potential_val
+                totals[UNDERBILLING] += potential_val
                 findings.append(
                     self._create_finding(
+                        exposure_class=UNDERBILLING,
                         code="UNBILLED_JOB",
                         subject=j_id,
                         severity="HIGH",
@@ -215,10 +224,11 @@ class RevenueLeakageEngine:
             # Duplicate / Multiple invoices
             if len(relevant_invoices) > 1:
                 dup_exposure = sum((parse_money(inv["amount"]) for inv in relevant_invoices[1:]), Decimal("0.00"))
-                identified_exposure += dup_exposure
+                totals[OVERBILLING] += dup_exposure
                 evidence_records = [("job", job)] + [("invoice", inv) for inv in relevant_invoices]
                 findings.append(
                     self._create_finding(
+                        exposure_class=OVERBILLING,
                         code="MULTIPLE_INVOICES",
                         subject=j_id,
                         severity="CRITICAL",
@@ -243,6 +253,7 @@ class RevenueLeakageEngine:
             if len(active_rates) == 0:
                 findings.append(
                     self._create_finding(
+                        exposure_class=UNVERIFIED,
                         code="RATE_UNVERIFIED",
                         subject=j_id,
                         severity="MEDIUM",
@@ -259,6 +270,7 @@ class RevenueLeakageEngine:
                 evidence_records = [("job", job)] + [("rate", r) for r in active_rates]
                 findings.append(
                     self._create_finding(
+                        exposure_class=UNVERIFIED,
                         code="AMBIGUOUS_RATE",
                         subject=j_id,
                         severity="MEDIUM",
@@ -280,9 +292,11 @@ class RevenueLeakageEngine:
                 diff = billed_amt - expected_amt
                 if diff != Decimal("0.00"):
                     abs_diff = abs(diff)
-                    identified_exposure += abs_diff
+                    exposure_class = UNDERBILLING if diff < 0 else OVERBILLING
+                    totals[exposure_class] += abs_diff
                     findings.append(
                         self._create_finding(
+                            exposure_class=exposure_class,
                             code="RATE_MISMATCH",
                             subject=target_inv["invoice_id"],
                             severity="HIGH" if abs_diff > Decimal("100.00") else "MEDIUM",
@@ -300,8 +314,10 @@ class RevenueLeakageEngine:
         for inv in invoices:
             inv_id = inv["invoice_id"]
             if inv["job_id"] not in job_ids:
+                totals[UNVERIFIED] += parse_money(inv["amount"])
                 findings.append(
                     self._create_finding(
+                        exposure_class=UNVERIFIED,
                         code="ORPHAN_INVOICE",
                         subject=inv_id,
                         severity="HIGH",
@@ -315,38 +331,47 @@ class RevenueLeakageEngine:
                     )
                 )
 
-            if inv["status"] == "paid":
-                payments_for_inv = by_invoice_payments[inv_id]
-                total_paid = sum((parse_money(p["amount"]) for p in payments_for_inv), Decimal("0.00"))
-                billed = parse_money(inv["amount"])
-                if total_paid != billed:
-                    delta = total_paid - billed
-                    abs_delta = abs(delta)
-                    identified_exposure += abs_delta
-                    evidence_records = [("invoice", inv)] + [("payment", p) for p in payments_for_inv]
-                    findings.append(
-                        self._create_finding(
-                            code="PAID_STATUS_UNRECONCILED",
-                            subject=inv_id,
-                            severity="HIGH",
-                            records=evidence_records,
-                            exposure=abs_delta,
-                            now=f"Invoice {inv_id} marked paid but payments total ${total_paid} vs billed ${billed} (delta ${delta:+}).",
-                            changed="General ledger status out of balance with cash application records.",
-                            next_action="Review remittance advice and post missing payment or short-pay adjustment.",
-                            why="Unreconciled paid statuses misstate accounts receivable and cash flow.",
-                            proof=f"Invoice SHA:{digest(inv)[:12]}, Payments: {len(payments_for_inv)} records",
-                        )
+            payments_for_inv = by_invoice_payments[inv_id]
+            total_paid = sum((parse_money(p["amount"]) for p in payments_for_inv), Decimal("0.00"))
+            billed = parse_money(inv["amount"])
+            delta = total_paid - billed
+            code = None
+            if inv["status"] == "paid" and delta != 0:
+                code = "PAID_STATUS_UNRECONCILED"
+            elif inv["status"] != "paid" and delta > 0:
+                code = "OVERPAYMENT"
+            elif inv["status"] != "paid" and total_paid > 0 and delta < 0:
+                code = "PARTIAL_PAYMENT"
+            if code:
+                abs_delta = abs(delta)
+                # Payment shortfalls and surpluses are cash-application questions, never confirmed.
+                totals[UNVERIFIED] += abs_delta
+                evidence_records = [("invoice", inv)] + [("payment", p) for p in payments_for_inv]
+                findings.append(
+                    self._create_finding(
+                        exposure_class=UNVERIFIED,
+                        code=code,
+                        subject=inv_id,
+                        severity="HIGH" if code == "PAID_STATUS_UNRECONCILED" else "MEDIUM",
+                        records=evidence_records,
+                        exposure=abs_delta,
+                        now=f"Invoice {inv_id} ({inv['status']}) payments total ${total_paid} vs billed ${billed} (delta ${delta:+}).",
+                        changed="General ledger status out of balance with cash application records.",
+                        next_action="Review remittance advice and post missing payment, refund, or short-pay adjustment.",
+                        why="Unreconciled payment status misstates accounts receivable and cash flow.",
+                        proof=f"Invoice SHA:{digest(inv)[:12]}, Payments: {len(payments_for_inv)} records",
                     )
+                )
 
         # 3. Payment-level evaluation (orphan payments)
         for payment in payments:
             p_id = payment["payment_id"]
             if payment["invoice_id"] not in invoice_ids:
                 p_amt = parse_money(payment["amount"])
-                identified_exposure += p_amt
+                totals[UNVERIFIED] += p_amt
                 findings.append(
                     self._create_finding(
+                        exposure_class=UNVERIFIED,
                         code="ORPHAN_PAYMENT",
                         subject=p_id,
                         severity="MEDIUM",
@@ -360,7 +385,8 @@ class RevenueLeakageEngine:
                     )
                 )
 
-        findings.sort(key=lambda x: (x["severity"], x["code"], x["subject"]))
+        findings.sort(key=lambda x: (SEVERITY_RANK[x["severity"]], x["code"], x["subject"]))
+        identified_exposure = sum(totals.values(), Decimal("0.00"))
 
         audit_summary = {
             "schema": SCHEMA,
@@ -378,6 +404,10 @@ class RevenueLeakageEngine:
             },
             "financial_summary": {
                 "identified_exposure_usd": str(identified_exposure),
+                "potential_underbilling_usd": str(totals[UNDERBILLING]),
+                "potential_overbilling_usd": str(totals[OVERBILLING]),
+                "unverified_exposure_usd": str(totals[UNVERIFIED]),
+                "human_confirmed_discrepancy_usd": "0.00",
                 "confirmed_recovery_usd": "0.00",
                 "recovery_rate_disclaimer": "Identified exposure is a candidate for human review, not confirmed recovery.",
             },
@@ -392,6 +422,7 @@ class RevenueLeakageEngine:
 
     def _create_finding(
         self,
+        exposure_class: str,
         code: str,
         subject: str,
         severity: str,
@@ -410,6 +441,7 @@ class RevenueLeakageEngine:
             "subject": subject,
             "severity": severity,
             "exposure_usd": str(exposure),
+            "exposure_class": exposure_class,
             "evidence": evidence,
             "authority": "HUMAN_REVIEW_REQUIRED",
             "xaeli_explanation": {
@@ -422,3 +454,36 @@ class RevenueLeakageEngine:
         }
         finding_body["finding_sha256"] = digest(finding_body)
         return finding_body
+
+
+def verify_receipt(report: dict[str, Any]) -> bool:
+    """Return True when the report's receipt hash matches its content (tamper check)."""
+    body = {k: v for k, v in report.items() if k != "receipt_sha256"}
+    try:
+        return hmac_equal(digest(body), str(report.get("receipt_sha256", "")))
+    except (TypeError, ValueError):
+        return False
+
+
+def hmac_equal(a: str, b: str) -> bool:
+    import hmac
+
+    return hmac.compare_digest(a.encode(), b.encode())
+
+
+def report_to_csv(report: dict[str, Any]) -> str:
+    """Export findings as CSV with formula-injection neutralization on every cell."""
+    import csv
+    import io
+
+    buf = io.StringIO()
+    writer = csv.writer(buf, lineterminator="\n")
+    writer.writerow(["finding_id", "code", "subject", "severity", "exposure_class", "exposure_usd", "authority"])
+    for f in report.get("findings", []):
+        writer.writerow(
+            [
+                sanitize_formula_field(str(f.get(k, "")))
+                for k in ("finding_id", "code", "subject", "severity", "exposure_class", "exposure_usd", "authority")
+            ]
+        )
+    return buf.getvalue()

@@ -14,6 +14,8 @@ Verifies:
    - Unauthenticated 401 rejection
 """
 
+from pathlib import Path
+
 import pytest
 from fastapi.testclient import TestClient
 
@@ -26,8 +28,15 @@ from aurex.dispater_intelligence import (
 
 
 @pytest.fixture
-def auth_client(monkeypatch: pytest.MonkeyPatch) -> TestClient:
-    monkeypatch.setenv("AUREX_SERVICE_TOKEN", "12345678901234567890123456789012")
+def auth_client(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> TestClient:
+    import hashlib
+    import json
+
+    token = "12345678901234567890123456789012"
+    grants = {hashlib.sha256(token.encode()).hexdigest(): ["TENANT-API-TEST"]}
+    monkeypatch.setenv("AUREX_SERVICE_TOKEN", token)
+    monkeypatch.setenv("AUREX_DISPATER_TENANT_GRANTS", json.dumps(grants))
+    monkeypatch.setenv("AUREX_DISPATER_DB", str(tmp_path / "dispater.db"))
     return TestClient(app)
 
 

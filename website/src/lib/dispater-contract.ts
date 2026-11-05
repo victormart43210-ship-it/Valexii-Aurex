@@ -14,6 +14,7 @@ export const DispaterFindingSchema = z.object({
   subject: z.string(),
   severity: z.enum(["CRITICAL", "HIGH", "MEDIUM", "LOW", "ROUTINE"]),
   exposure_usd: z.string(),
+  exposure_class: z.string().optional(),
   evidence: z.array(
     z.object({
       kind: z.string(),
@@ -41,12 +42,17 @@ export const DispaterReconciliationReportSchema = z.object({
   }),
   financial_summary: z.object({
     identified_exposure_usd: z.string(),
+    potential_underbilling_usd: z.string().optional(),
+    potential_overbilling_usd: z.string().optional(),
+    unverified_exposure_usd: z.string().optional(),
+    human_confirmed_discrepancy_usd: z.string().optional(),
     confirmed_recovery_usd: z.string(),
     recovery_rate_disclaimer: z.string(),
   }),
   findings: z.array(DispaterFindingSchema),
   limits: z.string(),
   receipt_sha256: z.string(),
+  run_id: z.string().optional(),
 });
 
 export type DispaterFinding = z.infer<typeof DispaterFindingSchema>;
