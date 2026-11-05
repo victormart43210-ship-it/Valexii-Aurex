@@ -192,7 +192,8 @@ class RevenueLeakageEngine:
             cust_id = job["customer_id"]
             svc = job["service_code"]
             j_date = parse_date(job["date"])
-            relevant_invoices = by_job_invoices[j_id]
+            # Sorted so duplicate-charge exposure never depends on input row order.
+            relevant_invoices = sorted(by_job_invoices[j_id], key=lambda i: str(i["invoice_id"]))
 
             # Unbilled ticket / job
             if not relevant_invoices:
@@ -458,7 +459,7 @@ class RevenueLeakageEngine:
 
 def verify_receipt(report: dict[str, Any]) -> bool:
     """Return True when the report's receipt hash matches its content (tamper check)."""
-    body = {k: v for k, v in report.items() if k != "receipt_sha256"}
+    body = {k: v for k, v in report.items() if k not in ("receipt_sha256", "receipt_auth", "receipt_mac")}
     try:
         return hmac_equal(digest(body), str(report.get("receipt_sha256", "")))
     except (TypeError, ValueError):

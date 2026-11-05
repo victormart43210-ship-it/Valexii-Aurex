@@ -23,6 +23,7 @@ from datetime import UTC, datetime, timedelta
 from typing import Any
 
 from aurex.dispater_intelligence import verify_receipt
+from aurex.dispater_receipt import sign_report, verify_mac
 
 logger = logging.getLogger("aurex.dispater")
 
@@ -141,6 +142,7 @@ def _verified(row: sqlite3.Row) -> dict[str, Any]:
     report: dict[str, Any] = json.loads(row["report_json"])
     if (
         not verify_receipt(report)
+        or not verify_mac(report)
         or report.get("receipt_sha256") != row["receipt_sha256"]
         or report.get("tenant_id") != row["tenant_id"]
     ):
@@ -154,6 +156,7 @@ def save_run(tenant_id: str, report: dict[str, Any]) -> tuple[dict[str, Any], bo
     """Persist atomically. Returns (stored report, created). Idempotent on dataset hash."""
     if report.get("tenant_id") != tenant_id:
         raise ValueError("report tenant mismatch")
+    report = sign_report(report)  # fails closed when no receipt key is configured
     run_id = f"run-{uuid.uuid4().hex}"
     now = datetime.now(UTC).isoformat()
     refs: list[dict[str, str]] = []
@@ -194,7 +197,8 @@ def save_run(tenant_id: str, report: dict[str, Any]) -> tuple[dict[str, Any], bo
             )
             conn.execute("COMMIT")
         except BaseException:
-            conn.execute("ROLLBACK")
+            if conn.in_transaction:
+                conn.execute("ROLLBACK")
             raise
         row = conn.execute("SELECT * FROM dispater_runs WHERE run_id=?", (run_id,)).fetchone()
         return _verified(row), True
