@@ -90,7 +90,12 @@ def test_restart_recovery_keeps_records() -> None:
     assert dispater_store.get_run(TENANT, stored["run_id"]) is not None
 
 
-def test_concurrent_writers_all_persist() -> None:
+@pytest.mark.parametrize("round_no", range(10))
+def test_concurrent_writers_all_persist(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path, round_no: int
+) -> None:
+    # Fresh database each round: exercises the first-connection schema-creation race.
+    monkeypatch.setenv("AUREX_DISPATER_DB", str(tmp_path / f"r{round_no}.db"))
     errors: list[BaseException] = []
 
     def work(i: int) -> None:

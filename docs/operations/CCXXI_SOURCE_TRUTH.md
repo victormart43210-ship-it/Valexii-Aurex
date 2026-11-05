@@ -42,6 +42,8 @@ Real choices were only the store and the limiter.
 - **D-3** Schema init cache keyed by path: a replaced/deleted DB file was never re-initialised. Removed.
 - **D-4** `synchronous` not set under WAL. Now `FULL`; WAL mode is verified.
 
+- **D-5** (introduced by my interim D-3 change, caught by GitHub CI `integration`, fixed before merge): concurrent first connections could see a half-created schema (`no such table: dispater_findings`) or hit `database is locked` on the WAL switch. Setup is now serialised with bounded retry, and probes the last schema object. Test repeats over 10 fresh databases.
+
 ## Known limitations (not fixed)
 
 - Receipt hash is unkeyed; someone with DB write access can recompute it. Needs HMAC/signing.

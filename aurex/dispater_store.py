@@ -16,6 +16,7 @@ import logging
 import os
 import sqlite3
 import threading
+import time
 import uuid
 from contextlib import closing
 from datetime import UTC, datetime, timedelta
@@ -114,16 +115,25 @@ def _connect() -> sqlite3.Connection:
     conn.execute("PRAGMA busy_timeout=30000")
     conn.execute("PRAGMA synchronous=FULL")
     # No process-level cache: a replaced or recreated file must always be re-validated.
-    mode = conn.execute("PRAGMA journal_mode=WAL").fetchone()[0]
-    if str(mode).lower() != "wal":
-        conn.close()
-        raise StorageUnavailableError(f"SQLite WAL mode unavailable (got '{mode}')")
-    present = conn.execute(
-        "SELECT 1 FROM sqlite_master WHERE type='table' AND name='dispater_runs'"
-    ).fetchone()
-    if present is None:
-        with _init_lock:
-            conn.executescript(_SCHEMA)
+    # Setup is serialised and retried because switching to WAL needs an exclusive lock.
+    with _init_lock:
+        for attempt in range(50):
+            try:
+                mode = conn.execute("PRAGMA journal_mode=WAL").fetchone()[0]
+                if str(mode).lower() != "wal":
+                    conn.close()
+                    raise StorageUnavailableError(f"SQLite WAL mode unavailable (got '{mode}')")
+                present = conn.execute(
+                    "SELECT 1 FROM sqlite_master WHERE name='idx_dispater_findings_tenant'"
+                ).fetchone()  # last object in _SCHEMA; DDL commits in order, so it implies the rest
+                if present is None:
+                    conn.executescript(_SCHEMA)
+                break
+            except sqlite3.OperationalError as exc:
+                if "locked" not in str(exc) or attempt == 49:
+                    conn.close()
+                    raise
+                time.sleep(0.05)
     return conn
 
 

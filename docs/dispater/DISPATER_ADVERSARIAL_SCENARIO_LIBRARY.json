@@ -5,7 +5,7 @@
   "RESEARCHED": 0,
   "SPECIFIED": 0,
   "IMPLEMENTED": 0,
-  "PASS": 24,
+  "PASS": 25,
   "FAIL": 0,
   "BLOCKED": 0
  },
@@ -393,6 +393,22 @@
    "status": "PASS",
    "actual_result": "Pass",
    "limitations": "Does not exercise a live LLM"
+  },
+  {
+   "id": "ADV-CON-003",
+   "category": "Concurrency and race conditions",
+   "severity": "HIGH",
+   "severity_rationale": "First-connection race: schema partially visible, and WAL switch raising 'database is locked' under concurrent start",
+   "source_url": null,
+   "mechanism": "Non-atomic schema creation observed by a concurrent connection; exclusive-lock PRAGMA contention",
+   "preconditions": "Fresh database, concurrent first requests",
+   "fixture": "tests/test_dispater_storage.py",
+   "expected_safe_behavior": "All writers succeed",
+   "subsystem": "aurex.dispater_store._connect",
+   "test_location": "tests/test_dispater_storage.py::test_concurrent_writers_all_persist",
+   "status": "PASS",
+   "actual_result": "Reproduced: 'no such table: dispater_findings' in GitHub CI (introduced by interim D-3 fix) and 'database is locked' locally; the 10-round test detects both. After fix: 0 failures in 15 repeated runs.",
+   "limitations": "Single-process threads; no multi-process contention test"
   }
  ],
  "risk_ranked_queue_not_started": [
