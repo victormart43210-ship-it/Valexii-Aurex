@@ -54,6 +54,21 @@ CREATE INDEX IF NOT EXISTS idx_dispater_findings_tenant ON dispater_findings (te
 class IntegrityError(RuntimeError):
     """A stored report no longer matches its receipt hash."""
 
+class StorageUnavailableError(RuntimeError):
+    """Raised when persistent storage directory is unwriteable or missing when required."""
+
+
+def validate_storage_mount(path: str) -> None:
+    """Validate that the target storage path directory exists and is writeable."""
+    directory = os.path.dirname(os.path.abspath(path))
+    if not os.path.exists(directory):
+        try:
+            os.makedirs(directory, exist_ok=True)
+        except OSError as exc:
+            raise StorageUnavailableError(f"Persistent storage directory '{directory}' is not accessible") from exc
+    if not os.access(directory, os.W_OK):
+        raise StorageUnavailableError(f"Persistent storage directory '{directory}' is not writeable")
+
 
 def db_path() -> str:
     return os.environ.get("AUREX_DISPATER_DB", DEFAULT_DISPATER_DB)
@@ -71,6 +86,7 @@ def _connect() -> sqlite3.Connection:
     conn.execute("PRAGMA busy_timeout=30000")
     if path not in _initialized:
         with _init_lock:
+            validate_storage_mount(path)
             conn.execute("PRAGMA journal_mode=WAL")
             conn.executescript(_SCHEMA)
             _initialized.add(path)
@@ -188,3 +204,10 @@ def purge_tenant(tenant_id: str, older_than_days: int | None = None) -> int:
                 "DELETE FROM dispater_runs WHERE tenant_id=? AND created_at<?", (tenant_id, cutoff)
             )
         return cur.rowcount
+
+
+def checkpoint(db_path_override: str | None = None) -> None:
+    """Explicitly checkpoint the SQLite WAL log to ensure full durability to disk."""
+    target_path = db_path_override or db_path()
+    with closing(sqlite3.connect(target_path, timeout=30)) as conn:
+        conn.execute("PRAGMA wal_checkpoint(FULL)")

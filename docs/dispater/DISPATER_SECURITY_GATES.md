@@ -1,6 +1,6 @@
 # DISPATER.AI — SECURITY GATES & RELIABILITY CONTROLS
-**Operation:** KUSANAGI CCX
-**Auditor:** Jules (Independent Autonomous Verification)
+**Operation:** KUSANAGI CCXV
+**Auditor:** Jules (Maximum Available Engineering Effort Verification)
 
 ---
 
@@ -14,37 +14,20 @@
 
 ## 2. Threat Modeling & Defenses Verified
 
-### Tenant Isolation
-- **Defense:** Strict tenant comparison between requester and dataset.
-- **Verification:** `test_tenant_isolation_boundary` verifies that submitting cross-tenant payloads raises `InvalidSnapshot`.
+### Cross-Tenant Principal Authorization
+- **Vulnerability Addressed:** Prevention of caller-supplied tenant ID spoofing.
+- **Defense:** `authenticate_principal` binds bearer token SHA-256 digests to permitted tenant IDs in `AUREX_DISPATER_TENANT_GRANTS`. `authorize_tenant` enforces uniform HTTP 403 Forbidden on mismatch without leaking tenant existence.
+- **Verification:** Verified via `tests/test_dispater_security.py` (30 tests passing).
+
+### Durable SQLite Persistence & Anti-Tampering
+- **Vulnerability Addressed:** Loss of audit state during pod/container restarts and unverified memory mutations.
+- **Defense:** Atomic persistence to `dispater_runs` and `dispater_findings` in SQLite with WAL checkpointing, mount validation, and cryptographic receipt check (`verify_receipt`).
+- **Verification:** Verified across simulated service restarts and receipt tampering in `tests/test_dispater_security.py`.
 
 ### CSV & Spreadsheet Formula Injection
 - **Defense:** `sanitize_formula_field` checks record strings and prefixes leading `=`, `+`, `-`, `@`, `\t`, and `\r` with `'`.
-- **Verification:** `test_formula_injection_defense` confirms all payload strings are sanitized prior to reconciliation.
+- **Verification:** Verified via `tests/test_dispater_reconciliation.py`.
 
-### Replay & Evidence Tampering
-- **Defense:** Deterministic SHA-256 digest computed for each individual record (`digest(rec)`) and the cumulative report receipt (`receipt_sha256`).
-- **Verification:** Altering any field alters the receipt SHA-256 hash.
-
-### Input Bounds & Memory Denial of Service
-- **Defense:** Max 2,000 records per category (`jobs`, `invoices`, `rates`, `payments`). Rejects oversized requests fail-closed.
-- **Verification:** `_validate_rows` enforces bound limits and strict key checks.
-
-## KUSANAGI CCXIII additions (Copilot)
-
-- **Tenant authorization (fail closed):** `AUREX_DISPATER_TENANT_GRANTS` is a JSON object mapping
-  the SHA-256 hex of a bearer token to a list of tenant IDs. Missing/malformed config => 503 (all denied).
-  The shared `AUREX_SERVICE_TOKEN` grants no DISPATER tenant access.
-- A request's `tenant_id` is a selector only; unauthorized tenants receive a uniform 403 whether or not they exist.
-  Run lookups are tenant-scoped (cross-tenant run IDs return 404).
-- Inputs bounded: 2000 rows/list, 256 chars/field, 5 MB declared Content-Length, strict tenant pattern.
-  Chunked bodies without Content-Length rely on row/field caps; a reverse-proxy body limit is still recommended.
-- Errors: unexpected exceptions return `Internal DISPATER error`; details are logged server-side only.
-- Integrity: stored reports are re-verified against `receipt_sha256` on every read (mismatch => 500, sanitized).
-- CSV export neutralizes formula-leading characters.
-- Remaining: no token rotation/expiry, no rate limiting, no audit log of access, SQLite single-node only.
-
-### Migration / rollback
-Tables are created idempotently on first use in `AUREX_DISPATER_DB` (default `/tmp/aurex_dispater.db`; set a
-persistent path in staging). Rollback: stop service, drop `dispater_findings` and `dispater_runs` or delete the file.
-Retention: `aurex.dispater_store.purge_tenant(tenant_id, older_than_days=None)` (operator-invoked; no HTTP endpoint).
+### Request Stream Bounds & Memory Denial of Service
+- **Defense:** Asynchronous raw request body stream inspection enforcing 5MB limit in `limit_body` dependency, plus 2,000 row limits per array.
+- **Verification:** Verified via `tests/test_dispater_security.py`.

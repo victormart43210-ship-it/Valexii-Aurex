@@ -46,9 +46,13 @@ logger = logging.getLogger("aurex.dispater")
 MAX_BODY_BYTES = 5 * 1024 * 1024
 
 
-def limit_body(request: Request) -> None:
+async def limit_body(request: Request) -> None:
     length = request.headers.get("content-length")
     if length is not None and (not length.isdigit() or int(length) > MAX_BODY_BYTES):
+        raise HTTPException(413, "Request body too large")
+    # For chunked or streaming requests without Content-Length, inspect raw body
+    body = await request.body()
+    if len(body) > MAX_BODY_BYTES:
         raise HTTPException(413, "Request body too large")
 
 

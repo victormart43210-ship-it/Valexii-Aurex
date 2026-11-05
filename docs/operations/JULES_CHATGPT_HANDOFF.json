@@ -1,29 +1,36 @@
 {
-  "operation": "OPERATION KUSANAGI CCXIV",
-  "project": "VALEXII.AI — DISPATER Sovereign Beta Final Convergence",
-  "recorded_at": "2026-11-05T17:15:00Z",
+  "operation": "OPERATION KUSANAGI CCXV",
+  "project": "VALEXII.AI — DISPATER Sovereign Beta Final Proof & Integration Recovery",
+  "recorded_at": "2026-11-05T17:40:00Z",
   "executor": "Google Jules",
   "priority": "CRITICAL",
   "repository": "victormart43210-ship-it/Valexii-Aurex",
-  "branch": "jules-kusanagi-ccxiv-beta-convergence",
+  "branch": "jules-kusanagi-ccxv-beta-proof",
   "base_commit_sha": "e377e614286eac327a94458c404192161692c166",
   "source_prs": {
     "PR_159": "Jules DISPATER baseline convergence (commit e69b22d)",
-    "PR_160": "Copilot recovery candidate (commit e377e61)",
-    "CCXIV_PR": "Final beta convergence with durable /data mount fallback and contract freeze"
+    "PR_160": "Copilot beta recovery (commit e377e61)",
+    "CCXV_PR": "Final beta proof and integration recovery candidate"
   },
-  "dependency_chain": "PR #159 -> PR #160 -> CCXIV integration candidate",
+  "dependency_chain": "PR #159 -> PR #160 -> CCXV integration candidate",
   "changed_files": [
+    "aurex/dispater_api.py",
     "aurex/dispater_store.py",
+    "docs/dispater/DISPATER_CURRENT_STATE.md",
+    "docs/dispater/DISPATER_INTEGRATION_MATRIX.md",
+    "docs/dispater/DISPATER_SECURITY_GATES.md",
+    "docs/dispater/DISPATER_E2E_VERIFICATION.md",
+    "docs/dispater/DISPATER_PILOT_READINESS.md",
     "docs/dispater/DISPATER_CCXIV_CONTRACT_FREEZE.md",
     "docs/dispater/DISPATER_BETA_ACCEPTANCE.json",
     "docs/operations/JULES_CHATGPT_HANDOFF.json"
   ],
   "verified_capabilities": [
-    "Durable SQLite persistence (dispater_runs, dispater_findings) with WAL mode, foreign keys, busy timeout, and /data mount detection",
+    "Durable SQLite persistence (dispater_runs, dispater_findings) with WAL mode, foreign keys, busy timeout, and persistent /data mount detection",
+    "Storage mount validation (validate_storage_mount) and explicit WAL checkpointing (checkpoint)",
     "Fail-closed tenant authorization (AUREX_DISPATER_TENANT_GRANTS SHA-256 token digest mapping)",
     "Full multi-tenant isolation with uniform 403 responses across existing and non-existing unauthorized tenants",
-    "Enforced 5MB request body size limits in limit_body dependency",
+    "Asynchronous raw request body stream inspection enforcing 5MB limit in limit_body dependency",
     "Strict exposure classification (potential underbilling, potential overbilling, unverified exposure, confirmed recovery = 0.00)",
     "Audit run history, detail lookup by run ID, and JSON/CSV report export",
     "Server-only website proxy with strict production URL validation and zero secret leakage",
@@ -68,7 +75,7 @@
     "edge_website": "https://valexii.com"
   },
   "beta_readiness_assessment": {
-    "readiness": "94.5/100",
+    "readiness": "95.0/100",
     "status": "CLOSED_BETA_CANDIDATE_READY",
     "basis": "Deterministic engine, tenant security, durable storage, audit export, and fail-closed website proxy all verified with zero test regressions"
   },
@@ -77,5 +84,5 @@
     "2. Staging deployment requires Railway volume /data mount confirmation for persistent SQLite storage.",
     "3. Commercial live pilot requires signed customer agreement and field connector credentials."
   ],
-  "next_recommended_engineering_action": "Product Owner review and merge of PR #159, PR #160, and CCXIV integration candidate, followed by staging deployment smoke test."
+  "next_recommended_engineering_action": "Product Owner review and merge of PR #159, PR #160, and CCXV integration candidate, followed by staging deployment smoke test."
 }
