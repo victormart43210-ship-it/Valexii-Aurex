@@ -1,28 +1,90 @@
 {
-  "operation_id": "CCXIX",
-  "timestamp": "2026-11-05T19:55:00Z",
-  "status": "PARTIAL",
-  "repository": "victormart43210-ship-it/Valexii-Aurex",
-  "branch": "copilot/kusanagi-ccxix-mainline",
-  "base_commit_sha": "17a6cbf2a502f46f866d0fe1693d4c2a7f26ef70",
-  "code_fix_commit_sha": "7ca06ac3e45e62214401fadc6aa1abeba45eb95b",
-  "docs_commit_sha": "be3c698ff2af06d55185596c798ab7b64f2f7700",
-  "published_remote_commit_sha": "be3c698ff2af06d55185596c798ab7b64f2f7700 (handoff file added in a later commit; see branch head)",
-  "pr": {"number": 161, "url": "https://github.com/victormart43210-ship-it/Valexii-Aurex/pull/161", "draft": true},
-  "verified_dependency_ancestry": "main 99af5fd -> 1888aa1 -> df7db18; PR159: df7db18->d6da58e->df71cc9->01b4209->b12490b->17a6cbf; PR160: df7db18->f35a9bf->e377e61 (sibling, NOT stacked on 159; 5 file conflicts)",
-  "changed_files": ["aurex/api.py", "aurex/dispater_api.py", "tests/test_dispater_body_limit.py", "docs/operations/CCXIX_SOURCE_RECONCILIATION.md", "docs/operations/CCXIX_ACCEPTANCE_MATRIX.json", "docs/dispater/DISPATER_ADVERSARIAL_SCENARIO_LIBRARY.json", "docs/operations/COPILOT_CHATGPT_HANDOFF.json"],
-  "scenario_counts": {"RESEARCHED": 0, "SPECIFIED": 0, "IMPLEMENTED": 0, "PASS": 6, "FAIL": 0, "BLOCKED": 0},
-  "critical_vulnerabilities": {"found": 1, "fixed": 1, "detail": "D-1 body-limit bypass (HIGH, DoS): chunked 20MB body fully read, 422 returned"},
-  "tests": {"pytest": "476 passed, 1 skipped", "ruff": "clean", "mypy_strict": "clean on touched files only", "dispater_web": "25/25 node:test + build OK", "vitest": "project does not use vitest", "website_build": "not run"},
-  "ci_links": [],
-  "financial_correctness": "NOT TESTED",
-  "storage_recovery": "NOT TESTED",
-  "tenant_security": "Not independently re-reviewed; existing PR159 tests pass",
-  "website_integration": "NOT VERIFIED",
-  "xaeli_aurex_compatibility": "Existing tests pass; no new verification",
-  "mainline_merge_readiness": "HOLD — BLOCKERS REMAIN",
-  "outstanding_blockers": ["PR159 vs PR160 divergent auth/store implementations: owner must choose canonical", "No web research / only 6 scenarios", "Financial oracle, SQLite durability, tenant review, CSV injection, prompt-injection tests not done", "GitHub CI not reviewed", "No independent reproduction or staging", "No CCXVIII PR to review"],
-  "governance": {"production_release": "HOLD", "financial_authority": "NONE", "paid_external_inference": "OFF", "merge": "OWNER APPROVAL REQUIRED", "deploy": "OWNER APPROVAL REQUIRED"},
-  "next_actions": ["Owner decides canonical store/auth between #159 and #160", "Rerun CCXIX phases 2-4 in remaining scope", "Review CI on PR #161", "Review Jules CCXVIII PR when published"],
-  "resume_commands": ["git clone https://github.com/victormart43210-ship-it/Valexii-Aurex && cd Valexii-Aurex && git checkout copilot/kusanagi-ccxix-mainline", "python -m venv v && . v/bin/activate && pip install -e '.[dev]'", "python -m pytest -q tests && ruff check . && mypy --strict aurex/dispater_api.py", "cd dispater-web && npm ci && npm test && npm run build"]
+ "operation_id": "CCXXI",
+ "timestamp": "2026-11-05T20:20:00Z",
+ "status": "PARTIAL",
+ "repository": "victormart43210-ship-it/Valexii-Aurex",
+ "branch": "copilot/kusanagi-ccxxi-iron-convergence",
+ "tested_code_sha": "cc1f88f49185ba3543e9e85d64e9b1a5edab0547",
+ "remote_sha_note": "Branch head is this handoff's own later commit; code under test/CI is cc1f88f. See `git ls-remote`.",
+ "pr": {
+  "number": 162,
+  "url": "https://github.com/victormart43210-ship-it/Valexii-Aurex/pull/162",
+  "draft": true,
+  "supersedes": 161
+ },
+ "verified_ancestry": "main 99af5fd; #159 head a1d4856 (includes CCXVIII commit); #160 e377e61 sibling from df7db18; #161 62f2f4c on 17a6cbf. Candidate = a1d4856 + merge #161 + merge #160 + CCXXI commits.",
+ "conflict_resolution": {
+  "dispater_store.py": "#159 (stronger) then hardened",
+  "dispater_api.py limit_body": "#161 BodyLimitMiddleware",
+  "docs E2E/SECURITY_GATES/JULES handoff": "#159 versions",
+  "tests": "all #160 + #159 + #161 tests retained",
+  "auth/engine": "identical across #159/#160"
+ },
+ "security_defects": {
+  "D-1": "body limit bypass (fixed, PR161)",
+  "D-2": "ephemeral-path guard bypass/opt-in only (fixed)",
+  "D-3": "stale schema-init cache after DB replacement (fixed)",
+  "D-4": "synchronous not FULL (fixed)",
+  "D-5": "first-connection schema/WAL race, introduced mid-session and caught by CI (fixed)"
+ },
+ "scenario_counts": {
+  "RESEARCHED": 0,
+  "SPECIFIED": 0,
+  "IMPLEMENTED": 0,
+  "PASS": 25,
+  "FAIL": 0,
+  "BLOCKED": 0,
+  "note": "code-derived only; no external web research performed"
+ },
+ "tests": {
+  "backend": "533 passed, 1 skipped (fresh clone of 04a9782 gave 524/1; rerun after D-5 fix locally: 533/1)",
+  "frontend": "dispater-web 25/25 via node --test (no Vitest in project); website has no tests, build OK",
+  "ruff": "PASS",
+  "mypy": "PASS: mypy --strict aurex (82 files)"
+ },
+ "ci": {
+  "result": "PASS on cc1f88f",
+  "urls": [
+   "https://github.com/victormart43210-ship-it/Valexii-Aurex/actions/runs/42098916499",
+   "https://github.com/victormart43210-ship-it/Valexii-Aurex/actions/runs/42098916493",
+   "https://github.com/victormart43210-ship-it/Valexii-Aurex/actions/runs/42098916401",
+   "https://github.com/victormart43210-ship-it/Valexii-Aurex/actions/runs/42098916439",
+   "https://github.com/victormart43210-ship-it/Valexii-Aurex/actions/runs/42098916347"
+  ]
+ },
+ "financial_oracle": "PASS (limited): differential on single-job rate/invoice + pre-existing example oracle; confirmed recovery stays 0.00",
+ "storage_durability": "PASS in local tests; real-volume/container-replacement BLOCKED (no staging)",
+ "tenant_isolation": "PASS: 24 tests from #160; no new tenant code",
+ "website_e2e": "NOT TESTED (website->API->export->restart); builds only",
+ "xaeli_compat": "existing tests pass; live Qwen not tested or claimed",
+ "jules_coordination": "BLOCKED: no CCXX branch/PR published; CCXVIII is a1d4856 in #159",
+ "mainline_readiness": "HOLD - BLOCKERS REMAIN",
+ "blockers": [
+  "No external-source research (0 RESEARCHED scenarios vs 300-500 target)",
+  "Receipts use unkeyed hash; DB-write attacker can forge",
+  "No website E2E / staging / real-volume test",
+  "No independent (non-Copilot) reproduction",
+  "Railway fail-closed behaviour change needs owner confirmation and volume attached",
+  "Jules CCXX unpublished"
+ ],
+ "governance": {
+  "production_release": "HOLD",
+  "financial_authority": "NONE",
+  "paid_external_inference": "OFF",
+  "merge": "OWNER APPROVAL REQUIRED",
+  "deploy": "PROHIBITED"
+ },
+ "next_actions": [
+  "Owner reviews PR #162; close #159/#160/#161 as superseded only after approval",
+  "Confirm Railway volume before any deploy",
+  "Add HMAC-signed receipts",
+  "Run website E2E on staging",
+  "Perform primary-source research for scenario library"
+ ],
+ "resume_commands": [
+  "git clone https://github.com/victormart43210-ship-it/Valexii-Aurex && cd Valexii-Aurex && git checkout copilot/kusanagi-ccxxi-iron-convergence",
+  "python -m venv v && . v/bin/activate && pip install -e '.[dev]'",
+  "python -m pytest -q tests && ruff check . && mypy --strict aurex",
+  "cd dispater-web && npm ci && npm test && npm run build"
+ ]
 }
