@@ -32,10 +32,10 @@ from fastapi import (
     HTTPException,
     Path,
     Query,
-    Request,
     Response,
     status,
 )
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field, field_validator
 
 from aurex import dispater_store
@@ -46,24 +46,67 @@ logger = logging.getLogger("aurex.dispater")
 MAX_BODY_BYTES = 5 * 1024 * 1024
 
 
-async def limit_body(request: Request) -> None:
-    length = request.headers.get("content-length")
-    if length is not None:
-        if not length.isdigit() or int(length) > MAX_BODY_BYTES:
-            raise HTTPException(413, "Request body too large")
-        # Starlette caches body in request._body when request.body() is awaited
-        body = await request.body()
-        if len(body) > MAX_BODY_BYTES:
-            raise HTTPException(413, "Request body too large")
-        return
-
-    # For chunked or streaming requests without Content-Length, read body safely into cache
-    body = await request.body()
-    if len(body) > MAX_BODY_BYTES:
-        raise HTTPException(413, "Request body too large")
+class _BodyTooLarge(Exception):
+    pass
 
 
-router = APIRouter(prefix="/v1/dispater", tags=["dispater"], dependencies=[Depends(limit_body)])
+class BodyLimitMiddleware:
+    """Enforce MAX_BODY_BYTES on the raw ASGI receive stream for DISPATER routes.
+
+    FastAPI parses request bodies before route dependencies run, so the limit must
+    sit below it to stop chunked or dishonest-Content-Length uploads from buffering.
+    """
+
+    prefix = "/v1/dispater"
+
+    def __init__(self, app: Any, max_bytes: int | None = None) -> None:
+        self.app = app
+        self.max_bytes = max_bytes
+
+    async def __call__(self, scope: Any, receive: Any, send: Any) -> None:
+        if scope["type"] != "http" or not scope["path"].startswith(self.prefix):
+            await self.app(scope, receive, send)
+            return
+        limit = self.max_bytes if self.max_bytes is not None else MAX_BODY_BYTES
+        exceeded = False
+
+        async def guarded_send(message: Any) -> None:
+            # Once the limit is hit, the framework's own error reply (e.g. 400) is discarded.
+            if not exceeded:
+                await send(message)
+
+        async def reject() -> None:
+            response = JSONResponse({"detail": "Request body too large"}, status_code=413)
+            await response(scope, receive, send)
+
+        for name, value in scope["headers"]:
+            if name == b"content-length":
+                text = value.decode("latin-1")
+                if not text.isdigit() or int(text) > limit:
+                    await reject()
+                    return
+
+        total = 0
+
+        async def limited_receive() -> Any:
+            nonlocal total, exceeded
+            message = await receive()
+            if message["type"] == "http.request":
+                total += len(message.get("body", b""))
+                if total > limit:
+                    exceeded = True
+                    raise _BodyTooLarge
+            return message
+
+        try:
+            await self.app(scope, limited_receive, guarded_send)
+        except _BodyTooLarge:
+            pass
+        if exceeded:
+            await reject()
+
+
+router = APIRouter(prefix="/v1/dispater", tags=["dispater"])
 
 MAX_ROWS = 2000
 TENANT_PATTERN = r"^[A-Za-z0-9][A-Za-z0-9_.-]{0,63}$"
@@ -89,7 +132,9 @@ def _load_grants() -> dict[str, frozenset[str]]:
         if not isinstance(data, dict):
             raise ValueError("grants must be an object")
         return {
-            str(k).lower(): frozenset(str(t) for t in v) for k, v in data.items() if isinstance(v, list)
+            str(k).lower(): frozenset(str(t) for t in v)
+            for k, v in data.items()
+            if isinstance(v, list)
         }
     except (ValueError, TypeError):
         logger.error("AUREX_DISPATER_TENANT_GRANTS is malformed; denying all DISPATER access")
@@ -98,13 +143,17 @@ def _load_grants() -> dict[str, frozenset[str]]:
 
 def authenticate_principal(authorization: Annotated[str | None, Header()] = None) -> Principal:
     if not authorization or not authorization.startswith("Bearer "):
-        raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Missing or malformed Authorization header")
+        raise HTTPException(
+            status.HTTP_401_UNAUTHORIZED, "Missing or malformed Authorization header"
+        )
     supplied = authorization[7:]
     if not supplied or not supplied.isascii() or supplied != supplied.strip():
         raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Malformed authorization credentials")
     grants = _load_grants()
     if not grants:
-        raise HTTPException(status.HTTP_503_SERVICE_UNAVAILABLE, "DISPATER tenant authorization is not configured")
+        raise HTTPException(
+            status.HTTP_503_SERVICE_UNAVAILABLE, "DISPATER tenant authorization is not configured"
+        )
     digest = hashlib.sha256(supplied.encode()).hexdigest()
     match: frozenset[str] | None = None
     for key, tenants in grants.items():  # constant-time over every entry
@@ -150,7 +199,9 @@ def _internal_error(op: str) -> HTTPException:
 def run_reconciliation(payload: ReconciliationRequest, principal: PrincipalDep) -> dict[str, Any]:
     authorize_tenant(principal, payload.tenant_id)
     try:
-        report = RevenueLeakageEngine(tenant_id=payload.tenant_id).reconcile_records(payload.model_dump())
+        report = RevenueLeakageEngine(tenant_id=payload.tenant_id).reconcile_records(
+            payload.model_dump()
+        )
     except InvalidSnapshot as exc:
         raise HTTPException(status.HTTP_400_BAD_REQUEST, str(exc)) from exc
     except Exception as exc:
@@ -250,7 +301,9 @@ def _run_or_404(tenant_id: str, run_id: str) -> dict[str, Any]:
 
 @router.get("/runs/{run_id}")
 def get_run(
-    run_id: Annotated[str, Path(pattern=r"^run-[0-9a-f]{32}$")], principal: PrincipalDep, tenant_id: TenantQuery
+    run_id: Annotated[str, Path(pattern=r"^run-[0-9a-f]{32}$")],
+    principal: PrincipalDep,
+    tenant_id: TenantQuery,
 ) -> dict[str, Any]:
     authorize_tenant(principal, tenant_id)
     return _run_or_404(tenant_id, run_id)
