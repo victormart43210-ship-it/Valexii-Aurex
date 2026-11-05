@@ -48,12 +48,17 @@ MAX_BODY_BYTES = 5 * 1024 * 1024
 
 async def limit_body(request: Request) -> None:
     length = request.headers.get("content-length")
-    if length is not None and (not length.isdigit() or int(length) > MAX_BODY_BYTES):
-        raise HTTPException(413, "Request body too large")
-    # For chunked or streaming requests without Content-Length, inspect raw body
-    body = await request.body()
-    if len(body) > MAX_BODY_BYTES:
-        raise HTTPException(413, "Request body too large")
+    if length is not None:
+        if not length.isdigit() or int(length) > MAX_BODY_BYTES:
+            raise HTTPException(413, "Request body too large")
+        return
+
+    # For chunked/streaming requests without Content-Length, inspect stream with hard ceiling
+    total = 0
+    async for chunk in request.stream():
+        total += len(chunk)
+        if total > MAX_BODY_BYTES:
+            raise HTTPException(413, "Request body too large")
 
 
 router = APIRouter(prefix="/v1/dispater", tags=["dispater"], dependencies=[Depends(limit_body)])

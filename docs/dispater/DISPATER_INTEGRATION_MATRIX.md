@@ -1,5 +1,5 @@
 # DISPATER.AI — INTEGRATION MATRIX & API SPECIFICATION
-**Operation:** KUSANAGI CCXV
+**Operation:** KUSANAGI CCXVI
 **API Prefix:** `/v1/dispater`
 **Authentication & Authorization:** Principal token binding via `authenticate_principal` and `authorize_tenant`
 
@@ -77,4 +77,5 @@ Returns audit history runs and downloadable report exports.
 1. **Principal-Tenant Binding**: Principal credentials must match the tenant authorization registry (`AUREX_DISPATER_TENANT_GRANTS`). Unauthorized cross-tenant queries fail closed with uniform HTTP 403.
 2. **Durable SQLite Persistence**: Audits are written atomically to `dispater_runs` and `dispater_findings` in SQLite with WAL mode, foreign keys, and busy timeout, defaulting to `/data/aurex_dispater.db` when `/data` directory is available.
 3. **Formula Injection Sanitization**: Inputs starting with `=, +, -, @, \t, \r` are prepended with `'`.
-4. **Decimal Arithmetic**: All financial calculations use Python `decimal.Decimal` with explicit `0.01` quantization.
+4. **Streaming Limit**: Async streaming body size enforcement (`limit_body`) with 5MB ceiling protects against unbounded buffering attacks.
+5. **Decimal Arithmetic**: All financial calculations use Python `decimal.Decimal` with explicit `0.01` quantization.

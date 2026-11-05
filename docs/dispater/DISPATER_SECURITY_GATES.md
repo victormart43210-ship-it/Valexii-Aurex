@@ -1,6 +1,6 @@
 # DISPATER.AI — SECURITY GATES & RELIABILITY CONTROLS
-**Operation:** KUSANAGI CCXV
-**Auditor:** Jules (Maximum Available Engineering Effort Verification)
+**Operation:** KUSANAGI CCXVI
+**Auditor:** Jules (Remote Source Recovery & Beta Verification)
 
 ---
 
@@ -21,7 +21,7 @@
 
 ### Durable SQLite Persistence & Anti-Tampering
 - **Vulnerability Addressed:** Loss of audit state during pod/container restarts and unverified memory mutations.
-- **Defense:** Atomic persistence to `dispater_runs` and `dispater_findings` in SQLite with WAL checkpointing, mount validation, and cryptographic receipt check (`verify_receipt`).
+- **Defense:** Atomic persistence to `dispater_runs` and `dispater_findings` in SQLite with WAL checkpointing, mount validation (`validate_storage_mount`), and cryptographic receipt check (`verify_receipt`).
 - **Verification:** Verified across simulated service restarts and receipt tampering in `tests/test_dispater_security.py`.
 
 ### CSV & Spreadsheet Formula Injection
@@ -29,5 +29,5 @@
 - **Verification:** Verified via `tests/test_dispater_reconciliation.py`.
 
 ### Request Stream Bounds & Memory Denial of Service
-- **Defense:** Asynchronous raw request body stream inspection enforcing 5MB limit in `limit_body` dependency, plus 2,000 row limits per array.
+- **Defense:** Asynchronous streaming request body chunk inspection enforcing 5MB limit in `limit_body` dependency without unbounded buffering, plus 2,000 row limits per array.
 - **Verification:** Verified via `tests/test_dispater_security.py`.
