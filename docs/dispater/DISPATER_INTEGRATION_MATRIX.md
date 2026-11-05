@@ -1,15 +1,17 @@
 # DISPATER.AI — INTEGRATION MATRIX & API SPECIFICATION
-**Operation:** KUSANAGI CCX
+**Operation:** KUSANAGI CCXII
 **API Prefix:** `/v1/dispater`
-**Authentication:** Bearer token (min 32 chars) via `authenticate` middleware
+**Authentication & Authorization:** Principal token binding via `authorize_tenant_principal`
 
 ---
 
 ## 1. REST Endpoints Specification
 
 ### `POST /v1/dispater/reconciliation`
-Executes deterministic multi-record reconciliation across jobs, invoices, approved rates, and payments.
+Executes deterministic multi-record reconciliation across jobs, invoices, approved rates, and payments, persisting findings into durable SQLite storage.
 
+- **Request Headers**:
+  `Authorization: Bearer <token>` (min 32 chars, authorized for `tenant_id`)
 - **Request Schema**:
   ```json
   {
@@ -20,7 +22,8 @@ Executes deterministic multi-record reconciliation across jobs, invoices, approv
         "job_id": "string",
         "customer_id": "string",
         "service_code": "string",
-        "date": "YYYY-MM-DD"
+        "date": "YYYY-MM-DD",
+        "hours": "optional float"
       }
     ],
     "rates": [
@@ -51,57 +54,22 @@ Executes deterministic multi-record reconciliation across jobs, invoices, approv
   }
   ```
 - **Response**:
-  Returns `DispaterReconciliationReport` including `counts`, `financial_summary`, `findings` (with 5-step XAELI explanations), and `receipt_sha256`.
+  Returns `DispaterReconciliationReport` including `run_id`, `counts`, `financial_summary` (with separate accounting for underbilling, overbilling, and unverified exposure), `findings` (with 5-step XAELI explanations), and `receipt_sha256`.
 
 ---
 
 ### `GET /v1/dispater/findings?tenant_id={tenant_id}`
-Retrieves active audit findings for a specific tenant from the latest reconciliation execution.
-
-- **Response**:
-  ```json
-  {
-    "tenant_id": "tenant-01",
-    "status": "AUDIT_COMPLETE",
-    "dataset_sha256": "...",
-    "receipt_sha256": "...",
-    "financial_summary": { ... },
-    "findings": [ ... ],
-    "count": 2
-  }
-  ```
+Retrieves active audit findings for a specific tenant from durable SQLite persistence.
 
 ---
 
 ### `GET /v1/dispater/dashboard?tenant_id={tenant_id}`
 Returns tenant-level summary metrics, identified exposure, confirmed recovery ($0.00), finding severity distribution, and governance locks.
 
-- **Response**:
-  ```json
-  {
-    "tenant_id": "tenant-01",
-    "status": "AUDIT_COMPLETE",
-    "last_reconciliation_sha256": "...",
-    "identified_exposure_usd": "500.00",
-    "confirmed_recovery_usd": "0.00",
-    "finding_counts": {
-      "total": 1,
-      "critical": 0,
-      "high": 1,
-      "medium": 0
-    },
-    "recent_findings": [ ... ],
-    "system_state": {
-      "production_release": "HOLD",
-      "financial_authority": "NONE",
-      "external_paid_inference": "OFF"
-    }
-  }
-  ```
-
 ---
 
 ## 2. Security & Architectural Controls
-1. **SSRF & Egress Protection**: Browser clients cannot invoke the raw backend directly; requests route through server-only functions (`dispater.server.ts`).
-2. **Formula Injection Sanitization**: Inputs starting with `=, +, -, @, \t, \r` are prepended with `'`.
-3. **Decimal Arithmetic**: All financial calculations use Python `decimal.Decimal` with explicit `0.01` quantization.
+1. **Principal-Tenant Binding**: Principal credentials must match the tenant authorization registry (`AUREX_TENANT_TOKEN_<TENANT>`) or administrative service tokens (`AUREX_SERVICE_TOKEN`). Unauthorized cross-tenant queries fail closed with HTTP 403.
+2. **Durable SQLite Persistence**: Audits are written atomically to `dispater_audit_runs` table in SQLite, preserving run metadata across container restarts.
+3. **Formula Injection Sanitization**: Inputs starting with `=, +, -, @, \t, \r` are prepended with `'`.
+4. **Decimal Arithmetic**: All financial calculations use Python `decimal.Decimal` with explicit `0.01` quantization.

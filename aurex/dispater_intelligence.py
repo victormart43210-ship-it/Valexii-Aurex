@@ -2,13 +2,15 @@
 
 Implements deterministic, decimal-safe operational revenue reconciliation,
 equipment ticket matching, approved rate schedule verification, SHA-256 evidence
-digest generation, CSV formula-injection defenses, and canonical 5-step XAELI findings
-(NOW -> CHANGED -> NEXT -> WHY -> PROOF).
+digest generation, CSV formula-injection defenses, canonical 5-step XAELI findings
+(NOW -> CHANGED -> NEXT -> WHY -> PROOF), and durable SQLite storage for multi-tenant
+audit isolation.
 
 NON-DELEGABLE CONSTRAINTS:
 - No automatic billing, payment execution, invoice modification, or customer account changes.
 - All detected discrepancies are candidates for human review (HUMAN_REVIEW_REQUIRED).
-- Potential exposure is NOT confirmed recovery or realized savings.
+- Potential exposure is strictly categorized (underbilling, overbilling, unverified exposure).
+- Confirmed recovery remains permanently 0.00 without external financial evidence.
 - The system may never be its own sole witness.
 """
 
@@ -16,17 +18,24 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 import re
+import sqlite3
 from collections import defaultdict
-from datetime import date
+from datetime import UTC, date, datetime
 from decimal import Decimal, InvalidOperation
 from typing import Any
 
-SCHEMA = "dispater.synthetic.revenue_intelligence.v1"
+SCHEMA = "dispater.synthetic.revenue_intelligence.v2"
+DEFAULT_DISPATER_DB = os.environ.get("DISPATER_DB_PATH", "/tmp/dispater_audit.db")
 
 
 class InvalidSnapshot(ValueError):
     """Reject a malformed, invalid, or non-synthetic audit payload."""
+
+
+class TenantAuthorizationError(PermissionError):
+    """Reject an unauthorized cross-tenant audit access attempt."""
 
 
 def digest(value: object) -> str:
@@ -100,11 +109,92 @@ def _ensure_unique_ids(rows: list[dict[str, Any]], id_key: str, context: str) ->
         seen.add(val)
 
 
+# ---------------------------------------------------------------------------
+# Durable SQLite Audit Storage
+# ---------------------------------------------------------------------------
+
+
+def get_dispater_db(db_path: str = DEFAULT_DISPATER_DB) -> sqlite3.Connection:
+    """Initialize and return a SQLite connection for durable audit records."""
+    conn = sqlite3.connect(db_path)
+    conn.row_factory = sqlite3.Row
+    with conn:
+        conn.execute(
+            """
+            CREATE TABLE IF NOT EXISTS dispater_audit_runs (
+                run_id TEXT PRIMARY KEY,
+                tenant_id TEXT NOT NULL,
+                dataset_sha256 TEXT NOT NULL,
+                receipt_sha256 TEXT NOT NULL,
+                status TEXT NOT NULL,
+                report_json TEXT NOT NULL,
+                created_at TEXT NOT NULL
+            )
+            """
+        )
+        conn.execute(
+            """
+            CREATE INDEX IF NOT EXISTS idx_dispater_tenant_time
+            ON dispater_audit_runs(tenant_id, created_at DESC)
+            """
+        )
+    return conn
+
+
+def save_audit_run(report: dict[str, Any], db_path: str = DEFAULT_DISPATER_DB) -> None:
+    """Atomically store an audit reconciliation report in durable SQLite."""
+    run_id = report.get("run_id") or f"RUN-{digest(report)[:16]}"
+    report["run_id"] = run_id
+    tenant_id = report["tenant_id"]
+    dataset_sha256 = report["dataset_sha256"]
+    receipt_sha256 = report["receipt_sha256"]
+    status = report["status"]
+    report_json = json.dumps(report, sort_keys=True)
+    created_at = datetime.now(UTC).isoformat()
+
+    conn = get_dispater_db(db_path)
+    with conn:
+        conn.execute(
+            """
+            INSERT OR REPLACE INTO dispater_audit_runs (
+                run_id, tenant_id, dataset_sha256, receipt_sha256, status, report_json, created_at
+            ) VALUES (?, ?, ?, ?, ?, ?, ?)
+            """,
+            (run_id, tenant_id, dataset_sha256, receipt_sha256, status, report_json, created_at),
+        )
+    conn.close()
+
+
+def get_latest_audit_run(tenant_id: str, db_path: str = DEFAULT_DISPATER_DB) -> dict[str, Any] | None:
+    """Retrieve the latest durable audit run for a specific tenant."""
+    conn = get_dispater_db(db_path)
+    cursor = conn.execute(
+        """
+        SELECT report_json FROM dispater_audit_runs
+        WHERE tenant_id = ?
+        ORDER BY created_at DESC
+        LIMIT 1
+        """,
+        (tenant_id,),
+    )
+    row = cursor.fetchone()
+    conn.close()
+    if not row:
+        return None
+    return json.loads(row["report_json"])  # type: ignore[no-any-return]
+
+
+# ---------------------------------------------------------------------------
+# Revenue Leakage Engine
+# ---------------------------------------------------------------------------
+
+
 class RevenueLeakageEngine:
     """Deterministic Revenue Leakage and Billing Exception Audit Engine."""
 
-    def __init__(self, tenant_id: str = "default"):
+    def __init__(self, tenant_id: str = "default", db_path: str = DEFAULT_DISPATER_DB):
         self.tenant_id = tenant_id
+        self.db_path = db_path
 
     def reconcile_records(self, dataset: dict[str, Any]) -> dict[str, Any]:
         """Reconcile jobs, invoices, approved rates, and payments deterministically."""
@@ -116,7 +206,7 @@ class RevenueLeakageEngine:
 
         dataset_tenant = dataset.get("tenant_id", "default")
         if dataset_tenant != self.tenant_id:
-            raise InvalidSnapshot(
+            raise TenantAuthorizationError(
                 f"Tenant isolation mismatch: dataset tenant '{dataset_tenant}' != engine tenant '{self.tenant_id}'"
             )
 
@@ -153,6 +243,14 @@ class RevenueLeakageEngine:
 
         for j in jobs:
             parse_date(j["date"])
+            # Validate operating hours if present
+            if "hours" in j:
+                try:
+                    hrs = float(j["hours"])
+                    if hrs < 0.0 or hrs > 168.0:
+                        raise InvalidSnapshot(f"Invalid equipment hours: {j['hours']}")
+                except ValueError as err:
+                    raise InvalidSnapshot(f"Non-numeric equipment hours: {j['hours']}") from err
 
         for r in rates:
             s_date = parse_date(r["start"])
@@ -173,7 +271,10 @@ class RevenueLeakageEngine:
             by_invoice_payments[p["invoice_id"]].append(p)
 
         findings: list[dict[str, Any]] = []
-        identified_exposure = Decimal("0.00")
+
+        potential_underbilling = Decimal("0.00")
+        potential_overbilling = Decimal("0.00")
+        unverified_exposure = Decimal("0.00")
 
         job_ids = {j["job_id"] for j in jobs}
         invoice_ids = {inv["invoice_id"] for inv in invoices}
@@ -196,7 +297,7 @@ class RevenueLeakageEngine:
                     and parse_date(r["start"]) <= j_date <= parse_date(r["end"])
                 ]
                 potential_val = parse_money(applicable_rates[0]["amount"]) if len(applicable_rates) == 1 else Decimal("0.00")
-                identified_exposure += potential_val
+                potential_underbilling += potential_val
                 findings.append(
                     self._create_finding(
                         code="UNBILLED_JOB",
@@ -204,6 +305,7 @@ class RevenueLeakageEngine:
                         severity="HIGH",
                         records=[("job", job)],
                         exposure=potential_val,
+                        exposure_kind="POTENTIAL_UNDERBILLING",
                         now=f"Completed job {j_id} has no invoice record in the snapshot.",
                         changed=f"Job marked executed on {job['date']} without a generated billing reference.",
                         next_action="Review field completion log and draft invoice according to agreed schedule.",
@@ -215,7 +317,7 @@ class RevenueLeakageEngine:
             # Duplicate / Multiple invoices
             if len(relevant_invoices) > 1:
                 dup_exposure = sum((parse_money(inv["amount"]) for inv in relevant_invoices[1:]), Decimal("0.00"))
-                identified_exposure += dup_exposure
+                potential_overbilling += dup_exposure
                 evidence_records = [("job", job)] + [("invoice", inv) for inv in relevant_invoices]
                 findings.append(
                     self._create_finding(
@@ -224,6 +326,7 @@ class RevenueLeakageEngine:
                         severity="CRITICAL",
                         records=evidence_records,
                         exposure=dup_exposure,
+                        exposure_kind="POTENTIAL_OVERBILLING",
                         now=f"Job {j_id} is referenced by {len(relevant_invoices)} distinct invoices.",
                         changed=f"Multiple billing references issued for single work completion {j_id}.",
                         next_action="Quarantine secondary invoices and verify single legitimate charge with billing clerk.",
@@ -248,6 +351,7 @@ class RevenueLeakageEngine:
                         severity="MEDIUM",
                         records=[("job", job)],
                         exposure=Decimal("0.00"),
+                        exposure_kind="UNVERIFIED_EXPOSURE",
                         now=f"No approved rate schedule found for job {j_id} ({cust_id}/{svc}).",
                         changed="Work scheduled and billed without active contractual rate schedule in ledger.",
                         next_action="Obtain counter-signed rate schedule or master services agreement amendment.",
@@ -264,6 +368,7 @@ class RevenueLeakageEngine:
                         severity="MEDIUM",
                         records=evidence_records,
                         exposure=Decimal("0.00"),
+                        exposure_kind="UNVERIFIED_EXPOSURE",
                         now=f"Multiple conflicting rate schedules active for job {j_id} on {job['date']}.",
                         changed=f"{len(active_rates)} overlapping rate definitions found for customer {cust_id}.",
                         next_action="Determine binding rate schedule precedence with account representative.",
@@ -280,7 +385,13 @@ class RevenueLeakageEngine:
                 diff = billed_amt - expected_amt
                 if diff != Decimal("0.00"):
                     abs_diff = abs(diff)
-                    identified_exposure += abs_diff
+                    if diff > Decimal("0.00"):
+                        potential_overbilling += abs_diff
+                        kind = "POTENTIAL_OVERBILLING"
+                    else:
+                        potential_underbilling += abs_diff
+                        kind = "POTENTIAL_UNDERBILLING"
+
                     findings.append(
                         self._create_finding(
                             code="RATE_MISMATCH",
@@ -288,6 +399,7 @@ class RevenueLeakageEngine:
                             severity="HIGH" if abs_diff > Decimal("100.00") else "MEDIUM",
                             records=[("job", job), ("invoice", target_inv), ("rate", target_rate)],
                             exposure=abs_diff,
+                            exposure_kind=kind,
                             now=f"Invoice {target_inv['invoice_id']} billed ${billed_amt} vs approved rate of ${expected_amt} (delta ${diff:+}).",
                             changed=f"Discrepancy of ${abs_diff} detected between field rate schedule and billing line.",
                             next_action="Issue corrected invoice or credit memo reflecting approved master rate schedule.",
@@ -300,13 +412,16 @@ class RevenueLeakageEngine:
         for inv in invoices:
             inv_id = inv["invoice_id"]
             if inv["job_id"] not in job_ids:
+                exposure_amt = parse_money(inv["amount"])
+                unverified_exposure += exposure_amt
                 findings.append(
                     self._create_finding(
                         code="ORPHAN_INVOICE",
                         subject=inv_id,
                         severity="HIGH",
                         records=[("invoice", inv)],
-                        exposure=parse_money(inv["amount"]),
+                        exposure=exposure_amt,
+                        exposure_kind="UNVERIFIED_EXPOSURE",
                         now=f"Invoice {inv_id} references non-existent job ID '{inv['job_id']}'.",
                         changed="Invoice billed without field operational equipment ticket backing.",
                         next_action="Locate valid job ticket or void orphan billing entry.",
@@ -322,7 +437,13 @@ class RevenueLeakageEngine:
                 if total_paid != billed:
                     delta = total_paid - billed
                     abs_delta = abs(delta)
-                    identified_exposure += abs_delta
+                    if delta < Decimal("0.00"):
+                        potential_underbilling += abs_delta
+                        kind = "POTENTIAL_UNDERBILLING"
+                    else:
+                        potential_overbilling += abs_delta
+                        kind = "POTENTIAL_OVERBILLING"
+
                     evidence_records = [("invoice", inv)] + [("payment", p) for p in payments_for_inv]
                     findings.append(
                         self._create_finding(
@@ -331,6 +452,7 @@ class RevenueLeakageEngine:
                             severity="HIGH",
                             records=evidence_records,
                             exposure=abs_delta,
+                            exposure_kind=kind,
                             now=f"Invoice {inv_id} marked paid but payments total ${total_paid} vs billed ${billed} (delta ${delta:+}).",
                             changed="General ledger status out of balance with cash application records.",
                             next_action="Review remittance advice and post missing payment or short-pay adjustment.",
@@ -344,7 +466,7 @@ class RevenueLeakageEngine:
             p_id = payment["payment_id"]
             if payment["invoice_id"] not in invoice_ids:
                 p_amt = parse_money(payment["amount"])
-                identified_exposure += p_amt
+                unverified_exposure += p_amt
                 findings.append(
                     self._create_finding(
                         code="ORPHAN_PAYMENT",
@@ -352,6 +474,7 @@ class RevenueLeakageEngine:
                         severity="MEDIUM",
                         records=[("payment", payment)],
                         exposure=p_amt,
+                        exposure_kind="UNVERIFIED_EXPOSURE",
                         now=f"Payment {p_id} references non-existent invoice ID '{payment['invoice_id']}'.",
                         changed="Cash receipt deposited without matched invoice account.",
                         next_action="Research customer remittance to match unapplied cash to open invoice.",
@@ -361,6 +484,8 @@ class RevenueLeakageEngine:
                 )
 
         findings.sort(key=lambda x: (x["severity"], x["code"], x["subject"]))
+
+        total_exposure = potential_underbilling + potential_overbilling + unverified_exposure
 
         audit_summary = {
             "schema": SCHEMA,
@@ -377,9 +502,15 @@ class RevenueLeakageEngine:
                 "findings": len(findings),
             },
             "financial_summary": {
-                "identified_exposure_usd": str(identified_exposure),
+                "identified_exposure_usd": str(total_exposure),
+                "potential_underbilling_usd": str(potential_underbilling),
+                "potential_overbilling_usd": str(potential_overbilling),
+                "unverified_exposure_usd": str(unverified_exposure),
                 "confirmed_recovery_usd": "0.00",
-                "recovery_rate_disclaimer": "Identified exposure is a candidate for human review, not confirmed recovery.",
+                "recovery_rate_disclaimer": (
+                    "Identified exposure is a candidate for human review, not confirmed recovery. "
+                    "Confirmed recovery remains 0.00 until independent settlement."
+                ),
             },
             "findings": findings,
             "limits": (
@@ -388,6 +519,10 @@ class RevenueLeakageEngine:
             ),
         }
         audit_summary["receipt_sha256"] = digest(audit_summary)
+
+        # Persist report to durable SQLite storage
+        save_audit_run(audit_summary, db_path=self.db_path)
+
         return audit_summary
 
     def _create_finding(
@@ -397,6 +532,7 @@ class RevenueLeakageEngine:
         severity: str,
         records: list[tuple[str, dict[str, Any]]],
         exposure: Decimal,
+        exposure_kind: str,
         now: str,
         changed: str,
         next_action: str,
@@ -410,6 +546,7 @@ class RevenueLeakageEngine:
             "subject": subject,
             "severity": severity,
             "exposure_usd": str(exposure),
+            "exposure_kind": exposure_kind,
             "evidence": evidence,
             "authority": "HUMAN_REVIEW_REQUIRED",
             "xaeli_explanation": {

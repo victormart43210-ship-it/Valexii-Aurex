@@ -84,7 +84,7 @@ app.include_router(research_advice_router, dependencies=[Depends(authenticate)])
 app.include_router(industrial_demo_router, dependencies=[Depends(authenticate)])
 app.include_router(towing_router, dependencies=[Depends(authenticate)])
 app.include_router(xaeli_staging_router, dependencies=[Depends(authenticate)])
-app.include_router(dispater_router, dependencies=[Depends(authenticate)])
+app.include_router(dispater_router)
 
 
 class JobCreateRequest(BaseModel):

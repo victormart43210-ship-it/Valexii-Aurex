@@ -14,6 +14,7 @@ export const DispaterFindingSchema = z.object({
   subject: z.string(),
   severity: z.enum(["CRITICAL", "HIGH", "MEDIUM", "LOW", "ROUTINE"]),
   exposure_usd: z.string(),
+  exposure_kind: z.string().optional(),
   evidence: z.array(
     z.object({
       kind: z.string(),
@@ -28,6 +29,7 @@ export const DispaterFindingSchema = z.object({
 export const DispaterReconciliationReportSchema = z.object({
   schema: z.string(),
   tenant_id: z.string(),
+  run_id: z.string().optional(),
   dataset_sha256: z.string(),
   status: z.string(),
   authority_state: z.string(),
@@ -41,6 +43,9 @@ export const DispaterReconciliationReportSchema = z.object({
   }),
   financial_summary: z.object({
     identified_exposure_usd: z.string(),
+    potential_underbilling_usd: z.string().optional(),
+    potential_overbilling_usd: z.string().optional(),
+    unverified_exposure_usd: z.string().optional(),
     confirmed_recovery_usd: z.string(),
     recovery_rate_disclaimer: z.string(),
   }),

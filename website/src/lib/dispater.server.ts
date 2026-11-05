@@ -1,4 +1,5 @@
 // Server-only handler for DISPATER reconciliation. No client secrets exposed.
+// Fails closed if configuration is missing, insecure, or pointing to untrusted endpoints in production.
 import {
   DispaterReconciliationReportSchema,
   type DispaterReconciliationReport,
@@ -43,10 +44,10 @@ const OILFIELD_SYNTHETIC_FIXTURE = {
     {
       invoice_id: "INV-PP-104-A",
       job_id: "FT-WELL-104",
-      amount: "5000.00", // Deliberate billing discrepancy: $5000 billed vs $4500 rate ($500 exposure)
+      amount: "5000.00", // Deliberate billing discrepancy: $5000 billed vs $4500 rate ($500 overbilling)
       status: "open",
     },
-    // FT-FLOWBACK-08 intentionally has no invoice: detects UNBILLED_JOB ($1250 exposure)
+    // FT-FLOWBACK-08 intentionally has no invoice: detects UNBILLED_JOB ($1250 underbilling)
   ],
   payments: [],
 };
@@ -59,10 +60,17 @@ export async function executeDispaterReconciliation(
   customDataset?: unknown,
   transport: typeof fetch = fetch,
 ): Promise<DispaterReconciliationReport> {
-  const url = config.serviceUrl ?? "http://127.0.0.1:8000";
-  const token = config.serviceToken ?? "0".repeat(32);
-  const payload = customDataset ?? OILFIELD_SYNTHETIC_FIXTURE;
+  const url = config.serviceUrl;
+  const token = config.serviceToken;
 
+  // Fail closed if unconfigured or insecure token (< 32 chars)
+  if (!url || !token || token.length < 32) {
+    throw new Error(
+      "DISPATER API service is not configured or authentication token is insecure. Audit service failed closed.",
+    );
+  }
+
+  const payload = customDataset ?? OILFIELD_SYNTHETIC_FIXTURE;
   const endpoint = new URL("/v1/dispater/reconciliation", url).toString();
 
   const response = await transport(endpoint, {

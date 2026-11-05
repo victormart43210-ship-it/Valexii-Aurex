@@ -5,22 +5,77 @@ Mounts `/v1/dispater` routes for:
 - GET  /v1/dispater/findings
 - GET  /v1/dispater/dashboard
 
-Enforces tenant isolation, authentication, and strictly synthetic execution.
+Enforces tenant isolation, token-principal binding, durable SQLite storage, and strictly synthetic execution.
 """
 
 from __future__ import annotations
 
+import hmac
+import os
 from typing import Any
 
-from fastapi import APIRouter, HTTPException, Query, status
+from fastapi import APIRouter, Header, HTTPException, Query, status
 from pydantic import BaseModel, Field
 
-from aurex.dispater_intelligence import InvalidSnapshot, RevenueLeakageEngine
+from aurex.dispater_intelligence import (
+    DEFAULT_DISPATER_DB,
+    InvalidSnapshot,
+    RevenueLeakageEngine,
+    TenantAuthorizationError,
+    get_latest_audit_run,
+)
 
 router = APIRouter(prefix="/v1/dispater", tags=["dispater"])
 
-# In-memory tenant store for demonstration results (tenant-isolated)
-_DISPATER_RUNS: dict[str, dict[str, Any]] = {}
+
+def authorize_tenant_principal(
+    tenant_id: str,
+    authorization: str | None = Header(default=None),
+) -> str:
+    """Authorize authenticated principal against requested tenant.
+
+    Guarantees:
+    - Never treat unverified caller tenant ID as proof of access.
+    - Tenant isolation fails closed if principal is not authorized for tenant.
+    - Rejects missing, invalid, or cross-tenant manipulation attempts.
+    """
+    if not authorization or not authorization.startswith("Bearer "):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Missing or malformed Authorization header",
+        )
+    supplied = authorization[7:].strip()
+    if not supplied.isascii() or len(supplied) < 32:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid authorization token",
+        )
+
+    # In production, tenant mapping derives from cryptographically verified claims or token binding
+    # For synthetic demonstration and staging: tokens scoped to tenant-specific secrets or admin service token
+    service_token = os.environ.get("AUREX_SERVICE_TOKEN")
+    admin_token = os.environ.get("AUREX_ADMIN_TOKEN")
+
+    # If tenant-specific token configured:
+    tenant_env_var = f"AUREX_TENANT_TOKEN_{tenant_id.replace('-', '_').upper()}"
+    tenant_token = os.environ.get(tenant_env_var)
+
+    authorized = False
+    if tenant_token and hmac.compare_digest(supplied, tenant_token):
+        authorized = True
+    elif service_token and hmac.compare_digest(supplied, service_token):
+        # Global service token authorized for all synthetic tenants
+        authorized = True
+    elif admin_token and hmac.compare_digest(supplied, admin_token):
+        authorized = True
+
+    if not authorized:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Access forbidden: Principal not authorized for requested tenant",
+        )
+
+    return tenant_id
 
 
 class ReconciliationRequest(BaseModel):
@@ -33,15 +88,24 @@ class ReconciliationRequest(BaseModel):
 
 
 @router.post("/reconciliation")
-def run_reconciliation(payload: ReconciliationRequest) -> dict[str, Any]:
+def run_reconciliation(
+    payload: ReconciliationRequest,
+    authorization: str | None = Header(default=None),
+) -> dict[str, Any]:
+    # 1. Authorize principal for target tenant
+    authorize_tenant_principal(payload.tenant_id, authorization=authorization)
+
     if payload.dataset_type != "SYNTHETIC_ONLY":
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Only SYNTHETIC_ONLY datasets are admitted for demonstration.",
         )
-    engine = RevenueLeakageEngine(tenant_id=payload.tenant_id)
+
+    engine = RevenueLeakageEngine(tenant_id=payload.tenant_id, db_path=DEFAULT_DISPATER_DB)
     try:
         report = engine.reconcile_records(payload.model_dump())
+    except TenantAuthorizationError as exc:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=str(exc))
     except InvalidSnapshot as exc:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc))
     except Exception as exc:
@@ -50,15 +114,17 @@ def run_reconciliation(payload: ReconciliationRequest) -> dict[str, Any]:
             detail=f"Reconciliation failure: {exc}",
         )
 
-    _DISPATER_RUNS[payload.tenant_id] = report
     return report
 
 
 @router.get("/findings")
 def get_findings(
     tenant_id: str = Query(default="default", min_length=1, max_length=64),
+    authorization: str | None = Header(default=None),
 ) -> dict[str, Any]:
-    run = _DISPATER_RUNS.get(tenant_id)
+    authorize_tenant_principal(tenant_id, authorization=authorization)
+
+    run = get_latest_audit_run(tenant_id, db_path=DEFAULT_DISPATER_DB)
     if not run:
         return {
             "tenant_id": tenant_id,
@@ -68,6 +134,7 @@ def get_findings(
         }
     return {
         "tenant_id": tenant_id,
+        "run_id": run.get("run_id"),
         "status": run.get("status"),
         "dataset_sha256": run.get("dataset_sha256"),
         "receipt_sha256": run.get("receipt_sha256"),
@@ -80,8 +147,11 @@ def get_findings(
 @router.get("/dashboard")
 def get_dashboard(
     tenant_id: str = Query(default="default", min_length=1, max_length=64),
+    authorization: str | None = Header(default=None),
 ) -> dict[str, Any]:
-    run = _DISPATER_RUNS.get(tenant_id)
+    authorize_tenant_principal(tenant_id, authorization=authorization)
+
+    run = get_latest_audit_run(tenant_id, db_path=DEFAULT_DISPATER_DB)
     if not run:
         return {
             "tenant_id": tenant_id,
@@ -104,10 +174,20 @@ def get_dashboard(
 
     return {
         "tenant_id": tenant_id,
+        "run_id": run.get("run_id"),
         "status": run.get("status"),
         "last_reconciliation_sha256": run.get("receipt_sha256"),
         "identified_exposure_usd": run.get("financial_summary", {}).get(
             "identified_exposure_usd", "0.00"
+        ),
+        "potential_underbilling_usd": run.get("financial_summary", {}).get(
+            "potential_underbilling_usd", "0.00"
+        ),
+        "potential_overbilling_usd": run.get("financial_summary", {}).get(
+            "potential_overbilling_usd", "0.00"
+        ),
+        "unverified_exposure_usd": run.get("financial_summary", {}).get(
+            "unverified_exposure_usd", "0.00"
         ),
         "confirmed_recovery_usd": "0.00",
         "finding_counts": {
