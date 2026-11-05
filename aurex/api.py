@@ -19,6 +19,7 @@ from aurex.database import (
     list_evidence,
     list_jobs,
 )
+from aurex.dispater_api import router as dispater_router
 from aurex.fenced_worker import cancel_job, claim_job, finalize_job
 from aurex.governance_math.industrial_api import router as industrial_demo_router
 from aurex.governance_math.research_api import router as research_advice_router
@@ -83,6 +84,7 @@ app.include_router(research_advice_router, dependencies=[Depends(authenticate)])
 app.include_router(industrial_demo_router, dependencies=[Depends(authenticate)])
 app.include_router(towing_router, dependencies=[Depends(authenticate)])
 app.include_router(xaeli_staging_router, dependencies=[Depends(authenticate)])
+app.include_router(dispater_router, dependencies=[Depends(authenticate)])
 
 
 class JobCreateRequest(BaseModel):
