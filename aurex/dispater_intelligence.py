@@ -1037,7 +1037,9 @@ def _orphan_payment_withhold(
     for amount in amounts:
         jobs = [item for item in remaining if parse_money(item["exposure_usd"]) == amount]
         pays = [item for item in open_payments if parse_money(item["exposure_usd"]) == amount]
-        if not jobs or not pays:
+        # Several jobs at one flat rate are not all the same payment. Withhold
+        # only when a single unbilled amount is the match.
+        if len(jobs) != 1 or not pays:
             continue
         for item in jobs + pays:
             keys.add((item["code"], item["subject"]))

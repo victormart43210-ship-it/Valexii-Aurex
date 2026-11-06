@@ -28,7 +28,7 @@ def destination_allowed(url: str, *, purpose: str) -> bool:
 def connector_destination_allowed(url: str) -> bool:
     """True for a host named in AUREX_EGRESS_ALLOWLIST.
 
-    An empty allowlist denies every non-loopback destination. This is an
+    An empty allowlist denies every destination, including loopback. This is an
     application check. It is not a container, host, or Railway firewall.
     """
     assert_no_effect()
