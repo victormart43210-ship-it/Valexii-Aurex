@@ -51,3 +51,11 @@ XAELI staging was not verified. The public page stays scripted. Staging flags ar
 [Independent financial review](bc-8d014e21-f195-52e8-a120-cc026e7cfd43) reviewed `cf083f7` on this same checkout and returned NO-GO. The independent-assurance gate stays open. Do not merge pull request 180. GitHub CI on `0f32769` does not cover this SHA.
 
 Next action: push this head and wait for GitHub CI. Leave the pull request in draft.
+
+## 2026-11-06 10:21 AM CT — CCL
+
+Tested code `4d9beb1c4b0156799de88b31aff6f6eb2c0b46e8`. `pytest -q`: 709 passed, 1 skipped. Golden identified `385.00`, withheld `150.00`, confirmed `0.00`.
+
+Customer contact, financial action, and training reuse are refused in `aurex/customer_sovereignty.py`. A reviewer token is not a signature. `SYNTHETIC_ONLY` stays unverified. The historical path still does not read source files.
+
+[Independent trust review](bc-1611271a-d149-5753-8b72-a42b7b07569c) reviewed `4d9beb1` on this same checkout and returned NO-GO. The assurance gate stays open. Do not merge pull request 180. GitHub CI on `e82d63c` does not cover this code.
