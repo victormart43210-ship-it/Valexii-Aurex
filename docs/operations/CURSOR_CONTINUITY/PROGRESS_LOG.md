@@ -17,3 +17,5 @@ Frontend: vitest 157 passed, `tsc --noEmit` exited 0, `npm run build` exited 0.
 Browser: Google Chrome 156 opened `http://127.0.0.1:5173/dispater` against uvicorn on port 8765. Admit synthetic CSV showed SYNTHETIC DOCUMENT, ORPHAN_INVOICE, $10.00 identified, $0.00 confirmed, BOUND_V2. Run Synthetic Audit showed SYNTHETIC DEMO, $1750.00 identified, $0.00 confirmed, BOUND_V2. The service token was not in the page or loaded scripts.
 
 OCR and the named supply-chain scanners were not installed and were not run.
+
+Pull request #177 is open against `cursor/kusanagi-ccxxxv-industrial-beta-4082`: https://github.com/victormart43210-ship-it/Valexii-Aurex/pull/177

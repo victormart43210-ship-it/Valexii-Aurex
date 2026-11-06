@@ -18,8 +18,8 @@
   "final_sha_note": "implementation_sha is the code commit. The pull request head is the later handoff commit. Do not treat this file's own commit as the implementation SHA.",
   "branch": "cursor/kusanagi-ccxxxix-sovereign-convergence-4082",
   "pr_base_branch": "cursor/kusanagi-ccxxxv-industrial-beta-4082",
-  "pr_number": null,
-  "pr_url": null,
+  "pr_number": 177,
+  "pr_url": "https://github.com/victormart43210-ship-it/Valexii-Aurex/pull/177",
   "ancestry": {
     "main": "34cda4bd8f207f5b1284093b87e4760d782a4903",
     "pr_170": "d2e3df77 included through PR 171; not reimplemented",

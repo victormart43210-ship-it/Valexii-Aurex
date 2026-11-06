@@ -18,4 +18,6 @@ The local website at `/dispater` can admit one synthetic CSV and run the oilfiel
 
 OCR, live model inference, Playwright, OSV-Scanner, Syft, and Semgrep were not verified.
 
+Pull request: https://github.com/victormart43210-ship-it/Valexii-Aurex/pull/177
+
 Do not overwrite `docs/operations/CURSOR_CHATGPT_HANDOFF.json`. The CCXXXIX handoff is `docs/operations/CURSOR_CHATGPT_HANDOFF_CCXXXIX.json`.
