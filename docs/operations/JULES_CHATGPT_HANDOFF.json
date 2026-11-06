@@ -213,5 +213,17 @@
     "independent_human_assurance": "OPEN",
     "external_anchor": "NOT_VERIFIED",
     "next_executable_action": "Copilot incorporates the tested SHA. Cursor reviews that new SHA. Do not merge."
+  },
+  "cclix_note": {
+    "operation": "KUSANAGI_CCLIX",
+    "recorded_at": "2026-11-06T20:38:00Z",
+    "note": "Website convergence on PR 184. This note does not replace earlier Jules or Cursor records. PRs 172 and 176 stay excluded.",
+    "tested_code_sha": "ba6db1bac46e76317e6218301f1d71f051781636",
+    "foundation_sha": "fa9d2254a2b2e15b7117c55ef6917d365357caf5",
+    "decision": "HOLD_WITH_BLOCKERS",
+    "production": "HOLD",
+    "financial_authority": "NONE",
+    "xaeli": "NOT_VERIFIED",
+    "next_executable_action": "Review the branch. Do not merge or deploy."
   }
 }
