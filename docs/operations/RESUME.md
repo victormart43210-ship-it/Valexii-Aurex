@@ -36,6 +36,6 @@ GitHub CI run 42235274479 and CLIV run 42235274474 failed on `b5b935763f8c7658dc
 
 Do not merge pull request 180. Do not merge 172, 175, or 176. Pull request 172 head is now `47c23fcaa52923820e0c573f2e046d871da47fec` and adds `aurex/the_big_one.py`, which walks a directory. Leave it out.
 
-Release decision: NO-GO until GitHub reruns CI and CLIV on the repair commit and the Opus reviewer findings are recorded.
+Release decision: NO-GO. Independent contract review `bc-74a1875d-ee1e-59f9-9b9e-0f6a8184a6ab` returned NO-GO against `b5b9357`. Misapplied double booking, orphan reversals, and the registry denylist were repaired afterward and still need a fresh review. Caller-supplied synthetic labels and unverified byte length remain.
 
 Production is HOLD. Financial authority is NONE.

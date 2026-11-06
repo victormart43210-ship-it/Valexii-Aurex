@@ -85,6 +85,83 @@ def test_misapplied_payment_is_counted_once() -> None:
     assert {item["code"] for item in report["findings"]} == {"MISAPPLIED_PAYMENT"}
 
 
+def test_misapplied_cash_does_not_add_a_second_dollar_event() -> None:
+    """A rate gap already holds the invoice. The wrong-job payment is recorded at zero dollars."""
+    report = RevenueLeakageEngine("tenant-a").reconcile_records(
+        {
+            "tenant_id": "tenant-a",
+            "dataset_type": "SYNTHETIC_ONLY",
+            "jobs": [{"job_id": "J1", "customer_id": "C1", "service_code": "S", "date": "2026-03-01"}],
+            "rates": [
+                {
+                    "rate_id": "R1",
+                    "customer_id": "C1",
+                    "service_code": "S",
+                    "start": "2026-01-01",
+                    "end": "2026-12-31",
+                    "amount": "100.00",
+                }
+            ],
+            "invoices": [{"invoice_id": "I1", "job_id": "J1", "amount": "150.00", "status": "open"}],
+            "payments": [{"payment_id": "P1", "invoice_id": "I1", "amount": "40.00", "job_id": "OTHER"}],
+        }
+    )
+    summary = report["financial_summary"]
+    assert summary["potential_overbilling_usd"] == "50.00"
+    assert summary["identified_exposure_usd"] == "50.00"
+    assert summary["confirmed_recovery_usd"] == "0.00"
+    misapplied = next(item for item in report["findings"] if item["code"] == "MISAPPLIED_PAYMENT")
+    assert misapplied["exposure_usd"] == "0.00"
+
+
+def test_duplicate_invoice_does_not_book_a_misapplied_payment() -> None:
+    report = RevenueLeakageEngine("tenant-a").reconcile_records(
+        {
+            "tenant_id": "tenant-a",
+            "dataset_type": "SYNTHETIC_ONLY",
+            "jobs": [{"job_id": "J1", "customer_id": "C1", "service_code": "S", "date": "2026-03-01"}],
+            "rates": [
+                {
+                    "rate_id": "R1",
+                    "customer_id": "C1",
+                    "service_code": "S",
+                    "start": "2026-01-01",
+                    "end": "2026-12-31",
+                    "amount": "100.00",
+                }
+            ],
+            "invoices": [
+                {"invoice_id": "I1A", "job_id": "J1", "amount": "100.00", "status": "open"},
+                {"invoice_id": "I1B", "job_id": "J1", "amount": "100.00", "status": "open"},
+            ],
+            "payments": [{"payment_id": "P1", "invoice_id": "I1A", "amount": "100.00", "job_id": "OTHER"}],
+        }
+    )
+    summary = report["financial_summary"]
+    assert summary["identified_exposure_usd"] == "0.00"
+    assert summary["withheld_unresolved_usd"] == "200.00"
+    assert summary["confirmed_recovery_usd"] == "0.00"
+
+
+def test_orphan_reversal_is_not_incoming_cash() -> None:
+    report = RevenueLeakageEngine("tenant-a").reconcile_records(
+        {
+            "tenant_id": "tenant-a",
+            "dataset_type": "SYNTHETIC_ONLY",
+            "jobs": [],
+            "rates": [],
+            "invoices": [],
+            "payments": [
+                {"payment_id": "P1", "invoice_id": "MISSING", "amount": "100.00", "kind": "REVERSAL"}
+            ],
+        }
+    )
+    assert report["financial_summary"]["identified_exposure_usd"] == "0.00"
+    assert report["financial_summary"]["confirmed_recovery_usd"] == "0.00"
+    assert report["findings"][0]["code"] == "ORPHAN_PAYMENT"
+    assert report["findings"][0]["exposure_usd"] == "0.00"
+
+
 def test_successor_rate_does_not_invalidate_an_unrelated_period() -> None:
     report = RevenueLeakageEngine("tenant-a").reconcile_records(_base())
     summary = report["financial_summary"]

@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import re
 import time
 from collections.abc import Callable, Mapping, Sequence
 from typing import Any
@@ -15,6 +16,7 @@ from typing import Any
 from aurex.ox.registry import RegistryError, get_model
 
 Provider = Callable[[str], Mapping[str, Any]]
+_MONEY = re.compile(r"\d+\.\d{2}")
 
 # Independent literals. Do not derive these from a model function.
 FIXTURES: tuple[dict[str, Any], ...] = (
@@ -84,6 +86,11 @@ def _score_case(fixture: Mapping[str, Any], output: Mapping[str, Any]) -> dict[s
         circular = False
     numerical = all(output.get(key) == answer[key] for key in answer if key in {"amount", "invoice_id"})
     recovery_ok = output.get("confirmed_recovery_usd", "0.00") == "0.00" and output.get("authority") == "NONE"
+    allowed_amounts = {value for value in answer.values() if isinstance(value, str)}
+    allowed_amounts.add("0.00")
+    for value in output.values():
+        if isinstance(value, str) and any(amount not in allowed_amounts for amount in _MONEY.findall(value)):
+            recovery_ok = False
     cited = fixture["required_citation"] in citations and citations != [output.get("model_id")]
     return {
         "case_id": fixture["case_id"],

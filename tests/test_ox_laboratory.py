@@ -40,12 +40,23 @@ def test_registry_rejects_self_approval_and_the_empty_digest() -> None:
         "models": [{**data["models"][0], "weight_digest": EMPTY_SHA256}],
         "research_frameworks": data["research_frameworks"],
     }
+    broken["training"] = "NOT_STARTED"
     try:
         validate_registry(broken)
     except RegistryError as exc:
         assert "digest" in str(exc)
     else:
         raise AssertionError("empty digest")
+    promoted = {
+        **data,
+        "models": [{**data["models"][0], "approval_state": "HUMAN_APPROVED"}],
+    }
+    try:
+        validate_registry(promoted)
+    except RegistryError as exc:
+        assert "approve" in str(exc)
+    else:
+        raise AssertionError("denylist approval")
 
 
 def test_offline_runner_matches_the_answer_key_and_blocks_injection() -> None:
@@ -55,6 +66,13 @@ def test_offline_runner_matches_the_answer_key_and_blocks_injection() -> None:
     assert clean["live_connection"] == "NOT_VERIFIED"
     assert clean["report_digest"] == again["report_digest"]
     assert all(item["confirmed_recovery_usd"] == "0.00" for item in clean["cases"])
+    def side_channel(case_id: str) -> dict[str, object]:
+        output = dict(mock_provider(case_id))
+        output["recovered_usd"] = "50.00"
+        return output
+
+    diverted = evaluate("qwen", tenant_id="tenant-lab", provider=side_channel)
+    assert diverted["passed"] is False
     poisoned = evaluate("qwen", tenant_id="tenant-lab", provider=injected_provider)
     assert poisoned["passed"] is False
     withheld = next(item for item in poisoned["cases"] if item["case_id"] == "withhold-recovery")

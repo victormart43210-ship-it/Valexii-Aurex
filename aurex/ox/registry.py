@@ -6,7 +6,8 @@ is not accepted as evidence that a model was installed.
 
 from __future__ import annotations
 
-from typing import Any, cast
+import copy
+from typing import Any
 
 EMPTY_SHA256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
 
@@ -64,16 +65,20 @@ def validate_registry(registry: dict[str, Any] | None = None) -> dict[str, Any]:
     data = REGISTRY if registry is None else registry
     if data.get("paid_inference") != "OFF" or data.get("financial_authority") != "NONE":
         raise RegistryError("paid inference and financial authority stay off")
+    if data.get("training") != "NOT_STARTED":
+        raise RegistryError("training is not started")
     seen: set[str] = set()
     for entry in data["models"]:
         if set(entry) != _MODEL_FIELDS:
             raise RegistryError(f"model fields do not match v1: {entry.get('entry_id')}")
         if not entry["license"] or not entry["entry_id"] or entry["entry_id"] in seen:
             raise RegistryError("every model needs a unique id and a license record")
-        if entry["self_approval_allowed"] or entry["approval_state"] == "APPROVED":
+        if entry["self_approval_allowed"] or entry["approval_state"] != "CANDIDATE":
             raise RegistryError("a registry entry cannot approve itself")
-        if entry["live_connection"] == "VERIFIED" or entry["evaluation_status"] == "PASSED":
+        if entry["live_connection"] != "NOT_VERIFIED" or entry["evaluation_status"] != "NOT_EVALUATED":
             raise RegistryError("this registry has no verified live model")
+        if entry["runtime"] != "NOT_INSTALLED":
+            raise RegistryError("a candidate runtime is not installed")
         if not _digest_ok(entry["weight_digest"]) or not _digest_ok(entry["tokenizer_digest"]):
             raise RegistryError("an empty or malformed digest is not an installed model")
         seen.add(str(entry["entry_id"]))
@@ -89,5 +94,5 @@ def get_model(entry_id: str) -> dict[str, Any]:
     validate_registry()
     for entry in REGISTRY["models"]:
         if entry["entry_id"] == entry_id:
-            return cast(dict[str, Any], entry)
+            return copy.deepcopy(entry)
     raise RegistryError(f"unknown model {entry_id}")

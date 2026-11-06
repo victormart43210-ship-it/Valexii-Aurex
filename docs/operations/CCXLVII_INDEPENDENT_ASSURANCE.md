@@ -4,9 +4,23 @@ Recorded 2026-11-06 8:57 AM CT (`2026-11-06T14:57:00Z`).
 
 ## Reviewer
 
-An Opus-class read-only reviewer was started in a separate agent (`bc-74a1875d-ee1e-59f9-9b9e-0f6a8184a6ab`, model Claude Opus). It was told not to edit files. Its findings were not back when this note was written.
+[Independent contract review](bc-74a1875d-ee1e-59f9-9b9e-0f6a8184a6ab) read the contracts at `b5b935763f8c7658dcc1f8aa54d221a4fb7a5a50` and did not edit files. It used the same checkout and interpreter as this session, so it is not a separate runner. Its verdict was NO-GO for merging pull request 180 to `main`.
 
-This session repaired the test and wrote this note. It is not an outside witness. The reviewer shares the same repository checkout, so even its report is not a separate runner. A human review is still required before any merge.
+Findings it reported, and what happened after:
+
+| Finding | Result |
+|---|---|
+| Confirmed recovery stays `0.00`. The engine has no `CONFIRMED_DISCREPANCY` qualification. | Accepted. Still true. |
+| A misapplied payment added dollars on an invoice that already had a rate gap, a duplicate, or an orphan finding. | Reproduced. The payment finding remains, and its exposure is `0.00` when that invoice already holds the dollar event. A lone misapplied payment on a matched invoice is still `100.00` once. |
+| An orphan `REVERSAL` was booked as positive exposure. | Reproduced. A reversal with no invoice now has exposure `0.00`. |
+| Registry checks were a denylist. `HUMAN_APPROVED`, `LIVE`, and `training=STARTED` could pass. | Reproduced. The registry now allows only `CANDIDATE`, `NOT_VERIFIED`, `NOT_EVALUATED`, `NOT_INSTALLED`, and `training=NOT_STARTED`. |
+| An extra `recovered_usd` of `50.00` still passed the scorer. | Reproduced. Any money string that is not in the answer key, other than `0.00`, fails the case. |
+| `byte_length` is range-checked and reported `byte_length_verified: false`. The digest covers normalized rows, not source bytes. `HUMAN`, the clock, and `SYNTHETIC_ONLY` are caller-supplied strings. | Still true. Not changed. A caller can label rows synthetic. |
+| An unbilled job and a separate orphan invoice can both carry dollars when the invoice does not name that job. | Still true. The engine does not invent that join. |
+| `verify_receipt` is an unkeyed SHA-256. `get_model` returned a live registry object. | The lookup now returns a copy. The receipt hash is unchanged. |
+| CI was red at `b5b9357`. | The collection repair is `aa49c56`. GitHub `CI` / `test` was SUCCESS on that commit. CLII and CLIV were still running when this note was updated. This later repair has not been rerun on GitHub. |
+
+The reviewer has not re-reviewed these repairs. This session wrote them.
 
 ## What this session checked
 

@@ -560,7 +560,11 @@ class RevenueLeakageEngine:
                 )
 
         for payment in misapplied:
-            amount = parse_money(payment["amount"])
+            invoice = invoices_by_id.get(payment["invoice_id"])
+            invoice_id = invoice["invoice_id"] if invoice is not None else ""
+            already_assigned = invoice_id in orphan_ids or invoice_id in duplicate_ids or invoice_id in rate_mismatch_ids
+            signed = _signed_payment(payment)
+            amount = Decimal("0.00") if already_assigned or signed < 0 else signed
             totals[UNVERIFIED] += amount
             findings.append(
                 self._create_finding(
@@ -585,7 +589,9 @@ class RevenueLeakageEngine:
         for payment in payments:
             p_id = payment["payment_id"]
             if payment["invoice_id"] not in invoice_ids:
-                p_amt = parse_money(payment["amount"])
+                signed = _signed_payment(payment)
+                # A reversal without an invoice is not incoming cash.
+                p_amt = Decimal("0.00") if signed < 0 else signed
                 totals[UNVERIFIED] += p_amt
                 findings.append(
                     self._create_finding(

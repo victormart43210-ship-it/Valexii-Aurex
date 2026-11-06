@@ -98,7 +98,7 @@
     "local_pytest_q": "695 passed, 1 skipped (training/tests/test_lora_smoke.py, torch absent), exit 0",
     "github_rerun": "PENDING",
     "decision": "NO-GO",
-    "reviewer": "Opus-class agent bc-74a1875d-ee1e-59f9-9b9e-0f6a8184a6ab was started read-only. Findings were not in hand at this record.",
+    "reviewer": "Independent contract review bc-74a1875d-ee1e-59f9-9b9e-0f6a8184a6ab returned NO-GO on b5b9357. Same checkout. Findings are in CCXLVII_INDEPENDENT_ASSURANCE.md. Later repairs are not re-reviewed.",
     "artifacts": [
       "docs/operations/CCXLVII_CI_FAILURE_MATRIX.json",
       "docs/operations/CCXLVII_DEPENDENCY_MATRIX.json",
