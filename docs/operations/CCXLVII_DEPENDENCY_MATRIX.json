@@ -1,0 +1,81 @@
+{
+  "operation": "KUSANAGI_CCXLVII",
+  "recorded_at": "2026-11-06T14:57:00Z",
+  "candidate_branch": "cursor/kusanagi-ccxlvi-sovereign-ascendancy-4082",
+  "candidate_base": "cursor/kusanagi-ccxli-aurex-ascendancy-4082",
+  "candidate_base_sha": "9148634e75a66c1ab7f43fa4f08a039620661a9f",
+  "origin_main_sha": "34cda4bd8f207f5b1284093b87e4760d782a4903",
+  "merge_to_main": "NO-GO. The candidate contains the unmerged stack and is not independently mergeable to main.",
+  "safe_order_already_in_the_branch": ["171", "174", "177", "178", "180"],
+  "pull_requests": [
+    {
+      "number": 171,
+      "head": "db4670ab78fa36c8a2b4b8b66df842350440e437",
+      "base": "main",
+      "state": "OPEN",
+      "relation": "INCLUDED. Ancestor of this branch."
+    },
+    {
+      "number": 174,
+      "head": "2d0b62400e0ad40f2780f51b26ba0d09261cd724",
+      "base": "cursor/kusanagi-ccxxxiv-sovereign-beta-4082",
+      "state": "OPEN",
+      "relation": "INCLUDED. Ancestor of this branch."
+    },
+    {
+      "number": 177,
+      "head": "cffef9d4adcb6ff0dfca04629cacdb93760dbde7",
+      "base": "cursor/kusanagi-ccxxxv-industrial-beta-4082",
+      "state": "OPEN",
+      "relation": "INCLUDED. Ancestor of this branch."
+    },
+    {
+      "number": 178,
+      "head": "9148634e75a66c1ab7f43fa4f08a039620661a9f",
+      "base": "cursor/kusanagi-ccxxxix-sovereign-convergence-4082",
+      "state": "OPEN",
+      "relation": "INCLUDED. This is the base of pull request 180."
+    },
+    {
+      "number": 180,
+      "head_before_ccxlvii": "b5b935763f8c7658dcc1f8aa54d221a4fb7a5a50",
+      "base": "cursor/kusanagi-ccxli-aurex-ascendancy-4082",
+      "state": "OPEN",
+      "draft": true,
+      "mergeable_against_its_base": "MERGEABLE",
+      "merge_state": "UNSTABLE because CI and CLIV failed",
+      "relation": "CANDIDATE. Do not merge to main ahead of 171, 174, 177, and 178."
+    },
+    {
+      "number": 172,
+      "head": "47c23fcaa52923820e0c573f2e046d871da47fec",
+      "base": "main",
+      "state": "OPEN",
+      "relation": "NOT_INCLUDED. Head moved after the CCXLVI note. The diff now touches the financial engine, store, API, website, ascendancy modules, aurex/ox_model_lab.py, and aurex/the_big_one.py. That last module discovers a directory and hashes file bytes. Do not merge it and do not copy it into this branch."
+    },
+    {
+      "number": 175,
+      "head": "425d05470cf1463cf2b5c93b1457c1923ceb6b25",
+      "base": "main",
+      "state": "OPEN",
+      "draft": true,
+      "relation": "NOT_INCLUDED. It edits the shared engine, ingest, store, and website contract. Merging it would replace the stabilized parsers. Superseded as a git merge. Its assurance intent already lives in the stack tests."
+    },
+    {
+      "number": 176,
+      "head": "27d20d32f765a55a883f2b8cf15c106238031d84",
+      "base": "main",
+      "state": "OPEN",
+      "mergeable": "CONFLICTING",
+      "relation": "NOT_INCLUDED. Conflicts with main and overlaps dispater_intelligence.py, dispater_store.py, dispater_api.py, and the website DISPATER client."
+    },
+    {
+      "number": 179,
+      "head": "2984e6346efb453e3173773c774ac024fd659f85",
+      "base": "main",
+      "state": "OPEN",
+      "draft": true,
+      "relation": "CONTRACT_SOURCE_ONLY. Two markdown files. REANA, Rucio, ROOT, and InvenioRDM are not installed."
+    }
+  ]
+}

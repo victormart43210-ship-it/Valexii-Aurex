@@ -1,0 +1,57 @@
+{
+  "operation": "KUSANAGI_CCLVI",
+  "repository": "victormart43210-ship-it/Valexii-Aurex",
+  "branch": "cursor/kusanagi-cclvi-convergence-assurance-4082",
+  "base_branch": "integration/kusanagi-cclv-sovereign-mainline",
+  "base_sha": "c4f45925e086bbb23b643e66707b224419d52b60",
+  "tested_code_sha": "bd1c4d00559bed86d4e37aab103204cf95829769",
+  "final_pushed_sha": "the commit that adds these CCLVI records, which does not change the engine",
+  "origin_main_sha": "34cda4bd8f207f5b1284093b87e4760d782a4903",
+  "source_pr": "https://github.com/victormart43210-ship-it/Valexii-Aurex/pull/180",
+  "target_integration_pr": "https://github.com/victormart43210-ship-it/Valexii-Aurex/pull/181",
+  "upstream_cclv_status": "READY",
+  "completed_repairs": [
+    "Confusable and punctuated customer ids are not PROVEN_DISTINCT.",
+    "An equal unbilled job and orphan payment are withheld without restoring that pair when a one-cent payment is added.",
+    "A payment that names a job id is withheld with that job.",
+    "Monitor sidecar writes take a file lock on this host.",
+    "The website connector does not treat loopback as an implicit allow."
+  ],
+  "unresolved_defects": [
+    "Several unbilled jobs at one amount plus one equal orphan payment stay identified.",
+    "ASCII lookalikes, punctuated job ids, and split payments are not matched.",
+    "Rows plus sidecar plus anchor can be deleted together without detection.",
+    "Deletion and retention requests do not execute.",
+    "XAELI live connection NOT_VERIFIED.",
+    "CCLIII and CCLIV NOT_FOUND."
+  ],
+  "test_commands": [
+    "pytest -q",
+    "ruff check .",
+    "mypy aurex",
+    "npx vitest run",
+    "npx tsc --noEmit",
+    "npm run build",
+    "npm test in dispater-web"
+  ],
+  "test_results": {
+    "pytest": "732 passed, 1 skipped, exit 0",
+    "ruff": "PASS",
+    "mypy": "109 files, PASS",
+    "website_vitest": "157 passed",
+    "website_tsc_and_build": "PASS",
+    "dispater_web": "25 passed",
+    "xaeli": "NOT_VERIFIED"
+  },
+  "ci_status": "SUCCESS on pushed head 08d3f7a1e3304e7662b3591d57d1f3ecd3eee7c2 (six workflow runs). SUCCESS on upstream c4f45925 is a separate SHA.",
+  "security_limitations": [
+    "EXTERNAL_ANCHOR NOT_VERIFIED",
+    "Application allowlist is not a production firewall",
+    "Report encryption is optional and does not cover finding columns",
+    "Same-machine review is not human assurance"
+  ],
+  "next_action": "Copilot incorporates bd1c4d00559bed86d4e37aab103204cf95829769 into the CCLV branch without a force-push. Cursor then reviews that new SHA. Do not merge pull request 181 or 180. Production remains HOLD.",
+  "decision": "HOLD_WITH_BLOCKERS",
+  "production": "HOLD",
+  "financial_authority": "NONE"
+}

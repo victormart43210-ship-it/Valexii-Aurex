@@ -1,0 +1,17 @@
+{
+  "operation": "KUSANAGI_CCLXV",
+  "tested_code_sha": "cfbf5386e679696048318ad843aeb29b520654bb",
+  "golden": {
+    "identified_exposure_usd": "385.00",
+    "withheld_unresolved_usd": "150.00",
+    "confirmed_recovery_usd": "0.00",
+    "result": "PASS"
+  },
+  "website_fixture_is_not_the_golden_ledger": {
+    "identified_exposure_usd": "1750.00",
+    "confirmed_recovery_usd": "0.00"
+  },
+  "approval_claim": {"effect": "NONE", "financial_action": "NONE", "verification": "UNVERIFIED"},
+  "financial_authority": "NONE",
+  "suite": "pytest -q: 760 passed, 1 skipped"
+}

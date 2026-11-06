@@ -1,0 +1,30 @@
+{
+  "operation": "KUSANAGI_CCLXV",
+  "tested_code_sha": "cfbf5386e679696048318ad843aeb29b520654bb",
+  "remote_staging": "NOT_AVAILABLE. AUREX_STAGING_SERVICE_URL is absent. The configured service host seen in this environment was http://127.0.0.1:8765, which is loopback, not a remote staging deployment.",
+  "local_browser": {
+    "url": "http://127.0.0.1:5190/dispater",
+    "api": "http://127.0.0.1:8766",
+    "result": "PASS",
+    "witness": "SAME_SESSION",
+    "api_link": "CONNECTED",
+    "identified_exposure_usd": "1750.00",
+    "withheld_unresolved_usd": "0.00",
+    "confirmed_recovery_usd": "0.00",
+    "receipt_binding": "BOUND_V2",
+    "receipt_sha256_prefix": "92de3d5b2e874255",
+    "stored_run": "MATCH",
+    "presentation": ["NOW", "CHANGED", "NEXT", "WHY", "PROOF"],
+    "authority": "HOLD",
+    "financial_authority": "NONE",
+    "service_token_visible": false
+  },
+  "api_tests": {
+    "stored_readback": "PASS",
+    "missing_authentication": "PASS 401 or 403",
+    "invalid_amount": "PASS 400",
+    "approval_claim_effect": "NONE",
+    "duplicate_invoice": "PASS by the existing golden test DUPLICATE_INVOICE_UNRESOLVED. No new duplicate rule was added.",
+    "expired_evidence": "NOT_IMPLEMENTED. Retention is recorded and not enforced."
+  }
+}

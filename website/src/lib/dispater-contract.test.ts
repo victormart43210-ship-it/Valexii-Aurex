@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { DispaterReconciliationReportSchema } from "./dispater-contract";
+import { DispaterDocumentIngestionSchema, DispaterReconciliationReportSchema } from "./dispater-contract";
 
 const SIGNED = {
   schema: "s",
@@ -27,6 +27,13 @@ describe("receipt export round-trip", () => {
     const exported = JSON.parse(JSON.stringify(parsed, null, 2));
     expect(exported).toEqual(SIGNED);
   });
+  it("rejects a recovery amount other than zero", () => {
+    const altered = {
+      ...SIGNED,
+      financial_summary: { ...SIGNED.financial_summary, confirmed_recovery_usd: "385.00" },
+    };
+    expect(DispaterReconciliationReportSchema.safeParse(altered).success).toBe(false);
+  });
   it("rejects malformed receipt fields instead of dropping them", () => {
     expect(
       DispaterReconciliationReportSchema.safeParse({ ...SIGNED, receipt_mac: 42 }).success,
@@ -34,6 +41,27 @@ describe("receipt export round-trip", () => {
     expect(
       DispaterReconciliationReportSchema.safeParse({ ...SIGNED, receipt_auth: "x" }).success,
     ).toBe(false);
+  });
+  it("keeps document provenance outside financial authority", () => {
+    const parsed = DispaterDocumentIngestionSchema.parse({
+      authority_state: "HOLD",
+      financial_authority: "NONE",
+      ingestion_authenticated: false,
+      ocr_status: "NOT_INSTALLED",
+      ingestion: {
+        source_sha256: "ab".repeat(32),
+        filename: "invoice.pdf",
+        kind: "pdf",
+        processor: { name: "dispater_ingest", version: "v1", model: null, ocr: "NOT_INSTALLED" },
+        provenance: [{ source_sha256: "ab".repeat(32), row: "1", qualification: "EXTRACTED" }],
+        field_provenance: [{ page: 1, method: "pdf_text", qualification: "EXTRACTED" }],
+        limits: "OCR is not installed",
+      },
+      report: SIGNED,
+    });
+    expect(parsed.report.financial_summary.confirmed_recovery_usd).toBe("0.00");
+    expect(parsed.ingestion.field_provenance[0]?.["page"]).toBe(1);
+    expect(parsed.financial_authority).toBe("NONE");
   });
   it("does not invent a MAC when the backend sent none", () => {
     const { receipt_mac: _m, receipt_auth: _a, ...unsigned } = SIGNED;

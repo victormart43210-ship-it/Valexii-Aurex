@@ -1,7 +1,12 @@
 import { useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
-import { runDispaterDemoReconciliation } from "@/lib/dispater.functions";
+import {
+  admitSyntheticDispaterCsv,
+  readDispaterStoredRun,
+  runDispaterDemoReconciliation,
+} from "@/lib/dispater.functions";
 import type { DispaterReconciliationReport } from "@/lib/dispater-contract";
+import { dispaterLinkState } from "@/lib/dispater-link";
 import { Button } from "@/components/ui/button";
 import {
   CheckCircle2,
@@ -14,21 +19,57 @@ import {
 
 export function DispaterReconciliationConsole() {
   const reconcileFn = useServerFn(runDispaterDemoReconciliation);
+  const admitFn = useServerFn(admitSyntheticDispaterCsv);
+  const readFn = useServerFn(readDispaterStoredRun);
+  const [presentation, setPresentation] = useState<"SYNTHETIC DEMO" | "SYNTHETIC DOCUMENT">(
+    "SYNTHETIC DEMO",
+  );
   const [busy, setBusy] = useState(false);
   const [selectedFixture, setSelectedFixture] = useState<"oilfield_demo_v1" | "clean_control_v1">(
     "oilfield_demo_v1",
   );
   const [report, setReport] = useState<DispaterReconciliationReport | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [storedMatch, setStoredMatch] = useState<"MATCH" | "UNCHECKED" | null>(null);
 
   async function handleRunDemo() {
     setBusy(true);
     setErrorMsg(null);
+    setStoredMatch(null);
     try {
       const res = await reconcileFn({ data: { fixture: selectedFixture } });
+      setPresentation("SYNTHETIC DEMO");
+      if (res.run_id) {
+        const stored = await readFn({ data: { runId: res.run_id } });
+        if (
+          stored.receipt_sha256 !== res.receipt_sha256 ||
+          stored.financial_summary.confirmed_recovery_usd !== "0.00"
+        ) {
+          throw new Error("DISPATER API returned an invalid report");
+        }
+        setStoredMatch("MATCH");
+      } else {
+        setStoredMatch("UNCHECKED");
+      }
       setReport(res);
     } catch (err: unknown) {
       setErrorMsg(err instanceof Error ? err.message : "Reconciliation failed");
+      setReport(null);
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function handleAdmitCsv() {
+    setBusy(true);
+    setErrorMsg(null);
+    try {
+      const admitted = await admitFn({ data: {} });
+      setPresentation("SYNTHETIC DOCUMENT");
+      setStoredMatch(null);
+      setReport(admitted);
+    } catch (err: unknown) {
+      setErrorMsg(err instanceof Error ? err.message : "Document admission failed");
       setReport(null);
     } finally {
       setBusy(false);
@@ -51,18 +92,21 @@ export function DispaterReconciliationConsole() {
       className="rounded-xl border border-primary/30 bg-card p-6 shadow-xl"
       aria-labelledby="console-heading"
     >
+      <p className="mb-4 text-xs uppercase tracking-wider text-muted-foreground">
+        Synthetic demonstration. These dollars are not customer savings or recovered revenue.
+      </p>
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-border pb-4">
         <div>
           <span className="text-xs font-semibold uppercase tracking-wider text-primary">
-            DISPATER REVENUE RECONCILIATION CONSOLE
+            DISPATER REVENUE RECONCILIATION CONSOLE · {presentation}
           </span>
           <h3 id="console-heading" className="text-2xl font-display text-foreground mt-1">
             Automated Audit Workflow
           </h3>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:flex-wrap sm:items-center">
           <select
-            className="bg-background border border-border text-foreground text-sm rounded-lg px-3 py-2"
+            className="w-full bg-background border border-border text-foreground text-sm rounded-lg px-3 py-2 sm:w-auto"
             value={selectedFixture}
             onChange={(e) =>
               setSelectedFixture(e.target.value as "oilfield_demo_v1" | "clean_control_v1")
@@ -71,20 +115,20 @@ export function DispaterReconciliationConsole() {
             aria-label="Select test fixture"
           >
             <option value="oilfield_demo_v1">
-              Synthetic Oilfield Discrepancy (Deliberate Leakage)
+              Synthetic Oilfield Discrepancy (Planted differences)
             </option>
-            <option value="clean_control_v1">Clean Control Dataset (Zero False Positives)</option>
+            <option value="clean_control_v1">Clean Control Dataset (No findings in this sample)</option>
           </select>
           <Button
             type="button"
             variant="hero"
             disabled={busy}
             onClick={() => void handleRunDemo()}
-            className="flex items-center gap-2"
+            className="flex w-full items-center justify-center gap-2 sm:w-auto"
           >
             {busy ? (
               <>
-                <RefreshCw className="size-4 animate-spin" /> Running Audit…
+                <RefreshCw className="size-4 motion-reduce:animate-none animate-spin" /> Running Audit…
               </>
             ) : (
               <>
@@ -92,14 +136,21 @@ export function DispaterReconciliationConsole() {
               </>
             )}
           </Button>
+          <Button type="button" variant="glass" disabled={busy} onClick={() => void handleAdmitCsv()} className="w-full sm:w-auto">
+            Admit synthetic CSV
+          </Button>
         </div>
       </div>
+
+      <p className="mt-4 text-xs uppercase tracking-wider text-muted-foreground" role="status">
+        API link: {dispaterLinkState(busy, report, errorMsg)} · synthetic demonstration · not recovered revenue
+      </p>
 
       {errorMsg && (
         <div className="mt-4 rounded-lg border border-destructive/50 bg-destructive/10 p-4 text-destructive flex items-center gap-3">
           <ShieldAlert className="size-5 shrink-0" />
           <div>
-            <p className="font-semibold text-sm">Audit Error</p>
+            <p className="font-semibold text-sm">{dispaterLinkState(busy, report, errorMsg)}</p>
             <p className="text-xs">{errorMsg}</p>
           </div>
         </div>
@@ -119,6 +170,12 @@ export function DispaterReconciliationConsole() {
 
       {report && (
         <div className="mt-6 space-y-6">
+          <p className="text-xs uppercase tracking-wider text-muted-foreground">
+            {presentation} · {report.receipt_binding ?? "RECEIPT UNBOUND"} · confirmed recovery stays
+            ${report.financial_summary.confirmed_recovery_usd} · withheld $
+            {report.financial_summary.withheld_unresolved_usd ?? "0.00"} · XAELI cannot approve recovery
+            · you decide the next action · no vendor is contacted
+          </p>
           {/* Exposure and Stats Header */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div className="rounded-lg border border-border bg-background p-4">
@@ -128,6 +185,9 @@ export function DispaterReconciliationConsole() {
               </p>
               <span className="text-[10px] text-muted-foreground block mt-1">
                 Human Review Candidate
+                {report.financial_summary.event_separation
+                  ? ` · ${report.financial_summary.event_separation}`
+                  : ""}
               </span>
             </div>
             <div className="rounded-lg border border-border bg-background p-4">
@@ -154,7 +214,16 @@ export function DispaterReconciliationConsole() {
               >
                 SHA-256: {report.receipt_sha256.slice(0, 16)}…
               </p>
-              <span className="text-[10px] text-emerald block mt-1">Cryptographically Sealed</span>
+              <span className="text-[10px] text-muted-foreground block mt-1">
+                {report.receipt_binding === "BOUND_V2"
+                  ? "Identity-bound receipt"
+                  : "Legacy or unbound metadata"}
+                {storedMatch === "MATCH" ? " · Stored run matches" : ""}
+                {storedMatch === "UNCHECKED" ? " · Stored run was not read back" : ""}
+                {report.financial_summary.withheld_unresolved_usd
+                  ? ` · Withheld ${report.financial_summary.withheld_unresolved_usd}`
+                  : ""}
+              </span>
             </div>
           </div>
 
@@ -163,13 +232,18 @@ export function DispaterReconciliationConsole() {
             <h4 className="text-sm font-semibold uppercase tracking-wider text-foreground mb-3">
               Grounded Audit Findings ({report.findings.length})
             </h4>
+            <p className="text-xs text-muted-foreground -mt-2 mb-3">
+              XAELI can explain a finding. It cannot approve a recovery or replace the calculation.
+              The proof line is the trace back to the source digest, page, or row. OCR is not claimed
+              on this screen.
+            </p>
             {report.findings.length === 0 ? (
               <div className="rounded-lg border border-emerald/30 bg-emerald/5 p-4 text-emerald flex items-center gap-3">
                 <CheckCircle2 className="size-5 shrink-0" />
                 <div>
                   <p className="font-semibold text-sm">Control Dataset Clean</p>
                   <p className="text-xs">
-                    No billing anomalies or unbilled jobs detected. Zero false positives.
+                    This sample produced no findings. That is not proof of zero false positives.
                   </p>
                 </div>
               </div>
@@ -194,9 +268,19 @@ export function DispaterReconciliationConsole() {
                           {f.severity}
                         </span>
                         <span className="font-mono text-xs text-muted-foreground">{f.code}</span>
+                        {f.qualification ? (
+                          <span className="text-[10px] uppercase text-muted-foreground">
+                            {f.qualification}
+                          </span>
+                        ) : null}
                         <span className="font-semibold text-sm text-foreground">
                           Subject: {f.subject}
                         </span>
+                        {f.event_relation ? (
+                          <span className="text-[10px] uppercase text-amber">
+                            {f.event_relation}
+                          </span>
+                        ) : null}
                       </div>
                       <span className="text-sm font-bold text-gold">
                         Exposure: ${f.exposure_usd}
