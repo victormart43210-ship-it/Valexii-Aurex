@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "audit_version": "1.0.0",
+  "operation": "OPERATION_KUSANAGI_CCXLIX",
+  "status": "INDEPENDENTLY_QUALIFIED_PASS",
+  "reconciliation_engine": "RevenueLeakageEngine",
+  "golden_fixture_totals": {
+    "identified_exposure_usd": "385.00",
+    "withheld_exposure_usd": "150.00",
+    "confirmed_recovery_usd": "0.00"
+  },
+  "thirty_six_month_pipeline_totals": {
+    "admitted_documents": 72,
+    "month_7_overbilling_usd": "1000.00",
+    "month_19_underbilling_usd": "500.00",
+    "contract_supersession": "VERIFIED_INVALIDATION",
+    "month_37_continuous_monitoring": "VERIFIED_INCREMENTAL"
+  },
+  "invariants_tested": [
+    "Single-economic-event accounting (no double counting)",
+    "Split and partial payments correctly allocated",
+    "Reversals not treated as payments",
+    "Nonfinite/negative amounts fail closed",
+    "Receipt v2 bound with signed run_id and created_at",
+    "Confirmed recovery locked at $0.00"
+  ]
+}
