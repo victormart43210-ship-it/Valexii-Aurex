@@ -1,0 +1,92 @@
+{
+  "operation": "KUSANAGI_CCXLVI",
+  "project": "PROJECT_SOVEREIGN_ASCENDANCY",
+  "recorded_at": "2026-11-06T14:34:19Z",
+  "recorded_at_america_chicago": "2026-11-06T08:34:19-0600",
+  "repository": "victormart43210-ship-it/Valexii-Aurex",
+  "branch": "cursor/kusanagi-ccxlvi-sovereign-ascendancy-4082",
+  "base_branch": "cursor/kusanagi-ccxli-aurex-ascendancy-4082",
+  "base_commit_sha": "9148634e75a66c1ab7f43fa4f08a039620661a9f",
+  "origin_main_sha": "34cda4bd8f207f5b1284093b87e4760d782a4903",
+  "implementation_commit_sha": "2c4fd08288353b6e713207e3f2774e380e66c671",
+  "prior_implementation_commit_sha": "05c53ecf2298ce6f662f54d2277cb33fc9b3339e",
+  "production": "HOLD",
+  "financial_authority": "NONE",
+  "paid_inference": "OFF",
+  "training": "NOT_STARTED",
+  "customer_data_uploads": "PROHIBITED",
+  "independent_verification": "PENDING",
+  "agent_assignment": {
+    "coordinator_and_implementer": "This Cursor session, Grok 4.7 class",
+    "opus_class_parallel_writer": "NOT_LAUNCHED. Shared financial, store, and website API files were not edited in parallel.",
+    "grok_4_6_class_parallel_writer": "NOT_LAUNCHED. The same session wrote the registry, fixtures, and tests, then reran them.",
+    "independent_verifier": "PENDING. This session is not an outside witness."
+  },
+  "completed_work": [
+    "Re-read PR heads 171 through 179. Did not merge 172, 175, or 176.",
+    "Used PR 179 commit 2984e634 as the contract source only. Did not install REANA, Rucio, ROOT, or InvenioRDM.",
+    "Found no CCXLII branch and no aurex/the_big_one.py.",
+    "Left the DISPATER engine, store, and API unchanged and reran the existing golden audit.",
+    "Added aurex/ox registry, offline evaluation, customization contracts, and replay manifest.",
+    "Added an inactive historical validation proposal.",
+    "Added website routes /development-status, /aurex-ox, and /aurex-ox/model-laboratory."
+  ],
+  "files_modified_in_code_commits": [
+    "aurex/ox/__init__.py",
+    "aurex/ox/registry.py",
+    "aurex/ox/evaluation.py",
+    "aurex/ox/customization.py",
+    "aurex/ox/replay.py",
+    "aurex/ascendancy/historical_audit.py",
+    "tests/test_ox_laboratory.py",
+    "website/src/routes/development-status.tsx",
+    "website/src/routes/aurex-ox.tsx",
+    "website/src/routes/aurex-ox.index.tsx",
+    "website/src/routes/aurex-ox.model-laboratory.tsx",
+    "website/src/routeTree.gen.ts"
+  ],
+  "verification_on_this_candidate": {
+    "pytest": "python3 -m pytest tests -q --tb=line exited 0. 675 passed, 0 failed, 0 skipped, 1 StarletteDeprecationWarning.",
+    "ruff": "python3 -m ruff check aurex tests scripts/clii_sandbox.py exited 0.",
+    "mypy": "python3 -m mypy aurex aurex_foundation exited 0. 109 source files.",
+    "frontend_tests": "cd website && npx vitest run exited 0. 23 files, 157 passed. Bun was not the runner and was not claimed.",
+    "frontend_types": "cd website && npx tsc --noEmit -p tsconfig.json exited 0 after the route split.",
+    "frontend_build": "cd website && npm run build exited 0 after the route split.",
+    "browser": "Chrome loaded the three new routes on the local Vite server at 127.0.0.1:5173. Production was not deployed. vite preview did not start because it looked for dist/server/server.js."
+  },
+  "financial_pipeline": {
+    "status": "TESTED",
+    "engine_edited": false,
+    "golden_identified_usd": "385.00",
+    "golden_withheld_usd": "150.00",
+    "golden_confirmed_recovery_usd": "0.00",
+    "ascendancy_case": "Invoice 110.00 against rate 100.00 identified 10.00. Confirmed recovery 0.00."
+  },
+  "the_big_one": {
+    "status": "TESTED_FAIL_CLOSED",
+    "historical_rows": "NOT_PROCESSED",
+    "proposal": "PROPOSED",
+    "proposal_activated": false,
+    "ccxlii": "NOT_FOUND"
+  },
+  "model_laboratory": {
+    "registry": "TESTED",
+    "evaluation_runner": "TESTED_OFFLINE_MOCK",
+    "live_connection": "NOT_VERIFIED",
+    "weights": "NOT_DOWNLOADED",
+    "training": "NOT_STARTED"
+  },
+  "integration_conflicts": [
+    "PR 175 would delete the document parsers and was not merged.",
+    "PR 176 edits the shared engine, store, API, and website and was not merged.",
+    "PR 172 head 706152c8 was not merged. Its OCR adapter is not treated as installed OCR."
+  ],
+  "remaining_blockers": [
+    "Independent review is pending. This session wrote the code and the tests.",
+    "No live model connection was verified.",
+    "Historical company records stay unprocessed until a human authorizes a local review and the engine can admit them without relabeling them as synthetic.",
+    "Landing on main requires the unmerged stack and owner approval. This branch is not independently mergeable to main.",
+    "Production remains HOLD."
+  ],
+  "next_executable_action": "Owner review of the stacked pull request. Do not merge, deploy, download weights, or process historical company rows."
+}

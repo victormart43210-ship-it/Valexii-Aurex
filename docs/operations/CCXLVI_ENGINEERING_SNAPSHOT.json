@@ -1,0 +1,38 @@
+{
+  "schema": "aurex.engineering_snapshot.v1",
+  "operation": "KUSANAGI_CCXLVI",
+  "date": "2026-11-06",
+  "recorded_at": "2026-11-06T14:34:19Z",
+  "recorded_at_america_chicago": "2026-11-06T08:34:19-0600",
+  "repository": "victormart43210-ship-it/Valexii-Aurex",
+  "branch": "cursor/kusanagi-ccxlvi-sovereign-ascendancy-4082",
+  "commit": "2c4fd08288353b6e713207e3f2774e380e66c671",
+  "frontend": {
+    "runner": "npx vitest run",
+    "files": 23,
+    "passed": 157,
+    "failed": 0,
+    "typescript": "npx tsc --noEmit -p tsconfig.json exited 0",
+    "production_build": "npm run build exited 0",
+    "bun": "NOT_RUN"
+  },
+  "backend": {
+    "pytest": "675 passed, 0 failed, 0 skipped",
+    "ruff": "0 findings on aurex, tests, and scripts/clii_sandbox.py",
+    "mypy": "0 errors in 109 source files"
+  },
+  "financial_pipeline": "TESTED. Engine unchanged. Golden identified 385.00, withheld 150.00, confirmed 0.00.",
+  "the_big_one": "NOT_PROCESSED. Proposal is inactive.",
+  "model_registry": "11 foundation-model candidates and 7 research frameworks. Approval state CANDIDATE. No weight digest.",
+  "model_evaluation": "Offline mock provider. Report digest is stable. Live connection NOT_VERIFIED.",
+  "training": "NOT_STARTED",
+  "live_model_connectivity": "NOT_VERIFIED",
+  "unresolved_blockers": [
+    "Independent verification pending",
+    "No installed model weights",
+    "Historical validation not activated",
+    "Stack is not merged to main"
+  ],
+  "production_authority": "HOLD",
+  "financial_authority": "NONE"
+}
