@@ -1,0 +1,13 @@
+{
+  "repository": "victormart43210-ship-it/Valexii-Aurex",
+  "branch": "integration/kusanagi-cclv-sovereign-mainline",
+  "starting_main_sha": "34cda4bd8f207f5b1284093b87e4760d782a4903",
+  "tested_code_sha": "77a97c1f1e5f3749868bd39ad6aec73513b5e64f",
+  "pr": "draft PR from this branch into main (see GitHub)",
+  "completed": ["discovery", "inventory", "contract freeze", "ff integration of Cursor stack", "fresh backend+frontend verification", "records"],
+  "deferred": ["#168/#172/#175/#176/#159 conflicts", "#173 and docs-only PRs #164/#169/#179", "triage of PRs #100-#158", "dependency review", "XAELI live check", "external anchor"],
+  "not_implemented": ["CCLIII", "CCLIV"],
+  "blockers": ["independent human assurance", "owner approval", "workflow run on final head", "conflicting Jules/Work financial engines"],
+  "protected": "Cursor operations may still push to the #180 branch; re-run `git fetch` and compare before resuming.",
+  "next_action": "Owner reviews the draft PR; decide on #173 and per-conflict ports (#172 first, requiring golden-fixture parity). Do not edit expected totals."
+}
