@@ -4,12 +4,12 @@ Operation: KUSANAGI CCXXXVI. Status PARTIAL; production HOLD; financial authorit
 Repository: https://github.com/victormart43210-ship-it/Valexii-Aurex
 Active branch: `work/ccxxxvi-continuity-verification`
 Base: `34cda4bd8f207f5b1284093b87e4760d782a4903`
-Preceding verified remote checkpoint: `daedf988101dccc4e8ae301aeba9a39da39513a9`
+Preceding verified remote checkpoint: `55ebda81b91e887f320c5cd8fb037931a3995b0f`
 Draft PR: https://github.com/victormart43210-ship-it/Valexii-Aurex/pull/173
 Always verify actual remote HEAD. The committed checkpoint records a preceding SHA to avoid self-reference.
 
 ## Exact next action
-Finish separate review of Work artifacts and dependency inventory; recheck Cursor/Jules heads; validate from a clean remote checkout; persist final checkpoint. Runtime defects stay assigned to existing Cursor/Jules owners.
+Review new Cursor PR #174 at 2d0b62400e0ad40f2780f51b26ba0d09261cd724 in a clean detached checkout. It stacks on #171 and adds document parsing, hours and SQLite monitoring. Reproduce inherited semantic failures and new negative tests. Then finish clean-checkout validation and final savepoint. Runtime files remain Cursor-owned.
 Last completed milestone: C36-006 recovery validator (12 tests PASS). Current milestone: C36-007 final review and verification.
 
 ## Resume commands
@@ -54,3 +54,6 @@ Blockers: seven Cursor semantic failures; Jules false independent qualification,
 Shell push lacks credentials; connected GitHub Git-data writes succeeded, with git ls-remote readback. A local commit alone is LOCAL_ONLY. No merge/deploy authorized or performed.
 
 Separate source review corrected golden-harness dirty-checkout/optimized-Python guards, exact provenance cardinality and replay after an already-applied month37. Resume remote checking now fetches the named ref, validates origin, local HEAD/branch, preceding-SHA ancestry and clean working tree. Initial schema-only remote check was superseded; do not use it as readiness evidence.
+
+## Newly observed Cursor CCXXXV
+PR #174: https://github.com/victormart43210-ship-it/Valexii-Aurex/pull/174, branch cursor/kusanagi-ccxxxv-industrial-beta-4082, head 2d0b62400e0ad40f2780f51b26ba0d09261cd724. This appeared during Work verification. #171/#172 reports are historical pinned evidence and do not qualify #174.

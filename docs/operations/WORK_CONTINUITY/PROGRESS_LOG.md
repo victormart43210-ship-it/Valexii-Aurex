@@ -14,3 +14,6 @@ Preceding remote checkpoint daedf988101dccc4e8ae301aeba9a39da39513a9 verified. W
 
 ## 2026-11-06T12:01:06.617061+00:00 — C36-006 review repairs
 Separate reviewer found stale prose and false-PASS risks in Work-only harnesses. Corrected current records; guard assertions disabled/dirty candidate, require exact row provenance and test replay against already-merged month37; remote checker now requires canonical origin, exact local/remote HEAD, branch or exact detached checkout, clean state and checkpoint ancestry. Added 5 regression cases; 12 tests PASS. Golden file audit rerun PASS. Source review is not commercial independence. Next: remote savepoint and clean remote validation.
+
+## 2026-11-06T12:02:16.372673+00:00 — C36-008 newer Cursor candidate observed
+Before finalizing, queried open PRs and discovered #174 @2d0b62400e0ad40f2780f51b26ba0d09261cd724, stacked on #171. Owner runtime boundary preserved. Added exact next task; prior tests remain pinned to earlier heads. Next: new-code review/challenge, no implementation competition.

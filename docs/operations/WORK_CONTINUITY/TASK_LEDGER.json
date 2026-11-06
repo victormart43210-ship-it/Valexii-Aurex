@@ -101,6 +101,20 @@
       "commit_sha": null,
       "verification_status": "NOT_VERIFIED",
       "blockers": []
+    },
+    {
+      "task_id": "C36-008",
+      "description": "Review newly published Cursor CCXXXV #174 and recheck inherited failures",
+      "priority": "P0",
+      "dependencies": [
+        "C36-004"
+      ],
+      "assigned_owner": "ChatGPT Work",
+      "status": "IN_PROGRESS",
+      "branch": "work/ccxxxvi-continuity-verification",
+      "commit_sha": null,
+      "verification_status": "NOT_VERIFIED",
+      "blockers": []
     }
   ]
 }

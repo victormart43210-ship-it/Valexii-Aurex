@@ -10,3 +10,5 @@
 | Earlier Work session | work/kusanagi-ccxxv-sovereign-convergence local | historical recovery, prototype kernel/outcomes/store/UI | Superseded; archive separately, never merge blindly |
 
 Shared contracts: tenant authorization, evidence qualification, receipt versions, decimal money, synthetic-only admission. #171 contains #170. #172 is a sibling candidate from main; concurrent edits to intelligence/API create integration risk. Exact conflict status must be measured, not assumed. No merge/rebase planned. Review and artifact-only branch is conflict safe.
+
+Cursor CCXXXV now published as #174, branch cursor/kusanagi-ccxxxv-industrial-beta-4082 @2d0b62400e0ad40f2780f51b26ba0d09261cd724. Owns digital PDF/XLSX parser, hours/reversals, SQLite monitoring and UI integration. Work reviews only; #174 depends on #171.
