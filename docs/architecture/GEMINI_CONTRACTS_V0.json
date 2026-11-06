@@ -1,0 +1,122 @@
+{
+  "schema_version": "0.1.0",
+  "status": "DRAFT_NOT_IMPLEMENTED",
+  "architecture": "XAELI-ZAYLEE-AUREX",
+  "envelope": {
+    "required": [
+      "schema_version",
+      "message_id",
+      "correlation_id",
+      "actor",
+      "tenant_scope",
+      "captured_at",
+      "payload_type",
+      "payload",
+      "provenance_refs"
+    ],
+    "actor_enum": [
+      "xaeli",
+      "zaylee",
+      "aurex",
+      "independent_verifier",
+      "owner"
+    ],
+    "payload_types": [
+      "observation",
+      "hypothesis",
+      "proposal",
+      "approval_request",
+      "approval_decision",
+      "execution_receipt",
+      "verification_result"
+    ]
+  },
+  "observation": {
+    "required": [
+      "observation_id",
+      "source_id",
+      "source_digest",
+      "captured_at",
+      "valid_until",
+      "tenant_scope",
+      "kind",
+      "value_ref",
+      "status"
+    ],
+    "status_enum": [
+      "OBSERVED",
+      "STALE",
+      "UNAVAILABLE",
+      "UNVERIFIED"
+    ]
+  },
+  "hypothesis": {
+    "required": [
+      "hypothesis_id",
+      "claim",
+      "supporting_observation_ids",
+      "counterevidence_ids",
+      "uncertainty",
+      "falsification_test",
+      "status"
+    ],
+    "status_enum": [
+      "PROPOSED",
+      "TESTED",
+      "REJECTED",
+      "INCONCLUSIVE"
+    ]
+  },
+  "proposal": {
+    "required": [
+      "proposal_id",
+      "target_revision",
+      "expected_benefit",
+      "risk",
+      "budget_cap",
+      "test_plan",
+      "rollback_plan",
+      "required_approvals",
+      "status"
+    ],
+    "status_enum": [
+      "DRAFT",
+      "REVIEW",
+      "APPROVED",
+      "DENIED",
+      "EXPIRED",
+      "EXECUTED",
+      "VERIFIED",
+      "FAILED"
+    ]
+  },
+  "per_receipt": {
+    "required": [
+      "action_id",
+      "actor",
+      "plan_id",
+      "plan_created_at",
+      "execution_id",
+      "rationale_id",
+      "policy_version",
+      "authorization_id",
+      "decision",
+      "evidence_digest",
+      "verifier_id"
+    ],
+    "decision_enum": [
+      "DENY",
+      "ALLOW_WITH_BOUNDED_APPROVAL"
+    ],
+    "rule": "plan timestamp must precede execution; rationale cannot substitute for prior plan; verifier must be independent"
+  },
+  "invariants": [
+    "no direct XAELI/Zaylee critical execution",
+    "default-deny missing or stale authorization",
+    "no cross-tenant data",
+    "no self-certified critical outcome",
+    "no secrets in receipts",
+    "separate observed state from prediction",
+    "no unapproved training or paid inference"
+  ]
+}
