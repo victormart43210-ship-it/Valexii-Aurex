@@ -95,9 +95,8 @@ class EvidenceGraph:
     def roots(self, evidence_id: str) -> frozenset[tuple[str, str]]:
         """Origin (source_system, source_record_id) pairs reachable via parents.
 
-        A parent that is missing from the graph is treated as its own unknown root, so a
-        dangling reference can never make two records look independent *or* dependent by luck.
-        Cycles are rejected.
+        Missing parents and cycles are rejected: incomplete provenance cannot
+        establish independent corroboration.
         """
         out: set[tuple[str, str]] = set()
         stack = [(evidence_id, frozenset[str]())]
@@ -188,6 +187,8 @@ def qualify(
             if graph.independent_root_count(ids) < 2:
                 raise QualificationError("at least two independent evidence roots are required")
         except (KeyError, ValueError) as exc:
+            if isinstance(exc, QualificationError):
+                raise
             raise QualificationError("supporting evidence has unresolved provenance") from exc
     if target is ClaimState.VERIFIED and (actor is not ActorKind.HUMAN or not reviewer):
         raise QualificationError("verification requires an identified human reviewer")
@@ -272,9 +273,15 @@ class RecoveryClaim:
             if target is Outcome.VERIFIED_DISCREPANCY and graph.independent_root_count(evidence_ids) < 2:
                 raise QualificationError("verified discrepancy needs two independent evidence roots")
         except (KeyError, ValueError) as exc:
+            if isinstance(exc, QualificationError):
+                raise
             raise QualificationError("transition evidence has unresolved provenance") from exc
         if target is Outcome.CONFIRMED_RECOVERED:
-            if received_amount is None or received_amount <= 0 or received_amount > self.amount:
+            if (
+                not self.amount.is_finite() or self.amount <= 0
+                or received_amount is None or not received_amount.is_finite()
+                or received_amount <= 0 or received_amount > self.amount
+            ):
                 raise QualificationError("received amount must be positive and not exceed the claim")
             if not claim_source_ids:
                 raise QualificationError("claim source evidence is required to confirm recovery")
@@ -285,6 +292,8 @@ class RecoveryClaim:
                 if any(graph.roots(e) & own for e in evidence_ids):
                     raise QualificationError("payment evidence must be independent of the claim sources")
             except (KeyError, ValueError) as exc:
+                if isinstance(exc, QualificationError):
+                    raise
                 raise QualificationError("claim or payment evidence has unresolved provenance") from exc
             self.recovered_amount = received_amount
         self.history.append(
@@ -309,10 +318,12 @@ def challenge_finding(finding: dict[str, Any], tenant_id: str, known_obligations
         problems.append("duplicate obligation")
     try:
         exposure = Decimal(str(finding.get("exposure_usd", "0")))
-        if exposure < 0:
+        if not exposure.is_finite() or not recovered.is_finite():
+            problems.append("invalid amount")
+        if exposure.is_finite() and exposure < 0:
             problems.append("negative exposure")
         recovered = Decimal(str(finding.get("recovered_usd", "0")))
-        if recovered > exposure:
+        if recovered.is_finite() and exposure.is_finite() and recovered > exposure:
             problems.append("recovery exceeds exposure")
     except ArithmeticError:
         problems.append("invalid amount")
