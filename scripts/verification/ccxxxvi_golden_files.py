@@ -18,6 +18,8 @@ from pathlib import Path
 
 
 def main() -> None:
+    if not __debug__:
+        raise SystemExit("Verification requires assertions; do not use python -O")
     parser = argparse.ArgumentParser()
     parser.add_argument("--candidate-root", type=Path, required=True)
     parser.add_argument("--expected-sha", required=True)
@@ -28,12 +30,16 @@ def main() -> None:
     ).strip()
     if actual != args.expected_sha:
         raise SystemExit(f"Candidate SHA mismatch: {actual}")
+    if subprocess.check_output(
+        ["git", "-C", str(root), "status", "--porcelain"], text=True
+    ).strip():
+        raise SystemExit("Candidate checkout is modified; exact-SHA verification refused")
     sys.path.insert(0, str(root))
     import aurex.dispater_ingest as ingest
 
     if not Path(ingest.__file__).resolve().is_relative_to(root):
         raise SystemExit("Imported a different checkout")
-    from aurex.dispater_monitor import monitor_increment
+    from aurex.dispater_monitor import merge_datasets, monitor_increment
 
     from aurex.dispater_intelligence import RevenueLeakageEngine
 
@@ -50,6 +56,23 @@ def main() -> None:
         result = ingest.ingest_source(tenant, item["filename"], raw, kind="json")
         assert result["source_sha256"] == item["sha256"]
         source = json.loads(raw)
+        id_keys = {
+            "jobs": "job_id",
+            "invoices": "invoice_id",
+            "rates": "rate_id",
+            "payments": "payment_id",
+        }
+        expected_locations = {
+            (table, row[id_keys[table]], str(index))
+            for table in id_keys
+            for index, row in enumerate(source[table], start=1)
+        }
+        actual_locations = {
+            (entry["table"], entry["record_id"], str(entry["row"]))
+            for entry in result["provenance"]
+        }
+        assert actual_locations == expected_locations
+        assert len(result["provenance"]) == len(expected_locations)
         for table in ("jobs", "invoices", "rates", "payments"):
             assert result["dataset"][table] == source[table], (item["filename"], table)
             combined[table].extend(result["dataset"][table])
@@ -80,6 +103,12 @@ def main() -> None:
     for key, value in manifest["month37_expected"].items():
         assert movement[key] == value
     assert movement == monitor_increment(tenant, combined, additions)
+    already_updated = merge_datasets(combined, additions)
+    replay = monitor_increment(tenant, already_updated, additions)
+    for key, value in manifest["month37_expected"].items():
+        assert replay[key] == value
+    assert replay["dataset_sha256"] == movement["dataset_sha256"]
+    assert all(event["type"] == "UNCHANGED" for event in replay["events"])
     with tempfile.TemporaryDirectory(prefix="ccxxxvi-golden-") as tmp:
         token = secrets.token_hex(32)
         os.environ.update(

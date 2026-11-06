@@ -66,6 +66,36 @@
         "C36-004"
       ],
       "assigned_owner": "ChatGPT Work",
+      "status": "TESTED",
+      "branch": "work/ccxxxvi-continuity-verification",
+      "commit_sha": null,
+      "verification_status": "PASS_AVAILABLE_SUITES; BROWSER_NOT_RUN",
+      "blockers": []
+    },
+    {
+      "task_id": "C36-006",
+      "description": "Validate recovery records and negative failure cases",
+      "priority": "P0",
+      "dependencies": [
+        "C36-002"
+      ],
+      "assigned_owner": "ChatGPT Work",
+      "status": "TESTED",
+      "branch": "work/ccxxxvi-continuity-verification",
+      "commit_sha": null,
+      "verification_status": "12_DEVELOPER_TESTS_PASS; SOURCE_REVIEW_FIXES_APPLIED",
+      "blockers": []
+    },
+    {
+      "task_id": "C36-007",
+      "description": "Review own artifacts, dependency inventory and final remote recovery verification",
+      "priority": "P1",
+      "dependencies": [
+        "C36-004",
+        "C36-005",
+        "C36-006"
+      ],
+      "assigned_owner": "ChatGPT Work",
       "status": "IN_PROGRESS",
       "branch": "work/ccxxxvi-continuity-verification",
       "commit_sha": null,

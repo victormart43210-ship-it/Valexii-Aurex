@@ -1,38 +1,56 @@
 # START HERE — RESUME WITHOUT REPEATING COMPLETED WORK
 
-Operation: KUSANAGI CCXXXVI. Repository: https://github.com/victormart43210-ship-it/Valexii-Aurex
-Active branch: `work/ccxxxvi-continuity-verification`. Base SHA: `34cda4bd8f207f5b1284093b87e4760d782a4903`.
-Latest recorded durable checkpoint: `a83b82677bc7a76107abca131ac92af1c65d44e2` (initial remote readback verified). Always fetch and verify actual remote HEAD; recorded SHA is preceding checkpoint, never self-referential.
-Pull request: https://github.com/victormart43210-ship-it/Valexii-Aurex/pull/173.
+Operation: KUSANAGI CCXXXVI. Status PARTIAL; production HOLD; financial authority NONE; paid inference OFF; customer data prohibited.
+Repository: https://github.com/victormart43210-ship-it/Valexii-Aurex
+Active branch: `work/ccxxxvi-continuity-verification`
+Base: `34cda4bd8f207f5b1284093b87e4760d782a4903`
+Preceding verified remote checkpoint: `daedf988101dccc4e8ae301aeba9a39da39513a9`
+Draft PR: https://github.com/victormart43210-ship-it/Valexii-Aurex/pull/173
+Always verify actual remote HEAD. The committed checkpoint records a preceding SHA to avoid self-reference.
 
-## Resume now
-1. `git fetch origin`
-2. `git switch work/ccxxxvi-continuity-verification` (or clone canonical repository then select branch).
-3. Read CHECKPOINT.json, TASK_LEDGER.json and VERIFICATION.json in this directory.
-4. `git rev-parse HEAD` and `git ls-remote origin refs/heads/work/ccxxxvi-continuity-verification`; compare actual remote.
-5. Recheck #171/#172/newer Cursor or Jules work before edits. Do not re-investigate #159–#164 unless materially changed.
+## Exact next action
+Finish separate review of Work artifacts and dependency inventory; recheck Cursor/Jules heads; validate from a clean remote checkout; persist final checkpoint. Runtime defects stay assigned to existing Cursor/Jules owners.
+Last completed milestone: C36-006 recovery validator (12 tests PASS). Current milestone: C36-007 final review and verification.
 
-Last completed: C36-003 superseded archive remotely preserved. In progress: C36-004 pinned candidate review.
-Exact next action: run isolated #171/#172 regressions and adversarial review; persist reproducible counterexamples before any fixes.
+## Resume commands
+```bash
+git clone https://github.com/victormart43210-ship-it/Valexii-Aurex.git
+cd Valexii-Aurex
+git fetch origin
+git switch work/ccxxxvi-continuity-verification
+git ls-remote origin refs/heads/work/ccxxxvi-continuity-verification
+python3 scripts/verification/ccxxxvi_resume_check.py --check-remote
+python3 -m venv .venv
+.venv/bin/pip install -e '.[dev]'
+```
+If the host configures SOCKS proxies, install environment-only `socksio` or the relevant HTTP client extra. No project dependency was added.
+Read CHECKPOINT.json, TASK_LEDGER.json, VERIFICATION.json and both source review reports. Do not repeat completed reconnaissance. Check newer Cursor/Jules commits before runtime work.
 
-## Environment and checks
-Python 3.12; `python3 -m venv .venv`; `.venv/bin/pip install -e '.[dev]'`.
-Use unique disposable databases: `AUREX_DB_PATH=/tmp/ccxxxvi-unique.sqlite .venv/bin/pytest tests -q`.
-Run `.venv/bin/ruff check aurex aurex_foundation tests`; `.venv/bin/mypy --strict aurex aurex_foundation`.
-Frontend: inspect lockfile/runtime, install frozen dependencies; run recorded project test command and production build. Not run yet for current SHA.
-No paid inference, customer records, production mutation or external effects.
+## Pinned candidate reproduction
+Create separate detached worktrees (do not rebase or merge):
+```bash
+git worktree add --detach ../review-171 db4670ab78fa36c8a2b4b8b66df842350440e437
+git worktree add --detach ../review-172 46befcb04d2a98633876b4239775bedbf0b265ca
+.venv/bin/python scripts/verification/ccxxxvi_golden_files.py --candidate-root ../review-171 --expected-sha db4670ab78fa36c8a2b4b8b66df842350440e437
+.venv/bin/python -m pytest tests/test_work_continuity_ccxxxvi.py -q
+```
+Run each defect probe from its candidate cwd: `PYTHONPATH=. <venv>/python <work>/scripts/verification/ccxxxvi_cursor_171_probe.py` or `ccxxxvi_jules_172_probe.py`. Exit 1 is expected while defects remain; Jules probe 14/14 means defective reference observations reproduced, not safety gates passed.
+Candidate regression: `PYTHONPATH=. AUREX_DB_PATH=<unique disposable path> <venv>/python -m pytest tests -q`; `<venv>/ruff check aurex aurex_foundation tests`; `<venv>/mypy --strict aurex aurex_foundation`.
+Website: `npm ci --ignore-scripts`, `npx vitest run`, `npm run build`. Separate dispater-web: `npm ci --ignore-scripts`, `npm test`, `npm run build`.
 
-## Known state and conflicts
-Main is 34cda4bd8f207f5b1284093b87e4760d782a4903. #171 includes #170, both open. #168 is overlapping evidence enforcement, #169 contract-only. New #172 Jules pipeline exists, not reviewed yet. No observed CCXXXV branch at baseline; query again.
-Prior local CCXXV branch `work/kusanagi-ccxxv-sovereign-convergence` @89ec43cc has uncommitted slices and is superseded by newer main/Cursor work; preserve as archive, do not integrate blindly. Its baseline test result (609 pass, 2 fail due missing socksio, 2 skip) is NOT current candidate verification.
-Files modified by Work: only this continuity directory initially. Runtime/receipt/financial/UI files owned by Cursor/Jules are excluded.
-Blockers: Cursor CCXXXV branch not yet observed; recheck before touching product files; PR #171 and Jules #172 overlap; neither integrated; Prior CCXXV work remains in separate local worktree pending archival checkpoint; Independent verification REVIEW_PENDING; no commercial or staging validation.
-Production: HOLD. Financial authority: NONE. External paid inference OFF. Automatic merge prohibited.
+## Verified results and limits
+- #171 @db4670ab: 637 pytest PASS/1 skip; Ruff/Mypy PASS; website 156 tests/build PASS; separate dispater-web 25 tests/build PASS. Probe 2 PASS/7 FAIL.
+- #172 @46befcb: 622 pytest PASS/1 skip; Ruff/Mypy PASS; website 156 tests/build PASS. Probe reproduced 14 defective observations.
+- Work mainline runtime: 616 pytest PASS/1 skip before adding 7 continuity tests; 12 continuity tests also PASS. Own implementation is not independently verified.
+- New 36-file structured JSON corpus: 107 provenance rows; independent arithmetic 275.50 identified, 130.00 withheld, 0.00 recovered; month37 400.75/130.00/0.00. API/dashboard/tenant denial/v2 receipt/replay/separate-process DB reopen PASS. Monitoring remains in-memory.
+- Browser E2E, PDF/OCR/XLSX, equipment/personnel hours, live mounted-volume durability and commercial correctness NOT VERIFIED.
 
-## Preserved archive
-Earlier work is remote at `archive/ccxxv-superseded-work-20261106` @ `b0c1725b1895ca170c156d272b1866da5c2af63d`. Superseded, do not merge. It passed 712 tests/1 skip; frontend not run. Active continuity branch remains the only current Work candidate. Shell push lacks credentials; connected GitHub Git-data writes and `git ls-remote` readback are available.
+## Ownership and blockers
+Work owns continuity records, three probes/harnesses plus resume validator, new fixtures and recovery tests only. Cursor #171 includes #170; #168 overlaps receipt work; #169 is contract-only. Jules #172 overlaps API and pipeline/monitoring. No product code or their handoffs changed by Work.
+Blockers: seven Cursor semantic failures; Jules false independent qualification, malformed-file handling, receipt binding and request-to-request document persistence; overlapping owners; human/real-world review pending.
 
-## Candidate verification checkpoint
-Recorded preceding remote SHA: 9b691026d81cf5876885968f7f82169a94061665. See VERIFICATION.json and evidence/ logs. Cursor #171: 637 pytest pass/1 skip, Ruff/Mypy pass, 156 frontend tests pass and production build pass; separate probe fails 7/9 semantic gates. Jules #172: 622 pytest pass/1 skip, Ruff/Mypy pass; 14 defective observations reproduced by probe. Do not confuse green regressions with passing the adversarial review.
-New Work 36-file JSON audit fixture and manifest: tests/fixtures/ccxxxvi_golden. Run scripts/verification/ccxxxvi_golden_files.py against pinned #171. Expected 275.50 identified, 130.00 withheld, 0.00 recovered; month37 400.75/130.00/0.00. API/store/dashboard checks PASS, monitor remains in-memory.
-Exact next action: finish frontend checks and validate continuity records, then coordinate ownership for findings. Do not repair Cursor/Jules active runtime files from this branch. No product rewrite or integration merge.
+## Preserved earlier work
+`archive/ccxxv-superseded-work-20261106` @ `b0c1725b1895ca170c156d272b1866da5c2af63d` preserves the older session, superseded and DO NOT MERGE. Archive developer tests: 712 pass/1 skip, frontend NOT_RUN. It is not a competing candidate.
+Shell push lacks credentials; connected GitHub Git-data writes succeeded, with git ls-remote readback. A local commit alone is LOCAL_ONLY. No merge/deploy authorized or performed.
+
+Separate source review corrected golden-harness dirty-checkout/optimized-Python guards, exact provenance cardinality and replay after an already-applied month37. Resume remote checking now fetches the named ref, validates origin, local HEAD/branch, preceding-SHA ancestry and clean working tree. Initial schema-only remote check was superseded; do not use it as readiness evidence.

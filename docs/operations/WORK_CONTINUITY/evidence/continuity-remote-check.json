@@ -1,0 +1,7 @@
+{
+  "status": "PASS",
+  "errors": [],
+  "actual_remote_head": "daedf988101dccc4e8ae301aeba9a39da39513a9",
+  "recorded_preceding_checkpoint": "9b691026d81cf5876885968f7f82169a94061665",
+  "note": "Actual remote HEAD is authoritative; a preceding recorded SHA is expected."
+}

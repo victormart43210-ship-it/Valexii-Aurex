@@ -222,6 +222,129 @@
         "separate-process DB reopen",
         "in-memory month37 replay"
       ]
+    },
+    {
+      "commit_sha": "46befcb04d2a98633876b4239775bedbf0b265ca",
+      "test_command": "cd website && npx vitest run",
+      "exit_code": 0,
+      "passed_count": 156,
+      "failed_count": 0,
+      "skipped_count": 0,
+      "environment": {
+        "python": "Python 3.12.14",
+        "node": "v24.22.1",
+        "install": "existing isolated venv with pip install -e .[dev]; socksio environment-only for host proxy",
+        "network": "no model calls; synthetic local API TestClient only"
+      },
+      "timestamp_recorded_utc": "2026-11-06T11:59:25.983495+00:00",
+      "reviewer_process": "Work separate pinned checkout; exact same website package-lock across #171/#172; shared installed node_modules",
+      "evidence_location": "docs/operations/WORK_CONTINUITY/evidence/jules172-vitest.log",
+      "status": "PASS"
+    },
+    {
+      "commit_sha": "46befcb04d2a98633876b4239775bedbf0b265ca",
+      "test_command": "cd website && npm run build",
+      "exit_code": 0,
+      "passed_count": null,
+      "failed_count": 0,
+      "skipped_count": null,
+      "environment": {
+        "python": "Python 3.12.14",
+        "node": "v24.22.1",
+        "install": "existing isolated venv with pip install -e .[dev]; socksio environment-only for host proxy",
+        "network": "no model calls; synthetic local API TestClient only"
+      },
+      "timestamp_recorded_utc": "2026-11-06T11:59:25.983495+00:00",
+      "reviewer_process": "Work separate pinned checkout; exact same website package-lock across #171/#172; shared installed node_modules",
+      "evidence_location": "docs/operations/WORK_CONTINUITY/evidence/jules172-build.log",
+      "status": "PASS"
+    },
+    {
+      "commit_sha": "db4670ab78fa36c8a2b4b8b66df842350440e437",
+      "test_command": "cd dispater-web && npm ci --ignore-scripts && npm test",
+      "exit_code": 0,
+      "passed_count": 25,
+      "failed_count": 0,
+      "skipped_count": 0,
+      "environment": {
+        "python": "Python 3.12.14",
+        "node": "v24.22.1",
+        "install": "existing isolated venv with pip install -e .[dev]; socksio environment-only for host proxy",
+        "network": "no model calls; synthetic local API TestClient only"
+      },
+      "timestamp_recorded_utc": "2026-11-06T11:59:25.983495+00:00",
+      "reviewer_process": "Work separate pinned checkout; exact same website package-lock across #171/#172; shared installed node_modules",
+      "evidence_location": "docs/operations/WORK_CONTINUITY/evidence/cursor171-dispater-web.log",
+      "status": "PASS"
+    },
+    {
+      "commit_sha": "db4670ab78fa36c8a2b4b8b66df842350440e437",
+      "test_command": "cd dispater-web && npm run build",
+      "exit_code": 0,
+      "passed_count": null,
+      "failed_count": 0,
+      "skipped_count": null,
+      "environment": {
+        "python": "Python 3.12.14",
+        "node": "v24.22.1",
+        "install": "existing isolated venv with pip install -e .[dev]; socksio environment-only for host proxy",
+        "network": "no model calls; synthetic local API TestClient only"
+      },
+      "timestamp_recorded_utc": "2026-11-06T11:59:25.983495+00:00",
+      "reviewer_process": "Work separate pinned checkout; exact same website package-lock across #171/#172; shared installed node_modules",
+      "evidence_location": "docs/operations/WORK_CONTINUITY/evidence/cursor171-dispater-web-build.log",
+      "status": "PASS"
+    },
+    {
+      "commit_sha": "a83b82677bc7a76107abca131ac92af1c65d44e2",
+      "working_tree_note": "Continuity artifacts modified; runtime identical to main 34cda4bd",
+      "test_command": "PYTHONPATH=. AUREX_DB_PATH=<disposable> <venv>/python -m pytest tests -q",
+      "exit_code": 0,
+      "passed_count": 616,
+      "failed_count": 0,
+      "skipped_count": 1,
+      "environment": {
+        "python": "Python 3.12.14",
+        "node": "v24.22.1",
+        "install": "existing isolated venv with pip install -e .[dev]; socksio environment-only for host proxy",
+        "network": "no model calls; synthetic local API TestClient only"
+      },
+      "timestamp_recorded_utc": "2026-11-06T11:59:25.983495+00:00",
+      "reviewer_process": "Work mainline regression before new continuity tests",
+      "evidence_location": "docs/operations/WORK_CONTINUITY/evidence/work-main-pytest.log",
+      "status": "PASS"
+    },
+    {
+      "commit_sha": null,
+      "source_state": "uncommitted Work artifact slice, to be remotely checkpointed",
+      "test_command": "<venv>/python -m pytest tests/test_work_continuity_ccxxxvi.py -q",
+      "exit_code": 0,
+      "passed_count": 7,
+      "failed_count": 0,
+      "skipped_count": 0,
+      "environment": {
+        "python": "Python 3.12.14",
+        "node": "v24.22.1",
+        "install": "existing isolated venv with pip install -e .[dev]; socksio environment-only for host proxy",
+        "network": "no model calls; synthetic local API TestClient only"
+      },
+      "timestamp_recorded_utc": "2026-11-06T11:59:25.983495+00:00",
+      "reviewer_process": "Developer tests; separate source review requested",
+      "evidence_location": "docs/operations/WORK_CONTINUITY/evidence/continuity-tests.log",
+      "status": "PASS"
+    },
+    {
+      "commit_sha": null,
+      "source_state": "Work slice before remote checkpoint",
+      "test_command": "<venv>/python -m pytest tests/test_work_continuity_ccxxxvi.py -q",
+      "exit_code": 0,
+      "passed_count": 12,
+      "failed_count": 0,
+      "skipped_count": 0,
+      "timestamp_recorded_utc": "2026-11-06T12:01:06.617061+00:00",
+      "reviewer_process": "Developer rerun after separate source review identified false-PASS gaps",
+      "evidence_location": "docs/operations/WORK_CONTINUITY/evidence/continuity-tests.log",
+      "status": "PASS"
     }
   ],
   "independent_review_status": "REVIEW_PENDING",
