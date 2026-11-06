@@ -110,11 +110,14 @@
         "C36-004"
       ],
       "assigned_owner": "ChatGPT Work",
-      "status": "IN_PROGRESS",
+      "status": "TESTED",
       "branch": "work/ccxxxvi-continuity-verification",
-      "commit_sha": null,
-      "verification_status": "NOT_VERIFIED",
-      "blockers": []
+      "commit_sha": "2d0b62400e0ad40f2780f51b26ba0d09261cd724",
+      "verification_status": "651_REGRESSION_PASS;13_SEMANTIC_GATES_FAIL;SOURCE_REVIEW_ONLY",
+      "blockers": [
+        "Latest Cursor #174:13/18 financial/API/monitor checks fail; optional data dropped at boundaries yields inconsistent amounts",
+        "Latest Cursor #174 document probe reproduces11 reference observations including ambiguous field overwrite and parser limit bypass"
+      ]
     }
   ]
 }

@@ -1,0 +1,153 @@
+{
+  "candidate_sha": "2d0b62400e0ad40f2780f51b26ba0d09261cd724",
+  "cases": [
+    {
+      "check": "reject_cross_tenant_live_source",
+      "expected": "IngestError",
+      "observed": {
+        "accepted": true,
+        "tenant": "T",
+        "class": "SYNTHETIC_ONLY",
+        "invoice_amounts": [
+          "100"
+        ]
+      },
+      "pass": false
+    },
+    {
+      "check": "reject_ambiguous_amount_columns",
+      "expected": "IngestError",
+      "observed": {
+        "accepted": true,
+        "tenant": "T",
+        "class": "SYNTHETIC_ONLY",
+        "invoice_amounts": [
+          "1"
+        ]
+      },
+      "pass": false
+    },
+    {
+      "check": "controlled_short_row_rejection",
+      "expected": "IngestError",
+      "observed": "AttributeError",
+      "pass": false
+    },
+    {
+      "check": "reject_unsupported_only_table",
+      "expected": "IngestError",
+      "observed": {
+        "accepted": true,
+        "tenant": "T",
+        "class": "SYNTHETIC_ONLY",
+        "invoice_amounts": []
+      },
+      "pass": false
+    },
+    {
+      "check": "reject_duplicate_json_keys",
+      "expected": "IngestError",
+      "observed": {
+        "accepted": true,
+        "tenant": "T",
+        "class": "SYNTHETIC_ONLY",
+        "invoice_amounts": [
+          "1"
+        ]
+      },
+      "pass": false
+    },
+    {
+      "check": "no_point_estimate_when_duplicate_cash_unresolved",
+      "expected": "0.00",
+      "observed": "100.00",
+      "pass": false
+    },
+    {
+      "check": "no_cash_automatically_confirmed",
+      "expected": "0.00",
+      "observed": "0.00",
+      "pass": true
+    },
+    {
+      "check": "unbilled_dollars_reference_causing_rate_and_job",
+      "expected": [
+        "job",
+        "rate"
+      ],
+      "observed": [
+        "job"
+      ],
+      "pass": false
+    },
+    {
+      "check": "monitor_replay_cannot_settle_cash",
+      "expected": "0.00",
+      "observed": "0.00",
+      "pass": true
+    },
+    {
+      "check": "direct_hourly_8_times_25",
+      "expected": "200.00",
+      "observed": "200.00",
+      "pass": true
+    },
+    {
+      "check": "document_hourly_8_times_25",
+      "expected": "200.00",
+      "observed": "25.00",
+      "pass": false
+    },
+    {
+      "check": "direct_reversal_leaves_60",
+      "expected": true,
+      "observed": true,
+      "pass": true
+    },
+    {
+      "check": "document_reversal_leaves_60",
+      "expected": true,
+      "observed": false,
+      "pass": false
+    },
+    {
+      "check": "ambiguous_workbook_amounts_rejected",
+      "expected": "IngestError",
+      "observed": {
+        "accepted": true,
+        "tenant": "T",
+        "class": "SYNTHETIC_ONLY",
+        "invoice_amounts": [
+          "1"
+        ]
+      },
+      "pass": false
+    },
+    {
+      "check": "http_reconciliation_preserves_hours",
+      "expected": "200.00",
+      "observed": "0.00",
+      "pass": false
+    },
+    {
+      "check": "http_documents_preserves_hourly_rate",
+      "expected": "200.00",
+      "observed": "25.00",
+      "pass": false
+    },
+    {
+      "check": "sqlite_event_reopened_same_id",
+      "expected": true,
+      "observed": true,
+      "pass": true
+    },
+    {
+      "check": "tampered_monitor_payload_rejected",
+      "expected": "REJECTED",
+      "observed": "GRANTED",
+      "pass": false
+    }
+  ],
+  "passed": 5,
+  "failed": 13
+}

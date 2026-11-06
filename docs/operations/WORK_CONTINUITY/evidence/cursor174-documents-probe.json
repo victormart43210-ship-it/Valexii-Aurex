@@ -1,0 +1,77 @@
+{
+  "head": "2d0b62400e0ad40f2780f51b26ba0d09261cd724",
+  "libraries": {
+    "pypdf": {
+      "version": "6.21.4",
+      "license": "BSD-3-Clause",
+      "license_files": [
+        "pypdf-6.21.4.dist-info/licenses/LICENSE"
+      ]
+    },
+    "openpyxl": {
+      "version": "3.1.5",
+      "license": "MIT",
+      "license_files": []
+    },
+    "et-xmlfile": {
+      "version": "2.0.0",
+      "license": "MIT",
+      "license_files": []
+    }
+  },
+  "observations": {
+    "duplicate_pdf_amount": "999.00",
+    "conflicting_pdf_amounts": [
+      "10.00",
+      "999.00"
+    ],
+    "oversize_pdf_bytes_admitted": 1000001,
+    "normalized_xlsx_payment": {
+      "payment_id": "'=2+2",
+      "invoice_id": "I",
+      "amount": "999.00"
+    },
+    "xlsx_field_provenance_count": 0,
+    "reversal_via_xlsx_codes": [
+      "PAID_STATUS_UNRECONCILED",
+      "SPLIT_OR_DUPLICATE_PAYMENT_UNRESOLVED"
+    ],
+    "reversal_explicit_codes": [
+      "PAID_STATUS_UNRECONCILED"
+    ],
+    "uppercase_macro_name_admitted": true,
+    "bad_zip_rejected": true,
+    "blank_pdf_rejected": true,
+    "invalid_base64_http": 500,
+    "wrong_tenant_http": 403,
+    "oversize_pdf_http": 200
+  },
+  "expected_on_candidate": {
+    "reversal_via_xlsx_codes": [
+      "PAID_STATUS_UNRECONCILED",
+      "SPLIT_OR_DUPLICATE_PAYMENT_UNRESOLVED"
+    ],
+    "reversal_explicit_codes": [
+      "PAID_STATUS_UNRECONCILED"
+    ],
+    "duplicate_pdf_amount": "999.00",
+    "conflicting_pdf_amounts": [
+      "10.00",
+      "999.00"
+    ],
+    "oversize_pdf_bytes_admitted": 1000001,
+    "normalized_xlsx_payment": {
+      "payment_id": "'=2+2",
+      "invoice_id": "I",
+      "amount": "999.00"
+    },
+    "xlsx_field_provenance_count": 0,
+    "uppercase_macro_name_admitted": true,
+    "bad_zip_rejected": true,
+    "blank_pdf_rejected": true,
+    "invalid_base64_http": 500,
+    "wrong_tenant_http": 403,
+    "oversize_pdf_http": 200
+  },
+  "mismatches": []
+}

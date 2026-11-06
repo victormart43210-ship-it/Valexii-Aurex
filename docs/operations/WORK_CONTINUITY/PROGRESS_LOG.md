@@ -17,3 +17,6 @@ Separate reviewer found stale prose and false-PASS risks in Work-only harnesses.
 
 ## 2026-11-06T12:02:16.372673+00:00 — C36-008 newer Cursor candidate observed
 Before finalizing, queried open PRs and discovered #174 @2d0b62400e0ad40f2780f51b26ba0d09261cd724, stacked on #171. Owner runtime boundary preserved. Added exact next task; prior tests remain pinned to earlier heads. Next: new-code review/challenge, no implementation competition.
+
+## 2026-11-06T12:06:15.891605+00:00 — C36-008 latest Cursor review checkpoint
+Pinned #174 at 2d0b62400e0ad40f2780f51b26ba0d09261cd724. Actual tests:651backend pass/0skip; Ruff PASS; strict Mypy92files PASS;157website tests/build PASS;36-file Work golden PASS. Adversarial financial/API18checks:5pass13fail; document probe13 defective observations reproduced. Saved logs/probes/source reports, dependency license inventory and npm audit14advisories. Main still34cda4bd; no runtime edits, merges or deployments. Exact next: clean remote recovery validation, then coordinate owned candidate repairs.

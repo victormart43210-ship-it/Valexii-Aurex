@@ -4,13 +4,13 @@ Operation: KUSANAGI CCXXXVI. Status PARTIAL; production HOLD; financial authorit
 Repository: https://github.com/victormart43210-ship-it/Valexii-Aurex
 Active branch: `work/ccxxxvi-continuity-verification`
 Base: `34cda4bd8f207f5b1284093b87e4760d782a4903`
-Preceding verified remote checkpoint: `55ebda81b91e887f320c5cd8fb037931a3995b0f`
+Preceding verified remote checkpoint: `3ad06d8594da1e0835100cec84db9006c5bd6495`
 Draft PR: https://github.com/victormart43210-ship-it/Valexii-Aurex/pull/173
 Always verify actual remote HEAD. The committed checkpoint records a preceding SHA to avoid self-reference.
 
 ## Exact next action
-Review new Cursor PR #174 at 2d0b62400e0ad40f2780f51b26ba0d09261cd724 in a clean detached checkout. It stacks on #171 and adds document parsing, hours and SQLite monitoring. Reproduce inherited semantic failures and new negative tests. Then finish clean-checkout validation and final savepoint. Runtime files remain Cursor-owned.
-Last completed milestone: C36-006 recovery validator (12 tests PASS). Current milestone: C36-007 final review and verification.
+Validate the final remote checkpoint with resume checker from a clean checkout, then coordinate Cursor fixes on #174: preserve equipment/labor/unit/payment-kind through both API paths, reject ambiguous field/header imports, authenticate monitoring event payloads and enforce document limits. Rerun saved #174 probes and golden audit. Do not edit Cursor/Jules-owned runtime files from this verification branch.
+Last completed: C36-008 latest Cursor CCXXXV review. In progress: C36-007 final remote verification.
 
 ## Resume commands
 ```bash
@@ -57,3 +57,9 @@ Separate source review corrected golden-harness dirty-checkout/optimized-Python 
 
 ## Newly observed Cursor CCXXXV
 PR #174: https://github.com/victormart43210-ship-it/Valexii-Aurex/pull/174, branch cursor/kusanagi-ccxxxv-industrial-beta-4082, head 2d0b62400e0ad40f2780f51b26ba0d09261cd724. This appeared during Work verification. #171/#172 reports are historical pinned evidence and do not qualify #174.
+
+## Latest candidate findings (supersedes earlier candidate status)
+Cursor #174 @2d0b62400e0ad40f2780f51b26ba0d09261cd724: 651 backend tests PASS, zero skipped; Ruff/strict Mypy PASS(92files);157 website tests/build PASS. Golden structured-file corpus PASS. Separate finance/API probe:5PASS/13FAIL; document probe13/13 defective reference observations reproduced. Digital PDF/XLSX exist, but no general OCR/image parsing. Same8h×25job:200.00direct,0.00reconciliation API,25.00documents API. Payment reversal kind is dropped by ingestion; duplicate PDF/XLSX fields overwrite; monitoring event payload is not independently sealed. See both174reports and executable probes.
+Website scan:14advisories(2high/12moderate), no automatic upgrade. Python license/version inventory saved; Python vulnerability scan NOT_RUN.
+
+Owner advanced to CCLVII. Active follow-on branch work/kusanagi-cclvii-sovereign-execution is based on current Copilot integration, not this old mainline verification branch. Preserve these pinned historical findings; do not reapply obsolete fixes blindly.

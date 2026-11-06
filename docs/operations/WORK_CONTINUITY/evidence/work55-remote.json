@@ -1,0 +1,9 @@
+{
+  "status": "FAIL",
+  "errors": [
+    "remote advanced during verification; retry readback"
+  ],
+  "actual_remote_head": "55ebda81b91e887f320c5cd8fb037931a3995b0f",
+  "recorded_preceding_checkpoint": "daedf988101dccc4e8ae301aeba9a39da39513a9",
+  "note": "Actual remote HEAD is authoritative; a preceding recorded SHA is expected."
+}

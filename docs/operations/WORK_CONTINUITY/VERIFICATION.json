@@ -345,6 +345,241 @@
       "reviewer_process": "Developer rerun after separate source review identified false-PASS gaps",
       "evidence_location": "docs/operations/WORK_CONTINUITY/evidence/continuity-tests.log",
       "status": "PASS"
+    },
+    {
+      "commit_sha": "2d0b62400e0ad40f2780f51b26ba0d09261cd724",
+      "test_command": "PYTHONPATH=. AUREX_DB_PATH=<disposable> <venv>/python -m pytest tests -q",
+      "exit_code": 0,
+      "passed_count": 651,
+      "failed_count": 0,
+      "skipped_count": 0,
+      "environment": {
+        "python": "Python 3.12.14",
+        "node": "v24.22.1",
+        "install": "existing isolated venv with pip install -e .[dev]; socksio environment-only for host proxy",
+        "network": "no model calls; synthetic local API TestClient only",
+        "parser_versions": {
+          "pypdf": "6.21.4",
+          "openpyxl": "3.1.5",
+          "et-xmlfile": "2.0.0"
+        }
+      },
+      "timestamp_recorded_utc": "2026-11-06T12:06:15.891605+00:00",
+      "reviewer_process": "Work clean detached checkout; separate source challenge from author; real-world independence REVIEW_PENDING",
+      "evidence_location": "docs/operations/WORK_CONTINUITY/evidence/cursor174-pytest.log",
+      "status": "PASS",
+      "note": "All available tests ran with parser dependencies installed"
+    },
+    {
+      "commit_sha": "2d0b62400e0ad40f2780f51b26ba0d09261cd724",
+      "test_command": "PYTHONPATH=. <venv>/ruff check aurex aurex_foundation tests",
+      "exit_code": 0,
+      "passed_count": null,
+      "failed_count": 0,
+      "skipped_count": null,
+      "environment": {
+        "python": "Python 3.12.14",
+        "node": "v24.22.1",
+        "install": "existing isolated venv with pip install -e .[dev]; socksio environment-only for host proxy",
+        "network": "no model calls; synthetic local API TestClient only",
+        "parser_versions": {
+          "pypdf": "6.21.4",
+          "openpyxl": "3.1.5",
+          "et-xmlfile": "2.0.0"
+        }
+      },
+      "timestamp_recorded_utc": "2026-11-06T12:06:15.891605+00:00",
+      "reviewer_process": "Work clean detached checkout; separate source challenge from author; real-world independence REVIEW_PENDING",
+      "evidence_location": "docs/operations/WORK_CONTINUITY/evidence/cursor174-ruff.log",
+      "status": "PASS",
+      "note": ""
+    },
+    {
+      "commit_sha": "2d0b62400e0ad40f2780f51b26ba0d09261cd724",
+      "test_command": "PYTHONPATH=. <venv>/mypy --strict aurex aurex_foundation",
+      "exit_code": 0,
+      "passed_count": null,
+      "failed_count": 0,
+      "skipped_count": null,
+      "environment": {
+        "python": "Python 3.12.14",
+        "node": "v24.22.1",
+        "install": "existing isolated venv with pip install -e .[dev]; socksio environment-only for host proxy",
+        "network": "no model calls; synthetic local API TestClient only",
+        "parser_versions": {
+          "pypdf": "6.21.4",
+          "openpyxl": "3.1.5",
+          "et-xmlfile": "2.0.0"
+        }
+      },
+      "timestamp_recorded_utc": "2026-11-06T12:06:15.891605+00:00",
+      "reviewer_process": "Work clean detached checkout; separate source challenge from author; real-world independence REVIEW_PENDING",
+      "evidence_location": "docs/operations/WORK_CONTINUITY/evidence/cursor174-mypy.log",
+      "status": "PASS",
+      "note": "92 source files"
+    },
+    {
+      "commit_sha": "2d0b62400e0ad40f2780f51b26ba0d09261cd724",
+      "test_command": "cd website && npx vitest run",
+      "exit_code": 0,
+      "passed_count": 157,
+      "failed_count": 0,
+      "skipped_count": 0,
+      "environment": {
+        "python": "Python 3.12.14",
+        "node": "v24.22.1",
+        "install": "existing isolated venv with pip install -e .[dev]; socksio environment-only for host proxy",
+        "network": "no model calls; synthetic local API TestClient only",
+        "parser_versions": {
+          "pypdf": "6.21.4",
+          "openpyxl": "3.1.5",
+          "et-xmlfile": "2.0.0"
+        }
+      },
+      "timestamp_recorded_utc": "2026-11-06T12:06:15.891605+00:00",
+      "reviewer_process": "Work clean detached checkout; separate source challenge from author; real-world independence REVIEW_PENDING",
+      "evidence_location": "docs/operations/WORK_CONTINUITY/evidence/cursor174-vitest.log",
+      "status": "PASS",
+      "note": "Installed from unchanged package-lock shared with #171"
+    },
+    {
+      "commit_sha": "2d0b62400e0ad40f2780f51b26ba0d09261cd724",
+      "test_command": "cd website && npm run build",
+      "exit_code": 0,
+      "passed_count": null,
+      "failed_count": 0,
+      "skipped_count": null,
+      "environment": {
+        "python": "Python 3.12.14",
+        "node": "v24.22.1",
+        "install": "existing isolated venv with pip install -e .[dev]; socksio environment-only for host proxy",
+        "network": "no model calls; synthetic local API TestClient only",
+        "parser_versions": {
+          "pypdf": "6.21.4",
+          "openpyxl": "3.1.5",
+          "et-xmlfile": "2.0.0"
+        }
+      },
+      "timestamp_recorded_utc": "2026-11-06T12:06:15.891605+00:00",
+      "reviewer_process": "Work clean detached checkout; separate source challenge from author; real-world independence REVIEW_PENDING",
+      "evidence_location": "docs/operations/WORK_CONTINUITY/evidence/cursor174-build.log",
+      "status": "PASS",
+      "note": ""
+    },
+    {
+      "commit_sha": "2d0b62400e0ad40f2780f51b26ba0d09261cd724",
+      "test_command": "<venv>/python <work>/scripts/verification/ccxxxvi_cursor_174_probe.py",
+      "exit_code": 1,
+      "passed_count": 5,
+      "failed_count": 13,
+      "skipped_count": 0,
+      "environment": {
+        "python": "Python 3.12.14",
+        "node": "v24.22.1",
+        "install": "existing isolated venv with pip install -e .[dev]; socksio environment-only for host proxy",
+        "network": "no model calls; synthetic local API TestClient only",
+        "parser_versions": {
+          "pypdf": "6.21.4",
+          "openpyxl": "3.1.5",
+          "et-xmlfile": "2.0.0"
+        }
+      },
+      "timestamp_recorded_utc": "2026-11-06T12:06:15.891605+00:00",
+      "reviewer_process": "Work clean detached checkout; separate source challenge from author; real-world independence REVIEW_PENDING",
+      "evidence_location": "docs/operations/WORK_CONTINUITY/evidence/cursor174-probe.json",
+      "status": "FAIL",
+      "note": "18 checks: 5 pass, 13 fail; inherited and new financial/API/monitoring boundaries"
+    },
+    {
+      "commit_sha": "2d0b62400e0ad40f2780f51b26ba0d09261cd724",
+      "test_command": "<venv>/python <work>/scripts/verification/ccxxxvi_cursor_174_documents.py",
+      "exit_code": 1,
+      "passed_count": null,
+      "failed_count": null,
+      "skipped_count": 0,
+      "environment": {
+        "python": "Python 3.12.14",
+        "node": "v24.22.1",
+        "install": "existing isolated venv with pip install -e .[dev]; socksio environment-only for host proxy",
+        "network": "no model calls; synthetic local API TestClient only",
+        "parser_versions": {
+          "pypdf": "6.21.4",
+          "openpyxl": "3.1.5",
+          "et-xmlfile": "2.0.0"
+        }
+      },
+      "timestamp_recorded_utc": "2026-11-06T12:06:15.891605+00:00",
+      "reviewer_process": "Work clean detached checkout; separate source challenge from author; real-world independence REVIEW_PENDING",
+      "evidence_location": "docs/operations/WORK_CONTINUITY/evidence/cursor174-documents-probe.json",
+      "status": "FAIL",
+      "note": "13/13 defective reference observations reproduced, not 11 safety gates passed"
+    },
+    {
+      "commit_sha": "2d0b62400e0ad40f2780f51b26ba0d09261cd724",
+      "test_command": "<venv>/python scripts/verification/ccxxxvi_golden_files.py --candidate-root <clean174> --expected-sha 2d0b62400e0ad40f2780f51b26ba0d09261cd724",
+      "exit_code": 0,
+      "passed_count": null,
+      "failed_count": 0,
+      "skipped_count": 0,
+      "environment": {
+        "python": "Python 3.12.14",
+        "node": "v24.22.1",
+        "install": "existing isolated venv with pip install -e .[dev]; socksio environment-only for host proxy",
+        "network": "no model calls; synthetic local API TestClient only",
+        "parser_versions": {
+          "pypdf": "6.21.4",
+          "openpyxl": "3.1.5",
+          "et-xmlfile": "2.0.0"
+        }
+      },
+      "timestamp_recorded_utc": "2026-11-06T12:06:15.891605+00:00",
+      "reviewer_process": "Work clean detached checkout; separate source challenge from author; real-world independence REVIEW_PENDING",
+      "evidence_location": "docs/operations/WORK_CONTINUITY/evidence/cursor174-golden-files.log",
+      "status": "PASS",
+      "note": "36 structured JSON files, independent275.50/130.00/0.00 oracle; no OCR claim"
+    },
+    {
+      "commit_sha": "55ebda81b91e887f320c5cd8fb037931a3995b0f",
+      "test_command": "PYTHONPATH=. AUREX_DB_PATH=<disposable> <venv>/python -m pytest tests -q",
+      "exit_code": 0,
+      "passed_count": 628,
+      "failed_count": 0,
+      "skipped_count": 1,
+      "environment": {
+        "python": "Python 3.12.14",
+        "node": "v24.22.1",
+        "install": "existing isolated venv with pip install -e .[dev]; socksio environment-only for host proxy",
+        "network": "no model calls; synthetic local API TestClient only"
+      },
+      "timestamp_recorded_utc": "2026-11-06T12:06:15.891605+00:00",
+      "reviewer_process": "Work clean remote checkpoint checkout",
+      "evidence_location": "docs/operations/WORK_CONTINUITY/evidence/work55-pytest.log",
+      "status": "PASS"
+    },
+    {
+      "commit_sha": "55ebda81b91e887f320c5cd8fb037931a3995b0f",
+      "test_command": "python scripts/verification/ccxxxvi_resume_check.py --check-remote",
+      "exit_code": 1,
+      "passed_count": 0,
+      "failed_count": 1,
+      "skipped_count": 0,
+      "timestamp_recorded_utc": "2026-11-06T12:06:15.891605+00:00",
+      "reviewer_process": "Remote advanced during validation; checker correctly refused PASS; rerun final checkpoint",
+      "evidence_location": "docs/operations/WORK_CONTINUITY/evidence/work55-remote.json",
+      "status": "FAIL"
+    },
+    {
+      "commit_sha": "2d0b62400e0ad40f2780f51b26ba0d09261cd724",
+      "test_command": "cd website && npm audit --json",
+      "exit_code": 1,
+      "passed_count": null,
+      "failed_count": null,
+      "skipped_count": null,
+      "timestamp_recorded_utc": "2026-11-06T12:06:15.891605+00:00",
+      "reviewer_process": "Registry advisory scan; same lockfile bytes as #171 where scan executed",
+      "evidence_location": "docs/operations/WORK_CONTINUITY/evidence/npm-audit-website.json",
+      "status": "FAIL",
+      "note": "14 advisories:12moderate2high; no auto-upgrades"
     }
   ],
   "independent_review_status": "REVIEW_PENDING",
