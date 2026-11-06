@@ -315,12 +315,21 @@ def finding_history(tenant_id: str, finding_id: str) -> list[dict[str, Any]]:
 
 
 def purge_tenant(tenant_id: str, older_than_days: int | None = None) -> int:
-    """Explicit retention/purge. Deletes a single tenant's runs (and findings by cascade)."""
+    """Delete one tenant's runs, cascaded findings, and monitor events.
+
+    This is a local maintenance function. It is not a customer API and it does
+    not contact anyone. The returned count is the number of runs removed.
+    """
     with closing(_connect()) as conn:
         if older_than_days is None:
+            conn.execute("DELETE FROM dispater_monitor_events WHERE tenant_id=?", (tenant_id,))
             cur = conn.execute("DELETE FROM dispater_runs WHERE tenant_id=?", (tenant_id,))
         else:
             cutoff = (datetime.now(UTC) - timedelta(days=older_than_days)).isoformat()
+            conn.execute(
+                "DELETE FROM dispater_monitor_events WHERE tenant_id=? AND created_at<?",
+                (tenant_id, cutoff),
+            )
             cur = conn.execute(
                 "DELETE FROM dispater_runs WHERE tenant_id=? AND created_at<?", (tenant_id, cutoff)
             )

@@ -172,7 +172,7 @@ def ingest_source(tenant_id: str, filename: str, raw: bytes, *, kind: str) -> di
         "tenant_id": tenant_id,
         "source_sha256": source_sha256,
         "byte_length": len(bytes(raw)),
-        "byte_length_matches_received_bytes": True,
+        "byte_length_scope": "RECEIVED_REQUEST_BYTES",
         "caller_declared_byte_length_accepted": False,
         "filename": filename,
         "kind": kind,

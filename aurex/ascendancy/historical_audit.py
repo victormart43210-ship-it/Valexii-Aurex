@@ -32,6 +32,12 @@ class AuditAuthorizationError(PermissionError):
     """The historical source is not admitted."""
 
 
+def _self_verified(value: object) -> bool:
+    if value is True:
+        return True
+    return isinstance(value, str) and value.strip().casefold() in {"true", "verified", "yes"}
+
+
 def require_authorization(authorization: Mapping[str, Any], now: datetime) -> None:
     """Human, unexpired, and explicit about purpose and privacy. Otherwise refuse."""
     if now.tzinfo is None or now.utcoffset() is None:
@@ -49,7 +55,7 @@ def require_authorization(authorization: Mapping[str, Any], now: datetime) -> No
         raise AuditAuthorizationError("authorization is expired")
     if expires - real_now > timedelta(days=7):
         raise AuditAuthorizationError("authorization lifetime is too long")
-    if authorization.get("grantor_verified") is True or str(authorization.get("authority_verification", "")).upper() == "VERIFIED":
+    if _self_verified(authorization.get("grantor_verified")) or _self_verified(authorization.get("authority_verification")):
         raise AuditAuthorizationError("a caller cannot verify its own authority")
     purpose = authorization.get("purpose")
     privacy = authorization.get("privacy_control")
@@ -78,6 +84,8 @@ def require_authorization(authorization: Mapping[str, Any], now: datetime) -> No
         raise AuditAuthorizationError("the action does not match the purpose")
     scope = authorization.get("scope")
     if not isinstance(scope, str) or not scope.startswith(f"{tenant}:"):
+        raise AuditAuthorizationError("the scope is not bound to the tenant")
+    if not _TOKEN.fullmatch(scope.removeprefix(f"{tenant}:")):
         raise AuditAuthorizationError("the scope is not bound to the tenant")
 
 

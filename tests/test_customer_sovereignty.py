@@ -149,3 +149,6 @@ def test_monitor_mac_rejects_a_rehashed_payload(tmp_path: Path, monkeypatch: pyt
     conn.commit()
     conn.close()
     assert dispater_store.verify_monitor_chain("tenant-a") is False
+    assert dispater_store.purge_tenant("tenant-a") >= 0
+    assert dispater_store.monitor_event_count("tenant-a") == 0
+    assert dispater_store.list_runs("tenant-a") == []

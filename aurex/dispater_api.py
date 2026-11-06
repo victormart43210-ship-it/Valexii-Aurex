@@ -261,7 +261,7 @@ def ingest_document(payload: DocumentRequest, principal: PrincipalDep) -> dict[s
             "field_provenance": batch["field_provenance"],
             "limits": batch["limits"],
             "byte_length": batch["byte_length"],
-            "byte_length_matches_received_bytes": batch["byte_length_matches_received_bytes"],
+            "byte_length_scope": batch["byte_length_scope"],
             "caller_declared_byte_length_accepted": False,
         },
         "report": stored,
@@ -392,11 +392,18 @@ def export_run(
                 "X-Aurex-Training-Reuse": "not-authorized",
             },
         )
-    return {
-        "export_authorization": "TENANT_BEARER",
-        "third_party_release": False,
-        "training_reuse": "NOT_AUTHORIZED",
-        "deletion": "NOT_IMPLEMENTED",
-        "receipt_authenticity": receipt_authenticity(run),
-        "report": run,
-    }
+    return JSONResponse(
+        {
+            "export_authorization": "TENANT_BEARER",
+            "third_party_release": False,
+            "training_reuse": "NOT_AUTHORIZED",
+            "deletion": "NOT_IMPLEMENTED",
+            "receipt_authenticity": receipt_authenticity(run),
+            "report": run,
+        },
+        headers={
+            "Cache-Control": "no-store",
+            "X-Aurex-Third-Party-Release": "none",
+            "X-Aurex-Training-Reuse": "not-authorized",
+        },
+    )
