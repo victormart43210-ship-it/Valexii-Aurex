@@ -50,7 +50,7 @@ export const DispaterReconciliationReportSchema = z.object({
     unverified_exposure_usd: z.string().optional(),
     withheld_unresolved_usd: z.string().optional(),
     human_confirmed_discrepancy_usd: z.string().optional(),
-    confirmed_recovery_usd: z.string(),
+    confirmed_recovery_usd: z.literal("0.00"),
     recovery_rate_disclaimer: z.string(),
     event_separation: z.string().optional(),
   }),

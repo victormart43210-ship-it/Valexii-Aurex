@@ -27,6 +27,13 @@ describe("receipt export round-trip", () => {
     const exported = JSON.parse(JSON.stringify(parsed, null, 2));
     expect(exported).toEqual(SIGNED);
   });
+  it("rejects a recovery amount other than zero", () => {
+    const altered = {
+      ...SIGNED,
+      financial_summary: { ...SIGNED.financial_summary, confirmed_recovery_usd: "385.00" },
+    };
+    expect(DispaterReconciliationReportSchema.safeParse(altered).success).toBe(false);
+  });
   it("rejects malformed receipt fields instead of dropping them", () => {
     expect(
       DispaterReconciliationReportSchema.safeParse({ ...SIGNED, receipt_mac: 42 }).success,

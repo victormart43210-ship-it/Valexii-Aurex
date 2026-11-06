@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { admitSyntheticDispaterCsv, runDispaterDemoReconciliation } from "@/lib/dispater.functions";
 import type { DispaterReconciliationReport } from "@/lib/dispater-contract";
+import { dispaterLinkState } from "@/lib/dispater-link";
 import { Button } from "@/components/ui/button";
 import {
   CheckCircle2,
@@ -107,7 +108,7 @@ export function DispaterReconciliationConsole() {
           >
             {busy ? (
               <>
-                <RefreshCw className="size-4 animate-spin" /> Running Audit…
+                <RefreshCw className="size-4 motion-reduce:animate-none animate-spin" /> Running Audit…
               </>
             ) : (
               <>
@@ -121,11 +122,15 @@ export function DispaterReconciliationConsole() {
         </div>
       </div>
 
+      <p className="mt-4 text-xs uppercase tracking-wider text-muted-foreground" role="status">
+        API link: {dispaterLinkState(busy, report, errorMsg)} · synthetic demonstration · not recovered revenue
+      </p>
+
       {errorMsg && (
         <div className="mt-4 rounded-lg border border-destructive/50 bg-destructive/10 p-4 text-destructive flex items-center gap-3">
           <ShieldAlert className="size-5 shrink-0" />
           <div>
-            <p className="font-semibold text-sm">Audit Error</p>
+            <p className="font-semibold text-sm">{dispaterLinkState(busy, report, errorMsg)}</p>
             <p className="text-xs">{errorMsg}</p>
           </div>
         </div>
