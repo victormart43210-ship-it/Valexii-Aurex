@@ -65,7 +65,7 @@ class WebsiteAdapter:
 
         response = self._client.post(
             "/v1/jobs",
-            json=dict(payload),
+            json=self._sanitize_job(payload),
             headers=headers,
         )
         response.raise_for_status()

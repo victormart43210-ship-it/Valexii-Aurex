@@ -90,6 +90,9 @@ def _rows_from_json(text: str) -> dict[str, list[dict[str, str]]]:
         raise IngestError("json source is malformed") from exc
     if not isinstance(payload, dict):
         raise IngestError("json source must be an object")
+    declared = payload.get("dataset_type")
+    if declared is not None and declared != "SYNTHETIC_ONLY":
+        raise IngestError("a source that declares a non-synthetic dataset is refused")
     tables: dict[str, list[dict[str, str]]] = {name: [] for name in TABLES}
     for name in TABLES:
         rows = payload.get(name, [])

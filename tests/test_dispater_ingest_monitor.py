@@ -60,6 +60,12 @@ def test_prompt_injection_stays_a_field_value() -> None:
     assert report["financial_summary"]["confirmed_recovery_usd"] == "0.00"
 
 
+def test_a_declared_customer_dataset_is_refused() -> None:
+    raw = json.dumps({"dataset_type": "REAL_CUSTOMER", "jobs": [], "invoices": [], "rates": [], "payments": []}).encode()
+    with pytest.raises(IngestError, match="non-synthetic"):
+        ingest_source("tenant-a", "books.json", raw, kind="json")
+
+
 @pytest.mark.parametrize(
     "raw",
     [b"\x00not-text", b"x" * 1_000_001, b"invoices,invoice_id\n"],

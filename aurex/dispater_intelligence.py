@@ -53,6 +53,8 @@ QUALIFICATION = {
     "DUPLICATE_FIELD_TICKET": "INSUFFICIENT_EVIDENCE",
     "OVERTIME_UNPRICED": "INSUFFICIENT_EVIDENCE",
 }
+_UNBILLED_CODES = frozenset({"UNBILLED_JOB", "UNBILLED_EQUIPMENT", "UNBILLED_LABOR"})
+_AMBIGUOUS_EVENT_CODES = _UNBILLED_CODES | {"ORPHAN_INVOICE"}
 
 
 class InvalidSnapshot(ValueError):
@@ -647,7 +649,7 @@ class RevenueLeakageEngine:
         event_separation = _event_separation(unbilled_jobs, orphan_invoices, findings)
         if event_separation == "WITHHELD_AMBIGUOUS":
             for finding in findings:
-                if finding["code"] not in {"UNBILLED_JOB", "ORPHAN_INVOICE"}:
+                if finding["code"] not in _AMBIGUOUS_EVENT_CODES:
                     continue
                 amount = parse_money(finding["exposure_usd"])
                 if amount == 0:
@@ -664,7 +666,7 @@ class RevenueLeakageEngine:
                 finding["finding_sha256"] = digest(finding)
         elif event_separation == "NOT_PROVEN":
             for finding in findings:
-                if finding["code"] not in {"UNBILLED_JOB", "ORPHAN_INVOICE"}:
+                if finding["code"] not in _AMBIGUOUS_EVENT_CODES:
                     continue
                 finding.pop("finding_sha256", None)
                 finding["event_relation"] = "NOT_PROVEN"
@@ -948,19 +950,27 @@ def _event_separation(
     """
     if not unbilled_jobs or not orphan_invoices:
         return "NOT_APPLICABLE"
-    job_customers = {job["customer_id"] for job in unbilled_jobs}
-    orphan_customers = [invoice.get("customer_id", "") for invoice in orphan_invoices]
+    job_customers = {str(job.get("customer_id", "")).casefold() for job in unbilled_jobs}
+    orphan_customers = [str(invoice.get("customer_id", "")).casefold() for invoice in orphan_invoices]
     if all(customer and customer not in job_customers for customer in orphan_customers):
         return "PROVEN_DISTINCT"
     if len(unbilled_jobs) == 1 and len(orphan_invoices) == 1:
-        amounts = {
-            finding["code"]: parse_money(finding["exposure_usd"])
+        unbilled_amounts = [
+            parse_money(finding["exposure_usd"])
             for finding in findings
-            if finding["code"] in {"UNBILLED_JOB", "ORPHAN_INVOICE"}
-        }
-        unbilled_amount = amounts.get("UNBILLED_JOB", Decimal("0.00"))
-        orphan_amount = amounts.get("ORPHAN_INVOICE", Decimal("0.00"))
-        if unbilled_amount > 0 and unbilled_amount == orphan_amount:
+            if finding["code"] in _UNBILLED_CODES
+        ]
+        orphan_amounts = [
+            parse_money(finding["exposure_usd"])
+            for finding in findings
+            if finding["code"] == "ORPHAN_INVOICE"
+        ]
+        if (
+            len(unbilled_amounts) == 1
+            and len(orphan_amounts) == 1
+            and unbilled_amounts[0] > 0
+            and unbilled_amounts[0] == orphan_amounts[0]
+        ):
             return "WITHHELD_AMBIGUOUS"
     return "NOT_PROVEN"
 

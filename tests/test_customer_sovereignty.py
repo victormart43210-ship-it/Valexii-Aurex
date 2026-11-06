@@ -175,6 +175,10 @@ def test_table_only_truncation_fails_the_chain_head(tmp_path: Path, monkeypatch:
     conn.commit()
     conn.close()
     assert dispater_store.verify_monitor_chain("tenant-a") is False
+    head = json.loads((tmp_path / "chain.db.monitor-head.json").read_text())
+    head["tenant-a"] = {"count": 0, "head": "0" * 64, "tenant_id": "tenant-a", "kid": "forged", "mac": "00" * 32}
+    (tmp_path / "chain.db.monitor-head.json").write_text(json.dumps(head))
+    assert dispater_store.verify_monitor_chain("tenant-a") is False
 
 
 def test_declared_source_length_and_financial_egress_are_refused(client: TestClient) -> None:

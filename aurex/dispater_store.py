@@ -404,7 +404,12 @@ def _monitor_head_agrees(tenant_id: str, events: list[dict[str, Any]]) -> bool:
         return False
     if not events:
         if not isinstance(stored, dict):
+            # A missing sidecar entry cannot be told apart from a tenant that never wrote
+            # an event. Deleting the rows and the entry together is not detectable here.
             return True
+        body = {"count": stored.get("count"), "head": stored.get("head"), "tenant_id": tenant_id}
+        if not verify_mapping_mac(body, kid=str(stored.get("kid", "")), mac=str(stored.get("mac", ""))):
+            return False
         return stored.get("count") == 0 and stored.get("head") == "0" * 64
     if not isinstance(stored, dict):
         return False

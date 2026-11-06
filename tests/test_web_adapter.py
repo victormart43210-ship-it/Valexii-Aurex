@@ -41,8 +41,11 @@ def test_create_job_and_get_job(monkeypatch):
     adapter = WebsiteAdapter("http://example.local")
     adapter._client = DummyClient()
 
-    payload = {"kind": "regression_scan", "params": {}, "maxCostUsd": 0.0}
+    payload = {"kind": "regression_scan", "params": {}, "maxCostUsd": 0.0, "invoice_id": "I1"}
     job = adapter.create_job(payload)
+    posted = adapter._client.calls[0][2]
+    assert set(posted) <= {"id", "state", "kind", "createdAt", "updatedAt"}
+    assert "invoice_id" not in posted
     assert job["id"] == "job-1"
     assert job["state"] in ("queued", "succeeded")
 
