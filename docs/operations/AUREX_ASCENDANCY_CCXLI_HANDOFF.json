@@ -4,6 +4,13 @@
   "repository": "victormart43210-ship-it/Valexii-Aurex",
   "recorded_at": "2026-11-06T07:08:00-06:00",
   "status": "PARTIAL",
+  "owner_clarification": {
+    "recorded_at": "2026-11-06T07:10:00-06:00",
+    "supersedes": "Any earlier statement in this file that treats THE BIG ONE as a fixed architecture or as an archive of proprietary algorithms.",
+    "dataset_role": "THE BIG ONE is the real-company industrial audit validation dataset.",
+    "handling": "Raw company records and sensitive metadata were not read, hashed, uploaded, committed, or transmitted. Processing them requires a human authorization and a read-only no-export privacy control. The current engine admits SYNTHETIC_ONLY, so an authorized historical digest is recorded and then left NOT_PROCESSED rather than relabeled as synthetic.",
+    "kernel_boundary": "aurex/ascendancy does not encode that company's columns, names, or file layout. Onboarding uses a caller-supplied header map."
+  },
   "rating_claimed": null,
   "rating_note": "9.9 is the requested engineering standard. This commit does not assign that rating.",
   "production_authority": "HOLD",
@@ -21,10 +28,11 @@
   "pr_url": "https://github.com/victormart43210-ship-it/Valexii-Aurex/pull/178",
   "pr_base_branch": "cursor/kusanagi-ccxxxix-sovereign-convergence-4082",
   "base_decision": "Mainline policy asks for a branch from main. This operation continues the unmerged CCXXXIX commercial stack because a branch from main would drop the DISPATER engine being measured. The pull request targets that stack, not main.",
-  "usb": {
+  "validation_dataset": {
     "name": "THE BIG ONE",
-    "status": "UNAVAILABLE",
-    "action": "No device was mounted. No original bytes were read or modified. No private IP inventory was created."
+    "role": "real-company industrial audit validation dataset",
+    "status": "NOT_ACCESSED",
+    "action": "No mount was available. No raw records or sensitive metadata were read or copied. The read-only gate is aurex/ascendancy/historical_audit.py."
   },
   "private_ip_inventory": "none",
   "integration_status": {
@@ -97,27 +105,32 @@
     "No service token, customer record, or model weight was added."
   ],
   "verification": [
-    {"command": "python3 -m pytest tests -q --tb=line", "exit_code": 0, "result": "664 passed"},
+    {"command": "python3 -m pytest tests -q --tb=line", "exit_code": 0, "result": "670 passed"},
     {"command": "python3 -m ruff check aurex tests scripts/clii_sandbox.py", "exit_code": 0, "result": "pass"},
-    {"command": "python3 -m mypy aurex aurex_foundation", "exit_code": 0, "result": "103 source files"}
+    {"command": "python3 -m mypy aurex aurex_foundation", "exit_code": 0, "result": "104 source files"}
   ],
+  "jules_ccxlii": {
+    "observed_at": "2026-11-06T07:10:00-06:00",
+    "branch_or_pr": "none named CCXLII on origin",
+    "adjacent_work": "PR #176 edits aurex/dispater_intelligence.py, aurex/dispater_store.py, aurex/dispater_api.py, and the DISPATER website console.",
+    "coordination": "This clarification does not edit those shared files and does not add a second financial calculator."
+  },
   "not_run": [
     "Frontend vitest, TypeScript, production build, and browser. No website file changed.",
     "OCR, live inference, Playwright, OSV-Scanner, Syft, and Semgrep.",
-    "Customer pilot.",
-    "Blinded review by a person who did not write the tests.",
-    "USB recovery."
+    "Customer pilot and raw validation-dataset processing.",
+    "Blinded review by a person who did not write the tests."
   ],
   "blockers": [
-    "THE BIG ONE USB is not mounted, so original mathematical files were not hashed.",
+    "The real-company validation dataset was not accessed. Authorized historical rows stay NOT_PROCESSED so they are not relabeled synthetic.",
     "Historical manuscript corpora are not licensed into this workspace.",
     "The commercial stack is still unmerged. This branch must not land on main by itself.",
     "Outside review of the financial oracle and the ablation has not happened."
   ],
   "next_actions": [
-    "Have a different reviewer rerun pytest and recompute the 300.00 oracle from the ledger description.",
-    "If the owner mounts THE BIG ONE read-only, hash it and keep any sensitive inventory outside this public repository.",
-    "Load a historical corpus only after its license, transcription, and split are recorded. Until then the status stays NOT_EVALUATED.",
+    "When a human authorization and read-only privacy control exist, admit the validation dataset by digest outside this public repository. Do not commit the records.",
+    "Extend the engine's dataset admission in one shared contract with Jules CCXLII, instead of forking dispater_intelligence.py.",
+    "Have a different reviewer rerun pytest and recompute the 300.00 and 10.00 oracles.",
     "Do not assign a 9.9 rating from these synthetic measurements."
   ],
   "rollback": "Reset this branch to cffef9d4adcb6ff0dfca04629cacdb93760dbde7. The kernel is a new package and does not migrate the DISPATER database."
