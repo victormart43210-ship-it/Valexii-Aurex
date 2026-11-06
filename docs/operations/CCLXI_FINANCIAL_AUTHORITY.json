@@ -1,0 +1,24 @@
+{
+  "operation": "KUSANAGI_CCLXI",
+  "tested_code_sha": "f480c518ffcb5360b2b084470dbdb71aeac68d32",
+  "golden": {
+    "identified_exposure_usd": "385.00",
+    "withheld_unresolved_usd": "150.00",
+    "confirmed_recovery_usd": "0.00",
+    "result": "PASS",
+    "command": "pytest -q tests/test_dispater_golden_audit.py"
+  },
+  "synthetic_api": {
+    "route": "POST /v1/dispater/reconciliation",
+    "identified_exposure_usd": "10.00",
+    "confirmed_recovery_usd": "0.00",
+    "authority_state": "HOLD",
+    "presentation": ["now", "changed", "next", "why", "proof"],
+    "missing_token": "401 or 403",
+    "result": "PASS",
+    "command": "pytest -q tests/test_cclxi_synthetic_audit.py"
+  },
+  "website_contract": "confirmed_recovery_usd remains z.literal('0.00') from CCLIX. Unchanged in this commit.",
+  "financial_authority": "NONE",
+  "actions_authorized": []
+}

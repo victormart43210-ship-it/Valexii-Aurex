@@ -1,0 +1,17 @@
+{
+  "operation": "KUSANAGI_CCLXI",
+  "tested_code_sha": "f480c518ffcb5360b2b084470dbdb71aeac68d32",
+  "decision": "HOLD_WITH_BLOCKERS",
+  "production": "HOLD",
+  "financial_authority": "NONE",
+  "paid_inference": "OFF",
+  "customer_data": "PROHIBITED",
+  "merge": "NOT_AUTHORIZED",
+  "external_anchor": "NOT_VERIFIED",
+  "independent_human_assurance": "OPEN",
+  "deletion_and_retention": "NOT_IMPLEMENTED",
+  "secret_scan": "NOT_RUN as a separate scanner. The new script contains no credentials.",
+  "dependency_license_review": "NOT_RUN. No dependency was added.",
+  "docker_image": "NOT_RUN on this SHA. The workflow path filter does not include scripts/ or tests/.",
+  "github_actions": "PENDING until this branch is pushed"
+}
