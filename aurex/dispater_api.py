@@ -277,6 +277,8 @@ def ingest_document(payload: DocumentRequest, principal: PrincipalDep) -> dict[s
             "byte_length": batch["byte_length"],
             "byte_length_scope": batch["byte_length_scope"],
             "caller_declared_byte_length_accepted": False,
+            "source_bytes_status": batch["source_bytes_status"],
+            "source_identity": batch["source_identity"],
         },
         "report": stored,
     }

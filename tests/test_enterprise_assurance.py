@@ -165,9 +165,32 @@ def test_deletion_request_does_not_delete_and_approval_stays_unverified(client: 
     assert decision["reason"] == "NO_IDENTITY_PROVIDER"
 
 
+def test_empty_data_keys_are_not_described_as_encryption(monkeypatch: pytest.MonkeyPatch) -> None:
+    from aurex.dispater_at_rest import encryption_status
+
+    monkeypatch.setenv("AUREX_DISPATER_DATA_KEYS", "{}")
+    assert encryption_status() == "NOT_CONFIGURED"
+
+
+def test_the_anchor_key_cannot_reuse_the_receipt_key(monkeypatch: pytest.MonkeyPatch) -> None:
+    from aurex.dispater_anchor import AnchorKeyError, require_configured
+
+    shared = "ab" * 32
+    monkeypatch.setenv("AUREX_DISPATER_RECEIPT_KEYS", json.dumps({"test-k1": shared}))
+    monkeypatch.setenv("AUREX_DISPATER_ANCHOR_KEYS", json.dumps({"anchor-k1": shared}))
+    monkeypatch.setenv("AUREX_DISPATER_ANCHOR_ACTIVE_KID", "anchor-k1")
+    with pytest.raises(AnchorKeyError):
+        require_configured()
+
+
 def test_unlisted_connector_destination_is_refused(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.delenv("AUREX_EGRESS_ALLOWLIST", raising=False)
     assert connector_destination_allowed("https://exfil.example.invalid/v1") is False
     adapter = WebsiteAdapter("https://exfil.example.invalid")
     with pytest.raises(SovereigntyError):
         adapter.create_job({"kind": "regression_scan"})
+    monkeypatch.setenv("AUREX_EGRESS_ALLOWLIST", "example.local")
+    allowed = WebsiteAdapter("http://example.local")
+    allowed.base_url = "http://127.0.0.1:9"
+    with pytest.raises(SovereigntyError):
+        allowed.create_job({"kind": "regression_scan"})

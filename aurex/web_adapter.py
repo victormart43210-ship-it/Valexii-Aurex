@@ -40,8 +40,14 @@ class WebsiteAdapter:
             raise ValueError("base_url must include a scheme and host")
 
         self.base_url = base_url.rstrip("/")
+        self._pinned_base = self.base_url
         self.token_env = service_token_env
         self._client = httpx.Client(base_url=self.base_url, timeout=10.0)
+
+    def _destination_allowed(self) -> bool:
+        if self.base_url != self._pinned_base:
+            return False
+        return connector_destination_allowed(self._pinned_base)
 
     def _auth_header(self) -> dict[str, str]:
         token = os.environ.get(self.token_env)
@@ -65,7 +71,7 @@ class WebsiteAdapter:
         payload: Mapping[str, Any],
         idempotency_key: str | None = None,
     ) -> dict[str, Any]:
-        if not connector_destination_allowed(self.base_url):
+        if not self._destination_allowed():
             raise SovereigntyError("EGRESS_DESTINATION_NOT_ALLOWLISTED")
         headers = self._auth_header()
         if idempotency_key:
@@ -83,7 +89,7 @@ class WebsiteAdapter:
         return self._sanitize_job(data)
 
     def get_job(self, job_id: str) -> dict[str, Any]:
-        if not connector_destination_allowed(self.base_url):
+        if not self._destination_allowed():
             raise SovereigntyError("EGRESS_DESTINATION_NOT_ALLOWLISTED")
         headers = self._auth_header()
         response = self._client.get(f"/v1/jobs/{job_id}", headers=headers)

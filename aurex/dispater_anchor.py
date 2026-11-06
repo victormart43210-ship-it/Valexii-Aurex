@@ -15,12 +15,14 @@ Configuration, never committed:
 
 from __future__ import annotations
 
+import fcntl
 import hashlib
 import hmac
 import json
 import os
 import threading
 import uuid
+from collections.abc import Callable
 from pathlib import Path
 from typing import Any
 
@@ -55,7 +57,27 @@ def _active() -> tuple[str, bytes]:
     kid = os.environ.get("AUREX_DISPATER_ANCHOR_ACTIVE_KID", "")
     if kid not in keys:
         raise AnchorKeyError("active anchor key id is not configured")
-    return kid, keys[kid]
+    key = keys[kid]
+    raw = os.environ.get("AUREX_DISPATER_RECEIPT_KEYS", "")
+    if raw:
+        try:
+            receipt_keys = json.loads(raw)
+        except ValueError:
+            receipt_keys = {}
+        if isinstance(receipt_keys, dict):
+            for value in receipt_keys.values():
+                try:
+                    other = bytes.fromhex(str(value))
+                except ValueError:
+                    continue
+                if len(other) == len(key) and hmac.compare_digest(other, key):
+                    raise AnchorKeyError("anchor key must not reuse the receipt key")
+    return kid, key
+
+
+def require_configured() -> None:
+    """Fail before a monitor row is written when the checkpoint key is unusable."""
+    _active()
 
 
 def _revoked() -> set[str]:
@@ -79,9 +101,20 @@ def _read(path: Path) -> dict[str, Any]:
 
 
 def _write(path: Path, payload: dict[str, Any]) -> None:
-    temporary = path.with_name(path.name + ".tmp")
+    temporary = path.with_name(f"{path.name}.{os.getpid()}.{uuid.uuid4().hex}.tmp")
     temporary.write_text(json.dumps(payload, sort_keys=True))
     temporary.replace(path)
+
+
+def _exclusive(path: Path, action: Callable[[], None]) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    lock_path = path.with_name(path.name + ".lock")
+    with lock_path.open("a+") as handle:
+        fcntl.flock(handle.fileno(), fcntl.LOCK_EX)
+        try:
+            action()
+        finally:
+            fcntl.flock(handle.fileno(), fcntl.LOCK_UN)
 
 
 def note_head(tenant_id: str, head: str, count: int) -> None:
@@ -90,7 +123,8 @@ def note_head(tenant_id: str, head: str, count: int) -> None:
     if kid in _revoked():
         raise AnchorKeyError("active anchor key is revoked")
     path = _path()
-    with _LOCK:
+
+    def _record() -> None:
         current = _read(path) if path.exists() else {}
         previous = current.get(tenant_id)
         generation = previous.get("generation") if isinstance(previous, dict) else None
@@ -107,16 +141,23 @@ def note_head(tenant_id: str, head: str, count: int) -> None:
         current[tenant_id] = {**body, "kid": kid, "mac": mac}
         _write(path, current)
 
+    with _LOCK:
+        _exclusive(path, _record)
+
 
 def clear_tenant(tenant_id: str) -> None:
     """Drop one tenant after an authorized full purge. This does not delete other tenants."""
     path = _path()
-    with _LOCK:
+
+    def _drop() -> None:
         if not path.exists():
             return
         current = _read(path)
         current.pop(tenant_id, None)
         _write(path, current)
+
+    with _LOCK:
+        _exclusive(path, _drop)
 
 
 def anchor_agrees(tenant_id: str, events: list[dict[str, Any]]) -> bool:

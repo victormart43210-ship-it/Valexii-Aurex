@@ -23,8 +23,13 @@ class AtRestError(RuntimeError):
 
 
 def encryption_status() -> str:
-    raw = os.environ.get("AUREX_DISPATER_DATA_KEYS", "")
-    if not raw:
+    """NOT_CONFIGURED unless an active 32-byte key is present. An empty object is not configured."""
+    try:
+        keys = _keys()
+    except AtRestError:
+        return "NOT_CONFIGURED"
+    kid = os.environ.get("AUREX_DISPATER_DATA_ACTIVE_KID", "")
+    if kid not in keys:
         return "NOT_CONFIGURED"
     return "SERVER_KEY_AESGCM"
 

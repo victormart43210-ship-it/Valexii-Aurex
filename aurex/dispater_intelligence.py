@@ -54,7 +54,6 @@ QUALIFICATION = {
     "OVERTIME_UNPRICED": "INSUFFICIENT_EVIDENCE",
 }
 _UNBILLED_CODES = frozenset({"UNBILLED_JOB", "UNBILLED_EQUIPMENT", "UNBILLED_LABOR"})
-_AMBIGUOUS_EVENT_CODES = _UNBILLED_CODES | {"ORPHAN_INVOICE"}
 
 
 class InvalidSnapshot(ValueError):
@@ -955,10 +954,13 @@ def _event_separation(
     if not unbilled_jobs or not orphan_invoices:
         return "NOT_APPLICABLE", empty, empty
     job_customers = {str(job.get("customer_id", "")).casefold() for job in unbilled_jobs}
+    # A blank customer id is not proof that the job belongs to someone else.
+    jobs_missing_customer = any(not str(job.get("customer_id", "")).casefold() for job in unbilled_jobs)
     unresolved = [
         invoice
         for invoice in orphan_invoices
-        if not str(invoice.get("customer_id", "")).casefold()
+        if jobs_missing_customer
+        or not str(invoice.get("customer_id", "")).casefold()
         or str(invoice.get("customer_id", "")).casefold() in job_customers
     ]
     if not unresolved:
@@ -986,7 +988,9 @@ def _event_separation(
             and unbilled_amounts[0] > 0
             and unbilled_amounts[0] == orphan_amounts[0]
         )
-        if same_amount:
+        shared_job = str(unbilled_jobs[0].get("job_id", "")).casefold() == str(unresolved[0].get("job_id", "")).casefold()
+        shared_job = shared_job and bool(str(unbilled_jobs[0].get("job_id", "")))
+        if same_amount or shared_job:
             return "WITHHELD_AMBIGUOUS", unbilled_keys | unresolved_keys, empty
         return "NO_RELATIONSHIP_EVIDENCE", empty, unbilled_keys | unresolved_keys
     return "WITHHELD_AMBIGUOUS", unbilled_keys | unresolved_keys, empty

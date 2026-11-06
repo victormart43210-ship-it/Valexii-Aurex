@@ -402,7 +402,7 @@ def _write_monitor_head(tenant_id: str, head: str, count: int) -> None:
         if path.exists():
             current = json.loads(path.read_text())
         current[tenant_id] = {**body, "kid": kid, "mac": mac}
-        temporary = path.with_name(path.name + ".tmp")
+        temporary = path.with_name(f"{path.name}.{os.getpid()}.{uuid.uuid4().hex}.tmp")
         temporary.write_text(json.dumps(current, sort_keys=True))
         temporary.replace(path)
 
@@ -452,6 +452,9 @@ def save_monitor_event(
     A repeated digest with a different checkpoint is a conflict and is not rewritten.
     Each event hashes the previous event. The actor is SYSTEM.
     """
+    from aurex.dispater_anchor import require_configured
+
+    require_configured()
     event_id = f"mon-{uuid.uuid4().hex}"
     created_at = datetime.now(UTC).isoformat()
     recorded = dict(payload)
@@ -464,11 +467,18 @@ def save_monitor_event(
                 (tenant_id, source_sha256),
             ).fetchone()
             if existing is not None:
+                count_row = conn.execute(
+                    "SELECT COUNT(*) AS n FROM dispater_monitor_events WHERE tenant_id=?",
+                    (tenant_id,),
+                ).fetchone()
                 conn.execute("COMMIT")
                 if existing["checkpoint_sha256"] != checkpoint_sha256:
                     raise sqlite3.IntegrityError(
                         "conflicting source evidence: digest reused for a different checkpoint"
                     )
+                from aurex.dispater_anchor import note_head
+
+                note_head(tenant_id, str(existing["entry_sha256"]), int(count_row["n"]))
                 return _monitor_row(existing)
             previous = conn.execute(
                 "SELECT entry_sha256 FROM dispater_monitor_events WHERE tenant_id=? "
