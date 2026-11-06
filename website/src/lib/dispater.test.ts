@@ -4,6 +4,7 @@ import {
   executeDispaterDocument,
   executeDispaterReconciliation,
   getFixture,
+  readDispaterRun,
   resolveDispaterConfig,
 } from "./dispater.server";
 
@@ -103,5 +104,25 @@ describe("dispater server config", () => {
         denied,
       ),
     ).rejects.toThrow(/^DISPATER API error \(401\)$/);
+  });
+  it("reads back the same receipt and refuses a mismatched run", async () => {
+    const stored = { ...REPORT, tenant_id: "tenant-x", run_id: "run-" + "a".repeat(32), receipt_sha256: "abc" };
+    const ok = (async () => new Response(JSON.stringify(stored), { status: 200 })) as typeof fetch;
+    const report = await readDispaterRun(
+      { serviceUrl: "https://a.example", serviceToken: TOKEN, tenantId: "tenant-x" },
+      stored.run_id,
+      ok,
+    );
+    expect(report.receipt_sha256).toBe("abc");
+    expect(report.financial_summary.confirmed_recovery_usd).toBe("0.00");
+    const wrong = (async () =>
+      new Response(JSON.stringify({ ...stored, run_id: "run-" + "b".repeat(32) }), { status: 200 })) as typeof fetch;
+    await expect(
+      readDispaterRun(
+        { serviceUrl: "https://a.example", serviceToken: TOKEN, tenantId: "tenant-x" },
+        stored.run_id,
+        wrong,
+      ),
+    ).rejects.toThrow("DISPATER API returned an invalid report");
   });
 });

@@ -160,6 +160,33 @@ export async function executeDispaterReconciliation(
   return parsed.data;
 }
 
+export async function readDispaterRun(
+  config: DispaterServerConfig,
+  runId: string,
+  transport: typeof fetch = fetch,
+): Promise<DispaterReconciliationReport> {
+  const { url, token, tenantId } = resolveDispaterConfig(config);
+  if (!/^run-[0-9a-f]{32}$/.test(runId)) throw new Error("DISPATER API returned an invalid report");
+  const endpoint = new URL(`/v1/dispater/runs/${runId}`, url);
+  endpoint.searchParams.set("tenant_id", tenantId);
+  let response: Response;
+  try {
+    response = await transport(endpoint.toString(), {
+      method: "GET",
+      headers: { Authorization: `Bearer ${token}`, Accept: "application/json" },
+      signal: AbortSignal.timeout(6000),
+    });
+  } catch {
+    throw new Error("DISPATER backend unreachable");
+  }
+  if (!response.ok) throw new Error(`DISPATER API error (${response.status})`);
+  const parsed = DispaterReconciliationReportSchema.safeParse(await response.json());
+  if (!parsed.success || parsed.data.tenant_id !== tenantId || parsed.data.run_id !== runId) {
+    throw new Error("DISPATER API returned an invalid report");
+  }
+  return parsed.data;
+}
+
 const SYNTHETIC_CSV = new TextEncoder().encode(
   "invoices,invoice_id,job_id,amount,status\ninvoices,I-SYN,MISSING,10.00,open\n",
 );

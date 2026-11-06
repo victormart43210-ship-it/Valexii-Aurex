@@ -1,6 +1,10 @@
 import { useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
-import { admitSyntheticDispaterCsv, runDispaterDemoReconciliation } from "@/lib/dispater.functions";
+import {
+  admitSyntheticDispaterCsv,
+  readDispaterStoredRun,
+  runDispaterDemoReconciliation,
+} from "@/lib/dispater.functions";
 import type { DispaterReconciliationReport } from "@/lib/dispater-contract";
 import { dispaterLinkState } from "@/lib/dispater-link";
 import { Button } from "@/components/ui/button";
@@ -16,6 +20,7 @@ import {
 export function DispaterReconciliationConsole() {
   const reconcileFn = useServerFn(runDispaterDemoReconciliation);
   const admitFn = useServerFn(admitSyntheticDispaterCsv);
+  const readFn = useServerFn(readDispaterStoredRun);
   const [presentation, setPresentation] = useState<"SYNTHETIC DEMO" | "SYNTHETIC DOCUMENT">(
     "SYNTHETIC DEMO",
   );
@@ -25,13 +30,27 @@ export function DispaterReconciliationConsole() {
   );
   const [report, setReport] = useState<DispaterReconciliationReport | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [storedMatch, setStoredMatch] = useState<"MATCH" | "UNCHECKED" | null>(null);
 
   async function handleRunDemo() {
     setBusy(true);
     setErrorMsg(null);
+    setStoredMatch(null);
     try {
       const res = await reconcileFn({ data: { fixture: selectedFixture } });
       setPresentation("SYNTHETIC DEMO");
+      if (res.run_id) {
+        const stored = await readFn({ data: { runId: res.run_id } });
+        if (
+          stored.receipt_sha256 !== res.receipt_sha256 ||
+          stored.financial_summary.confirmed_recovery_usd !== "0.00"
+        ) {
+          throw new Error("DISPATER API returned an invalid report");
+        }
+        setStoredMatch("MATCH");
+      } else {
+        setStoredMatch("UNCHECKED");
+      }
       setReport(res);
     } catch (err: unknown) {
       setErrorMsg(err instanceof Error ? err.message : "Reconciliation failed");
@@ -47,6 +66,7 @@ export function DispaterReconciliationConsole() {
     try {
       const admitted = await admitFn({ data: {} });
       setPresentation("SYNTHETIC DOCUMENT");
+      setStoredMatch(null);
       setReport(admitted);
     } catch (err: unknown) {
       setErrorMsg(err instanceof Error ? err.message : "Document admission failed");
@@ -198,6 +218,8 @@ export function DispaterReconciliationConsole() {
                 {report.receipt_binding === "BOUND_V2"
                   ? "Identity-bound receipt"
                   : "Legacy or unbound metadata"}
+                {storedMatch === "MATCH" ? " · Stored run matches" : ""}
+                {storedMatch === "UNCHECKED" ? " · Stored run was not read back" : ""}
                 {report.financial_summary.withheld_unresolved_usd
                   ? ` · Withheld ${report.financial_summary.withheld_unresolved_usd}`
                   : ""}

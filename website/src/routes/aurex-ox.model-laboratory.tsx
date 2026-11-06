@@ -22,6 +22,16 @@ export const Route = createFileRoute("/aurex-ox/model-laboratory")({
   component: ModelLaboratory,
 });
 
+const UPGRADE_CANDIDATES = [
+  "Qwen3.5-0.8B",
+  "Falcon-H1-1.5B-Instruct",
+  "Granite-4.0-Micro",
+  "Ministral-3-3B-Reasoning-2512-GGUF",
+  "PaddleOCR-VL",
+  "DeepSeek-OCR-2",
+  "EXAONE-4.0-1.2B",
+] as const;
+
 const CANDIDATES = [
   ["Qwen", "China", "Foundation model"],
   ["Mistral / Ministral", "France", "Foundation model"],
@@ -62,6 +72,29 @@ function ModelLaboratory() {
                   <td className="py-3 pr-4">{family}</td>
                   <td className="py-3 pr-4">{country}</td>
                   <td className="py-3 pr-4">{kind}</td>
+                  <td className="py-3 text-amber">NOT EVALUATED</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          <h2 className="mt-10 text-lg font-display">Named upgrade candidates</h2>
+          <p className="mt-2 text-sm text-muted-foreground">
+            These names come from the CCLXIV list. Weights were not downloaded here. No score is shown
+            because none was measured.
+          </p>
+          <table className="mt-4 w-full text-left text-sm">
+            <thead>
+              <tr className="border-b border-border text-xs text-muted-foreground">
+                <th className="py-2 pr-4">Candidate</th>
+                <th className="py-2 pr-4">Weights</th>
+                <th className="py-2">Evaluation</th>
+              </tr>
+            </thead>
+            <tbody>
+              {UPGRADE_CANDIDATES.map((name) => (
+                <tr key={name} className="border-b border-border">
+                  <td className="py-3 pr-4">{name}</td>
+                  <td className="py-3 pr-4 text-amber">NOT INSTALLED</td>
                   <td className="py-3 text-amber">NOT EVALUATED</td>
                 </tr>
               ))}
