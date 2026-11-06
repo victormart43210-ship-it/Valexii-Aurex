@@ -13,8 +13,9 @@
     "xaeli_live_inference": "BLOCKED",
     "model_benchmarks": "NOT_RUN",
     "training_job": "NOT_STARTED",
-    "railway_image": "PENDING. aurex/model_lab.py matches the workflow path filter. It had not run at the time of this record.",
-    "github_actions_on_this_sha": "PENDING",
+    "railway_image": "PASS for docker-build-and-smoke on f2ab253bf9f8e4bce55bc61d0c557446be2f78fc at 2026-11-06T16:28:00-0600. The job built the image. It did not deploy.",
+    "github_actions_on_f2ab253": "PASS for offline-practice, both CI test jobs, verify, integration, and docker-build-and-smoke. This does not authorize a merge.",
+    "github_actions_on_cfbf538_alone": "NOT_RUN. That commit was not pushed by itself.",
     "prior_ci_6c99b3e": "PASS for five checks on that earlier documentation commit. It does not verify this SHA.",
     "secret_in_frontend": "The local page text did not contain the test token.",
     "external_anchor": "NOT_VERIFIED"

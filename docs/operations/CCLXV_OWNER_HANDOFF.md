@@ -26,7 +26,7 @@ This session both wrote the change and checked the browser. That is not an outsi
 - ruff and mypy: pass
 - website vitest: 162 passed
 - website production build: pass
-- GitHub Actions and the Railway image on this SHA: pending
+- GitHub Actions on `f2ab253bf9f8e4bce55bc61d0c557446be2f78fc`: success at 4:28 PM CT for offline-practice, both CI test jobs, verify, integration, and docker-build-and-smoke. The image job did not deploy. The success does not authorize a merge.
 
 ## Next action
 
