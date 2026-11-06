@@ -30,7 +30,7 @@ The Post-9.9 blueprint v2.1 is not in the repository. The 108-run gate was not i
 - ruff and mypy: pass
 - website vitest: 161 passed
 - website production build: pass
-- GitHub Actions on this SHA: pending until the push is observed
+- GitHub Actions on `e9163594d308f4cb6782a04968692aa129ccafb8`: success at 4:07 PM CT for offline-practice, both CI test jobs, verify, and integration. That tip includes the tested code. The success does not authorize a merge.
 - Railway image: NOT_RUN
 
 ## Owner actions
