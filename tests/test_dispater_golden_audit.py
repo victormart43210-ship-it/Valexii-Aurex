@@ -120,6 +120,7 @@ def test_thirty_six_month_audit_matches_independent_totals() -> None:
     summary = report["financial_summary"]
     for key, value in EXPECTED.items():
         assert summary[key] == value
+    assert summary["event_separation"] == "NO_RELATIONSHIP_EVIDENCE"
     assert report["authority_state"] == "HOLD"
     assert all(item["qualification"] != "CONFIRMED_DISCREPANCY" for item in report["findings"])
     codes = {item["code"] for item in report["findings"]}

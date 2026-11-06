@@ -177,6 +177,8 @@ def ingest_source(tenant_id: str, filename: str, raw: bytes, *, kind: str) -> di
         "byte_length": len(bytes(raw)),
         "byte_length_scope": "RECEIVED_REQUEST_BYTES",
         "caller_declared_byte_length_accepted": False,
+        "source_bytes_status": "VERIFIED_RECEIVED_BYTES",
+        "source_identity": "UNVERIFIED",
         "filename": filename,
         "kind": kind,
         "processor": {"name": "dispater_ingest", "version": SCHEMA, "model": None, "ocr": "NOT_INSTALLED"},

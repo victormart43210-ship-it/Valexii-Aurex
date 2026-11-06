@@ -35,6 +35,7 @@ class DummyClient:
 @pytest.fixture(autouse=True)
 def fix_token(monkeypatch):
     monkeypatch.setenv("AUREX_SERVICE_TOKEN", "a" * 32)
+    monkeypatch.setenv("AUREX_EGRESS_ALLOWLIST", "example.local")
 
 
 def test_create_job_and_get_job(monkeypatch):

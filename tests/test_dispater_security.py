@@ -335,6 +335,9 @@ def test_financial_authority_remains_disabled(client: TestClient) -> None:
         "third_party_contact": "NONE",
         "training_reuse": "NOT_AUTHORIZED",
         "deletion": "NOT_IMPLEMENTED",
+        "deletion_request": "RECORDED_NOT_EXECUTED",
+        "encryption_at_rest": "NOT_CONFIGURED",
+        "external_anchor": "NOT_VERIFIED",
         "customer_decides": True,
     }
     assert d["confirmed_recovery_usd"] == "0.00"

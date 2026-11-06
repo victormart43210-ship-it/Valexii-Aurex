@@ -20,6 +20,9 @@ from urllib.parse import urlparse
 
 import httpx
 
+from aurex.customer_sovereignty import SovereigntyError
+from aurex.egress import connector_destination_allowed
+
 _JOB_FIELDS = ("id", "state", "kind", "createdAt", "updatedAt")
 _JOB_VALUE = re.compile(r"^[A-Za-z0-9_.:+-]{1,80}$")
 
@@ -62,6 +65,8 @@ class WebsiteAdapter:
         payload: Mapping[str, Any],
         idempotency_key: str | None = None,
     ) -> dict[str, Any]:
+        if not connector_destination_allowed(self.base_url):
+            raise SovereigntyError("EGRESS_DESTINATION_NOT_ALLOWLISTED")
         headers = self._auth_header()
         if idempotency_key:
             headers["Idempotency-Key"] = idempotency_key
@@ -78,6 +83,8 @@ class WebsiteAdapter:
         return self._sanitize_job(data)
 
     def get_job(self, job_id: str) -> dict[str, Any]:
+        if not connector_destination_allowed(self.base_url):
+            raise SovereigntyError("EGRESS_DESTINATION_NOT_ALLOWLISTED")
         headers = self._auth_header()
         response = self._client.get(f"/v1/jobs/{job_id}", headers=headers)
         if response.status_code == 404:

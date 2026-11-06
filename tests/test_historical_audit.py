@@ -102,6 +102,7 @@ def test_historical_rows_are_admitted_by_digest_and_not_processed() -> None:
     assert dossier["byte_length_verified"] is False
     assert dossier["admitted_row_byte_length_matches"] is True
     assert dossier["byte_length_scope"] == "NORMALIZED_ROWS_NOT_SOURCE_FILE"
+    assert dossier["source_bytes_status"] == "SOURCE_BYTES_UNVERIFIED"
     assert dossier["grantor_verified"] is False
     assert dossier["authority_verification"] == "UNVERIFIED"
     assert dossier["reviewer_binding"] == "TOKEN_NOT_SIGNATURE"

@@ -158,8 +158,19 @@ def _connect() -> sqlite3.Connection:
     return conn
 
 
+def _protect_report(encoded: str) -> str:
+    from aurex.dispater_at_rest import protect_text
+
+    return protect_text(encoded)
+
+
 def _verified(row: sqlite3.Row) -> dict[str, Any]:
-    report: dict[str, Any] = json.loads(row["report_json"])
+    from aurex.dispater_at_rest import AtRestError, reveal_text
+
+    try:
+        report: dict[str, Any] = json.loads(reveal_text(row["report_json"]))
+    except (AtRestError, json.JSONDecodeError) as exc:
+        raise IntegrityError("stored report envelope failed") from exc
     if (
         not verify_receipt(report)
         or not verify_mac(report)
@@ -228,7 +239,7 @@ def save_run(tenant_id: str, report: dict[str, Any]) -> tuple[dict[str, Any], bo
                     report["receipt_sha256"],
                     report["status"],
                     now,
-                    json.dumps(report, sort_keys=True),
+                    _protect_report(json.dumps(report, sort_keys=True)),
                     json.dumps(refs, sort_keys=True),
                 ),
             )
@@ -344,11 +355,15 @@ def purge_tenant(tenant_id: str, older_than_days: int | None = None) -> int:
                 conn.execute("ROLLBACK")
             raise
     remaining = monitor_event_count(tenant_id)
+    from aurex.dispater_anchor import clear_tenant, note_head
+
     if remaining == 0:
         _write_monitor_head(tenant_id, "0" * 64, 0)
+        clear_tenant(tenant_id)
     else:
         last = list_monitor_events(tenant_id)[-1]
         _write_monitor_head(tenant_id, str(last["entry_sha256"]), remaining)
+        note_head(tenant_id, str(last["entry_sha256"]), remaining)
     return removed
 
 
@@ -502,7 +517,11 @@ def save_monitor_event(
             "SELECT COUNT(*) AS n FROM dispater_monitor_events WHERE tenant_id=?",
             (tenant_id,),
         ).fetchone()
-        _write_monitor_head(tenant_id, entry_sha256, int(count_row["n"]))
+        count = int(count_row["n"])
+        _write_monitor_head(tenant_id, entry_sha256, count)
+        from aurex.dispater_anchor import note_head
+
+        note_head(tenant_id, entry_sha256, count)
         row = conn.execute(
             "SELECT * FROM dispater_monitor_events WHERE event_id=?", (event_id,)
         ).fetchone()
@@ -559,7 +578,12 @@ def verify_monitor_chain(tenant_id: str) -> bool:
         if not verify_mapping_mac(body, kid=str(auth.get("kid", "")), mac=str(auth.get("mac", ""))):
             return False
         previous = event["entry_sha256"]
-    return _monitor_head_agrees(tenant_id, list_monitor_events(tenant_id))
+    events = list_monitor_events(tenant_id)
+    if not _monitor_head_agrees(tenant_id, events):
+        return False
+    from aurex.dispater_anchor import anchor_agrees
+
+    return anchor_agrees(tenant_id, events)
 
 
 def get_monitor_event(tenant_id: str, source_sha256: str) -> dict[str, Any] | None:

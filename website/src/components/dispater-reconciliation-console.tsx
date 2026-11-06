@@ -71,6 +71,9 @@ export function DispaterReconciliationConsole() {
       className="rounded-xl border border-primary/30 bg-card p-6 shadow-xl"
       aria-labelledby="console-heading"
     >
+      <p className="mb-4 text-xs uppercase tracking-wider text-muted-foreground">
+        Synthetic demonstration. These dollars are not customer savings or recovered revenue.
+      </p>
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-border pb-4">
         <div>
           <span className="text-xs font-semibold uppercase tracking-wider text-primary">
@@ -157,6 +160,9 @@ export function DispaterReconciliationConsole() {
               </p>
               <span className="text-[10px] text-muted-foreground block mt-1">
                 Human Review Candidate
+                {report.financial_summary.event_separation
+                  ? ` · ${report.financial_summary.event_separation}`
+                  : ""}
               </span>
             </div>
             <div className="rounded-lg border border-border bg-background p-4">
@@ -243,6 +249,11 @@ export function DispaterReconciliationConsole() {
                         <span className="font-semibold text-sm text-foreground">
                           Subject: {f.subject}
                         </span>
+                        {f.event_relation ? (
+                          <span className="text-[10px] uppercase text-amber">
+                            {f.event_relation}
+                          </span>
+                        ) : null}
                       </div>
                       <span className="text-sm font-bold text-gold">
                         Exposure: ${f.exposure_usd}

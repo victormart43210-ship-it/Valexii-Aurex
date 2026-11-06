@@ -646,11 +646,12 @@ class RevenueLeakageEngine:
 
         unbilled_jobs = [job for job in jobs if not by_job_invoices[job["job_id"]]]
         orphan_invoices = [inv for inv in invoices if inv["job_id"] not in job_ids]
-        event_separation = _event_separation(unbilled_jobs, orphan_invoices, findings)
-        if event_separation == "WITHHELD_AMBIGUOUS":
-            for finding in findings:
-                if finding["code"] not in _AMBIGUOUS_EVENT_CODES:
-                    continue
+        event_separation, withhold_keys, disclose_keys = _event_separation(
+            unbilled_jobs, orphan_invoices, findings
+        )
+        for finding in findings:
+            key = (finding["code"], finding["subject"])
+            if key in withhold_keys:
                 amount = parse_money(finding["exposure_usd"])
                 if amount == 0:
                     continue
@@ -660,16 +661,17 @@ class RevenueLeakageEngine:
                 finding["exposure_usd"] = "0.00"
                 finding["event_relation"] = "WITHHELD_AMBIGUOUS"
                 finding["xaeli_explanation"]["changed"] += (
-                    " Dollar exposure is withheld because this snapshot cannot prove"
-                    " the unbilled job and the orphan invoice are different events."
+                    " Dollar exposure is withheld from the identified total because this"
+                    " snapshot cannot prove these records are independent events."
                 )
                 finding["finding_sha256"] = digest(finding)
-        elif event_separation == "NOT_PROVEN":
-            for finding in findings:
-                if finding["code"] not in _AMBIGUOUS_EVENT_CODES:
-                    continue
+            elif key in disclose_keys:
                 finding.pop("finding_sha256", None)
-                finding["event_relation"] = "NOT_PROVEN"
+                finding["event_relation"] = "NO_RELATIONSHIP_EVIDENCE"
+                finding["xaeli_explanation"]["changed"] += (
+                    " No shared reference links this record to the other open item,"
+                    " so the dollars stay separate and are not treated as one event."
+                )
                 finding["finding_sha256"] = digest(finding)
         findings.sort(key=lambda x: (SEVERITY_RANK[x["severity"]], x["code"], x["subject"]))
         identified_exposure = sum(totals.values(), Decimal("0.00"))
@@ -940,39 +942,54 @@ def _event_separation(
     unbilled_jobs: list[dict[str, Any]],
     orphan_invoices: list[dict[str, Any]],
     findings: list[dict[str, Any]],
-) -> str:
-    """Classify an unbilled job against an orphan invoice without inventing a join.
+) -> tuple[str, set[tuple[str, str]], set[tuple[str, str]]]:
+    """Classify unbilled jobs against orphan invoices without inventing a join.
 
-    A different customer id on both records proves they are distinct. One unbilled job
-    and one orphan invoice with the same dollar amount, and no such proof, are withheld.
-    Different amounts stay in their own findings and are labeled NOT_PROVEN. The golden
-    ledger's $100 unbilled job and $40 orphan invoice are that case.
+    A different customer id proves an orphan invoice is a distinct event. Equal amounts
+    are not evidence of the same event. One unresolved pair with different amounts is
+    left in the identified total and labeled ``NO_RELATIONSHIP_EVIDENCE``. That is the
+    golden ledger's $100 unbilled job and $40 orphan invoice. A larger unresolved set
+    is withheld from the identified total.
     """
+    empty: set[tuple[str, str]] = set()
     if not unbilled_jobs or not orphan_invoices:
-        return "NOT_APPLICABLE"
+        return "NOT_APPLICABLE", empty, empty
     job_customers = {str(job.get("customer_id", "")).casefold() for job in unbilled_jobs}
-    orphan_customers = [str(invoice.get("customer_id", "")).casefold() for invoice in orphan_invoices]
-    if all(customer and customer not in job_customers for customer in orphan_customers):
-        return "PROVEN_DISTINCT"
-    if len(unbilled_jobs) == 1 and len(orphan_invoices) == 1:
+    unresolved = [
+        invoice
+        for invoice in orphan_invoices
+        if not str(invoice.get("customer_id", "")).casefold()
+        or str(invoice.get("customer_id", "")).casefold() in job_customers
+    ]
+    if not unresolved:
+        return "PROVEN_DISTINCT", empty, empty
+    unbilled_keys = {
+        (finding["code"], finding["subject"])
+        for finding in findings
+        if finding["code"] in _UNBILLED_CODES and finding["subject"] in {job["job_id"] for job in unbilled_jobs}
+    }
+    unresolved_keys = {("ORPHAN_INVOICE", invoice["invoice_id"]) for invoice in unresolved}
+    if len(unbilled_jobs) == 1 and len(unresolved) == 1:
         unbilled_amounts = [
             parse_money(finding["exposure_usd"])
             for finding in findings
-            if finding["code"] in _UNBILLED_CODES
+            if (finding["code"], finding["subject"]) in unbilled_keys
         ]
         orphan_amounts = [
             parse_money(finding["exposure_usd"])
             for finding in findings
-            if finding["code"] == "ORPHAN_INVOICE"
+            if (finding["code"], finding["subject"]) in unresolved_keys
         ]
-        if (
+        same_amount = (
             len(unbilled_amounts) == 1
             and len(orphan_amounts) == 1
             and unbilled_amounts[0] > 0
             and unbilled_amounts[0] == orphan_amounts[0]
-        ):
-            return "WITHHELD_AMBIGUOUS"
-    return "NOT_PROVEN"
+        )
+        if same_amount:
+            return "WITHHELD_AMBIGUOUS", unbilled_keys | unresolved_keys, empty
+        return "NO_RELATIONSHIP_EVIDENCE", empty, unbilled_keys | unresolved_keys
+    return "WITHHELD_AMBIGUOUS", unbilled_keys | unresolved_keys, empty
 
 
 def verify_receipt(report: dict[str, Any]) -> bool:

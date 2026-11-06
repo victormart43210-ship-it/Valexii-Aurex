@@ -192,6 +192,7 @@ def run_authorized_audit(
         "byte_length_verified": False,
         "admitted_row_byte_length_matches": True,
         "byte_length_scope": "NORMALIZED_ROWS_NOT_SOURCE_FILE",
+        "source_bytes_status": "SOURCE_BYTES_UNVERIFIED",
         "grantor_verified": False,
         "authority_verification": "UNVERIFIED",
         "reviewer_binding": "TOKEN_NOT_SIGNATURE",
