@@ -1,0 +1,71 @@
+{
+  "operation": "KUSANAGI_CCXXXIV",
+  "title": "Project Sovereign Beta Ascension",
+  "repository": "victormart43210-ship-it/Valexii-Aurex",
+  "base_sha": "34cda4bd8f207f5b1284093b87e4760d782a4903",
+  "includes_pr_170_sha": "d2e3df77f72fffc00efcb72b6cc87716b2f04bc0",
+  "branch": "cursor/kusanagi-ccxxxiv-sovereign-beta-4082",
+  "final_sha": "PENDING_PR_HEAD",
+  "status": "PARTIAL",
+  "production_authority": "HOLD",
+  "financial_authority": "NONE",
+  "external_paid_inference": "OFF",
+  "customer_data": "PROHIBITED",
+  "independent_review": "NOT VERIFIED",
+  "independent_review_note": "The implementing agent wrote the tests. PR #170 CI was green for that same author's branch. That is not an independent witness. Do not merge on this report.",
+  "schema_migration": "None. SQLite tables are unchanged. Receipt v2 is a new signed document shape. Legacy rows are read and labeled LEGACY_METADATA_UNBOUND. They are not rewritten.",
+  "implemented": [
+    "Receipt v2 binds run_id, created_at, and receipt_binding under the MAC and the content hash",
+    "Legacy receipts still verify and are not silently upgraded",
+    "Downgrade, column swap, and identity stripping fail verification",
+    "Duplicate invoices withhold dollars when no precedence evidence exists",
+    "Orphan, duplicate, and rate-mismatch invoices do not also add their cash gap into the total",
+    "Partial payments, overpayments, settled-open invoices, and unresolved split-or-duplicate payments",
+    "Synthetic pilot covers the same payment cases and does not book reversals",
+    "CSV and JSON ingestion with SHA-256, tenant, row provenance, and formula neutralization",
+    "PDF and spreadsheet bytes are rejected rather than parsed by an uninstalled tool",
+    "36-month synthetic golden audit with an independent dollar manifest",
+    "In-memory incremental monitoring that refuses conflicting ids and never confirms recovery",
+    "Dashboard copy shows receipt binding, withheld dollars, qualification, and XAELI's advisory limit"
+  ],
+  "not_implemented": [
+    "OCR, PDF, image, and spreadsheet extraction",
+    "Live local or remote model inference",
+    "Equipment-hour, personnel-hour, standby, and contract-revision workflows beyond the existing rate window",
+    "A document archive of 36 months of files; the golden audit is typed synthetic rows",
+    "Browser end-to-end dashboard exercise",
+    "Deployment"
+  ],
+  "end_to_end_audit": {
+    "dataset": "tests/test_dispater_golden_audit.py build_dataset, 36 months, synthetic",
+    "identified_exposure_usd": "385.00",
+    "withheld_unresolved_usd": "150.00",
+    "confirmed_recovery_usd": "0.00",
+    "confirmed_discrepancy_count": 0,
+    "limit": "Typed rows only. This is not a scanned-document audit and is not a claim of field accuracy."
+  },
+  "tests": {
+    "command": "python3 -m pytest tests -q",
+    "result": "637 passed, 1 skipped",
+    "ruff": "PASS",
+    "mypy": "PASS (91 source files)",
+    "frontend_unit": "NOT RUN (website/node_modules absent)",
+    "frontend_build": "NOT RUN",
+    "browser": "NOT RUN",
+    "github_actions_on_this_branch": "NOT RUN at the time this file was written",
+    "live_inference": "NOT VERIFIED"
+  },
+  "open_prs_reviewed_not_merged": {
+    "167": "MERGED at base_sha",
+    "168": "OPEN. Receipt v2 there was read and not cherry-picked. This branch seals identity inside both the content hash and the MAC.",
+    "169": "OPEN DRAFT. Docs contract. Not merged and not copied wholesale.",
+    "170": "OPEN. CI was green. This branch contains that commit. Do not merge #170 and this branch as two separate changes."
+  },
+  "recommended_next_actions": [
+    "Obtain a reviewer who did not write this change",
+    "Keep production on HOLD",
+    "Do not treat the 36-month typed fixture as a customer pilot",
+    "Pin and test one PDF or spreadsheet parser before accepting those files",
+    "Requalify legacy receipts explicitly; do not rewrite them in place"
+  ]
+}

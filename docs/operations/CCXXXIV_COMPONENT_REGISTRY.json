@@ -1,0 +1,102 @@
+{
+  "operation": "KUSANAGI_CCXXXIV",
+  "recorded_from": "repository inspection on this branch, not from an external catalog",
+  "legal_note": "License names below are the declarations visible in this repo or widely published for that project. This is not a legal opinion.",
+  "components": [
+    {
+      "name": "Python standard library csv/json/hashlib/hmac/sqlite3/decimal",
+      "upstream": "python.org",
+      "version": "3.12 runtime used for pytest",
+      "license": "PSF",
+      "status": "INSTALLED_AND_TESTED",
+      "role": "Deterministic ingestion, receipts, and persistence",
+      "network": "none",
+      "cost": "$0"
+    },
+    {
+      "name": "FastAPI",
+      "upstream": "https://github.com/fastapi/fastapi",
+      "version": "pyproject constraint >=0.115,<1",
+      "license": "MIT",
+      "status": "INSTALLED_AND_TESTED",
+      "role": "HTTP API",
+      "network": "serves local tests only",
+      "cost": "$0"
+    },
+    {
+      "name": "Pydantic",
+      "upstream": "https://github.com/pydantic/pydantic",
+      "version": "pyproject constraint >=2.9,<3",
+      "license": "MIT",
+      "status": "INSTALLED_AND_TESTED",
+      "role": "Request validation",
+      "network": "none",
+      "cost": "$0"
+    },
+    {
+      "name": "Ollama adapter",
+      "upstream": "in-repo aurex/adapters/ollama.py",
+      "version": "working tree",
+      "license": "Apache-2.0 (this repository)",
+      "status": "LOCAL_ONLY",
+      "role": "Optional loopback inference. No server was contacted.",
+      "network": "loopback only if a local server exists",
+      "cost": "$0",
+      "live_inference": "NOT VERIFIED"
+    },
+    {
+      "name": "llama.cpp adapter",
+      "upstream": "in-repo aurex/adapters/llama_cpp.py",
+      "version": "working tree",
+      "license": "Apache-2.0 (this repository)",
+      "status": "LOCAL_ONLY",
+      "role": "Optional local OpenAI-compatible runtime. Private Qwen staging stays disabled.",
+      "network": "loopback unless an explicit Railway flag is set",
+      "cost": "$0",
+      "live_inference": "NOT VERIFIED"
+    },
+    {
+      "name": "Qwen",
+      "upstream": "named in docs; not downloaded",
+      "version": "unpinned",
+      "license": "not re-verified in this run",
+      "status": "PROPOSED",
+      "role": "not used",
+      "country_attribution": "not re-verified in this run",
+      "live_inference": "NOT VERIFIED"
+    },
+    {
+      "name": "PaddleOCR",
+      "upstream": "not referenced by an import or dependency",
+      "version": "absent",
+      "license": "not applicable",
+      "status": "UNAVAILABLE",
+      "role": "not used; PDF and images are rejected"
+    },
+    {
+      "name": "PDF and spreadsheet parsers",
+      "upstream": "not in pyproject dependencies",
+      "version": "absent",
+      "license": "not applicable",
+      "status": "UNAVAILABLE",
+      "role": "rejected until a parser is reviewed and pinned"
+    },
+    {
+      "name": "Semgrep",
+      "upstream": "named in docs/international-model-convergence-wave1.md",
+      "version": "absent",
+      "license": "not re-verified",
+      "status": "PROPOSED",
+      "role": "not executed"
+    },
+    {
+      "name": "International model notes (Norway, Greece, China, Uzbekistan)",
+      "upstream": "docs only",
+      "version": "not pinned",
+      "license": "not re-verified",
+      "status": "PROPOSED",
+      "role": "not installed and not attributed beyond the existing docs",
+      "country_attribution": "not re-verified in this run"
+    }
+  ]
+}

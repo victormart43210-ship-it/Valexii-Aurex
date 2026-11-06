@@ -154,7 +154,14 @@ export function DispaterReconciliationConsole() {
               >
                 SHA-256: {report.receipt_sha256.slice(0, 16)}…
               </p>
-              <span className="text-[10px] text-emerald block mt-1">Cryptographically Sealed</span>
+              <span className="text-[10px] text-muted-foreground block mt-1">
+                {report.receipt_binding === "BOUND_V2"
+                  ? "Identity-bound receipt"
+                  : "Legacy or unbound metadata"}
+                {report.financial_summary.withheld_unresolved_usd
+                  ? ` · Withheld ${report.financial_summary.withheld_unresolved_usd}`
+                  : ""}
+              </span>
             </div>
           </div>
 
@@ -163,6 +170,9 @@ export function DispaterReconciliationConsole() {
             <h4 className="text-sm font-semibold uppercase tracking-wider text-foreground mb-3">
               Grounded Audit Findings ({report.findings.length})
             </h4>
+            <p className="text-xs text-muted-foreground -mt-2 mb-3">
+              XAELI can explain a finding. It cannot approve a recovery or replace the calculation.
+            </p>
             {report.findings.length === 0 ? (
               <div className="rounded-lg border border-emerald/30 bg-emerald/5 p-4 text-emerald flex items-center gap-3">
                 <CheckCircle2 className="size-5 shrink-0" />
@@ -194,6 +204,11 @@ export function DispaterReconciliationConsole() {
                           {f.severity}
                         </span>
                         <span className="font-mono text-xs text-muted-foreground">{f.code}</span>
+                        {f.qualification ? (
+                          <span className="text-[10px] uppercase text-muted-foreground">
+                            {f.qualification}
+                          </span>
+                        ) : null}
                         <span className="font-semibold text-sm text-foreground">
                           Subject: {f.subject}
                         </span>

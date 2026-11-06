@@ -29,6 +29,20 @@ SEVERITY_RANK = {"CRITICAL": 0, "HIGH": 1, "MEDIUM": 2, "LOW": 3}
 UNDERBILLING = "POTENTIAL_UNDERBILLING"
 OVERBILLING = "POTENTIAL_OVERBILLING"
 UNVERIFIED = "UNVERIFIED_EXPOSURE"
+QUALIFICATION = {
+    "UNBILLED_JOB": "SUSPECTED_DISCREPANCY",
+    "RATE_MISMATCH": "SUSPECTED_DISCREPANCY",
+    "RATE_UNVERIFIED": "INSUFFICIENT_EVIDENCE",
+    "AMBIGUOUS_RATE": "INSUFFICIENT_EVIDENCE",
+    "DUPLICATE_INVOICE_UNRESOLVED": "INSUFFICIENT_EVIDENCE",
+    "ORPHAN_INVOICE": "INSUFFICIENT_EVIDENCE",
+    "ORPHAN_PAYMENT": "INSUFFICIENT_EVIDENCE",
+    "PAID_STATUS_UNRECONCILED": "STATUS_INCONSISTENCY",
+    "STATUS_UNRECONCILED": "STATUS_INCONSISTENCY",
+    "OVERPAYMENT": "STATUS_INCONSISTENCY",
+    "PARTIAL_PAYMENT": "STATUS_INCONSISTENCY",
+    "SPLIT_OR_DUPLICATE_PAYMENT_UNRESOLVED": "INSUFFICIENT_EVIDENCE",
+}
 
 
 class InvalidSnapshot(ValueError):
@@ -182,9 +196,18 @@ class RevenueLeakageEngine:
 
         findings: list[dict[str, Any]] = []
         totals = {UNDERBILLING: Decimal("0.00"), OVERBILLING: Decimal("0.00"), UNVERIFIED: Decimal("0.00")}
+        withheld = Decimal("0.00")
+        rate_mismatch_ids: set[str] = set()
 
         job_ids = {j["job_id"] for j in jobs}
         invoice_ids = {inv["invoice_id"] for inv in invoices}
+        orphan_ids = {inv["invoice_id"] for inv in invoices if inv["job_id"] not in job_ids}
+        duplicate_ids = {
+            inv["invoice_id"]
+            for job_id, grouped in by_job_invoices.items()
+            if job_id in job_ids and len(grouped) > 1
+            for inv in grouped
+        }
 
         # 1. Job-level evaluation
         for job in jobs:
@@ -192,7 +215,7 @@ class RevenueLeakageEngine:
             cust_id = job["customer_id"]
             svc = job["service_code"]
             j_date = parse_date(job["date"])
-            # Sorted so duplicate-charge exposure never depends on input row order.
+            # Sorted so the withheld narrative does not depend on input row order.
             relevant_invoices = sorted(by_job_invoices[j_id], key=lambda i: str(i["invoice_id"]))
 
             # Unbilled ticket / job
@@ -222,23 +245,28 @@ class RevenueLeakageEngine:
                     )
                 )
 
-            # Duplicate / Multiple invoices
+            # Duplicate invoices. No field in this snapshot says which document supersedes another,
+            # so the engine does not pick the lowest id or book the extras as overbilling.
             if len(relevant_invoices) > 1:
-                dup_exposure = sum((parse_money(inv["amount"]) for inv in relevant_invoices[1:]), Decimal("0.00"))
-                totals[OVERBILLING] += dup_exposure
+                conflict_total = sum((parse_money(inv["amount"]) for inv in relevant_invoices), Decimal("0.00"))
+                withheld += conflict_total
                 evidence_records = [("job", job)] + [("invoice", inv) for inv in relevant_invoices]
+                amounts = ", ".join(f"{inv['invoice_id']}={inv['amount']}" for inv in relevant_invoices)
                 findings.append(
                     self._create_finding(
-                        exposure_class=OVERBILLING,
-                        code="MULTIPLE_INVOICES",
+                        exposure_class=UNVERIFIED,
+                        code="DUPLICATE_INVOICE_UNRESOLVED",
                         subject=j_id,
                         severity="CRITICAL",
                         records=evidence_records,
-                        exposure=dup_exposure,
-                        now=f"Job {j_id} is referenced by {len(relevant_invoices)} distinct invoices.",
-                        changed=f"Multiple billing references issued for single work completion {j_id}.",
-                        next_action="Quarantine secondary invoices and verify single legitimate charge with billing clerk.",
-                        why="Duplicate invoices lead to customer disputes, reputational harm, and audit restatements.",
+                        exposure=Decimal("0.00"),
+                        now=(
+                            f"Job {j_id} is referenced by {len(relevant_invoices)} invoices ({amounts}) "
+                            f"totaling ${conflict_total}. Precedence is not established."
+                        ),
+                        changed="Conflicting bills were withheld from identified exposure instead of selecting a winner.",
+                        next_action="Produce the authoritative invoice, correction, or void. Do not collect a guessed duplicate.",
+                        why="Choosing the lowest invoice id would invent a legitimate bill and can inflate recoverable amounts.",
                         proof=f"Referenced invoice digests: {', '.join(digest(inv)[:16] for inv in relevant_invoices)}",
                     )
                 )
@@ -295,6 +323,7 @@ class RevenueLeakageEngine:
                     abs_diff = abs(diff)
                     exposure_class = UNDERBILLING if diff < 0 else OVERBILLING
                     totals[exposure_class] += abs_diff
+                    rate_mismatch_ids.add(target_inv["invoice_id"])
                     findings.append(
                         self._create_finding(
                             exposure_class=exposure_class,
@@ -346,10 +375,32 @@ class RevenueLeakageEngine:
                 code = "OVERPAYMENT"
             elif inv["status"] != "paid" and total_paid > 0 and delta < 0:
                 code = "PARTIAL_PAYMENT"
+            if len(payments_for_inv) > 1:
+                findings.append(
+                    self._create_finding(
+                        exposure_class=UNVERIFIED,
+                        code="SPLIT_OR_DUPLICATE_PAYMENT_UNRESOLVED",
+                        subject=inv_id,
+                        severity="MEDIUM",
+                        records=[("invoice", inv)] + [("payment", p) for p in payments_for_inv],
+                        exposure=Decimal("0.00"),
+                        now=(
+                            f"Invoice {inv_id} has {len(payments_for_inv)} payments. "
+                            "The snapshot cannot prove a split from a duplicate, so no extra cash is booked."
+                        ),
+                        changed="Net cash is applied once. Individual payments are not added again.",
+                        next_action="Match each payment to remittance advice before treating any as a duplicate.",
+                        why="Counting every payment as a separate recovery inflates exposure.",
+                        proof=f"Payment ids: {', '.join(p['payment_id'] for p in payments_for_inv)}",
+                    )
+                )
             if code:
                 abs_delta = abs(delta)
-                # Payment shortfalls and surpluses are cash-application questions, never confirmed.
-                totals[UNVERIFIED] += abs_delta
+                # One dollar assignment per invoice. Orphan, unresolved duplicate, and rate-mismatch
+                # findings already hold that invoice's economic event.
+                overlaps = inv_id in orphan_ids or inv_id in duplicate_ids or inv_id in rate_mismatch_ids
+                counted = Decimal("0.00") if overlaps or code == "STATUS_UNRECONCILED" else abs_delta
+                totals[UNVERIFIED] += counted
                 evidence_records = [("invoice", inv)] + [("payment", p) for p in payments_for_inv]
                 if code == "STATUS_UNRECONCILED":
                     now = f"Invoice {inv_id} is {inv['status']} but payments equal the billed ${billed}."
@@ -369,6 +420,8 @@ class RevenueLeakageEngine:
                         "Review remittance advice and post missing payment, refund, or short-pay adjustment."
                     )
                     why = "Unreconciled payment status misstates accounts receivable and cash flow."
+                if overlaps and counted == 0 and abs_delta != 0:
+                    changed += " Dollar exposure for this invoice is already recorded on its primary finding."
                 findings.append(
                     self._create_finding(
                         exposure_class=UNVERIFIED,
@@ -376,7 +429,7 @@ class RevenueLeakageEngine:
                         subject=inv_id,
                         severity="HIGH" if code == "PAID_STATUS_UNRECONCILED" else "MEDIUM",
                         records=evidence_records,
-                        exposure=abs_delta,
+                        exposure=counted,
                         now=now,
                         changed=changed,
                         next_action=next_action,
@@ -429,6 +482,7 @@ class RevenueLeakageEngine:
                 "potential_underbilling_usd": str(totals[UNDERBILLING]),
                 "potential_overbilling_usd": str(totals[OVERBILLING]),
                 "unverified_exposure_usd": str(totals[UNVERIFIED]),
+                "withheld_unresolved_usd": str(withheld),
                 "human_confirmed_discrepancy_usd": "0.00",
                 "confirmed_recovery_usd": "0.00",
                 "recovery_rate_disclaimer": "Identified exposure is a candidate for human review, not confirmed recovery.",
@@ -464,6 +518,8 @@ class RevenueLeakageEngine:
             "severity": severity,
             "exposure_usd": str(exposure),
             "exposure_class": exposure_class,
+            "exposure_event_id": f"{code}:{subject}",
+            "qualification": QUALIFICATION[code],
             "evidence": evidence,
             "authority": "HUMAN_REVIEW_REQUIRED",
             "xaeli_explanation": {

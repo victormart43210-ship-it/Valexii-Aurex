@@ -23,7 +23,7 @@ from datetime import UTC, datetime, timedelta
 from typing import Any
 
 from aurex.dispater_intelligence import verify_receipt
-from aurex.dispater_receipt import sign_report, verify_mac
+from aurex.dispater_receipt import receipt_version, seal_run, verify_mac
 
 logger = logging.getLogger("aurex.dispater")
 
@@ -149,18 +149,36 @@ def _verified(row: sqlite3.Row) -> dict[str, Any]:
         or report.get("status") != row["status"]
     ):
         raise IntegrityError("stored audit report failed integrity verification")
-    report["run_id"] = row["run_id"]
-    report["created_at"] = row["created_at"]
-    return report
+    version = receipt_version(report)
+    if version is None:
+        raise IntegrityError("unknown receipt version")
+    if version == 2:
+        if report.get("run_id") != row["run_id"] or report.get("created_at") != row["created_at"]:
+            raise IntegrityError("receipt identity does not match stored metadata")
+        if report.get("receipt_binding") != "BOUND_V2":
+            raise IntegrityError("versioned receipt is missing its binding label")
+        return report
+    if any(key in report for key in ("run_id", "created_at", "receipt_binding")):
+        raise IntegrityError("legacy receipt carries identity fields")
+    # Not an upgrade: column identity stays unbound and is labeled as such.
+    annotated = dict(report)
+    annotated["run_id"] = row["run_id"]
+    annotated["created_at"] = row["created_at"]
+    annotated["receipt_binding"] = "LEGACY_METADATA_UNBOUND"
+    return annotated
 
 
 def save_run(tenant_id: str, report: dict[str, Any]) -> tuple[dict[str, Any], bool]:
-    """Persist atomically. Returns (stored report, created). Idempotent on dataset hash."""
+    """Persist atomically. Returns (stored report, created). Idempotent on dataset hash.
+
+    New rows are sealed as receipt v2. An existing row is returned unchanged, including a
+    legacy receipt. Replaying a dataset does not rewrite its receipt.
+    """
     if report.get("tenant_id") != tenant_id:
         raise ValueError("report tenant mismatch")
-    report = sign_report(report)  # fails closed when no receipt key is configured
     run_id = f"run-{uuid.uuid4().hex}"
     now = datetime.now(UTC).isoformat()
+    report = seal_run(report, run_id=run_id, created_at=now)
     refs: list[dict[str, str]] = []
     for f in report.get("findings", []):
         for ev in f.get("evidence", []):

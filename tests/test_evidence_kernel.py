@@ -247,12 +247,13 @@ def test_signed_report_key_set_matches_frontend_contract(tmp_path: Path, monkeyp
     assert report is not None
     assert set(report) == {
         "authority_state", "counts", "created_at", "dataset_sha256", "financial_summary", "findings",
-        "human_review_required", "limits", "receipt_auth", "receipt_mac", "receipt_sha256", "run_id",
-        "schema", "status", "tenant_id",
+        "human_review_required", "limits", "receipt_auth", "receipt_binding", "receipt_mac",
+        "receipt_sha256", "run_id", "schema", "status", "tenant_id",
     }
+    assert report["receipt_binding"] == "BOUND_V2"
     assert set(report["findings"][0]) == {
-        "authority", "code", "evidence", "exposure_class", "exposure_usd", "finding_id",
-        "finding_sha256", "severity", "subject", "xaeli_explanation",
+        "authority", "code", "evidence", "exposure_class", "exposure_event_id", "exposure_usd",
+        "finding_id", "finding_sha256", "qualification", "severity", "subject", "xaeli_explanation",
     }
 
 
@@ -263,10 +264,8 @@ def test_exported_report_still_verifies_independently(tmp_path: Path, monkeypatc
     report = dispater_store.get_run(T, run_id)
     assert report is not None
     exported = json.loads(json.dumps(report, indent=2))
-    exported.pop("run_id")
-    exported.pop("created_at")  # API-added fields outside the signed body are not part of the MAC
     assert verify_mac(exported)
-    for field in ("receipt_mac", "receipt_auth"):
+    for field in ("run_id", "created_at", "receipt_binding", "receipt_mac", "receipt_auth"):
         stripped = {k: v for k, v in report.items() if k != field}
         assert not verify_mac(stripped)
     altered = {**report, "status": "TAMPERED"}
