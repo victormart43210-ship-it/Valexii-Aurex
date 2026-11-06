@@ -79,6 +79,8 @@ def validate_registry(registry: dict[str, Any] | None = None) -> dict[str, Any]:
             raise RegistryError("this registry has no verified live model")
         if entry["runtime"] != "NOT_INSTALLED":
             raise RegistryError("a candidate runtime is not installed")
+        if entry["commercial_use"] == "APPROVED" or entry["customization_eligibility"] == "APPROVED":
+            raise RegistryError("commercial use and customization stay unapproved")
         if not _digest_ok(entry["weight_digest"]) or not _digest_ok(entry["tokenizer_digest"]):
             raise RegistryError("an empty or malformed digest is not an installed model")
         seen.add(str(entry["entry_id"]))
@@ -87,7 +89,11 @@ def validate_registry(registry: dict[str, Any] | None = None) -> dict[str, Any]:
             raise RegistryError("a research framework is not an installed foundation model")
         if not entry.get("license"):
             raise RegistryError("a framework still needs a license note")
-    return data
+        if entry.get("approval_state") != "CANDIDATE" or entry.get("runtime") != "NOT_INSTALLED":
+            raise RegistryError("a framework cannot approve itself or claim a runtime")
+        if entry.get("commercial_use") == "APPROVED" or entry.get("live_connection") not in (None, "NOT_VERIFIED"):
+            raise RegistryError("a framework has no live approval")
+    return copy.deepcopy(data)
 
 
 def get_model(entry_id: str) -> dict[str, Any]:

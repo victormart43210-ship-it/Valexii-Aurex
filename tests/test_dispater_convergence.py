@@ -164,6 +164,104 @@ def test_orphan_reversal_is_not_incoming_cash() -> None:
     assert report["findings"][0]["exposure_usd"] == "0.00"
 
 
+def test_misapplied_cash_is_not_also_the_paid_status_gap() -> None:
+    report = RevenueLeakageEngine("tenant-a").reconcile_records(
+        {
+            "tenant_id": "tenant-a",
+            "dataset_type": "SYNTHETIC_ONLY",
+            "jobs": [{"job_id": "J1", "customer_id": "C1", "service_code": "S", "date": "2026-03-01"}],
+            "rates": [
+                {
+                    "rate_id": "R1",
+                    "customer_id": "C1",
+                    "service_code": "S",
+                    "start": "2026-01-01",
+                    "end": "2026-12-31",
+                    "amount": "100.00",
+                }
+            ],
+            "invoices": [{"invoice_id": "I1", "job_id": "J1", "amount": "100.00", "status": "paid"}],
+            "payments": [
+                {"payment_id": "P1", "invoice_id": "I1", "amount": "50.00"},
+                {"payment_id": "P2", "invoice_id": "I1", "amount": "50.00", "job_id": "OTHER"},
+            ],
+        }
+    )
+    summary = report["financial_summary"]
+    assert summary["identified_exposure_usd"] == "50.00"
+    assert summary["confirmed_recovery_usd"] == "0.00"
+    misapplied = next(item for item in report["findings"] if item["code"] == "MISAPPLIED_PAYMENT")
+    assert misapplied["exposure_usd"] == "50.00"
+
+
+def test_repeated_misapplied_payments_are_withheld() -> None:
+    report = RevenueLeakageEngine("tenant-a").reconcile_records(
+        {
+            "tenant_id": "tenant-a",
+            "dataset_type": "SYNTHETIC_ONLY",
+            "jobs": [{"job_id": "J1", "customer_id": "C1", "service_code": "S", "date": "2026-03-01"}],
+            "rates": [
+                {
+                    "rate_id": "R1",
+                    "customer_id": "C1",
+                    "service_code": "S",
+                    "start": "2026-01-01",
+                    "end": "2026-12-31",
+                    "amount": "100.00",
+                }
+            ],
+            "invoices": [{"invoice_id": "I1", "job_id": "J1", "amount": "100.00", "status": "paid"}],
+            "payments": [
+                {"payment_id": "P1", "invoice_id": "I1", "amount": "100.00", "job_id": "OTHER"},
+                {"payment_id": "P2", "invoice_id": "I1", "amount": "100.00", "job_id": "OTHER"},
+            ],
+        }
+    )
+    summary = report["financial_summary"]
+    assert summary["identified_exposure_usd"] == "0.00"
+    assert summary["withheld_unresolved_usd"] == "200.00"
+    assert summary["confirmed_recovery_usd"] == "0.00"
+
+
+def test_lone_reversal_on_a_paid_invoice_is_capped_at_the_invoice() -> None:
+    report = RevenueLeakageEngine("tenant-a").reconcile_records(
+        {
+            "tenant_id": "tenant-a",
+            "dataset_type": "SYNTHETIC_ONLY",
+            "jobs": [{"job_id": "J1", "customer_id": "C1", "service_code": "S", "date": "2026-03-01"}],
+            "rates": [
+                {
+                    "rate_id": "R1",
+                    "customer_id": "C1",
+                    "service_code": "S",
+                    "start": "2026-01-01",
+                    "end": "2026-12-31",
+                    "amount": "100.00",
+                }
+            ],
+            "invoices": [{"invoice_id": "I1", "job_id": "J1", "amount": "100.00", "status": "paid"}],
+            "payments": [{"payment_id": "P1", "invoice_id": "I1", "amount": "100.00", "kind": "REVERSAL"}],
+        }
+    )
+    summary = report["financial_summary"]
+    assert summary["identified_exposure_usd"] == "100.00"
+    assert summary["withheld_unresolved_usd"] == "100.00"
+    assert summary["confirmed_recovery_usd"] == "0.00"
+
+
+def test_bound_receipt_cannot_drop_its_mac() -> None:
+    from aurex.dispater_receipt import seal_run
+
+    report = RevenueLeakageEngine("tenant-a").reconcile_records(_base())
+    sealed = seal_run(report, run_id="run-" + "a" * 32, created_at="2026-11-06T15:00:00Z")
+    assert verify_receipt(sealed)
+    stripped = {key: value for key, value in sealed.items() if key not in {"receipt_auth", "receipt_mac"}}
+    stripped["financial_summary"] = {**stripped["financial_summary"], "identified_exposure_usd": "9999.00"}
+    body = {key: value for key, value in stripped.items() if key != "receipt_sha256"}
+    stripped["receipt_sha256"] = digest(body)
+    assert verify_receipt(stripped) is False
+
+
 def test_one_unbilled_job_and_one_orphan_invoice_are_withheld() -> None:
     report = RevenueLeakageEngine("tenant-a").reconcile_records(
         {

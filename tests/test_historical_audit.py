@@ -15,7 +15,7 @@ from aurex.ascendancy.historical_audit import (
 )
 from aurex.dispater_intelligence import digest
 
-NOW = datetime(2026, 11, 6, 13, 10, tzinfo=UTC)
+NOW = datetime.now(UTC)
 
 
 def _auth(purpose: str, privacy: str, *, kind: str = "HUMAN", expires: datetime | None = None) -> dict[str, object]:
@@ -97,7 +97,8 @@ def test_historical_rows_are_admitted_by_digest_and_not_processed() -> None:
     assert dossier["events"] == ()
     assert dossier["export_allowed"] is False
     assert dossier["rows_returned"] is False
-    assert dossier["byte_length_verified"] is True
+    assert dossier["byte_length_verified"] is False
+    assert dossier["admitted_row_byte_length_matches"] is True
     assert dossier["byte_length_scope"] == "NORMALIZED_ROWS_NOT_SOURCE_FILE"
     assert dossier["grantor_verified"] is False
     assert dossier["synthetic_label_verified"] is False

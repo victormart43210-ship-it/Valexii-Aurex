@@ -49,6 +49,8 @@ def require_authorization(authorization: Mapping[str, Any], now: datetime) -> No
         raise AuditAuthorizationError("authorization is expired")
     if abs(now - real_now) > timedelta(hours=48):
         raise AuditAuthorizationError("decision clock is not fresh")
+    if expires - real_now > timedelta(days=7):
+        raise AuditAuthorizationError("authorization lifetime is too long")
     purpose = authorization.get("purpose")
     privacy = authorization.get("privacy_control")
     if purpose == "SYNTHETIC_VALIDATION" and privacy != "SYNTHETIC_ONLY":
@@ -66,7 +68,7 @@ def require_authorization(authorization: Mapping[str, Any], now: datetime) -> No
     reviewer = authorization.get("reviewer_id")
     if not isinstance(reviewer, str) or not _TOKEN.fullmatch(reviewer):
         raise AuditAuthorizationError("a human reviewer id is required")
-    if reviewer in {"HUMAN", "MODEL", "SYSTEM"} or reviewer == auth_id:
+    if reviewer.casefold() in {"human", "model", "system", "agent"} or reviewer in {auth_id, tenant}:
         raise AuditAuthorizationError("the reviewer id is not an independent person")
 
 
@@ -162,9 +164,9 @@ def run_authorized_audit(
     are not parameters. The returned dossier does not contain the rows.
     """
     require_authorization(authorization, now)
-    _declared_source(source_sha256, byte_length, dataset)
     if not isinstance(dataset, Mapping):
         raise AuditAuthorizationError("normalized rows must be an object")
+    _declared_source(source_sha256, byte_length, dataset)
     row_digest = digest(dict(dataset))
     if row_digest != source_sha256:
         raise AuditAuthorizationError("source digest does not match the normalized rows")
@@ -176,7 +178,8 @@ def run_authorized_audit(
         "tenant_id": tenant,
         "source_sha256": source_sha256,
         "byte_length_declared": byte_length,
-        "byte_length_verified": True,
+        "byte_length_verified": False,
+        "admitted_row_byte_length_matches": True,
         "byte_length_scope": "NORMALIZED_ROWS_NOT_SOURCE_FILE",
         "grantor_verified": False,
         "synthetic_label_verified": False,

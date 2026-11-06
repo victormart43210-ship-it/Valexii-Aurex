@@ -19,7 +19,7 @@ from aurex.ox.evaluation import evaluate, injected_provider, mock_provider
 from aurex.ox.registry import EMPTY_SHA256, RegistryError, validate_registry
 from aurex.ox.replay import audit_replay_manifest
 
-NOW = datetime(2026, 11, 6, 14, 20, tzinfo=UTC)
+NOW = datetime.now(UTC)
 
 
 def _golden_fixture() -> ModuleType:
@@ -61,6 +61,16 @@ def test_registry_rejects_self_approval_and_the_empty_digest() -> None:
         assert "approve" in str(exc)
     else:
         raise AssertionError("denylist approval")
+    framework = {
+        **data,
+        "research_frameworks": [{**data["research_frameworks"][0], "approval_state": "HUMAN_APPROVED"}],
+    }
+    try:
+        validate_registry(framework)
+    except RegistryError as exc:
+        assert "framework" in str(exc)
+    else:
+        raise AssertionError("framework approval")
 
 
 def test_offline_runner_matches_the_answer_key_and_blocks_injection() -> None:
@@ -77,6 +87,13 @@ def test_offline_runner_matches_the_answer_key_and_blocks_injection() -> None:
 
     diverted = evaluate("qwen", tenant_id="tenant-lab", provider=side_channel)
     assert diverted["passed"] is False
+
+    def nested(case_id: str) -> dict[str, object]:
+        output = dict(mock_provider(case_id))
+        output["detail"] = {"recovered_usd": "50.00"}
+        return output
+
+    assert evaluate("qwen", tenant_id="tenant-lab", provider=nested)["passed"] is False
     poisoned = evaluate("qwen", tenant_id="tenant-lab", provider=injected_provider)
     assert poisoned["passed"] is False
     withheld = next(item for item in poisoned["cases"] if item["case_id"] == "withhold-recovery")

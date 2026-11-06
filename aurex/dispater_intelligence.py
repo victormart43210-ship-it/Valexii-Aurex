@@ -482,6 +482,16 @@ class RevenueLeakageEngine:
             payments_for_inv = by_invoice_payments[inv_id]
             if not payments_for_inv and any(item["invoice_id"] == inv_id for item in misapplied):
                 continue
+            positive_misapplied = sum(
+                (
+                    amount
+                    for amount in (
+                        _signed_payment(item) for item in misapplied if item["invoice_id"] == inv_id
+                    )
+                    if amount > 0
+                ),
+                Decimal("0.00"),
+            )
             total_paid = sum((_signed_payment(p) for p in payments_for_inv), Decimal("0.00"))
             billed = parse_money(inv["amount"])
             delta = total_paid - billed
@@ -521,6 +531,15 @@ class RevenueLeakageEngine:
                 # findings already hold that invoice's economic event.
                 overlaps = inv_id in orphan_ids or inv_id in duplicate_ids or inv_id in rate_mismatch_ids
                 counted = Decimal("0.00") if overlaps or code == "STATUS_UNRECONCILED" else abs_delta
+                # Misapplied cash was left out of total_paid, so the same dollars sit inside this gap.
+                if counted > 0 and positive_misapplied > 0:
+                    counted = max(Decimal("0.00"), counted - positive_misapplied)
+                negative_net_withheld = Decimal("0.00")
+                if counted > 0 and total_paid < 0:
+                    capped = min(counted, billed)
+                    negative_net_withheld = counted - capped
+                    counted = capped
+                    withheld += negative_net_withheld
                 totals[UNVERIFIED] += counted
                 evidence_records = [("invoice", inv)] + [("payment", p) for p in payments_for_inv]
                 if code == "STATUS_UNRECONCILED":
@@ -543,6 +562,10 @@ class RevenueLeakageEngine:
                     why = "Unreconciled payment status misstates accounts receivable and cash flow."
                 if overlaps and counted == 0 and abs_delta != 0:
                     changed += " Dollar exposure for this invoice is already recorded on its primary finding."
+                if positive_misapplied > 0 and counted < abs_delta:
+                    changed += " Misapplied cash was not added again on top of this gap."
+                if negative_net_withheld > 0:
+                    changed += " A negative net is not proof of a second collection beyond the invoice."
                 findings.append(
                     self._create_finding(
                         exposure_class=UNVERIFIED,
@@ -559,12 +582,18 @@ class RevenueLeakageEngine:
                     )
                 )
 
+        misapplied_counts: dict[str, int] = defaultdict(int)
+        for payment in misapplied:
+            misapplied_counts[str(payment["invoice_id"])] += 1
         for payment in misapplied:
             invoice = invoices_by_id.get(payment["invoice_id"])
             invoice_id = invoice["invoice_id"] if invoice is not None else ""
             already_assigned = invoice_id in orphan_ids or invoice_id in duplicate_ids or invoice_id in rate_mismatch_ids
             signed = _signed_payment(payment)
-            amount = Decimal("0.00") if already_assigned or signed < 0 else signed
+            repeated = misapplied_counts[str(payment["invoice_id"])] > 1
+            amount = Decimal("0.00") if already_assigned or signed < 0 or repeated else signed
+            if repeated and signed > 0 and not already_assigned:
+                withheld += signed
             totals[UNVERIFIED] += amount
             findings.append(
                 self._create_finding(
@@ -578,7 +607,11 @@ class RevenueLeakageEngine:
                         f"Payment {payment['payment_id']} names job {payment.get('job_id')} "
                         f"but invoice {payment['invoice_id']} belongs to a different job."
                     ),
-                    changed="The cash was not applied to the invoice and was not counted again as an orphan.",
+                    changed=(
+                        "The snapshot cannot prove these wrong-job payments are separate events."
+                        if repeated
+                        else "The cash was not applied to the invoice and was not counted again as an orphan."
+                    ),
                     next_action="Reallocate the payment to the invoice's job or correct the payment record.",
                     why="Applying the same cash to the invoice balance and to a wrong-job bucket would double-count it.",
                     proof=f"Payment digest: {digest(payment)}",
@@ -903,7 +936,12 @@ def verify_receipt(report: dict[str, Any]) -> bool:
         return False
     if not sha_ok:
         return False
-    if report.get("receipt_auth") or report.get("receipt_mac"):
+    claims_mac = bool(
+        report.get("receipt_auth")
+        or report.get("receipt_mac")
+        or report.get("receipt_binding") == "BOUND_V2"
+    )
+    if claims_mac:
         from aurex.dispater_receipt import verify_mac
 
         return verify_mac(report)
