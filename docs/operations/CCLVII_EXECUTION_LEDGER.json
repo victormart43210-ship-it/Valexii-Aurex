@@ -1,0 +1,21 @@
+{
+  "schema_version": "1.0",
+  "operation_id": "KUSANAGI_CCLVII",
+  "entries": [
+    {
+      "timestamp_utc": "2026-11-06T19:55:27.853461+00:00",
+      "task_id": "CCLVII-01",
+      "status": "IN_PROGRESS",
+      "action": "Verified main, integration181 and Cursor182; created isolated Work branch from integration per owner instruction",
+      "files": [
+        "docs/operations/CCLVII_RECOVERY.json",
+        "docs/operations/CCLVII_RESUME.md",
+        "docs/operations/CCLVII_EXECUTION_LEDGER.json"
+      ],
+      "source_sha": "c4f45925e086bbb23b643e66707b224419d52b60",
+      "remote_checkpoint_sha": null,
+      "tests": "NOT_RUN",
+      "next_action": "Verify initial remote checkpoint, inspect existing engine and Cursor182 diff, choose nonoverlapping defect and add failing regression"
+    }
+  ]
+}
