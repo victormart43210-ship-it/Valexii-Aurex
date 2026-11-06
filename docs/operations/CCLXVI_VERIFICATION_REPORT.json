@@ -1,0 +1,98 @@
+{
+  "schema": "aurex.cclxvi.verification_report.v1",
+  "tested_code_sha": "22a093979180fd3d3af7a99f58d76e52f98c40b7",
+  "tested_at": "2026-11-06T16:58:00-0600",
+  "zone": "America/Chicago",
+  "executor": "Cursor, the same agent that wrote the change",
+  "independent_review": "NOT_VERIFIED",
+  "production": "HOLD",
+  "financial_authority": "NONE",
+  "deployed": false,
+  "gates": {
+    "python_suite": {
+      "status": "PASS",
+      "command": "python3 -m pytest -q",
+      "result": "773 passed, 1 skipped"
+    },
+    "ruff": {
+      "status": "PASS",
+      "command": "python3 -m ruff check ."
+    },
+    "mypy": {
+      "status": "PASS",
+      "command": "python3 -m mypy aurex",
+      "result": "Success: no issues found in 111 source files"
+    },
+    "website_vitest": {
+      "status": "PASS",
+      "command": "npx vitest run",
+      "cwd": "website",
+      "result": "164 passed"
+    },
+    "typescript": {
+      "status": "PASS",
+      "command": "npx tsc --noEmit",
+      "cwd": "website"
+    },
+    "website_production_build": {
+      "status": "PASS",
+      "command": "npm run build",
+      "cwd": "website"
+    },
+    "dispater_web_tests": {
+      "status": "PASS",
+      "command": "node --test tests/*.test.mjs",
+      "cwd": "dispater-web",
+      "result": "25 passed"
+    },
+    "docker_image": {
+      "status": "NOT_RUN",
+      "reason": "The docker binary is not installed in this environment. A local image was not built."
+    },
+    "container_non_root": {
+      "status": "NOT_RUN",
+      "reason": "No container was started."
+    },
+    "container_health_sqlite": {
+      "status": "NOT_RUN",
+      "reason": "No container was started."
+    },
+    "synthetic_frontend_backend": {
+      "status": "PASS",
+      "scope": "Local loopback only. Not an independent witness.",
+      "observed": "Headless Chrome at http://127.0.0.1:5196/dispater against the API on 127.0.0.1:8076. Synthetic audit showed CONNECTED, identified 1750.00, confirmed recovery 0.00, BOUND_V2, stored run match, and source digests on the findings. CSV admission showed source synthetic-invoice.csv row 2, identified 10.00, confirmed recovery 0.00, and a stored run match. The service token was not in the page text. A 390 by 844 viewport still showed the console. This session used a local receipt key that is not recorded here."
+    },
+    "golden_financial_regression": {
+      "status": "PASS",
+      "identified_exposure_usd": "385.00",
+      "withheld_unresolved_usd": "150.00",
+      "confirmed_recovery_usd": "0.00"
+    },
+    "security_suite": {
+      "status": "PASS",
+      "scope": "The existing adversarial tests ran inside pytest. This was not a separate external penetration test."
+    },
+    "receipt_replay": {
+      "status": "PASS",
+      "scope": "Existing receipt and replay tests passed inside pytest. The browser also compared the stored receipt with the live receipt in the same session."
+    },
+    "tenant_isolation": {
+      "status": "PASS",
+      "scope": "Existing cross-tenant 403 coverage passed inside pytest."
+    },
+    "private_model": {
+      "status": "BLOCKED",
+      "probe": "http://127.0.0.1:8080/v1/models",
+      "result": "URLError",
+      "live_inference": "NOT_VERIFIED"
+    },
+    "staging_deployment_sha": {
+      "status": "NOT_VERIFIED",
+      "reason": "No staging URL was configured and nothing was deployed."
+    },
+    "independent_source_review": {
+      "status": "NOT_VERIFIED",
+      "reason": "The implementing agent ran these checks. That is not an independent witness."
+    }
+  }
+}

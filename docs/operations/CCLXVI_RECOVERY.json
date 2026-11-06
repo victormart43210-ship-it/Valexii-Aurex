@@ -1,0 +1,33 @@
+{
+  "schema": "aurex.cclxvi.recovery.v1",
+  "operation": "KUSANAGI CCLXVI",
+  "branch": "cursor/kusanagi-cclxvi-mainline-convergence-4082",
+  "code_sha": "22a093979180fd3d3af7a99f58d76e52f98c40b7",
+  "base_branch": "cursor/kusanagi-cclxv-breakthrough-4082",
+  "base_sha": "7daeff45efecd5d0293ff8a75afd71b98e9d4df0",
+  "main_sha": "34cda4bd8f207f5b1284093b87e4760d782a4903",
+  "main_changed": false,
+  "decision": "HOLD_WITH_BLOCKERS",
+  "production_authority": "NONE",
+  "financial_authority": "NONE",
+  "paid_inference": "OFF",
+  "customer_data": "PROHIBITED",
+  "completed": [
+    "Inventoried 117 open pull requests.",
+    "Left PR 172 and PR 176 unmerged.",
+    "Withheld duplicate labor hours.",
+    "Verified stored runs after synthetic CSV admission.",
+    "Added a default-deny observation proposal.",
+    "Ran pytest, ruff, mypy, website tests, the website build, and dispater-web tests.",
+    "Exercised the local DISPATER console in headless Chrome."
+  ],
+  "outstanding": [
+    "GitHub Actions on this SHA.",
+    "Local Docker image build.",
+    "Independent human review.",
+    "Owner decision on the 49 pull requests classified NEEDS_OWNER_DECISION.",
+    "Live private model. The probe returned URLError.",
+    "Staging and production deployment. Not authorized."
+  ],
+  "next_safe_action": "Review the pull request. Do not merge it to main and do not deploy it until an independent reviewer accepts the exact head SHA."
+}
