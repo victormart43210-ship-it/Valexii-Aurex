@@ -262,9 +262,9 @@ def test_exported_report_still_verifies_independently(tmp_path: Path, monkeypatc
     report = dispater_store.get_run(T, run_id)
     assert report is not None
     exported = json.loads(json.dumps(report, indent=2))
-    exported.pop("run_id")
-    exported.pop("created_at")  # API-added fields outside the signed body are not part of the MAC
-    assert verify_mac(exported)
+    assert verify_mac(exported)  # v2 export verifies exactly as downloaded
+    for field in ("run_id", "created_at"):
+        assert not verify_mac({k: v for k, v in exported.items() if k != field})
     for field in ("receipt_mac", "receipt_auth"):
         stripped = {k: v for k, v in report.items() if k != field}
         assert not verify_mac(stripped)

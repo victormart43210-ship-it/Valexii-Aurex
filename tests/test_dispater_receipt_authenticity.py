@@ -52,7 +52,7 @@ def _rewrite(db: Path, mutate: Any, recompute_sha: bool = True) -> None:
 def test_roundtrip_signed(db: Path) -> None:
     stored, created = dispater_store.save_run("tenant-a", _report())
     assert created
-    assert verify_mac({k: v for k, v in stored.items() if k not in ("run_id", "created_at")})
+    assert verify_mac(stored)  # v2: run_id/created_at are inside the signed body
     assert stored["receipt_auth"]["alg"] == "HMAC-SHA256"
     assert dispater_store.latest_run("tenant-a") is not None
 

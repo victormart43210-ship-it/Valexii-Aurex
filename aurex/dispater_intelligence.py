@@ -459,7 +459,9 @@ class RevenueLeakageEngine:
 
 def verify_receipt(report: dict[str, Any]) -> bool:
     """Return True when the report's receipt hash matches its content (tamper check)."""
-    body = {k: v for k, v in report.items() if k not in ("receipt_sha256", "receipt_auth", "receipt_mac")}
+    # run_id/created_at are added at save time and authenticated by the keyed MAC (receipt v2).
+    skip = ("receipt_sha256", "receipt_auth", "receipt_mac", "run_id", "created_at", "unauthenticated_fields")
+    body = {k: v for k, v in report.items() if k not in skip}
     try:
         return hmac_equal(digest(body), str(report.get("receipt_sha256", "")))
     except (TypeError, ValueError):

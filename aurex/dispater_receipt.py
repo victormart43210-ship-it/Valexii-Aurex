@@ -67,6 +67,30 @@ def sign_report(report: dict[str, Any]) -> dict[str, Any]:
     return signed
 
 
+def sign_report_v2(report: dict[str, Any], *, run_id: str, created_at: str) -> dict[str, Any]:
+    """Versioned receipt: run_id and created_at are inside the signed body.
+
+    ``receipt_auth.v == 2`` is itself covered by the MAC, so a v2 receipt cannot be downgraded
+    to look like a legacy one, and a receipt cannot be moved to another run or timestamp.
+    """
+    keys = _load_keys()
+    kid = os.environ.get("AUREX_DISPATER_RECEIPT_ACTIVE_KID", "")
+    if kid not in keys:
+        raise ReceiptKeyError("active receipt key id is not configured")
+    signed = {k: v for k, v in report.items() if k not in ("receipt_auth", "receipt_mac")}
+    signed["run_id"] = run_id
+    signed["created_at"] = created_at
+    signed["receipt_auth"] = {"alg": ALGORITHM, "kid": kid, "v": 2}
+    signed["receipt_mac"] = _mac(keys[kid], signed)
+    return signed
+
+
+def receipt_version(report: dict[str, Any]) -> int:
+    """1 for legacy receipts, 2 for versioned. Only meaningful after verify_mac() is True."""
+    auth = report.get("receipt_auth")
+    return 2 if isinstance(auth, dict) and auth.get("v") == 2 else 1
+
+
 def verify_mac(report: dict[str, Any]) -> bool:
     """True only for a well-formed receipt whose MAC verifies under a known key. Never raises."""
     try:
