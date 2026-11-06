@@ -91,6 +91,26 @@ def _declared_source(source_sha256: str, byte_length: int) -> None:
         raise AuditAuthorizationError("declared byte length is outside the read-only limit")
 
 
+def historical_validation_proposal() -> dict[str, object]:
+    """A reviewable proposal. It does not open files or run historical rows."""
+    return {
+        "schema": "aurex.historical_validation.proposal.v1",
+        "status": "PROPOSED",
+        "activated": False,
+        "dataset_role": "private real-company validation dataset",
+        "requirements": [
+            "human grantor",
+            "unexpired authorization",
+            "read-only no-export privacy control",
+            "caller-supplied header map",
+            "digest admission without returning raw rows",
+            "engine support that does not relabel historical rows as synthetic",
+        ],
+        "financial_authority": "NONE",
+        "production": "HOLD",
+    }
+
+
 def economic_events(report: Mapping[str, Any]) -> tuple[dict[str, Any], ...]:
     """One event per finding. Exposure is copied, not recalculated."""
     events: list[dict[str, Any]] = []

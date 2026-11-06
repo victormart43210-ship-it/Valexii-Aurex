@@ -12,11 +12,13 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as AurexRouteImport } from './routes/aurex'
+import { Route as AurexOxRouteImport } from './routes/aurex-ox'
 import { Route as BcxmetRouteImport } from './routes/bcxmet'
 import { Route as BuildWithUsRouteImport } from './routes/build-with-us'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as DeciphermentRouteImport } from './routes/decipherment'
 import { Route as DeciphermentFrontierRouteImport } from './routes/decipherment-frontier'
+import { Route as DevelopmentStatusRouteImport } from './routes/development-status'
 import { Route as DispaterRouteImport } from './routes/dispater'
 import { Route as EcosystemRouteImport } from './routes/ecosystem'
 import { Route as EvaluationRouteImport } from './routes/evaluation'
@@ -36,6 +38,7 @@ import { Route as VoynichRouteImport } from './routes/voynich'
 import { Route as XaeliRouteImport } from './routes/xaeli'
 import { Route as XaitaRouteImport } from './routes/xaita'
 import { Route as AdminAurexControlRouteImport } from './routes/admin.aurex-control'
+import { Route as AurexOxModelLaboratoryRouteImport } from './routes/aurex-ox.model-laboratory'
 import { Route as EarlyAccessConfirmRouteImport } from './routes/early-access.confirm'
 
 const IndexRoute = IndexRouteImport.update({
@@ -51,6 +54,11 @@ const AboutRoute = AboutRouteImport.update({
 const AurexRoute = AurexRouteImport.update({
   id: '/aurex',
   path: '/aurex',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AurexOxRoute = AurexOxRouteImport.update({
+  id: '/aurex-ox',
+  path: '/aurex-ox',
   getParentRoute: () => rootRouteImport,
 } as any)
 const BcxmetRoute = BcxmetRouteImport.update({
@@ -76,6 +84,11 @@ const DeciphermentRoute = DeciphermentRouteImport.update({
 const DeciphermentFrontierRoute = DeciphermentFrontierRouteImport.update({
   id: '/decipherment-frontier',
   path: '/decipherment-frontier',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DevelopmentStatusRoute = DevelopmentStatusRouteImport.update({
+  id: '/development-status',
+  path: '/development-status',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DispaterRoute = DispaterRouteImport.update({
@@ -173,6 +186,11 @@ const AdminAurexControlRoute = AdminAurexControlRouteImport.update({
   path: '/admin/aurex-control',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AurexOxModelLaboratoryRoute = AurexOxModelLaboratoryRouteImport.update({
+  id: '/model-laboratory',
+  path: '/model-laboratory',
+  getParentRoute: () => AurexOxRoute,
+} as any)
 const EarlyAccessConfirmRoute = EarlyAccessConfirmRouteImport.update({
   id: '/early-access/confirm',
   path: '/early-access/confirm',
@@ -183,11 +201,13 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/aurex': typeof AurexRoute
+  '/aurex-ox': typeof AurexOxRouteWithChildren
   '/bcxmet': typeof BcxmetRoute
   '/build-with-us': typeof BuildWithUsRoute
   '/contact': typeof ContactRoute
   '/decipherment': typeof DeciphermentRoute
   '/decipherment-frontier': typeof DeciphermentFrontierRoute
+  '/development-status': typeof DevelopmentStatusRoute
   '/dispater': typeof DispaterRoute
   '/ecosystem': typeof EcosystemRoute
   '/evaluation': typeof EvaluationRoute
@@ -207,17 +227,20 @@ export interface FileRoutesByFullPath {
   '/xaeli': typeof XaeliRoute
   '/xaita': typeof XaitaRoute
   '/admin/aurex-control': typeof AdminAurexControlRoute
+  '/aurex-ox/model-laboratory': typeof AurexOxModelLaboratoryRoute
   '/early-access/confirm': typeof EarlyAccessConfirmRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/aurex': typeof AurexRoute
+  '/aurex-ox': typeof AurexOxRouteWithChildren
   '/bcxmet': typeof BcxmetRoute
   '/build-with-us': typeof BuildWithUsRoute
   '/contact': typeof ContactRoute
   '/decipherment': typeof DeciphermentRoute
   '/decipherment-frontier': typeof DeciphermentFrontierRoute
+  '/development-status': typeof DevelopmentStatusRoute
   '/dispater': typeof DispaterRoute
   '/ecosystem': typeof EcosystemRoute
   '/evaluation': typeof EvaluationRoute
@@ -237,6 +260,7 @@ export interface FileRoutesByTo {
   '/xaeli': typeof XaeliRoute
   '/xaita': typeof XaitaRoute
   '/admin/aurex-control': typeof AdminAurexControlRoute
+  '/aurex-ox/model-laboratory': typeof AurexOxModelLaboratoryRoute
   '/early-access/confirm': typeof EarlyAccessConfirmRoute
 }
 export interface FileRoutesById {
@@ -244,11 +268,13 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/aurex': typeof AurexRoute
+  '/aurex-ox': typeof AurexOxRouteWithChildren
   '/bcxmet': typeof BcxmetRoute
   '/build-with-us': typeof BuildWithUsRoute
   '/contact': typeof ContactRoute
   '/decipherment': typeof DeciphermentRoute
   '/decipherment-frontier': typeof DeciphermentFrontierRoute
+  '/development-status': typeof DevelopmentStatusRoute
   '/dispater': typeof DispaterRoute
   '/ecosystem': typeof EcosystemRoute
   '/evaluation': typeof EvaluationRoute
@@ -268,6 +294,7 @@ export interface FileRoutesById {
   '/xaeli': typeof XaeliRoute
   '/xaita': typeof XaitaRoute
   '/admin/aurex-control': typeof AdminAurexControlRoute
+  '/aurex-ox/model-laboratory': typeof AurexOxModelLaboratoryRoute
   '/early-access/confirm': typeof EarlyAccessConfirmRoute
 }
 export interface FileRouteTypes {
@@ -276,11 +303,13 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/aurex'
+    | '/aurex-ox'
     | '/bcxmet'
     | '/build-with-us'
     | '/contact'
     | '/decipherment'
     | '/decipherment-frontier'
+    | '/development-status'
     | '/dispater'
     | '/ecosystem'
     | '/evaluation'
@@ -300,17 +329,20 @@ export interface FileRouteTypes {
     | '/xaeli'
     | '/xaita'
     | '/admin/aurex-control'
+    | '/aurex-ox/model-laboratory'
     | '/early-access/confirm'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/about'
     | '/aurex'
+    | '/aurex-ox'
     | '/bcxmet'
     | '/build-with-us'
     | '/contact'
     | '/decipherment'
     | '/decipherment-frontier'
+    | '/development-status'
     | '/dispater'
     | '/ecosystem'
     | '/evaluation'
@@ -330,17 +362,20 @@ export interface FileRouteTypes {
     | '/xaeli'
     | '/xaita'
     | '/admin/aurex-control'
+    | '/aurex-ox/model-laboratory'
     | '/early-access/confirm'
   id:
     | '__root__'
     | '/'
     | '/about'
     | '/aurex'
+    | '/aurex-ox'
     | '/bcxmet'
     | '/build-with-us'
     | '/contact'
     | '/decipherment'
     | '/decipherment-frontier'
+    | '/development-status'
     | '/dispater'
     | '/ecosystem'
     | '/evaluation'
@@ -360,6 +395,7 @@ export interface FileRouteTypes {
     | '/xaeli'
     | '/xaita'
     | '/admin/aurex-control'
+    | '/aurex-ox/model-laboratory'
     | '/early-access/confirm'
   fileRoutesById: FileRoutesById
 }
@@ -367,11 +403,13 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
   AurexRoute: typeof AurexRoute
+  AurexOxRoute: typeof AurexOxRouteWithChildren
   BcxmetRoute: typeof BcxmetRoute
   BuildWithUsRoute: typeof BuildWithUsRoute
   ContactRoute: typeof ContactRoute
   DeciphermentRoute: typeof DeciphermentRoute
   DeciphermentFrontierRoute: typeof DeciphermentFrontierRoute
+  DevelopmentStatusRoute: typeof DevelopmentStatusRoute
   DispaterRoute: typeof DispaterRoute
   EcosystemRoute: typeof EcosystemRoute
   EvaluationRoute: typeof EvaluationRoute
@@ -417,6 +455,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AurexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/aurex-ox': {
+      id: '/aurex-ox'
+      path: '/aurex-ox'
+      fullPath: '/aurex-ox'
+      preLoaderRoute: typeof AurexOxRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/bcxmet': {
       id: '/bcxmet'
       path: '/bcxmet'
@@ -450,6 +495,13 @@ declare module '@tanstack/react-router' {
       path: '/decipherment-frontier'
       fullPath: '/decipherment-frontier'
       preLoaderRoute: typeof DeciphermentFrontierRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/development-status': {
+      id: '/development-status'
+      path: '/development-status'
+      fullPath: '/development-status'
+      preLoaderRoute: typeof DevelopmentStatusRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/dispater': {
@@ -585,6 +637,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminAurexControlRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/aurex-ox/model-laboratory': {
+      id: '/aurex-ox/model-laboratory'
+      path: '/model-laboratory'
+      fullPath: '/aurex-ox/model-laboratory'
+      preLoaderRoute: typeof AurexOxModelLaboratoryRouteImport
+      parentRoute: typeof AurexOxRoute
+    }
     '/early-access/confirm': {
       id: '/early-access/confirm'
       path: '/early-access/confirm'
@@ -595,15 +654,28 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface AurexOxRouteChildren {
+  AurexOxModelLaboratoryRoute: typeof AurexOxModelLaboratoryRoute
+}
+
+const AurexOxRouteChildren: AurexOxRouteChildren = {
+  AurexOxModelLaboratoryRoute: AurexOxModelLaboratoryRoute,
+}
+
+const AurexOxRouteWithChildren =
+  AurexOxRoute._addFileChildren(AurexOxRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
   AurexRoute: AurexRoute,
+  AurexOxRoute: AurexOxRouteWithChildren,
   BcxmetRoute: BcxmetRoute,
   BuildWithUsRoute: BuildWithUsRoute,
   ContactRoute: ContactRoute,
   DeciphermentRoute: DeciphermentRoute,
   DeciphermentFrontierRoute: DeciphermentFrontierRoute,
+  DevelopmentStatusRoute: DevelopmentStatusRoute,
   DispaterRoute: DispaterRoute,
   EcosystemRoute: EcosystemRoute,
   EvaluationRoute: EvaluationRoute,

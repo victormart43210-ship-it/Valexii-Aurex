@@ -1,0 +1,147 @@
+"""Offline laboratory checks. Expected money is local arithmetic, not an engine callback."""
+
+from __future__ import annotations
+
+from datetime import UTC, datetime, timedelta
+from decimal import Decimal
+
+from aurex.ascendancy.historical_audit import historical_validation_proposal, run_authorized_audit
+from aurex.dispater_intelligence import digest
+from aurex.ox.customization import customization_contract, promotion_decision
+from aurex.ox.evaluation import evaluate, injected_provider, mock_provider
+from aurex.ox.registry import EMPTY_SHA256, RegistryError, validate_registry
+from aurex.ox.replay import audit_replay_manifest
+from tests.test_dispater_golden_audit import EXPECTED
+
+NOW = datetime(2026, 11, 6, 14, 20, tzinfo=UTC)
+
+
+def test_registry_rejects_self_approval_and_the_empty_digest() -> None:
+    data = validate_registry()
+    assert data["paid_inference"] == "OFF"
+    assert all(item["live_connection"] == "NOT_VERIFIED" for item in data["models"])
+    assert all(item["executable_model"] is False for item in data["research_frameworks"])
+    broken = {
+        "financial_authority": "NONE",
+        "paid_inference": "OFF",
+        "models": [{**data["models"][0], "weight_digest": EMPTY_SHA256}],
+        "research_frameworks": data["research_frameworks"],
+    }
+    try:
+        validate_registry(broken)
+    except RegistryError as exc:
+        assert "digest" in str(exc)
+    else:
+        raise AssertionError("empty digest")
+
+
+def test_offline_runner_matches_the_answer_key_and_blocks_injection() -> None:
+    clean = evaluate("qwen", tenant_id="tenant-lab")
+    again = evaluate("qwen", tenant_id="tenant-lab", provider=mock_provider)
+    assert clean["passed"] is True
+    assert clean["live_connection"] == "NOT_VERIFIED"
+    assert clean["report_digest"] == again["report_digest"]
+    assert all(item["confirmed_recovery_usd"] == "0.00" for item in clean["cases"])
+    poisoned = evaluate("qwen", tenant_id="tenant-lab", provider=injected_provider)
+    assert poisoned["passed"] is False
+    withheld = next(item for item in poisoned["cases"] if item["case_id"] == "withhold-recovery")
+    assert withheld["unsupported_claim"] is True
+    assert withheld["circular_evidence"] is True
+    try:
+        evaluate("qwen", tenant_id="tenant-lab", paid_inference=True)
+    except RegistryError as exc:
+        assert "paid" in str(exc)
+    else:
+        raise AssertionError("paid inference")
+    try:
+        evaluate("qwen", tenant_id="other-tenant")
+    except RegistryError as exc:
+        assert "tenant" in str(exc)
+    else:
+        raise AssertionError("cross tenant")
+
+
+def test_customization_does_not_train_or_let_a_model_promote_itself() -> None:
+    contract = customization_contract("lora", tenant_id="tenant-lab", base_entry_id="qwen")
+    assert contract["training_started"] is False
+    assert contract["weights_downloaded"] is False
+    model_vote = promotion_decision(actor="MODEL", evaluation_verified_by_other_party=True, method="prompt")
+    assert model_vote["eligible_for_synthetic_config"] is False
+    human = promotion_decision(actor="HUMAN", evaluation_verified_by_other_party=True, method="fine_tune")
+    assert human["training_started"] is False
+    assert human["eligible_for_synthetic_config"] is False
+
+
+def test_replay_manifest_ignores_the_clock_and_sees_a_changed_cent() -> None:
+    first = audit_replay_manifest(
+        tenant_pseudonym="tenant-lab",
+        audit_run_id="run-1",
+        source_digests=["b" * 64, "a" * 64],
+        rule_pack_digest="c" * 64,
+        code_commit="9148634",
+        output_digest="d" * 64,
+        created_at="2026-11-06T14:00:00Z",
+    )
+    later = audit_replay_manifest(
+        tenant_pseudonym="tenant-lab",
+        audit_run_id="run-1",
+        source_digests=["a" * 64, "b" * 64],
+        rule_pack_digest="c" * 64,
+        code_commit="9148634",
+        output_digest="d" * 64,
+        created_at="2026-11-06T18:00:00Z",
+    )
+    changed = audit_replay_manifest(
+        tenant_pseudonym="tenant-lab",
+        audit_run_id="run-1",
+        source_digests=["a" * 64, "b" * 64],
+        rule_pack_digest="c" * 64,
+        code_commit="9148634",
+        output_digest="e" * 64,
+        created_at="2026-11-06T14:00:00Z",
+    )
+    assert first["manifest_digest"] == later["manifest_digest"]
+    assert first["manifest_digest"] != changed["manifest_digest"]
+
+
+def test_financial_headlines_and_the_historical_gate_stay_closed() -> None:
+    assert EXPECTED["identified_exposure_usd"] == "385.00"
+    assert EXPECTED["withheld_unresolved_usd"] == "150.00"
+    assert EXPECTED["confirmed_recovery_usd"] == "0.00"
+    identified = Decimal("110.00") - Decimal("100.00")
+    dataset = {
+        "tenant_id": "tenant-asc",
+        "dataset_type": "SYNTHETIC_ONLY",
+        "jobs": [{"job_id": "J1", "customer_id": "C1", "service_code": "S", "date": "2026-03-01"}],
+        "rates": [
+            {
+                "rate_id": "R1",
+                "customer_id": "C1",
+                "service_code": "S",
+                "start": "2026-01-01",
+                "end": "2026-12-31",
+                "amount": "100.00",
+            }
+        ],
+        "invoices": [{"invoice_id": "I1", "job_id": "J1", "amount": "110.00", "status": "open"}],
+        "payments": [],
+    }
+    dossier = run_authorized_audit(
+        {
+            "authorization_id": "auth-lab",
+            "tenant_id": "tenant-asc",
+            "purpose": "SYNTHETIC_VALIDATION",
+            "privacy_control": "SYNTHETIC_ONLY",
+            "expires_at": NOW + timedelta(days=1),
+            "grantor_kind": "HUMAN",
+        },
+        NOW,
+        dataset,
+        source_sha256=digest(dataset),
+        byte_length=32,
+    )
+    assert dossier["financial_summary"]["identified_exposure_usd"] == f"{identified:.2f}"
+    assert dossier["financial_summary"]["confirmed_recovery_usd"] == "0.00"
+    proposal = historical_validation_proposal()
+    assert proposal["activated"] is False
+    assert proposal["status"] == "PROPOSED"
