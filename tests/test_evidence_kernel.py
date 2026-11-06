@@ -315,3 +315,17 @@ def test_system_cannot_approve_or_confirm_recovery() -> None:
     with pytest.raises(QualificationError, match="human reviewer"):
         c.advance(Outcome.APPROVED_CLAIM, actor=ActorKind.SYSTEM,
                   evidence_ids=("bank",), graph=graph(), reviewer="r", now=NOW)
+
+
+def test_nonfinite_financial_values_are_rejected() -> None:
+    for amount in ("NaN", "Infinity", "-Infinity"):
+        issues = challenge_finding({"evidence": [1], "exposure_usd": amount}, T, set())
+        assert "invalid amount" in issues
+        issues = challenge_finding({"evidence": [1], "exposure_usd": "100", "recovered_usd": amount}, T, set())
+        assert "invalid amount" in issues
+    c = _claim()
+    c.state = Outcome.APPROVED_CLAIM
+    with pytest.raises(QualificationError, match="received amount"):
+        c.advance(Outcome.CONFIRMED_RECOVERED, actor=ActorKind.HUMAN,
+                  evidence_ids=("bank",), graph=graph(), reviewer="r",
+                  received_amount=Decimal("NaN"), claim_source_ids=("pdf",), now=NOW)
