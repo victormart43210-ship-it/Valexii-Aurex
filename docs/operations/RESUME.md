@@ -103,3 +103,5 @@ GitHub Actions on `a4d9d85ab7d3ae7668659b01770f72c38eb6509e` completed success a
 PR 185 was still `5978a781114368d40965092f6094273683c51c7c`. This branch adds a standalone ZIP kit and an authenticated synthetic audit test. It does not merge PR 172 or PR 176.
 
 Tested code `f480c518ffcb5360b2b084470dbdb71aeac68d32`. pytest 751 passed, 1 skipped. Golden totals stay 385.00, 150.00, and 0.00. The USB and kit folders were absent, so the kit reported `LOCAL_ASSET_ACCESS_REQUIRED`. XAELI stays NOT_VERIFIED. Jules CCLX and the Post-9.9 blueprint were not in the repository. Decision HOLD_WITH_BLOCKERS. Do not merge or deploy.
+
+GitHub Actions on `0c85879c1b752b0f30a49d885296ad2204236bd7` completed success at 3:14 PM CT for offline-practice, both CI test jobs, verify, and integration. The Railway image workflow did not run. Its path filter covers the Dockerfile, `pyproject.toml`, `aurex/`, `training/`, and `workstation/`. Those greens do not authorize a merge.

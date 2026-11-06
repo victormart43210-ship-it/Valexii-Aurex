@@ -27,8 +27,8 @@ The USB path, `~/dispater-kit`, and `~/VALEXII_INSTALLER` were absent. The hando
 - mypy: 109 files, pass
 - golden ledger: identified 385.00, withheld 150.00, confirmed 0.00
 - website vitest: 161 passed. Website sources were not changed.
-- GitHub Actions on this SHA: pending until the push is observed
-- Docker image workflow: NOT_RUN. This diff does not match its path filter.
+- GitHub Actions on `0c85879c1b752b0f30a49d885296ad2204236bd7`: success at 3:14 PM CT for offline-practice, both CI test jobs, verify, and integration. That success does not authorize a merge.
+- Docker image workflow: NOT_RUN. Its path filter covers the Dockerfile, `pyproject.toml`, `aurex/`, `training/`, and `workstation/`.
 
 ## Owner actions
 
