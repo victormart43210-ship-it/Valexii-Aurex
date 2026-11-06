@@ -1,0 +1,46 @@
+{
+  "schema": "aurex.cclxix.e2e_verification.v1",
+  "code_sha": "44b30cb68269e4a36e7edac3a4773b5b095ae7ef",
+  "tested_at": "2026-11-06T17:28:00-0600",
+  "independent_review": "NOT_VERIFIED",
+  "journeys": {
+    "dispater_synthetic_audit": {
+      "status": "PASS",
+      "observed": "Headless Chrome at 390x844 on http://127.0.0.1:5197/dispater. CONNECTED, identified 1750.00, confirmed recovery 0.00, stored run match."
+    },
+    "dispater_history": {
+      "status": "PASS",
+      "observed": "Read stored history showed one AUDIT_COMPLETE run, run-7a0d879a, with a receipt prefix. The row came from the API."
+    },
+    "dispater_verified_export": {
+      "status": "NOT_VERIFIED",
+      "reason": "The browser session did not click the download. The adapter test rejects a FAIL authenticity result."
+    },
+    "zaylee_observation": {
+      "status": "PASS",
+      "observed": "The page showed ZAYLEE RECORDED and EFFECT NONE. The API test also refuses DEPLOY."
+    },
+    "xaeli_live_model": {
+      "status": "BLOCKED",
+      "probe": "http://127.0.0.1:8080/v1/models",
+      "result": "URLError"
+    },
+    "administration": {
+      "status": "NOT_RUN",
+      "reason": "The owner lock screen was not opened in this browser session. Its existing tests still require owner authentication."
+    },
+    "docker": {
+      "status": "NOT_RUN",
+      "reason": "The docker binary is not installed here."
+    }
+  },
+  "performance": {
+    "in_process_reconciliation_mean_seconds": 0.0036,
+    "sample": "20 identical TestClient posts after one warmup",
+    "scope": "local process only; not a deployed measurement",
+    "dispater_client_chunk_bytes": 25670,
+    "dispater_client_chunk_gzip_bytes": 7870,
+    "main_client_chunk_bytes": 362440,
+    "main_client_chunk_gzip_bytes": 113620
+  }
+}

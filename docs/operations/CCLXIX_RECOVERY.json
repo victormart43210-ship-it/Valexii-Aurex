@@ -1,0 +1,30 @@
+{
+  "schema": "aurex.cclxix.recovery.v1",
+  "branch": "cursor/kusanagi-cclxix-fullstack-ascendancy-4082",
+  "code_sha": "44b30cb68269e4a36e7edac3a4773b5b095ae7ef",
+  "base_branch": "cursor/kusanagi-cclxvi-mainline-convergence-4082",
+  "base_sha": "ea8ab72686c77895e905db55a94f674dd58e504d",
+  "main_sha": "34cda4bd8f207f5b1284093b87e4760d782a4903",
+  "main_changed": false,
+  "decision": "HOLD_WITH_BLOCKERS",
+  "production_authority": "NONE",
+  "financial_authority": "NONE",
+  "completed": [
+    "Connected stored audit history.",
+    "Connected verified export rejection for a failed receipt.",
+    "Connected an advisory ZAYLEE observation that cannot launch an effect.",
+    "Ignored stale DISPATER responses.",
+    "Ran pytest, ruff, mypy, website tests, the website build, and dispater-web tests.",
+    "Exercised the mobile DISPATER console in headless Chrome."
+  ],
+  "outstanding": [
+    "GitHub Actions on this SHA.",
+    "Local Docker.",
+    "Live Qwen. The probe returned URLError.",
+    "Fleet maintenance. No backend contract exists.",
+    "Independent human review.",
+    "A click-through of the verified export download.",
+    "Owner administration was not opened in this browser session."
+  ],
+  "next_safe_action": "Review the pull request. Do not merge it to main and do not deploy it."
+}
