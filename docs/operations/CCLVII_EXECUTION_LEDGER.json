@@ -16,6 +16,21 @@
       "remote_checkpoint_sha": null,
       "tests": "NOT_RUN",
       "next_action": "Verify initial remote checkpoint, inspect existing engine and Cursor182 diff, choose nonoverlapping defect and add failing regression"
+    },
+    {
+      "timestamp_utc": "2026-11-06T19:58:34.427956+00:00",
+      "task_id": "CCLVII-02",
+      "status": "TESTED",
+      "action": "Disable ambient proxies for local-only prompts in two existing clients",
+      "files": [
+        "aurex/local_inference.py",
+        "aurex/adapters/ollama.py",
+        "tests/test_cclvii_local_proxy_isolation.py"
+      ],
+      "remote_checkpoint_sha": "7b50f9e850652b8f6f3b2ebbc6f0a49123914171",
+      "red": "2failed proxy captured prompts",
+      "green": "23passed; scopedRuffPASS",
+      "next_action": "Verify privacy repair remote savepoint; publish duplicate-unbilled-equipment repair after golden checks"
     }
   ]
 }

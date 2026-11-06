@@ -14,3 +14,6 @@ Shell GitHub push was unavailable in the prior session. Connected GitHub Git-dat
 
 ## Boundaries
 Work owns new CCLVII records and a narrow tested repair in its isolated branch. Copilot owns integration181, Cursor owns182. Read their records; no shared branch writes. Preserve385identified/150withheld/0recovered and invoice10/0. No source of truth from LLMs. Production HOLD, financial NONE, external paid inference/training/customer data/third-party contact OFF. No merge/deployment.
+
+## Privacy slice ready
+Initial remote7b50f9e verified; draftPR183. Local inference and OllamaAdapter now explicitly disable inherited proxies while keeping redirect/read bounds. Two new tests failed before fix and23focused tests pass after. No paid provider/model download. Next: verify next remote checkpoint, then financial duplicate-ticket slice.
