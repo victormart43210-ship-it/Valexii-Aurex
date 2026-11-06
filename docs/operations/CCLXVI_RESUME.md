@@ -12,6 +12,6 @@ pytest: 773 passed, 1 skipped. Ruff and mypy passed. Website vitest: 164 passed.
 
 A local browser at 4:58 PM CT showed identified 1750.00, confirmed recovery 0.00, and a stored receipt match. CSV admission showed row 2 and confirmed recovery 0.00. That browser was this same session.
 
-Docker was not run here. `127.0.0.1:8080` returned URLError. No staging deployment was observed.
+Docker was not run in this environment. GitHub Actions on `52208f257f199eaf49b7e22f07120c485a37a6c3` finished success at 5:01 PM CT for offline-practice, both CI test jobs, verify, integration, and docker-build-and-smoke. That tip includes the tested code. The code commit was not pushed by itself, so it has no separate workflow run. The image job builds the canonical image, checks uid 10001, health, the SQLite volume, and an unauthenticated 401. It did not deploy. `127.0.0.1:8080` returned URLError. No staging deployment was observed. Those greens do not authorize a merge.
 
 Decision: HOLD_WITH_BLOCKERS. Financial authority NONE. Do not merge or deploy.

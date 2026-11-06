@@ -47,15 +47,28 @@
     },
     "docker_image": {
       "status": "NOT_RUN",
-      "reason": "The docker binary is not installed in this environment. A local image was not built."
+      "reason": "The docker binary is not installed in this environment. A local image was not built.",
+      "github_actions": "PASS for docker-build-and-smoke on 52208f257f199eaf49b7e22f07120c485a37a6c3 at 2026-11-06T17:01:00-0600. The job built the image. It did not deploy."
     },
     "container_non_root": {
       "status": "NOT_RUN",
-      "reason": "No container was started."
+      "reason": "No container was started in this environment.",
+      "github_actions": "PASS as a step inside docker-build-and-smoke. The workflow requires uid 10001. This agent did not read the container logs."
     },
     "container_health_sqlite": {
       "status": "NOT_RUN",
-      "reason": "No container was started."
+      "reason": "No container was started in this environment.",
+      "github_actions": "PASS as a step inside docker-build-and-smoke. The workflow requires /v1/health, a SQLite file under /data, and HTTP 401 for an unauthenticated /v1/jobs request."
+    },
+    "github_actions_on_52208f2": {
+      "status": "PASS",
+      "checks": ["offline-practice", "test", "test", "verify", "integration", "docker-build-and-smoke"],
+      "completed_at": "2026-11-06T17:01:00-0600",
+      "authorizes_merge": false
+    },
+    "github_actions_on_22a0939_alone": {
+      "status": "NOT_RUN",
+      "reason": "That commit was not pushed by itself."
     },
     "synthetic_frontend_backend": {
       "status": "PASS",

@@ -19,11 +19,12 @@
     "Verified stored runs after synthetic CSV admission.",
     "Added a default-deny observation proposal.",
     "Ran pytest, ruff, mypy, website tests, the website build, and dispater-web tests.",
-    "Exercised the local DISPATER console in headless Chrome."
+    "Exercised the local DISPATER console in headless Chrome.",
+    "Recorded six successful GitHub checks on 52208f257f199eaf49b7e22f07120c485a37a6c3, including docker-build-and-smoke. The image job did not deploy."
   ],
   "outstanding": [
-    "GitHub Actions on this SHA.",
-    "Local Docker image build.",
+    "GitHub Actions on the documentation note that records those checks.",
+    "A local Docker run in this environment.",
     "Independent human review.",
     "Owner decision on the 49 pull requests classified NEEDS_OWNER_DECISION.",
     "Live private model. The probe returned URLError.",
