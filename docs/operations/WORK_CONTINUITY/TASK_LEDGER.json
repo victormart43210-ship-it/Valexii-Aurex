@@ -9,8 +9,8 @@
       "assigned_owner": "ChatGPT Work",
       "status": "IMPLEMENTED",
       "branch": "work/ccxxxvi-continuity-verification",
-      "commit_sha": null,
-      "verification_status": "NOT_VERIFIED",
+      "commit_sha": "a83b82677bc7a76107abca131ac92af1c65d44e2",
+      "verification_status": "REMOTE_READBACK_VERIFIED",
       "blockers": []
     },
     {
@@ -21,10 +21,10 @@
         "C36-001"
       ],
       "assigned_owner": "ChatGPT Work",
-      "status": "IN_PROGRESS",
+      "status": "IMPLEMENTED",
       "branch": "work/ccxxxvi-continuity-verification",
-      "commit_sha": null,
-      "verification_status": "NOT_VERIFIED",
+      "commit_sha": "a83b82677bc7a76107abca131ac92af1c65d44e2",
+      "verification_status": "REMOTE_READBACK_VERIFIED",
       "blockers": []
     },
     {
@@ -35,10 +35,10 @@
         "C36-002"
       ],
       "assigned_owner": "ChatGPT Work",
-      "status": "NOT_STARTED",
+      "status": "TESTED",
       "branch": "work/ccxxxvi-continuity-verification",
-      "commit_sha": null,
-      "verification_status": "NOT_VERIFIED",
+      "commit_sha": "b0c1725b1895ca170c156d272b1866da5c2af63d",
+      "verification_status": "REMOTE_READBACK_VERIFIED",
       "blockers": []
     },
     {
@@ -49,7 +49,7 @@
         "C36-002"
       ],
       "assigned_owner": "ChatGPT Work",
-      "status": "NOT_STARTED",
+      "status": "IN_PROGRESS",
       "branch": "work/ccxxxvi-continuity-verification",
       "commit_sha": null,
       "verification_status": "NOT_VERIFIED",

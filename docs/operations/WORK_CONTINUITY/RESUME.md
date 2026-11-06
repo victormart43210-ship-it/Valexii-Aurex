@@ -2,8 +2,8 @@
 
 Operation: KUSANAGI CCXXXVI. Repository: https://github.com/victormart43210-ship-it/Valexii-Aurex
 Active branch: `work/ccxxxvi-continuity-verification`. Base SHA: `34cda4bd8f207f5b1284093b87e4760d782a4903`.
-Latest durable checkpoint: UNKNOWN — initial commit not yet pushed. Always fetch and verify actual remote HEAD; recorded SHA is preceding checkpoint, never self-referential.
-Pull request: NONE.
+Latest recorded durable checkpoint: `a83b82677bc7a76107abca131ac92af1c65d44e2` (initial remote readback verified). Always fetch and verify actual remote HEAD; recorded SHA is preceding checkpoint, never self-referential.
+Pull request: https://github.com/victormart43210-ship-it/Valexii-Aurex/pull/173.
 
 ## Resume now
 1. `git fetch origin`
@@ -12,8 +12,8 @@ Pull request: NONE.
 4. `git rev-parse HEAD` and `git ls-remote origin refs/heads/work/ccxxxvi-continuity-verification`; compare actual remote.
 5. Recheck #171/#172/newer Cursor or Jules work before edits. Do not re-investigate #159–#164 unless materially changed.
 
-Last completed: C36-001 baseline inspection. In progress: C36-002 initial remote savepoint.
-Exact next action: push this continuity commit, verify remote HEAD, then review pinned #171 and #172 in separate clean worktrees.
+Last completed: C36-003 superseded archive remotely preserved. In progress: C36-004 pinned candidate review.
+Exact next action: run isolated #171/#172 regressions and adversarial review; persist reproducible counterexamples before any fixes.
 
 ## Environment and checks
 Python 3.12; `python3 -m venv .venv`; `.venv/bin/pip install -e '.[dev]'`.
@@ -28,3 +28,6 @@ Prior local CCXXV branch `work/kusanagi-ccxxv-sovereign-convergence` @89ec43cc h
 Files modified by Work: only this continuity directory initially. Runtime/receipt/financial/UI files owned by Cursor/Jules are excluded.
 Blockers: Cursor CCXXXV branch not yet observed; recheck before touching product files; PR #171 and Jules #172 overlap; neither integrated; Prior CCXXV work remains in separate local worktree pending archival checkpoint; Independent verification REVIEW_PENDING; no commercial or staging validation.
 Production: HOLD. Financial authority: NONE. External paid inference OFF. Automatic merge prohibited.
+
+## Preserved archive
+Earlier work is remote at `archive/ccxxv-superseded-work-20261106` @ `b0c1725b1895ca170c156d272b1866da5c2af63d`. Superseded, do not merge. It passed 712 tests/1 skip; frontend not run. Active continuity branch remains the only current Work candidate. Shell push lacks credentials; connected GitHub Git-data writes and `git ls-remote` readback are available.

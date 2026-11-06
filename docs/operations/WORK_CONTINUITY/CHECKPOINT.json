@@ -4,25 +4,24 @@
   "repository": "https://github.com/victormart43210-ship-it/Valexii-Aurex",
   "branch": "work/ccxxxvi-continuity-verification",
   "base_sha": "34cda4bd8f207f5b1284093b87e4760d782a4903",
-  "latest_checkpoint_sha": null,
-  "checkpoint_timestamp_utc": "2026-11-06T11:49:17.926283+00:00",
-  "active_pr": null,
-  "current_phase": "BASELINE_PERSISTENCE",
-  "last_completed_task": "C36-001: verified canonical remote, main, open #168-#172 and isolated branch",
-  "next_task": "Push continuity commit and verify remote HEAD; then pin clean checkouts for #171 and #172 review",
+  "latest_checkpoint_sha": "a83b82677bc7a76107abca131ac92af1c65d44e2",
+  "checkpoint_timestamp_utc": "2026-11-06T11:52:14.621288+00:00",
+  "active_pr": "https://github.com/victormart43210-ship-it/Valexii-Aurex/pull/173",
+  "current_phase": "PINNED_CANDIDATE_VERIFICATION",
+  "last_completed_task": "C36-003: prior prototypes preserved remotely as superseded archive",
+  "next_task": "Run isolated #171/#172 regression and adversarial review, persist counterexamples",
   "completed_tasks": [
-    "C36-001"
+    "C36-001",
+    "C36-002",
+    "C36-003"
   ],
   "pending_tasks": [
-    "C36-002",
-    "C36-003",
     "C36-004",
     "C36-005"
   ],
   "blockers": [
     "Cursor CCXXXV branch not yet observed; recheck before touching product files",
     "PR #171 and Jules #172 overlap; neither integrated",
-    "Prior CCXXV work remains in separate local worktree pending archival checkpoint",
     "Independent verification REVIEW_PENDING; no commercial or staging validation"
   ],
   "changed_files": [
@@ -42,5 +41,11 @@
     "policy": "Work owns continuity and new verification artifacts only; no runtime edits"
   },
   "production_authority": "HOLD",
-  "financial_authority": "NONE"
+  "financial_authority": "NONE",
+  "archive": {
+    "branch": "archive/ccxxv-superseded-work-20261106",
+    "sha": "b0c1725b1895ca170c156d272b1866da5c2af63d",
+    "status": "SUPERSEDED_DO_NOT_MERGE",
+    "verification": "712 passed, 1 skipped; developer tests only"
+  }
 }
