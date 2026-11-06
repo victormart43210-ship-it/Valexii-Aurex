@@ -1,10 +1,235 @@
 {
   "schema_version": "1.0",
-  "records": [],
-  "status": "NOT_RUN",
-  "environment": {
-    "python": "3.12",
-    "runtime": "isolated worktree; synthetic only"
-  },
-  "note": "Prior branch tests do not qualify current main or Cursor/Jules candidates."
+  "records": [
+    {
+      "commit_sha": "db4670ab78fa36c8a2b4b8b66df842350440e437",
+      "test_command": "PYTHONPATH=. AUREX_DB_PATH=<unique disposable path> <venv>/python -m pytest tests -q",
+      "exit_code": 0,
+      "passed_count": 637,
+      "failed_count": 0,
+      "skipped_count": 1,
+      "source_files_checked": null,
+      "environment": {
+        "python": "Python 3.12.14",
+        "node": "v24.22.1",
+        "install": "existing isolated venv with pip install -e .[dev]; socksio environment-only for host proxy",
+        "network": "no model calls; synthetic local API TestClient only"
+      },
+      "timestamp_recorded_utc": "2026-11-06T11:56:23.885754+00:00",
+      "reviewer_process": "ChatGPT Work separate clean detached checkout; not source author; not real-world independent verification",
+      "evidence_location": "docs/operations/WORK_CONTINUITY/evidence/cursor171-pytest.log",
+      "status": "PASS"
+    },
+    {
+      "commit_sha": "db4670ab78fa36c8a2b4b8b66df842350440e437",
+      "test_command": "PYTHONPATH=. <venv>/ruff check aurex aurex_foundation tests",
+      "exit_code": 0,
+      "passed_count": null,
+      "failed_count": 0,
+      "skipped_count": null,
+      "source_files_checked": null,
+      "environment": {
+        "python": "Python 3.12.14",
+        "node": "v24.22.1",
+        "install": "existing isolated venv with pip install -e .[dev]; socksio environment-only for host proxy",
+        "network": "no model calls; synthetic local API TestClient only"
+      },
+      "timestamp_recorded_utc": "2026-11-06T11:56:23.885754+00:00",
+      "reviewer_process": "ChatGPT Work separate clean detached checkout; not source author; not real-world independent verification",
+      "evidence_location": "docs/operations/WORK_CONTINUITY/evidence/cursor171-ruff.log",
+      "status": "PASS"
+    },
+    {
+      "commit_sha": "db4670ab78fa36c8a2b4b8b66df842350440e437",
+      "test_command": "PYTHONPATH=. <venv>/mypy --strict aurex aurex_foundation",
+      "exit_code": 0,
+      "passed_count": null,
+      "failed_count": 0,
+      "skipped_count": null,
+      "source_files_checked": 91,
+      "environment": {
+        "python": "Python 3.12.14",
+        "node": "v24.22.1",
+        "install": "existing isolated venv with pip install -e .[dev]; socksio environment-only for host proxy",
+        "network": "no model calls; synthetic local API TestClient only"
+      },
+      "timestamp_recorded_utc": "2026-11-06T11:56:23.885754+00:00",
+      "reviewer_process": "ChatGPT Work separate clean detached checkout; not source author; not real-world independent verification",
+      "evidence_location": "docs/operations/WORK_CONTINUITY/evidence/cursor171-mypy.log",
+      "status": "PASS"
+    },
+    {
+      "commit_sha": "46befcb04d2a98633876b4239775bedbf0b265ca",
+      "test_command": "PYTHONPATH=. AUREX_DB_PATH=<unique disposable path> <venv>/python -m pytest tests -q",
+      "exit_code": 0,
+      "passed_count": 622,
+      "failed_count": 0,
+      "skipped_count": 1,
+      "source_files_checked": null,
+      "environment": {
+        "python": "Python 3.12.14",
+        "node": "v24.22.1",
+        "install": "existing isolated venv with pip install -e .[dev]; socksio environment-only for host proxy",
+        "network": "no model calls; synthetic local API TestClient only"
+      },
+      "timestamp_recorded_utc": "2026-11-06T11:56:23.885754+00:00",
+      "reviewer_process": "ChatGPT Work separate clean detached checkout; not source author; not real-world independent verification",
+      "evidence_location": "docs/operations/WORK_CONTINUITY/evidence/jules172-pytest.log",
+      "status": "PASS"
+    },
+    {
+      "commit_sha": "46befcb04d2a98633876b4239775bedbf0b265ca",
+      "test_command": "PYTHONPATH=. <venv>/ruff check aurex aurex_foundation tests",
+      "exit_code": 0,
+      "passed_count": null,
+      "failed_count": 0,
+      "skipped_count": null,
+      "source_files_checked": null,
+      "environment": {
+        "python": "Python 3.12.14",
+        "node": "v24.22.1",
+        "install": "existing isolated venv with pip install -e .[dev]; socksio environment-only for host proxy",
+        "network": "no model calls; synthetic local API TestClient only"
+      },
+      "timestamp_recorded_utc": "2026-11-06T11:56:23.885754+00:00",
+      "reviewer_process": "ChatGPT Work separate clean detached checkout; not source author; not real-world independent verification",
+      "evidence_location": "docs/operations/WORK_CONTINUITY/evidence/jules172-ruff.log",
+      "status": "PASS"
+    },
+    {
+      "commit_sha": "46befcb04d2a98633876b4239775bedbf0b265ca",
+      "test_command": "PYTHONPATH=. <venv>/mypy --strict aurex aurex_foundation",
+      "exit_code": 0,
+      "passed_count": null,
+      "failed_count": 0,
+      "skipped_count": null,
+      "source_files_checked": 93,
+      "environment": {
+        "python": "Python 3.12.14",
+        "node": "v24.22.1",
+        "install": "existing isolated venv with pip install -e .[dev]; socksio environment-only for host proxy",
+        "network": "no model calls; synthetic local API TestClient only"
+      },
+      "timestamp_recorded_utc": "2026-11-06T11:56:23.885754+00:00",
+      "reviewer_process": "ChatGPT Work separate clean detached checkout; not source author; not real-world independent verification",
+      "evidence_location": "docs/operations/WORK_CONTINUITY/evidence/jules172-mypy.log",
+      "status": "PASS"
+    },
+    {
+      "commit_sha": "db4670ab78fa36c8a2b4b8b66df842350440e437",
+      "test_command": "cd website && npm ci --ignore-scripts && npx vitest run",
+      "exit_code": 0,
+      "passed_count": 156,
+      "failed_count": 0,
+      "skipped_count": 0,
+      "environment": {
+        "python": "Python 3.12.14",
+        "node": "v24.22.1",
+        "install": "existing isolated venv with pip install -e .[dev]; socksio environment-only for host proxy",
+        "network": "no model calls; synthetic local API TestClient only"
+      },
+      "timestamp_recorded_utc": "2026-11-06T11:56:23.885754+00:00",
+      "reviewer_process": "Work separate checkout",
+      "evidence_location": "docs/operations/WORK_CONTINUITY/evidence/cursor171-vitest.log",
+      "status": "PASS"
+    },
+    {
+      "commit_sha": "db4670ab78fa36c8a2b4b8b66df842350440e437",
+      "test_command": "cd website && npm run build",
+      "exit_code": 0,
+      "passed_count": null,
+      "failed_count": 0,
+      "skipped_count": null,
+      "environment": {
+        "python": "Python 3.12.14",
+        "node": "v24.22.1",
+        "install": "existing isolated venv with pip install -e .[dev]; socksio environment-only for host proxy",
+        "network": "no model calls; synthetic local API TestClient only"
+      },
+      "timestamp_recorded_utc": "2026-11-06T11:56:23.885754+00:00",
+      "reviewer_process": "Work separate checkout",
+      "evidence_location": "docs/operations/WORK_CONTINUITY/evidence/cursor171-build.log",
+      "status": "PASS"
+    },
+    {
+      "commit_sha": "db4670ab78fa36c8a2b4b8b66df842350440e437",
+      "test_command": "From clean candidate cwd: PYTHONPATH=. <venv>/python <work>/scripts/verification/ccxxxvi_cursor_171_probe.py",
+      "exit_code": 1,
+      "passed_count": 2,
+      "failed_count": 7,
+      "skipped_count": 0,
+      "observations": 9,
+      "environment": {
+        "python": "Python 3.12.14",
+        "node": "v24.22.1",
+        "install": "existing isolated venv with pip install -e .[dev]; socksio environment-only for host proxy",
+        "network": "no model calls; synthetic local API TestClient only"
+      },
+      "timestamp_recorded_utc": "2026-11-06T11:56:23.885754+00:00",
+      "reviewer_process": "Separately authored counterexamples, SHA/import guarded; reproducible source challenge only",
+      "evidence_location": "docs/operations/WORK_CONTINUITY/evidence/cursor171-probe.json",
+      "status": "FAIL",
+      "note": "7 of 9 independent semantic gates failed"
+    },
+    {
+      "commit_sha": "46befcb04d2a98633876b4239775bedbf0b265ca",
+      "test_command": "From clean candidate cwd: PYTHONPATH=. <venv>/python <work>/scripts/verification/ccxxxvi_jules_172_probe.py",
+      "exit_code": 1,
+      "passed_count": 14,
+      "failed_count": 0,
+      "skipped_count": 0,
+      "observations": 14,
+      "environment": {
+        "python": "Python 3.12.14",
+        "node": "v24.22.1",
+        "install": "existing isolated venv with pip install -e .[dev]; socksio environment-only for host proxy",
+        "network": "no model calls; synthetic local API TestClient only"
+      },
+      "timestamp_recorded_utc": "2026-11-06T11:56:23.885754+00:00",
+      "reviewer_process": "Separately authored counterexamples, SHA/import guarded; reproducible source challenge only",
+      "evidence_location": "docs/operations/WORK_CONTINUITY/evidence/jules172-probe.json",
+      "status": "FAIL",
+      "note": "Jules probe exit 1 means 14 defective reference observations reproduced, not 14 safety gates passed"
+    },
+    {
+      "commit_sha": "db4670ab78fa36c8a2b4b8b66df842350440e437",
+      "test_command": "<venv>/python scripts/verification/ccxxxvi_golden_files.py --candidate-root <clean171> --expected-sha db4670ab78fa36c8a2b4b8b66df842350440e437",
+      "exit_code": 0,
+      "passed_count": null,
+      "failed_count": 0,
+      "skipped_count": 0,
+      "environment": {
+        "python": "Python 3.12.14",
+        "node": "v24.22.1",
+        "install": "existing isolated venv with pip install -e .[dev]; socksio environment-only for host proxy",
+        "network": "no model calls; synthetic local API TestClient only"
+      },
+      "timestamp_recorded_utc": "2026-11-06T11:56:23.885754+00:00",
+      "reviewer_process": "Work-authored 36-file corpus, independent seed arithmetic; not commercial validation",
+      "evidence_location": "docs/operations/WORK_CONTINUITY/evidence/ccxxxvi-golden-files.log",
+      "status": "PASS",
+      "expected": {
+        "identified": "275.50",
+        "withheld": "130.00",
+        "recovered": "0.00"
+      },
+      "coverage": [
+        "107 provenance rows",
+        "authenticated reconciliation/dashboard",
+        "cross-tenant deny",
+        "receipt v2",
+        "idempotent replay",
+        "separate-process DB reopen",
+        "in-memory month37 replay"
+      ]
+    }
+  ],
+  "independent_review_status": "REVIEW_PENDING",
+  "not_run": [
+    "browser E2E",
+    "live OCR",
+    "real PDF/XLSX extraction",
+    "live persistent-volume restart",
+    "production deployment"
+  ]
 }

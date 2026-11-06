@@ -1,0 +1,92 @@
+{
+  "candidate_sha": "db4670ab78fa36c8a2b4b8b66df842350440e437",
+  "cases": [
+    {
+      "check": "reject_cross_tenant_live_source",
+      "expected": "IngestError",
+      "observed": {
+        "accepted": true,
+        "tenant": "T",
+        "class": "SYNTHETIC_ONLY",
+        "invoice_amounts": [
+          "100"
+        ]
+      },
+      "pass": false
+    },
+    {
+      "check": "reject_ambiguous_amount_columns",
+      "expected": "IngestError",
+      "observed": {
+        "accepted": true,
+        "tenant": "T",
+        "class": "SYNTHETIC_ONLY",
+        "invoice_amounts": [
+          "1"
+        ]
+      },
+      "pass": false
+    },
+    {
+      "check": "controlled_short_row_rejection",
+      "expected": "IngestError",
+      "observed": "AttributeError",
+      "pass": false
+    },
+    {
+      "check": "reject_unsupported_only_table",
+      "expected": "IngestError",
+      "observed": {
+        "accepted": true,
+        "tenant": "T",
+        "class": "SYNTHETIC_ONLY",
+        "invoice_amounts": []
+      },
+      "pass": false
+    },
+    {
+      "check": "reject_duplicate_json_keys",
+      "expected": "IngestError",
+      "observed": {
+        "accepted": true,
+        "tenant": "T",
+        "class": "SYNTHETIC_ONLY",
+        "invoice_amounts": [
+          "1"
+        ]
+      },
+      "pass": false
+    },
+    {
+      "check": "no_point_estimate_when_duplicate_cash_unresolved",
+      "expected": "0.00",
+      "observed": "100.00",
+      "pass": false
+    },
+    {
+      "check": "no_cash_automatically_confirmed",
+      "expected": "0.00",
+      "observed": "0.00",
+      "pass": true
+    },
+    {
+      "check": "unbilled_dollars_reference_causing_rate_and_job",
+      "expected": [
+        "job",
+        "rate"
+      ],
+      "observed": [
+        "job"
+      ],
+      "pass": false
+    },
+    {
+      "check": "monitor_replay_cannot_settle_cash",
+      "expected": "0.00",
+      "observed": "0.00",
+      "pass": true
+    }
+  ],
+  "passed": 2,
+  "failed": 7
+}

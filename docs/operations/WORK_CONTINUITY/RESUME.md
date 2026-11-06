@@ -31,3 +31,8 @@ Production: HOLD. Financial authority: NONE. External paid inference OFF. Automa
 
 ## Preserved archive
 Earlier work is remote at `archive/ccxxv-superseded-work-20261106` @ `b0c1725b1895ca170c156d272b1866da5c2af63d`. Superseded, do not merge. It passed 712 tests/1 skip; frontend not run. Active continuity branch remains the only current Work candidate. Shell push lacks credentials; connected GitHub Git-data writes and `git ls-remote` readback are available.
+
+## Candidate verification checkpoint
+Recorded preceding remote SHA: 9b691026d81cf5876885968f7f82169a94061665. See VERIFICATION.json and evidence/ logs. Cursor #171: 637 pytest pass/1 skip, Ruff/Mypy pass, 156 frontend tests pass and production build pass; separate probe fails 7/9 semantic gates. Jules #172: 622 pytest pass/1 skip, Ruff/Mypy pass; 14 defective observations reproduced by probe. Do not confuse green regressions with passing the adversarial review.
+New Work 36-file JSON audit fixture and manifest: tests/fixtures/ccxxxvi_golden. Run scripts/verification/ccxxxvi_golden_files.py against pinned #171. Expected 275.50 identified, 130.00 withheld, 0.00 recovered; month37 400.75/130.00/0.00. API/store/dashboard checks PASS, monitor remains in-memory.
+Exact next action: finish frontend checks and validate continuity records, then coordinate ownership for findings. Do not repair Cursor/Jules active runtime files from this branch. No product rewrite or integration merge.

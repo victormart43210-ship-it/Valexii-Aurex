@@ -49,11 +49,14 @@
         "C36-002"
       ],
       "assigned_owner": "ChatGPT Work",
-      "status": "IN_PROGRESS",
+      "status": "TESTED",
       "branch": "work/ccxxxvi-continuity-verification",
       "commit_sha": null,
-      "verification_status": "NOT_VERIFIED",
-      "blockers": []
+      "verification_status": "COUNTEREXAMPLES_REPRODUCED; RELEASE_REVIEW_PENDING",
+      "blockers": [
+        "Cursor #171 fails 7/9 semantic challenge gates",
+        "Jules #172 reproduces 14 defective observations including false independent qualification and nonpersistent API ingestion"
+      ]
     },
     {
       "task_id": "C36-005",
@@ -63,7 +66,7 @@
         "C36-004"
       ],
       "assigned_owner": "ChatGPT Work",
-      "status": "NOT_STARTED",
+      "status": "IN_PROGRESS",
       "branch": "work/ccxxxvi-continuity-verification",
       "commit_sha": null,
       "verification_status": "NOT_VERIFIED",

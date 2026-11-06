@@ -1,0 +1,13 @@
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+ RUN  v5.0.4 /workspace/scratch/346565cd0297/review-171/website
+
+
+ Test Files  23 passed (23)
+      Tests  156 passed (156)
+   Start at  05:54:44
+   Duration  1.60s (transform 53%, tests 24%, import 20%, worker 4%)
+
+    Isolate  23 workers spawned · ~247ms startup each (spawn + environment, per file)
+             at least ~564ms faster with isolate: false — reuses workers across files instead of one per file
+
