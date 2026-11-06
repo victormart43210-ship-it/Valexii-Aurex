@@ -32,12 +32,6 @@ class AuditAuthorizationError(PermissionError):
     """The historical source is not admitted."""
 
 
-def _self_verified(value: object) -> bool:
-    if value is True:
-        return True
-    return isinstance(value, str) and value.strip().casefold() in {"true", "verified", "yes"}
-
-
 def require_authorization(authorization: Mapping[str, Any], now: datetime) -> None:
     """Human, unexpired, and explicit about purpose and privacy. Otherwise refuse."""
     if now.tzinfo is None or now.utcoffset() is None:
@@ -55,7 +49,7 @@ def require_authorization(authorization: Mapping[str, Any], now: datetime) -> No
         raise AuditAuthorizationError("authorization is expired")
     if expires - real_now > timedelta(days=7):
         raise AuditAuthorizationError("authorization lifetime is too long")
-    if _self_verified(authorization.get("grantor_verified")) or _self_verified(authorization.get("authority_verification")):
+    if "grantor_verified" in authorization or "authority_verification" in authorization:
         raise AuditAuthorizationError("a caller cannot verify its own authority")
     purpose = authorization.get("purpose")
     privacy = authorization.get("privacy_control")

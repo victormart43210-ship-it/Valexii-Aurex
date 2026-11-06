@@ -321,19 +321,28 @@ def purge_tenant(tenant_id: str, older_than_days: int | None = None) -> int:
     not contact anyone. The returned count is the number of runs removed.
     """
     with closing(_connect()) as conn:
-        if older_than_days is None:
-            conn.execute("DELETE FROM dispater_monitor_events WHERE tenant_id=?", (tenant_id,))
-            cur = conn.execute("DELETE FROM dispater_runs WHERE tenant_id=?", (tenant_id,))
-        else:
-            cutoff = (datetime.now(UTC) - timedelta(days=older_than_days)).isoformat()
-            conn.execute(
-                "DELETE FROM dispater_monitor_events WHERE tenant_id=? AND created_at<?",
-                (tenant_id, cutoff),
-            )
-            cur = conn.execute(
-                "DELETE FROM dispater_runs WHERE tenant_id=? AND created_at<?", (tenant_id, cutoff)
-            )
-        return cur.rowcount
+        conn.execute("BEGIN IMMEDIATE")
+        try:
+            if older_than_days is None:
+                conn.execute("DELETE FROM dispater_monitor_events WHERE tenant_id=?", (tenant_id,))
+                cur = conn.execute("DELETE FROM dispater_runs WHERE tenant_id=?", (tenant_id,))
+            else:
+                cutoff = (datetime.now(UTC) - timedelta(days=older_than_days)).isoformat()
+                conn.execute(
+                    "DELETE FROM dispater_monitor_events WHERE tenant_id=? AND created_at<?",
+                    (tenant_id, cutoff),
+                )
+                cur = conn.execute(
+                    "DELETE FROM dispater_runs WHERE tenant_id=? AND created_at<?",
+                    (tenant_id, cutoff),
+                )
+            removed = cur.rowcount
+            conn.execute("COMMIT")
+        except BaseException:
+            if conn.in_transaction:
+                conn.execute("ROLLBACK")
+            raise
+        return removed
 
 
 def _migrate_monitor_chain(conn: sqlite3.Connection) -> None:
