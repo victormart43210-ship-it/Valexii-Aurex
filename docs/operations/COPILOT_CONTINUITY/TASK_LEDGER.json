@@ -1,0 +1,35 @@
+{
+  "operation": "KUSANAGI_CCXXXVIII",
+  "production": "HOLD",
+  "financial_authority": "NONE",
+  "tasks": [
+    {"id": "T1", "title": "Verify repository, PRs, CI, overlap", "status": "DONE"},
+    {"id": "T2", "title": "Isolated branch from stacked candidate (main+#171+#172)", "status": "DONE"},
+    {"id": "T3", "title": "Independent financial oracle (hand-specified values)", "status": "DONE", "file": "tests/test_copilot_financial_oracle.py"},
+    {"id": "T4", "title": "Receipt, API boundary and ingestion security tests", "status": "DONE", "file": "tests/test_copilot_receipt_ingest_security.py"},
+    {"id": "T5", "title": "Pipeline, evidence kernel, monitoring, 36-month manifest tests", "status": "DONE", "file": "tests/test_copilot_pipeline_monitoring_adversarial.py"},
+    {"id": "T6", "title": "Open-source registry review and honesty tests", "status": "DONE", "file": "tests/test_copilot_registry_honesty.py"},
+    {"id": "T7", "title": "Frontend unit tests, typecheck, build", "status": "DONE"},
+    {"id": "T8", "title": "Browser e2e, Semgrep, Bun runner", "status": "NOT_RUN"},
+    {"id": "T9", "title": "Publish PR and handoff", "status": "DONE"}
+  ],
+  "defects": [
+    {"id": "D1", "severity": "HIGH", "status": "FIXED", "file": "aurex/dispater_pipeline.py", "title": "Pipeline summary and receipt read non-existent key 'summary'; reconciliation_summary was always {} and the receipt did not commit to exposure totals"},
+    {"id": "D2", "severity": "HIGH", "status": "FIXED", "file": "aurex/dispater_pipeline.py", "title": "Substring match of source_record_id in finding subject let unrelated documents (e.g. 'I1' vs 'I10') corroborate and qualify a finding"},
+    {"id": "D3", "severity": "HIGH", "status": "FIXED", "file": "aurex/dispater_pipeline.py", "title": "Admission accepted any media type (HTML, PDF, binary, malformed JSON) as ADMITTED; non-object JSON crashed with AttributeError (HTTP 500)"},
+    {"id": "D4", "severity": "MEDIUM", "status": "FIXED", "file": "aurex/dispater_pipeline.py", "title": "Replay overwrote the 'immutable' envelope (new ingested_at) before raising; conflicting content for the same source record was silently accepted"},
+    {"id": "D5", "severity": "MEDIUM", "status": "FIXED", "file": "aurex/dispater_monitoring.py", "title": "Monitoring labelled itself ActorKind.HUMAN; audit log had no hash chain so deletion/reordering was undetectable"},
+    {"id": "D6", "severity": "MEDIUM", "status": "FIXED", "file": "aurex/dispater_api.py", "title": "POST /pipeline/audit returned 500 for an invalid snapshot instead of 400"}
+  ],
+  "limitations": [
+    {"id": "L1", "status": "OPEN", "title": "Payment applied to the wrong invoice is reported as OVERPAYMENT + PARTIAL_PAYMENT (both UNVERIFIED), not netted into one economic event"},
+    {"id": "L2", "status": "OPEN", "title": "Evidence-root independence is per (source_system, source_record_id); two records from one ERP count as independent roots"},
+    {"id": "L3", "status": "OPEN", "title": "Contract supersession invalidates every RATE finding because findings carry no contract id (fails closed, over-invalidates)"},
+    {"id": "L4", "status": "OPEN", "title": "Pipeline/monitoring state is in memory: no persistence, no restart recovery; /pipeline/ingest builds a fresh engine per request so replay protection does not span requests; /pipeline/audit results are not persisted or MAC-sealed"},
+    {"id": "L5", "status": "OPEN", "title": "Equipment-hour and personnel-hour reconciliation, and payment reversals, are not implemented (negative payments are rejected)"},
+    {"id": "L6", "status": "OPEN", "title": "PaddleOCR digest in registry/code is the SHA-256 of empty input; OCR, PDF, image and XLSX ingestion are NOT_VERIFIED and refused"}
+  ],
+  "checkpoints": [
+    {"sha": "6bb61754490d7601e89b8d827c2524a13aca3475", "remote": "REMOTE_CONFIRMED", "note": "implementation, tests, registry"}
+  ]
+}

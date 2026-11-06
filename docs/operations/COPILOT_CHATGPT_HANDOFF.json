@@ -1,27 +1,54 @@
 {
- "operation_id": "CCXXIV",
- "status": "PARTIAL",
- "repository": "victormart43210-ship-it/Valexii-Aurex",
- "pr": {
-  "number": 162,
-  "url": "https://github.com/victormart43210-ship-it/Valexii-Aurex/pull/162"
- },
- "tested_base_sha": "e5115a613d0e7a28beda2266b47761db0b863428",
- "patch_branch": "copilot/kusanagi-ccxxiv-receipt-auth",
- "patch_note": "Bounded patch stacked on PR #162 branch (base=#162 branch); not a competing candidate. Final SHA = branch head; see git ls-remote.",
- "jules_ccxxiii": "No published work found",
- "changes": [
-  "aurex/dispater_receipt.py (HMAC receipts)",
-  "aurex/dispater_store.py (sign on save, verify on read, rollback masking fix)",
-  "aurex/dispater_intelligence.py (verify_receipt ignores MAC fields; invoice ordering determinism)",
-  "tests: receipt authenticity, multijob oracle, SIGKILL durability, conftest random key"
- ],
- "required_new_config": [
-  "AUREX_DISPATER_RECEIPT_KEYS (JSON kid->hex>=32 bytes)",
-  "AUREX_DISPATER_RECEIPT_ACTIVE_KID"
- ],
- "breaking": "Rows without a valid receipt_mac (pre-existing unsigned stored runs) now fail integrity verification (fail closed). Beta store is new; migrate/purge or re-run.",
- "production": "HOLD",
- "financial_authority": "NONE",
- "rollback": "Revert the patch commit; unset receipt env vars; stored signed reports remain readable by old code only if receipt_sha256 check ignores extra fields (old verify_receipt would fail on MAC fields: purge DISPATER DB)."
+  "operation_id": "KUSANAGI_CCXXXVIII",
+  "repository": "victormart43210-ship-it/Valexii-Aurex",
+  "base_sha": "34cda4bd8f207f5b1284093b87e4760d782a4903",
+  "implementation_checkpoint_sha": "6bb61754490d7601e89b8d827c2524a13aca3475",
+  "final_sha": "branch HEAD at review time (a commit cannot embed its own SHA); verify with git ls-remote",
+  "branch": "work/kusanagi-ccxxxviii-copilot-assurance",
+  "pull_request": "https://github.com/victormart43210-ship-it/Valexii-Aurex/pull/175 (draft, stacked on unmerged #171 + #172)",
+  "previous_handoff": "CCXXIV handoff previously at this path is preserved in git history (commit 9395e71)",
+  "files_changed": [
+    "aurex/dispater_api.py",
+    "aurex/dispater_monitoring.py",
+    "aurex/dispater_pipeline.py",
+    "docs/operations/INTERNATIONAL_OPEN_SOURCE_REGISTRY.json",
+    "docs/operations/COPILOT_CONTINUITY/*",
+    "docs/operations/COPILOT_CHATGPT_HANDOFF.json",
+    "tests/test_copilot_financial_oracle.py",
+    "tests/test_copilot_receipt_ingest_security.py",
+    "tests/test_copilot_pipeline_monitoring_adversarial.py",
+    "tests/test_copilot_registry_honesty.py"
+  ],
+  "defects_discovered": ["D1", "D2", "D3", "D4", "D5", "D6"],
+  "defects_fixed": ["D1", "D2", "D3", "D4", "D5", "D6"],
+  "defect_details": "See docs/operations/COPILOT_CONTINUITY/TASK_LEDGER.json",
+  "tests_executed": "See docs/operations/COPILOT_CONTINUITY/VERIFICATION.json (pytest 797 passed/1 skipped; ruff PASS; mypy PASS; vitest 156 passed; tsc PASS; vite build PASS)",
+  "independent_expected_value_results": {
+    "financial_oracle": "34 hand-specified cases PASS",
+    "golden_36_month_manifest": "72 docs, month-7 overbilling 1000.00, month-19 underbilling 500.00, identified 1500.00, confirmed recovery 0.00: PASS",
+    "pr171_fixture_not_interchangeable": "identified 385.00, withheld 150.00, confirmed 0.00 preserved by existing suites",
+    "regression_proof": "38 new tests fail with aurex/ reverted"
+  },
+  "security_findings": [
+    "D1-D6 fixed",
+    "L1 misapplied payment not netted (open)",
+    "L2 evidence-root independence per record, not per system (open)",
+    "L3 contract supersession invalidates all RATE findings (open, fail-closed)",
+    "L4 pipeline/monitoring in-memory, no restart recovery, /pipeline/audit not persisted or MAC-sealed (open)",
+    "L5 equipment/personnel-hour reconciliation and reversals not implemented (open)",
+    "L6 PaddleOCR registry digest is SHA-256 of empty input; OCR/PDF/image/XLSX NOT_VERIFIED and refused (open)",
+    "Registry: Qwen runtime/weights NOT_VERIFIED; some import_paths do not exist; CC-BY-SA needs legal review"
+  ],
+  "remaining_blockers": [
+    "Bun runner, Playwright e2e, Semgrep NOT_RUN",
+    "Monitoring restart recovery NOT_VERIFIED",
+    "No combined integration branch; #171/#172 unmerged",
+    "No real-customer accuracy evidence; beta readiness NOT claimed"
+  ],
+  "integration_dependencies": ["PR #171 (includes #170)", "PR #172", "PR #173 (ChatGPT Work, no overlap)"],
+  "overlap_warning": "Edits in dispater_pipeline.py, dispater_monitoring.py, dispater_api.py may conflict with Jules changes",
+  "next_exact_action": "Integration owner reviews PR #175, decides on L1-L6, and merges #171/#172 per its own process; Copilot reruns the matrix on the combined branch.",
+  "status": "PARTIAL",
+  "production": "HOLD",
+  "financial_authority": "NONE"
 }

@@ -1,0 +1,23 @@
+{
+  "commit_sha": "6bb61754490d7601e89b8d827c2524a13aca3475",
+  "timestamp_utc": "2026-11-06T12:01:00Z",
+  "environment": {"os": "linux", "python": "3.12.3", "node": "v26.12.1", "pytest": "8.4.2", "ruff": "0.17.4", "mypy": "1.20.2", "vitest": "5.0.4"},
+  "results": [
+    {"name": "full pytest", "command": "pytest -q -p no:cacheprovider", "exit_code": 0, "passed": 797, "failed": 0, "skipped": 1, "status": "PASS"},
+    {"name": "baseline pytest (candidate before changes, 9c0080b)", "command": "pytest -q -x -p no:cacheprovider", "exit_code": 0, "passed": 663, "failed": 0, "skipped": 2, "status": "PASS"},
+    {"name": "regression tests on unfixed source", "command": "pytest -q tests/test_copilot_*.py (aurex/ reverted)", "exit_code": 1, "passed": 91, "failed": 38, "skipped": 0, "status": "PASS", "note": "38 failures are the expected proof the tests detect D1-D6"},
+    {"name": "ruff", "command": "ruff check aurex tests", "exit_code": 0, "status": "PASS"},
+    {"name": "mypy", "command": "mypy aurex", "exit_code": 0, "status": "PASS", "note": "90 source files"},
+    {"name": "financial oracle", "command": "pytest tests/test_copilot_financial_oracle.py", "exit_code": 0, "passed": 34, "failed": 0, "status": "PASS"},
+    {"name": "receipt tampering / tenant / API boundary", "command": "pytest tests/test_copilot_receipt_ingest_security.py", "exit_code": 0, "status": "PASS"},
+    {"name": "evidence graph, monitoring replay, 36-month manifest", "command": "pytest tests/test_copilot_pipeline_monitoring_adversarial.py", "exit_code": 0, "passed": 38, "failed": 0, "status": "PASS"},
+    {"name": "website unit tests", "command": "cd website && npx vitest run", "exit_code": 0, "passed": 156, "failed": 0, "status": "PASS", "note": "23 files; Bun runner itself not used"},
+    {"name": "website typecheck", "command": "cd website && npx tsc --noEmit -p .", "exit_code": 0, "status": "PASS"},
+    {"name": "website production build", "command": "cd website && npx vite build", "exit_code": 0, "status": "PASS"},
+    {"name": "Bun frontend unit tests", "status": "NOT_RUN", "note": "bun not installed; vitest used"},
+    {"name": "browser end-to-end", "status": "NOT_RUN"},
+    {"name": "Semgrep / static analysis beyond ruff+mypy", "status": "NOT_RUN", "note": "not installed; no unverified dependencies added"},
+    {"name": "OCR / PDF / image / XLSX ingestion", "status": "NOT_VERIFIED", "note": "no parser installed; inputs are refused"},
+    {"name": "monitoring restart recovery", "status": "NOT_VERIFIED", "note": "no persistence exists"}
+  ]
+}
