@@ -755,6 +755,23 @@ class RevenueLeakageEngine:
                 )
             )
             return
+        if equipment and _duplicate_identity(equipment, "equipment_id", "service_date"):
+            findings.append(
+                self._create_finding(
+                    exposure_class=UNVERIFIED,
+                    code="DUPLICATE_FIELD_TICKET",
+                    subject=job["job_id"],
+                    severity="HIGH",
+                    records=[("job", job), ("rate", rate)] + [("equipment", row) for row in equipment],
+                    exposure=Decimal("0.00"),
+                    now=f"Job {job['job_id']} has multiple tickets for the same equipment and service date.",
+                    changed="The unbilled estimate is withheld until the hours can be distinguished.",
+                    next_action="Check the original tickets for separate shifts or duplicate entries.",
+                    why="The submitted records could describe the same work more than once.",
+                    proof="See the job, rate and equipment ticket digests in this finding.",
+                )
+            )
+            return
         if equipment:
             hours = sum((parse_money(row["billable_hours"]) for row in equipment), Decimal("0.00"))
             code = "UNBILLED_EQUIPMENT"

@@ -17,3 +17,6 @@ Work owns new CCLVII records and a narrow tested repair in its isolated branch. 
 
 ## Privacy slice ready
 Initial remote7b50f9e verified; draftPR183. Local inference and OllamaAdapter now explicitly disable inherited proxies while keeping redirect/read bounds. Two new tests failed before fix and23focused tests pass after. No paid provider/model download. Next: verify next remote checkpoint, then financial duplicate-ticket slice.
+
+## Financial slice ready
+Proxy checkpoint0638ace verified. Duplicate equipment/date unbilled work now returns explicit DUPLICATE_FIELD_TICKET/INSUFFICIENT_EVIDENCE with all source hashes and0identified, instead of summing400; single-ticket control200.37financial/golden testsPASS. Next: HTTP request drops equipment/labor, three new regression assertions fail. Fix that boundary without changing legacy empty-field request digest.

@@ -31,6 +31,20 @@
       "red": "2failed proxy captured prompts",
       "green": "23passed; scopedRuffPASS",
       "next_action": "Verify privacy repair remote savepoint; publish duplicate-unbilled-equipment repair after golden checks"
+    },
+    {
+      "timestamp_utc": "2026-11-06T19:59:56.152233+00:00",
+      "task_id": "CCLVII-03",
+      "status": "TESTED",
+      "action": "Apply existing duplicate equipment identity/date guard before unbilled hours sum",
+      "files": [
+        "aurex/dispater_intelligence.py",
+        "tests/test_cclvii_unbilled_hours.py"
+      ],
+      "remote_checkpoint_sha": "0638ace8840a65c28fc5e3c1e7513da5fe282429",
+      "red": "2failed1passed; duplicate tickets booked400",
+      "green": "37passed; duplicate amount0, single ticket200; golden385/150/0 invoice10/0",
+      "next_action": "Verify financial savepoint, fix confirmed hours collection loss at reconciliation HTTP boundary, then run integrated tests"
     }
   ]
 }
