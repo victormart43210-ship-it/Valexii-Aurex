@@ -1,0 +1,24 @@
+{
+  "operation": "KUSANAGI_CCLXV",
+  "tested_code_sha": "cfbf5386e679696048318ad843aeb29b520654bb",
+  "hardware": {"cpus": 4, "memory": "15Gi", "disk_free": "245G"},
+  "weights_found": false,
+  "downloads": "NOT_STARTED",
+  "cclxiv_source": {
+    "commit": "5d156abf13d62e7ad15756b50e278d6114bd4966",
+    "branch": "planning/kusanagi-cclxiii-website-foundation",
+    "merged": false,
+    "note": "Names were copied. Their benchmark_status was NOT_RUN there and was not re-measured here."
+  },
+  "candidates": [
+    "Qwen3.5-0.8B",
+    "Falcon-H1-1.5B-Instruct",
+    "Granite-4.0-Micro",
+    "Ministral-3-3B-Reasoning-2512-GGUF",
+    "PaddleOCR-VL",
+    "DeepSeek-OCR-2",
+    "EXAONE-4.0-1.2B"
+  ],
+  "installed": false,
+  "evaluation": "NOT_RUN"
+}

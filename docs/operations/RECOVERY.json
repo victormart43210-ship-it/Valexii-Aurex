@@ -89,7 +89,22 @@
     "Production remains HOLD."
   ],
   "pull_request": "https://github.com/victormart43210-ship-it/Valexii-Aurex/pull/180",
-  "next_executable_action": "CCLXII: review cursor/kusanagi-cclxii-unified-completion-4082. Tested code 41ce726dd1664b4f85dce2e316285c4711a3b1c7. Decision HOLD_WITH_BLOCKERS. Do not merge or deploy. Jules CCLX recovery was not found. USB access and live Qwen remain required.",
+  "next_executable_action": "CCLXV: review cursor/kusanagi-cclxv-breakthrough-4082. Tested code cfbf5386e679696048318ad843aeb29b520654bb. Local DISPATER read-back passed. Remote staging and live Qwen are blocked. Decision HOLD_WITH_BLOCKERS. Do not merge or deploy.",
+  "cclxv": {
+    "operation": "KUSANAGI_CCLXV",
+    "recorded_at": "2026-11-06T22:25:31Z",
+    "recorded_at_america_chicago": "2026-11-06T16:25:31-0600",
+    "base_sha": "6c99b3e7700330f99c98da7fb5cd69282368bce9",
+    "tested_code_sha": "cfbf5386e679696048318ad843aeb29b520654bb",
+    "branch": "cursor/kusanagi-cclxv-breakthrough-4082",
+    "decision": "HOLD_WITH_BLOCKERS",
+    "production": "HOLD",
+    "financial_authority": "NONE",
+    "breakthrough_a": "PASS_LOCAL_ONLY",
+    "breakthrough_b": "BLOCKED",
+    "breakthrough_c": "GATE_ONLY_NOT_SCORED",
+    "pytest": "760 passed, 1 skipped"
+  },
   "cclxii": {
     "operation": "KUSANAGI_CCLXII",
     "recorded_at": "2026-11-06T22:04:13Z",

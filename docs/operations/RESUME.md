@@ -115,3 +115,11 @@ This work starts at pull request 186. No Jules CCLX recovery branch was found. P
 Tested code `41ce726dd1664b4f85dce2e316285c4711a3b1c7`. pytest 755 passed, 1 skipped. The golden ledger stays 385.00, 150.00, and 0.00. A browser run of the local website showed the synthetic oilfield audit at identified 1750.00 and confirmed recovery 0.00, and a rejected token showed API error 401. The USB was not mounted. XAELI stays NOT_VERIFIED. Decision HOLD_WITH_BLOCKERS. Do not merge or deploy.
 
 GitHub Actions on `e9163594d308f4cb6782a04968692aa129ccafb8` completed success at 4:07 PM CT for offline-practice, both CI test jobs, verify, and integration. That tip includes the tested code. The code commit was not pushed by itself, so it has no separate workflow run. The Railway image workflow did not run. Those greens do not authorize a merge.
+
+The documentation commit `6c99b3e7700330f99c98da7fb5cd69282368bce9` later completed the same five checks. That result belongs to that SHA.
+
+## 2026-11-06 4:25 PM CT — CCLXV
+
+This branch starts at pull request 187. No remote staging URL is configured. `127.0.0.1:8080` refused a connection, so XAELI stays blocked. No model weights were downloaded and no benchmark score was created.
+
+Tested code `cfbf5386e679696048318ad843aeb29b520654bb`. pytest 760 passed, 1 skipped. The golden ledger stays 385.00, 150.00, and 0.00. A local browser audit showed identified 1750.00, confirmed recovery 0.00, and a stored receipt match. Decision HOLD_WITH_BLOCKERS. Do not merge or deploy.

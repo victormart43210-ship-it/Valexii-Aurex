@@ -1,0 +1,23 @@
+{
+  "operation": "KUSANAGI_CCLXV",
+  "tested_code_sha": "cfbf5386e679696048318ad843aeb29b520654bb",
+  "outside_witness": "NOT_PROVIDED. This session implemented the change and also ran the browser. That is not an independent witness.",
+  "checks": {
+    "pytest": "PASS 760 passed, 1 skipped",
+    "ruff": "PASS",
+    "mypy": "PASS 110 files",
+    "website_vitest": "PASS 162",
+    "website_production_build": "PASS",
+    "local_browser_audit": "PASS on this machine, SAME_SESSION",
+    "remote_staging_audit": "BLOCKED",
+    "xaeli_live_inference": "BLOCKED",
+    "model_benchmarks": "NOT_RUN",
+    "training_job": "NOT_STARTED",
+    "railway_image": "PENDING. aurex/model_lab.py matches the workflow path filter. It had not run at the time of this record.",
+    "github_actions_on_this_sha": "PENDING",
+    "prior_ci_6c99b3e": "PASS for five checks on that earlier documentation commit. It does not verify this SHA.",
+    "secret_in_frontend": "The local page text did not contain the test token.",
+    "external_anchor": "NOT_VERIFIED"
+  },
+  "decision": "HOLD_WITH_BLOCKERS"
+}
