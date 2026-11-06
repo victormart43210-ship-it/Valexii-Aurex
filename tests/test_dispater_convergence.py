@@ -14,6 +14,8 @@ from aurex.dispater_intelligence import (
     InvalidSnapshot,
     RevenueLeakageEngine,
     dependent_finding_ids,
+    digest,
+    verify_receipt,
 )
 from aurex.dispater_monitor import persist_increment
 from aurex.evidence_kernel import EvidenceGraph, EvidenceRecord
@@ -160,6 +162,43 @@ def test_orphan_reversal_is_not_incoming_cash() -> None:
     assert report["financial_summary"]["confirmed_recovery_usd"] == "0.00"
     assert report["findings"][0]["code"] == "ORPHAN_PAYMENT"
     assert report["findings"][0]["exposure_usd"] == "0.00"
+
+
+def test_one_unbilled_job_and_one_orphan_invoice_are_withheld() -> None:
+    report = RevenueLeakageEngine("tenant-a").reconcile_records(
+        {
+            "tenant_id": "tenant-a",
+            "dataset_type": "SYNTHETIC_ONLY",
+            "jobs": [{"job_id": "J1", "customer_id": "C1", "service_code": "S", "date": "2026-03-01"}],
+            "rates": [
+                {
+                    "rate_id": "R1",
+                    "customer_id": "C1",
+                    "service_code": "S",
+                    "start": "2026-01-01",
+                    "end": "2026-12-31",
+                    "amount": "100.00",
+                }
+            ],
+            "invoices": [{"invoice_id": "I9", "job_id": "MISSING", "amount": "100.00", "status": "open"}],
+            "payments": [],
+        }
+    )
+    summary = report["financial_summary"]
+    assert summary["identified_exposure_usd"] == "0.00"
+    assert summary["withheld_unresolved_usd"] == "200.00"
+    assert summary["confirmed_recovery_usd"] == "0.00"
+    assert {item["exposure_usd"] for item in report["findings"]} == {"0.00"}
+
+
+def test_unkeyed_hash_is_not_a_signature() -> None:
+    report = RevenueLeakageEngine("tenant-a").reconcile_records(_base())
+    body = {key: value for key, value in report.items() if key != "receipt_sha256"}
+    report["receipt_sha256"] = digest(body)
+    assert verify_receipt(report)
+    report["receipt_auth"] = {"alg": "HMAC-SHA256", "kid": "test-k1", "v": 2}
+    report["receipt_mac"] = "ab" * 32
+    assert verify_receipt(report) is False
 
 
 def test_successor_rate_does_not_invalidate_an_unrelated_period() -> None:

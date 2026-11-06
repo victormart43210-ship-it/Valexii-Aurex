@@ -9,6 +9,7 @@ from pathlib import Path
 from aurex.ascendancy.dispater_adapter import synthetic_ledger
 from aurex.ascendancy.historical_audit import (
     AuditAuthorizationError,
+    admitted_byte_length,
     normalize_invoices,
     run_authorized_audit,
 )
@@ -25,6 +26,7 @@ def _auth(purpose: str, privacy: str, *, kind: str = "HUMAN", expires: datetime 
         "privacy_control": privacy,
         "expires_at": NOW + timedelta(days=1) if expires is None else expires,
         "grantor_kind": kind,
+        "reviewer_id": "reviewer-1",
     }
 
 
@@ -33,7 +35,7 @@ def test_models_and_expired_grants_cannot_open_records() -> None:
     source = digest(dataset)
     for kind in ("MODEL", "SYSTEM"):
         try:
-            run_authorized_audit(_auth("SYNTHETIC_VALIDATION", "SYNTHETIC_ONLY", kind=kind), NOW, dataset, source_sha256=source, byte_length=128)
+            run_authorized_audit(_auth("SYNTHETIC_VALIDATION", "SYNTHETIC_ONLY", kind=kind), NOW, dataset, source_sha256=source, byte_length=admitted_byte_length(dataset))
         except AuditAuthorizationError as exc:
             assert "human" in str(exc)
         else:
@@ -44,12 +46,39 @@ def test_models_and_expired_grants_cannot_open_records() -> None:
             NOW,
             dataset,
             source_sha256=source,
-            byte_length=128,
+            byte_length=admitted_byte_length(dataset),
         )
     except AuditAuthorizationError as exc:
         assert "expired" in str(exc)
     else:
         raise AssertionError("expired grant")
+
+
+def test_a_stale_clock_and_a_missing_reviewer_are_refused() -> None:
+    dataset = synthetic_ledger()
+    source = digest(dataset)
+    length = admitted_byte_length(dataset)
+    stale = NOW - timedelta(days=30)
+    try:
+        run_authorized_audit(
+            _auth("SYNTHETIC_VALIDATION", "SYNTHETIC_ONLY", expires=stale + timedelta(days=1)),
+            stale,
+            dataset,
+            source_sha256=source,
+            byte_length=length,
+        )
+    except AuditAuthorizationError as exc:
+        assert "fresh" in str(exc) or "expired" in str(exc)
+    else:
+        raise AssertionError("stale clock")
+    grant = _auth("SYNTHETIC_VALIDATION", "SYNTHETIC_ONLY")
+    del grant["reviewer_id"]
+    try:
+        run_authorized_audit(grant, NOW, dataset, source_sha256=source, byte_length=length)
+    except AuditAuthorizationError as exc:
+        assert "reviewer" in str(exc)
+    else:
+        raise AssertionError("missing reviewer")
 
 
 def test_historical_rows_are_admitted_by_digest_and_not_processed() -> None:
@@ -61,14 +90,17 @@ def test_historical_rows_are_admitted_by_digest_and_not_processed() -> None:
         NOW,
         dataset,
         source_sha256=source,
-        byte_length=2048,
+        byte_length=admitted_byte_length(dataset),
     )
     assert dossier["status"] == "NOT_PROCESSED"
     assert dossier["reason"] == "ENGINE_ADMITS_SYNTHETIC_ONLY"
     assert dossier["events"] == ()
     assert dossier["export_allowed"] is False
     assert dossier["rows_returned"] is False
-    assert dossier["byte_length_verified"] is False
+    assert dossier["byte_length_verified"] is True
+    assert dossier["byte_length_scope"] == "NORMALIZED_ROWS_NOT_SOURCE_FILE"
+    assert dossier["grantor_verified"] is False
+    assert dossier["synthetic_label_verified"] is False
     assert "jobs" not in dossier
     assert dossier["confirmed_recovery_usd"] == "0.00"
 
@@ -81,7 +113,7 @@ def test_a_mismatched_digest_is_refused() -> None:
             NOW,
             dataset,
             source_sha256="ab" * 32,
-            byte_length=128,
+            byte_length=admitted_byte_length(dataset),
         )
     except AuditAuthorizationError as exc:
         assert "digest" in str(exc)
@@ -113,7 +145,7 @@ def test_synthetic_events_match_independent_money() -> None:
         NOW,
         dataset,
         source_sha256=digest(dataset),
-        byte_length=64,
+        byte_length=admitted_byte_length(dataset),
     )
     assert dossier["status"] == "SYNTHETIC_AUDIT_COMPLETE"
     assert dossier["financial_summary"]["identified_exposure_usd"] == f"{expected:.2f}"

@@ -8,7 +8,11 @@ from decimal import Decimal
 from pathlib import Path
 from types import ModuleType
 
-from aurex.ascendancy.historical_audit import historical_validation_proposal, run_authorized_audit
+from aurex.ascendancy.historical_audit import (
+    admitted_byte_length,
+    historical_validation_proposal,
+    run_authorized_audit,
+)
 from aurex.dispater_intelligence import RevenueLeakageEngine, digest
 from aurex.ox.customization import customization_contract, promotion_decision
 from aurex.ox.evaluation import evaluate, injected_provider, mock_provider
@@ -179,11 +183,12 @@ def test_financial_headlines_and_the_historical_gate_stay_closed() -> None:
             "privacy_control": "SYNTHETIC_ONLY",
             "expires_at": NOW + timedelta(days=1),
             "grantor_kind": "HUMAN",
+            "reviewer_id": "reviewer-lab",
         },
         NOW,
         dataset,
         source_sha256=digest(dataset),
-        byte_length=32,
+        byte_length=admitted_byte_length(dataset),
     )
     assert dossier["financial_summary"]["identified_exposure_usd"] == f"{identified:.2f}"
     assert dossier["financial_summary"]["confirmed_recovery_usd"] == "0.00"

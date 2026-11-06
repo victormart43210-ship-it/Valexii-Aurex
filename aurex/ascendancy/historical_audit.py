@@ -14,9 +14,10 @@ not change those files.
 
 from __future__ import annotations
 
+import json
 import re
 from collections.abc import Mapping, Sequence
-from datetime import datetime
+from datetime import UTC, datetime, timedelta
 from typing import Any
 
 from aurex.dispater_intelligence import RevenueLeakageEngine, digest
@@ -43,6 +44,11 @@ def require_authorization(authorization: Mapping[str, Any], now: datetime) -> No
         raise AuditAuthorizationError("expiry needs a timezone")
     if expires <= now:
         raise AuditAuthorizationError("authorization is expired")
+    real_now = datetime.now(UTC)
+    if expires <= real_now:
+        raise AuditAuthorizationError("authorization is expired")
+    if abs(now - real_now) > timedelta(hours=48):
+        raise AuditAuthorizationError("decision clock is not fresh")
     purpose = authorization.get("purpose")
     privacy = authorization.get("privacy_control")
     if purpose == "SYNTHETIC_VALIDATION" and privacy != "SYNTHETIC_ONLY":
@@ -57,6 +63,11 @@ def require_authorization(authorization: Mapping[str, Any], now: datetime) -> No
         raise AuditAuthorizationError("tenant id is not usable")
     if not isinstance(auth_id, str) or not _TOKEN.fullmatch(auth_id):
         raise AuditAuthorizationError("authorization id is not usable")
+    reviewer = authorization.get("reviewer_id")
+    if not isinstance(reviewer, str) or not _TOKEN.fullmatch(reviewer):
+        raise AuditAuthorizationError("a human reviewer id is required")
+    if reviewer in {"HUMAN", "MODEL", "SYSTEM"} or reviewer == auth_id:
+        raise AuditAuthorizationError("the reviewer id is not an independent person")
 
 
 def normalize_invoices(
@@ -84,11 +95,19 @@ def normalize_invoices(
     return normalized
 
 
-def _declared_source(source_sha256: str, byte_length: int) -> None:
+def admitted_byte_length(dataset: Mapping[str, Any]) -> int:
+    """UTF-8 length of the canonical normalized rows. This is not a source-file length."""
+    raw = json.dumps(dict(dataset), sort_keys=True, separators=(",", ":"), allow_nan=False)
+    return len(raw.encode("utf-8"))
+
+
+def _declared_source(source_sha256: str, byte_length: int, dataset: Mapping[str, Any]) -> None:
     if not isinstance(source_sha256, str) or not _SHA.fullmatch(source_sha256):
         raise AuditAuthorizationError("source digest must be 64 lowercase hex characters")
     if not isinstance(byte_length, int) or isinstance(byte_length, bool) or not 1 <= byte_length <= MAX_DECLARED_BYTES:
         raise AuditAuthorizationError("declared byte length is outside the read-only limit")
+    if byte_length != admitted_byte_length(dataset):
+        raise AuditAuthorizationError("declared byte length does not match the admitted rows")
 
 
 def historical_validation_proposal() -> dict[str, object]:
@@ -143,7 +162,7 @@ def run_authorized_audit(
     are not parameters. The returned dossier does not contain the rows.
     """
     require_authorization(authorization, now)
-    _declared_source(source_sha256, byte_length)
+    _declared_source(source_sha256, byte_length, dataset)
     if not isinstance(dataset, Mapping):
         raise AuditAuthorizationError("normalized rows must be an object")
     row_digest = digest(dict(dataset))
@@ -157,7 +176,10 @@ def run_authorized_audit(
         "tenant_id": tenant,
         "source_sha256": source_sha256,
         "byte_length_declared": byte_length,
-        "byte_length_verified": False,
+        "byte_length_verified": True,
+        "byte_length_scope": "NORMALIZED_ROWS_NOT_SOURCE_FILE",
+        "grantor_verified": False,
+        "synthetic_label_verified": False,
         "read_only": True,
         "export_allowed": False,
         "rows_returned": False,

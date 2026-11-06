@@ -609,6 +609,24 @@ class RevenueLeakageEngine:
                     )
                 )
 
+        unbilled_jobs = [job for job in jobs if not by_job_invoices[job["job_id"]]]
+        orphan_invoices = [inv for inv in invoices if inv["job_id"] not in job_ids]
+        if len(unbilled_jobs) == 1 and len(invoices) == 1 and len(orphan_invoices) == 1:
+            for finding in findings:
+                if finding["code"] not in {"UNBILLED_JOB", "ORPHAN_INVOICE"}:
+                    continue
+                amount = parse_money(finding["exposure_usd"])
+                if amount == 0:
+                    continue
+                finding.pop("finding_sha256", None)
+                totals[finding["exposure_class"]] -= amount
+                withheld += amount
+                finding["exposure_usd"] = "0.00"
+                finding["xaeli_explanation"]["changed"] += (
+                    " Dollar exposure is withheld because this snapshot cannot prove"
+                    " the unbilled job and the orphan invoice are different events."
+                )
+                finding["finding_sha256"] = digest(finding)
         findings.sort(key=lambda x: (SEVERITY_RANK[x["severity"]], x["code"], x["subject"]))
         identified_exposure = sum(totals.values(), Decimal("0.00"))
 
@@ -873,12 +891,23 @@ class RevenueLeakageEngine:
 
 
 def verify_receipt(report: dict[str, Any]) -> bool:
-    """Return True when the report's receipt hash matches its content (tamper check)."""
+    """True when the unkeyed hash matches. A versioned receipt also needs its HMAC.
+
+    The hash is an integrity check. It is not an authenticity signature. A report that
+    carries ``receipt_auth`` or ``receipt_mac`` is accepted only when that MAC verifies.
+    """
     body = {k: v for k, v in report.items() if k not in ("receipt_sha256", "receipt_auth", "receipt_mac")}
     try:
-        return hmac_equal(digest(body), str(report.get("receipt_sha256", "")))
+        sha_ok = hmac_equal(digest(body), str(report.get("receipt_sha256", "")))
     except (TypeError, ValueError):
         return False
+    if not sha_ok:
+        return False
+    if report.get("receipt_auth") or report.get("receipt_mac"):
+        from aurex.dispater_receipt import verify_mac
+
+        return verify_mac(report)
+    return True
 
 
 def hmac_equal(a: str, b: str) -> bool:
