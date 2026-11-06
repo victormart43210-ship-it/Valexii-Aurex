@@ -203,6 +203,7 @@ def test_the_anchor_key_cannot_reuse_the_receipt_key(monkeypatch: pytest.MonkeyP
 def test_unlisted_connector_destination_is_refused(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.delenv("AUREX_EGRESS_ALLOWLIST", raising=False)
     assert connector_destination_allowed("https://exfil.example.invalid/v1") is False
+    assert connector_destination_allowed("http://127.0.0.1:6379") is False
     adapter = WebsiteAdapter("https://exfil.example.invalid")
     with pytest.raises(SovereigntyError):
         adapter.create_job({"kind": "regression_scan"})

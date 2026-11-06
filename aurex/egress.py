@@ -36,8 +36,7 @@ def connector_destination_allowed(url: str) -> bool:
     if parsed.username or parsed.password or parsed.query or parsed.fragment:
         return False
     host = (parsed.hostname or "").casefold()
-    if parsed.scheme == "http" and host in _APPROVED_LOOPBACK and parsed.port is not None:
-        return True
+    # Loopback is not an implicit connector allow. Local inference uses destination_allowed.
     allowed = {
         item.strip().casefold()
         for item in os.environ.get("AUREX_EGRESS_ALLOWLIST", "").split(",")

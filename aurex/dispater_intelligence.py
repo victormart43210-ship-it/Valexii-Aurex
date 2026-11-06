@@ -17,6 +17,7 @@ from __future__ import annotations
 import hashlib
 import json
 import re
+import unicodedata
 from collections import defaultdict
 from datetime import date
 from decimal import ROUND_HALF_UP, Decimal, InvalidOperation
@@ -54,6 +55,27 @@ QUALIFICATION = {
     "OVERTIME_UNPRICED": "INSUFFICIENT_EVIDENCE",
 }
 _UNBILLED_CODES = frozenset({"UNBILLED_JOB", "UNBILLED_EQUIPMENT", "UNBILLED_LABOR"})
+# Lowercase lookalikes only. This does not merge records. It only refuses to
+# treat a confusable id as proof that two events are different customers.
+_LOOKALIKE = str.maketrans(
+    {
+        "а": "a",
+        "е": "e",
+        "о": "o",
+        "р": "p",
+        "с": "c",
+        "у": "y",
+        "х": "x",
+        "і": "i",
+        "ј": "j",
+        "ѕ": "s",
+        "һ": "h",
+        "α": "a",
+        "ε": "e",
+        "ι": "i",
+        "ο": "o",
+    }
+)
 
 
 class InvalidSnapshot(ValueError):
@@ -672,6 +694,26 @@ class RevenueLeakageEngine:
                     " so the dollars stay separate and are not treated as one event."
                 )
                 finding["finding_sha256"] = digest(finding)
+        payment_keys = _orphan_payment_withhold(findings)
+        if payment_keys:
+            event_separation = "WITHHELD_AMBIGUOUS"
+            for finding in findings:
+                key = (finding["code"], finding["subject"])
+                if key not in payment_keys:
+                    continue
+                amount = parse_money(finding["exposure_usd"])
+                if amount == 0:
+                    continue
+                finding.pop("finding_sha256", None)
+                totals[finding["exposure_class"]] -= amount
+                withheld += amount
+                finding["exposure_usd"] = "0.00"
+                finding["event_relation"] = "WITHHELD_AMBIGUOUS"
+                finding["xaeli_explanation"]["changed"] += (
+                    " Dollar exposure is withheld from the identified total because this"
+                    " snapshot cannot prove the unbilled job and the orphan payment are different events."
+                )
+                finding["finding_sha256"] = digest(finding)
         findings.sort(key=lambda x: (SEVERITY_RANK[x["severity"]], x["code"], x["subject"]))
         identified_exposure = sum(totals.values(), Decimal("0.00"))
 
@@ -937,6 +979,37 @@ class RevenueLeakageEngine:
         return finding_body
 
 
+def _customer_token(value: object) -> str:
+    """Fold case, width, punctuation, and a few lookalikes. This is not a join."""
+    text = unicodedata.normalize("NFKC", str(value or "")).casefold().translate(_LOOKALIKE)
+    return "".join(ch for ch in text if ch.isalnum())
+
+
+def _orphan_payment_withhold(findings: list[dict[str, Any]]) -> set[tuple[str, str]]:
+    """Withhold an equal unbilled amount and an orphan payment. Unequal pairs stay.
+
+    The golden ledger's $100 unbilled job and $25 orphan payment are unequal, so
+    both remain. Equal amounts are not proof they are one event, so both are
+    withheld instead of being added together.
+    """
+    unbilled = [
+        finding
+        for finding in findings
+        if finding["code"] in _UNBILLED_CODES and parse_money(finding["exposure_usd"]) > 0
+    ]
+    payments = [
+        finding
+        for finding in findings
+        if finding["code"] == "ORPHAN_PAYMENT" and parse_money(finding["exposure_usd"]) > 0
+    ]
+    if not unbilled or not payments:
+        return set()
+    if len(unbilled) == 1 and len(payments) == 1:
+        if parse_money(unbilled[0]["exposure_usd"]) != parse_money(payments[0]["exposure_usd"]):
+            return set()
+    return {(finding["code"], finding["subject"]) for finding in unbilled + payments}
+
+
 def _event_separation(
     unbilled_jobs: list[dict[str, Any]],
     orphan_invoices: list[dict[str, Any]],
@@ -953,15 +1026,15 @@ def _event_separation(
     empty: set[tuple[str, str]] = set()
     if not unbilled_jobs or not orphan_invoices:
         return "NOT_APPLICABLE", empty, empty
-    job_customers = {str(job.get("customer_id", "")).casefold() for job in unbilled_jobs}
-    # A blank customer id is not proof that the job belongs to someone else.
-    jobs_missing_customer = any(not str(job.get("customer_id", "")).casefold() for job in unbilled_jobs)
+    job_tokens = {_customer_token(job.get("customer_id")) for job in unbilled_jobs}
+    # A blank or confusable customer id is not proof of a different customer.
+    jobs_missing_customer = "" in job_tokens
     unresolved = [
         invoice
         for invoice in orphan_invoices
         if jobs_missing_customer
-        or not str(invoice.get("customer_id", "")).casefold()
-        or str(invoice.get("customer_id", "")).casefold() in job_customers
+        or not _customer_token(invoice.get("customer_id"))
+        or _customer_token(invoice.get("customer_id")) in job_tokens
     ]
     if not unresolved:
         return "PROVEN_DISTINCT", empty, empty
@@ -990,7 +1063,10 @@ def _event_separation(
         )
         shared_job = str(unbilled_jobs[0].get("job_id", "")).casefold() == str(unresolved[0].get("job_id", "")).casefold()
         shared_job = shared_job and bool(str(unbilled_jobs[0].get("job_id", "")))
-        if same_amount or shared_job:
+        job_token = _customer_token(unbilled_jobs[0].get("customer_id"))
+        invoice_token = _customer_token(unresolved[0].get("customer_id"))
+        same_customer_token = bool(job_token) and job_token == invoice_token
+        if same_amount or shared_job or same_customer_token:
             return "WITHHELD_AMBIGUOUS", unbilled_keys | unresolved_keys, empty
         return "NO_RELATIONSHIP_EVIDENCE", empty, unbilled_keys | unresolved_keys
     return "WITHHELD_AMBIGUOUS", unbilled_keys | unresolved_keys, empty

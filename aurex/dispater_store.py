@@ -11,6 +11,7 @@ Rollback: stop the service and drop `dispater_findings`, `dispater_runs`
 
 from __future__ import annotations
 
+import fcntl
 import hashlib
 import json
 import logging
@@ -397,14 +398,21 @@ def _write_monitor_head(tenant_id: str, head: str, count: int) -> None:
     body = {"count": count, "head": head, "tenant_id": tenant_id}
     kid, mac = mac_mapping(body)
     path = _monitor_head_path()
-    with _init_lock:
-        current: dict[str, Any] = {}
-        if path.exists():
-            current = json.loads(path.read_text())
-        current[tenant_id] = {**body, "kid": kid, "mac": mac}
-        temporary = path.with_name(f"{path.name}.{os.getpid()}.{uuid.uuid4().hex}.tmp")
-        temporary.write_text(json.dumps(current, sort_keys=True))
-        temporary.replace(path)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    lock_path = path.with_name(path.name + ".lock")
+    with lock_path.open("a+") as handle:
+        fcntl.flock(handle.fileno(), fcntl.LOCK_EX)
+        try:
+            with _init_lock:
+                current: dict[str, Any] = {}
+                if path.exists():
+                    current = json.loads(path.read_text())
+                current[tenant_id] = {**body, "kid": kid, "mac": mac}
+                temporary = path.with_name(f"{path.name}.{os.getpid()}.{uuid.uuid4().hex}.tmp")
+                temporary.write_text(json.dumps(current, sort_keys=True))
+                temporary.replace(path)
+        finally:
+            fcntl.flock(handle.fileno(), fcntl.LOCK_UN)
 
 
 def _monitor_head_agrees(tenant_id: str, events: list[dict[str, Any]]) -> bool:
