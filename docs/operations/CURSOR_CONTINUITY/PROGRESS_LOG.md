@@ -27,3 +27,5 @@ Operation KUSANAGI CCXLI started from the CCXXXIX head. `origin/main` is still `
 Implementation `0ee9b34cdf99d9965b9e41d380b316dba63f3ff5` adds `aurex/ascendancy/`. `python3 -m pytest tests -q --tb=line` exited 0 with 664 passed. Ruff exited 0. Mypy exited 0 on 103 files.
 
 The synthetic 36-month ledger matched the separate Decimal oracle: identified 300.00, overbilling 100.00, unverified 200.00, withheld 200.00, confirmed 0.00. With the BIC-style penalty the synthetic rule `kite-rule` won; without it `memorize-train` won. Holdout counts were 4/4 for the rule and 2/4 for the memorizer. Brier score on the holdout was 0.01 versus 0.265625 for the training base rate. Audit peak memory on this machine was 102624 bytes and the audit took about 0.010 seconds. Voynich, Linear A, and Rongorongo were not evaluated. Frontend files were not changed, so vitest and the browser were not re-run.
+
+Pull request #178 is open against `cursor/kusanagi-ccxxxix-sovereign-convergence-4082`: https://github.com/victormart43210-ship-it/Valexii-Aurex/pull/178

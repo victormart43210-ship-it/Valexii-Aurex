@@ -17,6 +17,8 @@
   "parent_pr": 177,
   "implementation_sha": "0ee9b34cdf99d9965b9e41d380b316dba63f3ff5",
   "branch": "cursor/kusanagi-ccxli-aurex-ascendancy-4082",
+  "pr_number": 178,
+  "pr_url": "https://github.com/victormart43210-ship-it/Valexii-Aurex/pull/178",
   "pr_base_branch": "cursor/kusanagi-ccxxxix-sovereign-convergence-4082",
   "base_decision": "Mainline policy asks for a branch from main. This operation continues the unmerged CCXXXIX commercial stack because a branch from main would drop the DISPATER engine being measured. The pull request targets that stack, not main.",
   "usb": {

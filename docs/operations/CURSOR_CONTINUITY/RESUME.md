@@ -10,6 +10,8 @@ Parent: CCXXXIX head `cffef9d4adcb6ff0dfca04629cacdb93760dbde7`.
 
 The USB named THE BIG ONE was not mounted. No private IP inventory was created. The mathematical kernel is in `aurex/ascendancy/` and is measured in `tests/test_ascendancy_audit.py`. Handoff: `docs/operations/AUREX_ASCENDANCY_CCXLI_HANDOFF.json`.
 
+Pull request: https://github.com/victormart43210-ship-it/Valexii-Aurex/pull/178
+
 ## Previous operation
 
 Operation: KUSANAGI CCXXXIX, Project Sovereign Convergence.
