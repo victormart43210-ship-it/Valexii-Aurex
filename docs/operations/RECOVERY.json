@@ -89,7 +89,7 @@
     "Production remains HOLD."
   ],
   "pull_request": "https://github.com/victormart43210-ship-it/Valexii-Aurex/pull/180",
-  "next_executable_action": "CCXLVIII: candidate cf083f7 is local. Push it, wait for GitHub CI on that SHA, and leave pull request 180 unmerged. Decision NO-GO.",
+  "next_executable_action": "CCXLVIII: push this branch, wait for GitHub CI on the new head, and leave pull request 180 unmerged. Tested code is cf083f7. Decision NO-GO.",
   "ccxlviii": {
     "operation": "KUSANAGI_CCXLVIII",
     "recorded_at": "2026-11-06T15:27:40Z",

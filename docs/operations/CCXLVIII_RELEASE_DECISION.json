@@ -5,6 +5,7 @@
   "repository": "victormart43210-ship-it/Valexii-Aurex",
   "pull_request": "https://github.com/victormart43210-ship-it/Valexii-Aurex/pull/180",
   "branch": "cursor/kusanagi-ccxlvi-sovereign-ascendancy-4082",
+  "code_sha": "cf083f7f531207c1fe77fec6d127e53e52584123",
   "candidate_sha": "cf083f7f531207c1fe77fec6d127e53e52584123",
   "decision": "NO-GO",
   "decision_scope": "Merge of pull request 180 to main, production deployment, financial authority, and paid inference.",
@@ -26,7 +27,7 @@
     "verdict": "NO-GO",
     "limitation": "Same checkout, machine, and interpreter as the implementing session. Not a separate runner. The documentation commit after cf083f7 was not part of that review."
   },
-  "github_ci_on_candidate": "NOT_RUN. The six successful checks belong to 0f32769.",
+  "github_ci_on_candidate": "NOT_RUN. The six successful checks belong to 0f32769. Local tests were run on code SHA cf083f7. The following documentation commit does not change code. GitHub CI applies to the pushed branch head.",
   "local_verification": {
     "pytest": "705 passed, 1 skipped, exit 0",
     "skip": "training/tests/test_lora_smoke.py because torch is absent",
