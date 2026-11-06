@@ -57,6 +57,8 @@ def _active() -> tuple[str, bytes]:
     kid = os.environ.get("AUREX_DISPATER_ANCHOR_ACTIVE_KID", "")
     if kid not in keys:
         raise AnchorKeyError("active anchor key id is not configured")
+    if kid in _revoked():
+        raise AnchorKeyError("active anchor key is revoked")
     key = keys[kid]
     raw = os.environ.get("AUREX_DISPATER_RECEIPT_KEYS", "")
     if raw:

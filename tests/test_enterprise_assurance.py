@@ -53,6 +53,23 @@ def test_received_bytes_are_labeled_separately_from_source_identity() -> None:
     assert batch["source_identity"] == "UNVERIFIED"
 
 
+def test_replaying_an_older_source_does_not_move_the_anchor(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setenv("AUREX_DISPATER_DB", str(tmp_path / "chain.db"))
+    first = _dataset()
+    persist_increment("tenant-a", first, {"tenant_id": "tenant-a", "dataset_type": "SYNTHETIC_ONLY"}, "aa" * 32)
+    second = {
+        "tenant_id": "tenant-a",
+        "dataset_type": "SYNTHETIC_ONLY",
+        "invoices": [{"invoice_id": "I2", "job_id": "MISSING", "amount": "2.00", "status": "open"}],
+    }
+    persist_increment("tenant-a", first, second, "bb" * 32)
+    assert dispater_store.verify_monitor_chain("tenant-a")
+    persist_increment("tenant-a", first, {"tenant_id": "tenant-a", "dataset_type": "SYNTHETIC_ONLY"}, "aa" * 32)
+    assert dispater_store.verify_monitor_chain("tenant-a")
+
+
 def test_anchor_rejects_a_receipt_key_and_a_deleted_sidecar(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv("AUREX_DISPATER_DB", str(tmp_path / "chain.db"))
     persist_increment("tenant-a", _dataset(), {"tenant_id": "tenant-a", "dataset_type": "SYNTHETIC_ONLY"}, "ab" * 32)

@@ -467,18 +467,17 @@ def save_monitor_event(
                 (tenant_id, source_sha256),
             ).fetchone()
             if existing is not None:
-                count_row = conn.execute(
-                    "SELECT COUNT(*) AS n FROM dispater_monitor_events WHERE tenant_id=?",
-                    (tenant_id,),
-                ).fetchone()
                 conn.execute("COMMIT")
                 if existing["checkpoint_sha256"] != checkpoint_sha256:
                     raise sqlite3.IntegrityError(
                         "conflicting source evidence: digest reused for a different checkpoint"
                     )
-                from aurex.dispater_anchor import note_head
+                from aurex.dispater_anchor import anchor_agrees, note_head
 
-                note_head(tenant_id, str(existing["entry_sha256"]), int(count_row["n"]))
+                # A replay must not move the checkpoint back to an older event.
+                events = list_monitor_events(tenant_id)
+                if events and not anchor_agrees(tenant_id, events):
+                    note_head(tenant_id, str(events[-1]["entry_sha256"]), len(events))
                 return _monitor_row(existing)
             previous = conn.execute(
                 "SELECT entry_sha256 FROM dispater_monitor_events WHERE tenant_id=? "
