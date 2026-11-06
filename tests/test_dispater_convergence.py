@@ -475,6 +475,31 @@ def test_an_equal_orphan_payment_is_withheld_and_an_unequal_one_stays() -> None:
     )["financial_summary"]
     assert extra["identified_exposure_usd"] == "155.00"
     assert extra["confirmed_recovery_usd"] == "0.00"
+    collided = RevenueLeakageEngine("tenant-a").reconcile_records(
+        {
+            "tenant_id": "tenant-a",
+            "dataset_type": "SYNTHETIC_ONLY",
+            "jobs": [{"job_id": "J1", "customer_id": "C1", "service_code": "S", "date": "2026-03-01"}],
+            "rates": [
+                {
+                    "rate_id": "R1",
+                    "customer_id": "C1",
+                    "service_code": "S",
+                    "start": "2026-01-01",
+                    "end": "2026-12-31",
+                    "amount": "100.00",
+                }
+            ],
+            "invoices": [],
+            "payments": [
+                {"payment_id": "P1", "invoice_id": "NONE", "amount": "100.00"},
+                {"payment_id": "P2", "invoice_id": "NONE", "amount": "0.01"},
+            ],
+        }
+    )["financial_summary"]
+    assert collided["identified_exposure_usd"] == "0.01"
+    assert collided["withheld_unresolved_usd"] == "200.00"
+    assert collided["confirmed_recovery_usd"] == "0.00"
 
 
 def test_same_customer_with_different_amounts_stays_separate() -> None:

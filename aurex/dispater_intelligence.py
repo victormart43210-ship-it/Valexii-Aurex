@@ -995,13 +995,13 @@ def _orphan_payment_withhold(
     payments: list[dict[str, Any]],
     unbilled_jobs: list[dict[str, Any]],
 ) -> set[tuple[str, str]]:
-    """Withhold one unbilled job and one orphan payment when the pair is ambiguous.
+    """Withhold unbilled jobs and orphan payments that collide, and leave the rest.
 
-    Equal amounts are not proof of one event. A shared job id is not proof either.
-    Both dollars are withheld in those two cases. A larger set is left alone:
-    pairing it would invent matches, and withholding every row because one extra
-    payment exists would hide unrelated exposure. The golden $100 job and $25
-    payment are unequal and have no shared job id, so both remain.
+    A shared job id, or an amount that matches one or more unbilled jobs, is not
+    proof of a single event. Those rows are withheld. A payment whose amount
+    matches nothing, and whose job id matches nothing, stays identified. An extra
+    one-cent payment therefore cannot put an equal $100 pair back into the total.
+    The golden $100 job and $25 payment do not collide, so both remain.
     """
     unbilled = [
         finding
@@ -1013,23 +1013,35 @@ def _orphan_payment_withhold(
         for finding in findings
         if finding["code"] == "ORPHAN_PAYMENT" and parse_money(finding["exposure_usd"]) > 0
     ]
-    if len(unbilled) != 1 or len(pay_findings) != 1 or len(unbilled_jobs) != 1:
+    if not unbilled or not pay_findings or not unbilled_jobs:
         return set()
-    payment = next(
-        (item for item in payments if item["payment_id"] == pay_findings[0]["subject"]),
-        None,
-    )
-    if payment is None:
-        return set()
-    same_amount = parse_money(unbilled[0]["exposure_usd"]) == parse_money(pay_findings[0]["exposure_usd"])
-    shared_job = str(payment.get("job_id", "")).casefold() == str(unbilled_jobs[0].get("job_id", "")).casefold()
-    shared_job = shared_job and bool(str(unbilled_jobs[0].get("job_id", "")))
-    if not same_amount and not shared_job:
-        return set()
-    return {
-        (unbilled[0]["code"], unbilled[0]["subject"]),
-        (pay_findings[0]["code"], pay_findings[0]["subject"]),
-    }
+    by_payment = {item["payment_id"]: item for item in payments}
+    keys: set[tuple[str, str]] = set()
+    claimed: set[str] = set()
+    for finding in pay_findings:
+        payment = by_payment.get(finding["subject"])
+        if payment is None:
+            continue
+        job_id = str(payment.get("job_id", "")).casefold()
+        if not job_id:
+            continue
+        matched = [item for item in unbilled if str(item["subject"]).casefold() == job_id]
+        if len(matched) != 1:
+            continue
+        keys.add((matched[0]["code"], matched[0]["subject"]))
+        keys.add((finding["code"], finding["subject"]))
+        claimed.add(matched[0]["subject"])
+    remaining = [item for item in unbilled if item["subject"] not in claimed]
+    open_payments = [item for item in pay_findings if (item["code"], item["subject"]) not in keys]
+    amounts = {parse_money(item["exposure_usd"]) for item in remaining}
+    for amount in amounts:
+        jobs = [item for item in remaining if parse_money(item["exposure_usd"]) == amount]
+        pays = [item for item in open_payments if parse_money(item["exposure_usd"]) == amount]
+        if not jobs or not pays:
+            continue
+        for item in jobs + pays:
+            keys.add((item["code"], item["subject"]))
+    return keys
 
 
 def _event_separation(
