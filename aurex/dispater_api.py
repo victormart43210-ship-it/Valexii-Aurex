@@ -345,6 +345,21 @@ class EvidenceItem(BaseModel):
     derived_from: list[dict[str, str]] = Field(default_factory=list, max_length=10)
     transformations: list[str] = Field(default_factory=list, max_length=10)
 
+    @field_validator("derived_from")
+    @classmethod
+    def _parents(cls, v: list[dict[str, str]]) -> list[dict[str, str]]:
+        for p in v:
+            if set(p) != {"source_system", "source_record_id"} or any(not x or len(x) > 200 for x in p.values()):
+                raise ValueError("derived_from entries need source_system and source_record_id (<=200 chars)")
+        return v
+
+    @field_validator("transformations")
+    @classmethod
+    def _transforms(cls, v: list[str]) -> list[str]:
+        if any(len(t) > 100 for t in v):
+            raise ValueError("transformation labels must be <=100 chars")
+        return v
+
 
 class ClaimAdvance(BaseModel):
     tenant_id: str = Field(pattern=TENANT_PATTERN, max_length=64)

@@ -64,6 +64,10 @@ def adv(client: TestClient, claim: dict[str, Any], target: str, evidence: list[d
                        json={"tenant_id": tenant, "target": target, "evidence": evidence, **kw})
 
 
+def pay(rid: str, **kw: Any) -> dict[str, Any]:
+    return ev("bank-feed", rid, days_old=0, **kw)
+
+
 GOOD = [ev("dispatch-gps", "TRK-1"), ev("customer-rate-sheet", "RS-7")]
 
 
@@ -79,8 +83,8 @@ def test_full_chain_counts_recovery_only_with_independent_payment(client: TestCl
     assert adv(client, c, "APPROVED_CLAIM", GOOD[:1]).status_code == 200
     assert client.get("/v1/dispater/claims?tenant_id=tenant-a", headers=H(TA)).json()["confirmed_recovered_usd"] == "0"
     own = adv(client, c, "CONFIRMED_RECOVERED", [ev("dispatch-gps", "TRK-1")], received_amount="50.00")
-    assert own.status_code == 422 and "independent" in own.text  # claim's own source is not payment proof
-    ok = adv(client, c, "CONFIRMED_RECOVERED", [ev("bank-feed", "DEP-9")], received_amount="50.00")
+    assert own.status_code == 422 and "already used" in own.text  # claim's own source is not payment proof
+    ok = adv(client, c, "CONFIRMED_RECOVERED", [pay("DEP-9")], received_amount="50.00")
     assert ok.status_code == 200 and ok.json()["recovered_amount"] == "50.00"
     s = client.get("/v1/dispater/claims?tenant_id=tenant-a", headers=H(TA)).json()
     assert s["confirmed_recovered_usd"] == "50.00"
@@ -120,8 +124,9 @@ def test_recovery_cannot_exceed_claim_or_be_zero(client: TestClient) -> None:
     c = verified(client)
     adv(client, c, "SUBMITTED_CLAIM", GOOD[:1])
     adv(client, c, "APPROVED_CLAIM", GOOD[:1])
-    for amt in ("50.01", "0", "-1", "abc"):
-        assert adv(client, c, "CONFIRMED_RECOVERED", [ev("bank-feed", "D1")], received_amount=amt).status_code == 422
+    for amt in ("50.01", "0", "-1", "abc", "NaN", "sNaN", "Infinity", "-Infinity", "1e999999", "1E-99999", "0.001"):
+        r = adv(client, c, "CONFIRMED_RECOVERED", [pay("D1")], received_amount=amt)
+        assert r.status_code == 422 and "after the claim" not in r.text, (amt, r.text)
 
 
 def test_duplicate_claims_per_obligation_are_idempotent(client: TestClient) -> None:
@@ -193,6 +198,12 @@ def test_malformed_evidence_and_limits(client: TestClient) -> None:
     assert client.get("/v1/dispater/claims/clm-nothex?tenant_id=tenant-a", headers=H(TA)).status_code == 422
 
 
+def test_separator_collision_in_identifiers_rejected(client: TestClient) -> None:
+    c = open_claim(client)
+    r = adv(client, c, "VERIFIED_DISCREPANCY", [ev("a|b", "c"), ev("a", "b|c")])
+    assert r.status_code == 422
+
+
 def test_cannot_open_claim_without_exposure(client: TestClient) -> None:
     run = client.post("/v1/dispater/reconciliation", json=dataset("tenant-a", "100.00"), headers=H(TA)).json()
     assert run["findings"] == []
@@ -228,3 +239,75 @@ def test_claims_fail_closed_without_receipt_keys(client: TestClient, monkeypatch
     c = verified(client)
     monkeypatch.delenv("AUREX_DISPATER_RECEIPT_KEYS")
     assert client.get(f"/v1/dispater/claims/{c['claim_id']}?tenant_id=tenant-a", headers=H(TA)).status_code == 500
+
+
+def _approved(client: TestClient) -> dict[str, Any]:
+    c = verified(client)
+    adv(client, c, "SUBMITTED_CLAIM", GOOD[:1])
+    adv(client, c, "APPROVED_CLAIM", GOOD[:1])
+    return c
+
+
+def test_claim_evidence_cannot_be_reused_as_payment(client: TestClient) -> None:
+    c = _approved(client)
+    for reused in (GOOD[:1], GOOD[1:]):  # verification and submission-stage evidence alike
+        r = adv(client, c, "CONFIRMED_RECOVERED", reused, received_amount="10.00")
+        assert r.status_code == 422
+
+
+def test_payment_dated_before_submission_rejected(client: TestClient) -> None:
+    c = _approved(client)
+    r = adv(client, c, "CONFIRMED_RECOVERED", [ev("bank-feed", "OLD", days_old=60)], received_amount="10.00")
+    assert r.status_code == 422 and "after the claim was submitted" in r.text
+
+
+def test_one_payment_cannot_confirm_two_claims(client: TestClient) -> None:
+    two = dataset("tenant-a")
+    two["jobs"].append({"job_id": "J2", "customer_id": "C1", "service_code": "S1", "date": "2026-03-02"})
+    two["invoices"].append({"invoice_id": "I2", "job_id": "J2", "amount": "180.00", "status": "open"})
+    run = client.post("/v1/dispater/reconciliation", json=two, headers=H(TA)).json()
+    assert len(run["findings"]) >= 2
+    claims = []
+    for f in run["findings"][:2]:
+        c = client.post("/v1/dispater/claims", headers=H(TA), json={
+            "tenant_id": "tenant-a", "run_id": run["run_id"], "finding_id": f["finding_id"]}).json()
+        claims.append(c)
+        for i, tgt in enumerate(("VERIFIED_DISCREPANCY", "SUBMITTED_CLAIM", "APPROVED_CLAIM")):
+            ok = adv(client, c, tgt, [ev("gps", f"G{f['finding_id']}"), ev("rates", f"R{f['finding_id']}")])
+            assert ok.status_code == 200, ok.text
+    first = adv(client, claims[0], "CONFIRMED_RECOVERED", [pay("DEP-1")], received_amount="10.00")
+    assert first.status_code == 200, first.text
+    second = adv(client, claims[1], "CONFIRMED_RECOVERED", [pay("DEP-1")], received_amount="10.00")
+    assert second.status_code == 422 and "already applied" in second.text
+    assert client.get("/v1/dispater/claims?tenant_id=tenant-a", headers=H(TA)).json()["confirmed_recovered_usd"] == "10.00"
+
+
+def test_dangling_parent_and_cycle_rejected(client: TestClient) -> None:
+    c = open_claim(client)
+    ghost = [ev("a", "1", derived_from=[{"source_system": "ghost", "source_record_id": "x"}]), ev("b", "2")]
+    assert adv(client, c, "VERIFIED_DISCREPANCY", ghost).status_code == 422
+    cyc = [ev("a", "1", derived_from=[{"source_system": "b", "source_record_id": "2"}]),
+           ev("b", "2", derived_from=[{"source_system": "a", "source_record_id": "1"}])]
+    assert adv(client, c, "VERIFIED_DISCREPANCY", cyc).status_code == 422
+
+
+def test_cycle_rejected_at_every_step(client: TestClient) -> None:
+    c = open_claim(client)
+    assert adv(client, c, "VERIFIED_DISCREPANCY", [ev("a", "1"), ev("b", "2")]).status_code == 200
+    cyc = [ev("c", "3", derived_from=[{"source_system": "d", "source_record_id": "4"}]),
+           ev("d", "4", derived_from=[{"source_system": "c", "source_record_id": "3"}])]
+    assert adv(client, c, "SUBMITTED_CLAIM", cyc).status_code == 422
+    assert adv(client, c, "SUBMITTED_CLAIM", [ev("e", "5")]).status_code == 200
+
+
+def test_conflict_inside_one_submission_quarantined(client: TestClient) -> None:
+    c = open_claim(client)
+    r = adv(client, c, "VERIFIED_DISCREPANCY", [ev("a", "1", content="x"), ev("a", "1", content="y"), ev("b", "2")])
+    assert r.status_code == 409
+
+
+def test_oversized_nested_fields_rejected(client: TestClient) -> None:
+    c = open_claim(client)
+    big = ev("a", "1", derived_from=[{"source_system": "s" * 500, "source_record_id": "r"}])
+    assert adv(client, c, "VERIFIED_DISCREPANCY", [big, ev("b", "2")]).status_code == 422
+    assert adv(client, c, "VERIFIED_DISCREPANCY", [ev("a", "1", transformations=["t" * 500]), ev("b", "2")]).status_code == 422

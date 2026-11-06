@@ -56,6 +56,12 @@ CREATE TABLE IF NOT EXISTS dispater_quarantine (
     payload_json TEXT NOT NULL,
     created_at TEXT NOT NULL
 );
+CREATE TABLE IF NOT EXISTS dispater_payment_applied (
+    tenant_id TEXT NOT NULL,
+    evidence_id TEXT NOT NULL,
+    claim_id TEXT NOT NULL,
+    PRIMARY KEY (tenant_id, evidence_id)
+);
 CREATE INDEX IF NOT EXISTS idx_dispater_quarantine_tenant ON dispater_quarantine (tenant_id, q_id);
 """
 
@@ -127,8 +133,8 @@ def create_claim(tenant_id: str, run_id: str, finding_id: str) -> tuple[dict[str
         amount = Decimal(str(finding["exposure_usd"]))
     except (InvalidOperation, KeyError) as exc:
         raise QualificationError("finding exposure is not a valid amount") from exc
-    if amount <= 0:
-        raise QualificationError("finding has no positive exposure to claim")
+    if not amount.is_finite() or amount <= 0:
+        raise QualificationError("finding has no finite positive exposure to claim")
     with closing(_connect()) as conn:
         conn.execute("BEGIN IMMEDIATE")
         try:
@@ -194,6 +200,8 @@ def _record(tenant_id: str, item: dict[str, Any], now: datetime) -> EvidenceReco
         event = datetime.fromisoformat(str(item["event_time"]))
     except (KeyError, ValueError) as exc:
         raise ClaimInputError("evidence needs source_system, source_record_id, content_sha256, event_time") from exc
+    if "|" in system or "|" in rid:
+        raise ClaimInputError("evidence identifiers must not contain '|'")
     if not system or not rid or len(content) != 64 or any(c not in "0123456789abcdef" for c in content):
         raise ClaimInputError("evidence identifiers or content_sha256 are malformed")
     parents = tuple(f"{p['source_system']}|{p['source_record_id']}" for p in item.get("derived_from", []) if isinstance(p, dict) and "source_system" in p and "source_record_id" in p)
@@ -252,7 +260,14 @@ def advance_claim(
         try:
             doc = _load(conn, tenant_id, claim_id)
             held = {r["evidence_id"]: r for r in doc["evidence"]}
+            prior_ids = tuple(held)
+            batch: dict[str, str] = {}
             for rec in submitted:
+                if batch.setdefault(rec.evidence_id, rec.content_sha256) != rec.content_sha256:
+                    conflict_reason = f"conflicting content for {rec.evidence_id} within one submission"
+            for rec in submitted:
+                if conflict_reason:
+                    break
                 prior = held.get(rec.evidence_id)
                 if prior is not None and prior["content_sha256"] != rec.content_sha256:
                     conflict_reason = f"conflicting content for {rec.evidence_id}"
@@ -279,6 +294,15 @@ def advance_claim(
                         new_ids.append(rec.evidence_id)
                 if len(stored_records) > MAX_EVIDENCE_PER_CLAIM:
                     raise ClaimInputError("claim evidence limit reached")
+                for rec in submitted:
+                    for parent in rec.parents:
+                        if parent not in {r.evidence_id for r in stored_records}:
+                            raise ClaimInputError("derived_from must reference evidence already held or submitted")
+                for eid in new_ids:
+                    try:
+                        graph.roots(eid)
+                    except ValueError as exc:
+                        raise ClaimInputError(str(exc)) from exc
                 for eid in new_ids:
                     if freshness_of(graph.get(eid), now, MAX_EVIDENCE_AGE) is not Freshness.CURRENT:
                         raise QualificationError(f"evidence {eid} is not CURRENT")
@@ -287,17 +311,43 @@ def advance_claim(
                     [dict(h) for h in doc["history"]], Decimal(doc["recovered_amount"]),
                 )
                 source_ids: tuple[str, ...] = ()
-                for h in doc["history"]:
-                    if h["to"] == Outcome.VERIFIED_DISCREPANCY.value:
-                        source_ids = tuple(h["evidence"])
+                if target is Outcome.CONFIRMED_RECOVERED:
+                    # Payment proof must be new and independent of everything the claim already relied on.
+                    source_ids = prior_ids
+                    if any(e in prior_ids for e in new_ids):
+                        raise QualificationError("payment evidence must not be evidence already used by this claim")
+                    submitted_at = next(
+                        (datetime.fromisoformat(h["at"]) for h in doc["history"] if h["to"] == Outcome.SUBMITTED_CLAIM.value),
+                        None,
+                    )
+                    if submitted_at is None or any((graph.get(e).event_time or now) < submitted_at for e in new_ids):
+                        raise QualificationError("payment evidence must be dated after the claim was submitted")
                 try:
                     received = Decimal(received_amount) if received_amount is not None else None
                 except InvalidOperation as exc:
                     raise ClaimInputError("received_amount is not a decimal") from exc
-                claim.advance(
-                    target, actor=ActorKind.HUMAN, evidence_ids=tuple(new_ids), graph=graph,
-                    reviewer=reviewer, received_amount=received, claim_source_ids=source_ids, now=now,
-                )
+                if received is not None:
+                    try:
+                        valid = received.is_finite() and received == received.quantize(Decimal("0.01"))
+                    except InvalidOperation:
+                        valid = False
+                    if not valid:
+                        raise ClaimInputError("received_amount must be a finite amount with at most 2 decimals")
+                try:
+                    claim.advance(
+                        target, actor=ActorKind.HUMAN, evidence_ids=tuple(new_ids), graph=graph,
+                        reviewer=reviewer, received_amount=received, claim_source_ids=source_ids, now=now,
+                    )
+                except QualificationError:
+                    raise
+                except ValueError as exc:  # e.g. evidence parent cycle
+                    raise ClaimInputError(str(exc)) from exc
+                if target is Outcome.CONFIRMED_RECOVERED:
+                    try:
+                        for eid in new_ids:
+                            conn.execute("INSERT INTO dispater_payment_applied VALUES (?,?,?)", (tenant_id, eid, claim_id))
+                    except sqlite3.IntegrityError as exc:
+                        raise QualificationError("payment evidence was already applied to a recovery") from exc
                 doc["state"] = claim.state.value
                 doc["recovered_amount"] = str(claim.recovered_amount)
                 doc["history"] = [{**h, "from": str(h["from"]), "to": str(h["to"]), "actor": str(h["actor"])} for h in claim.history]
