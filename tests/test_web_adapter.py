@@ -49,6 +49,20 @@ def test_create_job_and_get_job(monkeypatch):
     assert job["id"] == "job-1"
     adapter.create_job({"kind": '{"invoice_id":"I1","amount":"100.00"}'})
     assert "kind" not in adapter._client.calls[1][2]
+    adapter._client.get = lambda path, headers=None: DummyResponse(
+        200,
+        {
+            "id": "job-1",
+            "state": "succeeded",
+            "kind": "regression_scan",
+            "createdAt": "2026-11-06T17:00:00+00:00",
+            "updatedAt": "2026-11-06T17:00:00Z",
+            "invoice_id": "I1",
+        },
+    )
+    fetched = adapter.get_job("job-1")
+    assert fetched["createdAt"] == "2026-11-06T17:00:00+00:00"
+    assert "invoice_id" not in fetched
     assert job["state"] in ("queued", "succeeded")
 
     res = adapter.get_job("job-1")

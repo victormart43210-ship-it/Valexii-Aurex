@@ -21,7 +21,7 @@ from urllib.parse import urlparse
 import httpx
 
 _JOB_FIELDS = ("id", "state", "kind", "createdAt", "updatedAt")
-_JOB_VALUE = re.compile(r"^[A-Za-z0-9_.:-]{1,80}$")
+_JOB_VALUE = re.compile(r"^[A-Za-z0-9_.:+-]{1,80}$")
 
 
 class WebsiteAdapter:
