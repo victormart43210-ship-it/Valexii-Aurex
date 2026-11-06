@@ -2,6 +2,7 @@
 
 import importlib.util
 import json
+import sqlite3
 import zipfile
 from pathlib import Path
 
@@ -59,6 +60,78 @@ def test_missing_repository_and_missing_root_are_explicit(tmp_path: Path) -> Non
     assert report["asset_status"] == "LOCAL_ASSET_ACCESS_REQUIRED"
     assert report["repository"]["status"] == "REPOSITORY_ABSENT"
     assert report["downloads"] == "NOT_STARTED"
+
+
+def test_duplicate_bytes_resource_limits_and_a_bad_manifest_are_rejected(tmp_path: Path) -> None:
+    source = tmp_path / "usb"
+    source.mkdir()
+    payload = {"readme.txt": "same"}
+    _zip(source / "kit.zip", payload)
+    _zip(source / "kit (1).zip", payload)
+    first = kit.build_report([source], tmp_path / "work", None)
+    statuses = {item["status"] for item in first["archives"]}
+    assert statuses == {"EXTRACTED", "DUPLICATE_CONTENT"}
+    assert kit.resource_violation(1, 5_000_000, 100) == "COMPRESSION_RATIO"
+    huge = source / "huge.zip"
+    _zip(huge, {"note.txt": "x" * 50})
+    limited = kit.extract_archive(huge, tmp_path / "other", max_uncompressed=10)
+    assert limited["status"] == "REJECTED_RESOURCE_LIMIT"
+    (source / "kit.zip.sha256").write_text("0" * 64 + "\n")
+    mismatch = kit.extract_archive(source / "kit.zip", tmp_path / "third")
+    assert mismatch["status"] == "REJECTED_MANIFEST"
+
+
+def test_interrupted_extraction_resumes_and_checkpoints_stay_unmodified(tmp_path: Path) -> None:
+    source = tmp_path / "usb"
+    source.mkdir()
+    _zip(source / "kit.zip", {"readme.txt": "kept"})
+    dest = tmp_path / "work"
+    extracted = kit.extract_archive(source / "kit.zip", dest)
+    target = Path(extracted["extracted_to"])
+    (target / "readme.txt").unlink()
+    (target / "INVENTORY.json").unlink()
+    (target / ".partial").write_text("partial")
+    resumed = kit.extract_archive(source / "kit.zip", dest)
+    assert resumed["status"] == "RESUMED"
+    assert (target / "readme.txt").read_text() == "kept"
+    assert not (target / ".partial").exists()
+    database = source / "checkpoint.sqlite"
+    connection = sqlite3.connect(database)
+    connection.execute("CREATE TABLE failed_pages (page INTEGER)")
+    connection.commit()
+    connection.close()
+    before = database.stat().st_mtime_ns
+    found = kit.discover_sqlite([source])
+    assert found[0]["status"] == "DISCOVERED_READ_ONLY"
+    assert found[0]["authoritative"] is False
+    assert found[0]["tables"] == ["failed_pages"]
+    assert database.stat().st_mtime_ns == before
+    (source / "ocr-progress.json").write_text(
+        '{"pages_processed": 1, "pages_remaining": 2, "numeric_candidates": 236, "failed_pages": [4, 9]}'
+    )
+    progress = kit.read_ocr_progress([source])
+    assert progress["numeric_candidates_are_findings"] is False
+    assert progress["manifests"][0]["failed_pages_retained"] == 2
+    broken = source / "broken.zip"
+    broken.write_bytes(b"not a zip")
+    assert kit.extract_archive(broken, tmp_path / "broken-out")["status"] == "REJECTED_INTEGRITY"
+
+
+def test_hidden_directories_are_not_treated_as_checkpoints(tmp_path: Path) -> None:
+    hidden = tmp_path / ".config"
+    hidden.mkdir()
+    connection = sqlite3.connect(hidden / "secret.db")
+    connection.execute("CREATE TABLE keys (id INTEGER)")
+    connection.commit()
+    connection.close()
+    visible = tmp_path / "checkpoint.sqlite"
+    connection = sqlite3.connect(visible)
+    connection.execute("CREATE TABLE pages (page INTEGER)")
+    connection.commit()
+    connection.close()
+    found = kit.discover_sqlite([tmp_path])
+    assert [item["path"] for item in found] == [str(visible)]
+    assert found[0]["authoritative"] is False
 
 
 def test_command_requires_a_separate_destination(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:

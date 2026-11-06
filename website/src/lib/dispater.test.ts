@@ -95,5 +95,13 @@ describe("dispater server config", () => {
         fail,
       ),
     ).rejects.toThrow(/^DISPATER API error \(500\)$/);
+    const denied = (async () => new Response("token=secret", { status: 401 })) as typeof fetch;
+    await expect(
+      executeDispaterReconciliation(
+        { serviceUrl: "https://a.example", serviceToken: TOKEN },
+        undefined,
+        denied,
+      ),
+    ).rejects.toThrow(/^DISPATER API error \(401\)$/);
   });
 });

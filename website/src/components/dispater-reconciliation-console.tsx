@@ -84,9 +84,9 @@ export function DispaterReconciliationConsole() {
             Automated Audit Workflow
           </h3>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:flex-wrap sm:items-center">
           <select
-            className="bg-background border border-border text-foreground text-sm rounded-lg px-3 py-2"
+            className="w-full bg-background border border-border text-foreground text-sm rounded-lg px-3 py-2 sm:w-auto"
             value={selectedFixture}
             onChange={(e) =>
               setSelectedFixture(e.target.value as "oilfield_demo_v1" | "clean_control_v1")
@@ -104,7 +104,7 @@ export function DispaterReconciliationConsole() {
             variant="hero"
             disabled={busy}
             onClick={() => void handleRunDemo()}
-            className="flex items-center gap-2"
+            className="flex w-full items-center justify-center gap-2 sm:w-auto"
           >
             {busy ? (
               <>
@@ -116,7 +116,7 @@ export function DispaterReconciliationConsole() {
               </>
             )}
           </Button>
-          <Button type="button" variant="glass" disabled={busy} onClick={() => void handleAdmitCsv()}>
+          <Button type="button" variant="glass" disabled={busy} onClick={() => void handleAdmitCsv()} className="w-full sm:w-auto">
             Admit synthetic CSV
           </Button>
         </div>
