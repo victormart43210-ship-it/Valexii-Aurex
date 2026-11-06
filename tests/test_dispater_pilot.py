@@ -63,6 +63,16 @@ def test_duplicate_invoices_never_count_as_recovered_revenue() -> None:
     assert "RATE_MISMATCH" not in codes
 
 
+def test_open_invoice_settled_in_cash_is_unreconciled() -> None:
+    snap = revenue_fixture()
+    snap["invoices"][0]["status"] = "open"
+    report = audit_synthetic(snap)
+    assert [(f["code"], f.get("difference_usd")) for f in report["findings"]] == [
+        ("STATUS_UNRECONCILED", "0.00")
+    ]
+    assert report["status"] == "HOLD"
+
+
 def test_paid_status_unreconciled() -> None:
     snap = revenue_fixture()
     snap["payments"][0]["amount"] = "70.00"

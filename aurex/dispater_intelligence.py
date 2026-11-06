@@ -339,6 +339,9 @@ class RevenueLeakageEngine:
             code = None
             if inv["status"] == "paid" and delta != 0:
                 code = "PAID_STATUS_UNRECONCILED"
+            elif inv["status"] != "paid" and delta == 0 and total_paid > 0:
+                # Cash already matches the bill. Leaving the invoice open or disputed hides that.
+                code = "STATUS_UNRECONCILED"
             elif inv["status"] != "paid" and delta > 0:
                 code = "OVERPAYMENT"
             elif inv["status"] != "paid" and total_paid > 0 and delta < 0:
@@ -348,6 +351,24 @@ class RevenueLeakageEngine:
                 # Payment shortfalls and surpluses are cash-application questions, never confirmed.
                 totals[UNVERIFIED] += abs_delta
                 evidence_records = [("invoice", inv)] + [("payment", p) for p in payments_for_inv]
+                if code == "STATUS_UNRECONCILED":
+                    now = f"Invoice {inv_id} is {inv['status']} but payments equal the billed ${billed}."
+                    changed = "Cash application is complete while the invoice status still shows it is not paid."
+                    next_action = (
+                        "Confirm the remittance and correct the invoice status, "
+                        "or reverse the cash posting if it was applied in error."
+                    )
+                    why = "A settled invoice left unpaid misstates accounts receivable."
+                else:
+                    now = (
+                        f"Invoice {inv_id} ({inv['status']}) payments total ${total_paid} "
+                        f"vs billed ${billed} (delta ${delta:+})."
+                    )
+                    changed = "General ledger status out of balance with cash application records."
+                    next_action = (
+                        "Review remittance advice and post missing payment, refund, or short-pay adjustment."
+                    )
+                    why = "Unreconciled payment status misstates accounts receivable and cash flow."
                 findings.append(
                     self._create_finding(
                         exposure_class=UNVERIFIED,
@@ -356,10 +377,10 @@ class RevenueLeakageEngine:
                         severity="HIGH" if code == "PAID_STATUS_UNRECONCILED" else "MEDIUM",
                         records=evidence_records,
                         exposure=abs_delta,
-                        now=f"Invoice {inv_id} ({inv['status']}) payments total ${total_paid} vs billed ${billed} (delta ${delta:+}).",
-                        changed="General ledger status out of balance with cash application records.",
-                        next_action="Review remittance advice and post missing payment, refund, or short-pay adjustment.",
-                        why="Unreconciled payment status misstates accounts receivable and cash flow.",
+                        now=now,
+                        changed=changed,
+                        next_action=next_action,
+                        why=why,
                         proof=f"Invoice SHA:{digest(inv)[:12]}, Payments: {len(payments_for_inv)} records",
                     )
                 )

@@ -317,6 +317,46 @@ def test_system_cannot_approve_or_confirm_recovery() -> None:
                   evidence_ids=("bank",), graph=graph(), reviewer="r", now=NOW)
 
 
+def test_blank_reviewer_cannot_verify_or_approve() -> None:
+    kw: dict[str, Any] = {"graph": graph(), "evidence_ids": ["row", "bank"], "now": NOW}
+    for reviewer in (" ", "\t", ""):
+        with pytest.raises(QualificationError, match="reviewer"):
+            qualify(
+                ClaimState.CORROBORATED,
+                ClaimState.VERIFIED,
+                actor=ActorKind.HUMAN,
+                reviewer=reviewer,
+                **kw,
+            )
+    claim = _claim()
+    claim.state = Outcome.SUBMITTED_CLAIM
+    with pytest.raises(QualificationError, match="reviewer"):
+        claim.advance(
+            Outcome.APPROVED_CLAIM,
+            actor=ActorKind.HUMAN,
+            evidence_ids=("bank",),
+            graph=graph(),
+            reviewer=" ",
+            now=NOW,
+        )
+    assert claim.state is Outcome.SUBMITTED_CLAIM
+    assert claim.history == []
+
+
+def test_nonpositive_or_nonfinite_claim_amount_is_rejected() -> None:
+    for amount in (Decimal("0"), Decimal("-1.00"), Decimal("NaN"), Decimal("Infinity"), Decimal("-Infinity")):
+        with pytest.raises(QualificationError, match="claim amount"):
+            RecoveryClaim(T, "OBL-1", amount)
+
+
+def test_negative_recovery_is_challenged() -> None:
+    issues = challenge_finding(
+        {"evidence": [1], "exposure_usd": "10.00", "recovered_usd": "-0.01"}, T, set()
+    )
+    assert "negative recovery" in issues
+    assert "recovery exceeds exposure" not in issues
+
+
 def test_nonfinite_financial_values_are_rejected() -> None:
     for amount in ("NaN", "Infinity", "-Infinity"):
         issues = challenge_finding({"evidence": [1], "exposure_usd": amount}, T, set())

@@ -326,7 +326,8 @@ def independent_financial_oracle(dataset: dict) -> dict[str, str]:
 
     for j in jobs:
         j_id = j["job_id"]
-        invs = by_job_inv[j_id]
+        # Same tie-break as the engine: duplicate exposure must not follow input order.
+        invs = sorted(by_job_inv[j_id], key=lambda row: str(row["invoice_id"]))
         j_date = date.fromisoformat(j["date"])
         # Match rate
         matching_rates = [
@@ -356,14 +357,18 @@ def independent_financial_oracle(dataset: dict) -> dict[str, str]:
     for inv in invoices:
         if inv["job_id"] not in job_ids:
             unverified += Decimal(inv["amount"])
-        if inv.get("status") == "paid":
-            pmts = by_inv_pmt[inv["invoice_id"]]
-            total_pmt = sum((Decimal(p["amount"]) for p in pmts), Decimal("0.00"))
-            billed = Decimal(inv["amount"])
-            if total_pmt < billed:
-                under += (billed - total_pmt)
-            elif total_pmt > billed:
-                over += (total_pmt - billed)
+        # Cash-application gaps are unverified, including paid invoices. They are not under/overbilling.
+        pmts = by_inv_pmt[inv["invoice_id"]]
+        total_pmt = sum((Decimal(p["amount"]) for p in pmts), Decimal("0.00"))
+        billed = Decimal(inv["amount"])
+        delta = total_pmt - billed
+        status = inv.get("status")
+        if status == "paid" and delta != 0:
+            unverified += abs(delta)
+        elif status != "paid" and delta > 0:
+            unverified += abs(delta)
+        elif status != "paid" and total_pmt > 0 and delta < 0:
+            unverified += abs(delta)
 
     for p in payments:
         if p["invoice_id"] not in invoice_ids:
@@ -413,6 +418,59 @@ def test_independent_financial_oracle_reconciliation():
     assert summary["potential_overbilling_usd"] == expected["potential_overbilling_usd"]
     assert summary["unverified_exposure_usd"] == expected["unverified_exposure_usd"]
     assert summary["confirmed_recovery_usd"] == "0.00"
+
+
+def test_oracle_payment_class_and_duplicate_order_are_independent() -> None:
+    """Paid shortfalls are unverified, and duplicate exposure follows invoice id, not row order."""
+    tenant = "ORACLE-PAY"
+    dataset = {
+        "tenant_id": tenant,
+        "dataset_type": "SYNTHETIC_ONLY",
+        "jobs": [
+            {"job_id": "J1", "customer_id": "C1", "service_code": "S", "date": "2026-03-01"},
+            {"job_id": "J2", "customer_id": "C1", "service_code": "S", "date": "2026-03-02"},
+            {"job_id": "J3", "customer_id": "C1", "service_code": "S", "date": "2026-03-03"},
+            {"job_id": "J4", "customer_id": "C1", "service_code": "S", "date": "2026-03-04"},
+            {"job_id": "J5", "customer_id": "C1", "service_code": "S", "date": "2026-03-05"},
+        ],
+        "rates": [
+            {
+                "rate_id": "R1",
+                "customer_id": "C1",
+                "service_code": "S",
+                "start": "2026-01-01",
+                "end": "2026-12-31",
+                "amount": "100.00",
+            }
+        ],
+        "invoices": [
+            # Listed high-id first. Lowest id I1 ($90) is the kept bill; I2 ($40) is the duplicate.
+            {"invoice_id": "I2", "job_id": "J1", "amount": "40.00", "status": "open"},
+            {"invoice_id": "I1", "job_id": "J1", "amount": "90.00", "status": "open"},
+            {"invoice_id": "I3", "job_id": "J2", "amount": "100.00", "status": "open"},
+            {"invoice_id": "I4", "job_id": "J3", "amount": "100.00", "status": "paid"},
+            {"invoice_id": "I5", "job_id": "J4", "amount": "100.00", "status": "open"},
+            {"invoice_id": "I6", "job_id": "J5", "amount": "100.00", "status": "open"},
+        ],
+        "payments": [
+            {"payment_id": "P2", "invoice_id": "I3", "amount": "100.00"},  # settled, still open
+            {"payment_id": "P3", "invoice_id": "I4", "amount": "60.00"},  # paid shortfall
+            {"payment_id": "P4", "invoice_id": "I5", "amount": "140.00"},  # overpayment
+            {"payment_id": "P5", "invoice_id": "I6", "amount": "25.00"},  # partial
+        ],
+    }
+    report = RevenueLeakageEngine(tenant).reconcile_records(dataset)
+    expected = independent_financial_oracle(dataset)
+    summary = report["financial_summary"]
+    assert summary["potential_overbilling_usd"] == "40.00"
+    assert summary["potential_underbilling_usd"] == "0.00"
+    assert summary["unverified_exposure_usd"] == "155.00"
+    assert summary["identified_exposure_usd"] == "195.00"
+    assert summary["potential_overbilling_usd"] == expected["potential_overbilling_usd"]
+    assert summary["potential_underbilling_usd"] == expected["potential_underbilling_usd"]
+    assert summary["unverified_exposure_usd"] == expected["unverified_exposure_usd"]
+    assert summary["identified_exposure_usd"] == expected["identified_exposure_usd"]
+    assert "STATUS_UNRECONCILED" in {f["code"] for f in report["findings"]}
 
 
 # ===========================================================================

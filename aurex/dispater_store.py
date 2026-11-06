@@ -145,6 +145,8 @@ def _verified(row: sqlite3.Row) -> dict[str, Any]:
         or not verify_mac(report)
         or report.get("receipt_sha256") != row["receipt_sha256"]
         or report.get("tenant_id") != row["tenant_id"]
+        or report.get("dataset_sha256") != row["dataset_sha256"]
+        or report.get("status") != row["status"]
     ):
         raise IntegrityError("stored audit report failed integrity verification")
     report["run_id"] = row["run_id"]
@@ -221,14 +223,21 @@ def get_run(tenant_id: str, run_id: str) -> dict[str, Any] | None:
         return _verified(row) if row else None
 
 
+_LIST_FIELDS = ("run_id", "dataset_sha256", "receipt_sha256", "status", "created_at")
+
+
 def list_runs(tenant_id: str, limit: int = 50) -> list[dict[str, Any]]:
+    """List run metadata. Every row is MAC-verified; a tampered row fails the whole read."""
     with closing(_connect()) as conn:
         rows = conn.execute(
-            "SELECT run_id, dataset_sha256, receipt_sha256, status, created_at FROM dispater_runs "
-            "WHERE tenant_id=? ORDER BY created_at DESC, rowid DESC LIMIT ?",
+            "SELECT * FROM dispater_runs WHERE tenant_id=? ORDER BY created_at DESC, rowid DESC LIMIT ?",
             (tenant_id, max(1, min(limit, 200))),
         ).fetchall()
-        return [dict(r) for r in rows]
+    listed: list[dict[str, Any]] = []
+    for row in rows:
+        report = _verified(row)
+        listed.append({key: report[key] for key in _LIST_FIELDS})
+    return listed
 
 
 def finding_history(tenant_id: str, finding_id: str) -> list[dict[str, Any]]:
