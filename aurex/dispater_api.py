@@ -325,3 +325,86 @@ def export_run(
     if format == "csv":
         return Response(report_to_csv(run), media_type="text/csv")
     return run
+
+
+# --- CCXXXII INDUSTRIAL CONVERGENCE PIPELINE ENDPOINTS ---
+
+
+class PipelineIngestRequest(BaseModel):
+    source_id: str = Field(min_length=1, max_length=120)
+    source_record_id: str = Field(min_length=1, max_length=120)
+    document_category: str = Field(default="INVOICE")
+    media_type: str = Field(default="application/json")
+    payload_base64: str = Field(min_length=1)
+
+
+@router.post("/pipeline/audit")
+def run_pipeline_audit(
+    body: ReconciliationRequest,
+    principal: PrincipalDep,
+) -> dict[str, Any]:
+    """Execute canonical 6-stage industrial audit on an authorized snapshot."""
+    tenant_id = body.tenant_id
+    authorize_tenant(principal, tenant_id)
+    from aurex.dispater_pipeline import IndustrialAuditPipeline
+
+    pipeline = IndustrialAuditPipeline(tenant_id=tenant_id)
+    snapshot = body.model_dump()
+    res = pipeline.execute_audit_run(snapshot)
+    return {
+        "run_id": res.run_id,
+        "tenant_id": res.tenant_id,
+        "timestamp_utc": res.timestamp_utc,
+        "envelopes_admitted": res.envelopes_admitted,
+        "summary": res.reconciliation_summary,
+        "qualified_findings": res.qualified_findings,
+        "withheld_findings": res.withheld_findings,
+        "receipt_sha256": res.audit_receipt_sha256,
+        "verification_status": res.verification_status,
+        "authority": "HUMAN_REVIEW_REQUIRED",
+    }
+
+
+@router.post("/pipeline/ingest")
+def ingest_pipeline_document(
+    tenant_id: TenantQuery,
+    req: PipelineIngestRequest,
+    principal: PrincipalDep,
+) -> dict[str, Any]:
+    """Admit a document into the continuous monitoring pipeline with SHA-256 envelope."""
+    authorize_tenant(principal, tenant_id)
+    import base64
+
+    from aurex.dispater_envelope import DocumentCategory
+    from aurex.dispater_monitoring import ContinuousMonitoringEngine
+
+    try:
+        raw_bytes = base64.b64decode(req.payload_base64)
+    except Exception as exc:
+        raise HTTPException(status.HTTP_400_BAD_REQUEST, "Invalid base64 payload") from exc
+
+    cat_map = {c.value: c for c in DocumentCategory}
+    category = cat_map.get(req.document_category, DocumentCategory.UNKNOWN)
+
+    engine = ContinuousMonitoringEngine(tenant_id=tenant_id)
+    try:
+        env = engine.ingest_incremental_record(
+            source_id=req.source_id,
+            source_record_id=req.source_record_id,
+            category=category,
+            raw_bytes=raw_bytes,
+            media_type=req.media_type,
+        )
+    except ValueError as exc:
+        raise HTTPException(status.HTTP_400_BAD_REQUEST, str(exc)) from exc
+
+    return {
+        "status": "ADMITTED",
+        "envelope_id": env.envelope_id,
+        "content_sha256": env.source_content_sha256,
+        "tenant_id": env.tenant_id,
+        "source_record_id": env.source_record_id,
+        "byte_count": env.byte_count,
+        "schema_version": env.schema_version,
+        "recorded_at": env.ingested_at_utc,
+    }
