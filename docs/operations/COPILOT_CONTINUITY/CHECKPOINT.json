@@ -1,0 +1,20 @@
+{
+  "operation": "KUSANAGI_CCXXXVIII",
+  "repository": "victormart43210-ship-it/Valexii-Aurex",
+  "branch": "work/kusanagi-ccxxxviii-copilot-assurance",
+  "base_main_sha": "34cda4bd8f207f5b1284093b87e4760d782a4903",
+  "candidate_inputs": {
+    "pr171_head": "db4670ab78fa36c8a2b4b8b66df842350440e437",
+    "pr172_head": "46befcb04d2a98633876b4239775bedbf0b265ca",
+    "pr170_included_in_pr171": true
+  },
+  "last_implementation_checkpoint": {
+    "sha": "6bb61754490d7601e89b8d827c2524a13aca3475",
+    "remote_status": "REMOTE_CONFIRMED",
+    "verified_at_utc": "2026-11-06T12:02:00Z"
+  },
+  "current_task": "none: awaiting integration-owner review",
+  "next_exact_action": "Fetch origin; if #171/#172/#173 or a combined integration branch changed, merge it into this branch and rerun pytest, ruff, mypy and the website checks.",
+  "production": "HOLD",
+  "financial_authority": "NONE"
+}
