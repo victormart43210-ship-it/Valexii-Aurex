@@ -339,7 +339,7 @@ class RevenueLeakageEngine:
                             now=f"Completed job {j_id} has no invoice record in the snapshot.",
                             changed=f"Job marked executed on {job['date']} without a generated billing reference.",
                             next_action="Review field completion log and draft invoice according to agreed schedule.",
-                            why="Uninvoiced field work results in immediate unbilled revenue leakage.",
+                            why="Uninvoiced field work is a candidate underbilling, not confirmed leakage or recovered revenue.",
                             proof=f"Job payload digest: {digest(job)}",
                         )
                     )
@@ -455,7 +455,7 @@ class RevenueLeakageEngine:
                             now=f"Invoice {target_inv['invoice_id']} billed ${billed_amt} vs approved rate of ${expected_amt} (delta ${diff:+}).",
                             changed=f"Discrepancy of ${abs_diff} detected between field rate schedule and billing line.",
                             next_action="Issue corrected invoice or credit memo reflecting approved master rate schedule.",
-                            why="Deviating from contractual agreed rates causes revenue leakage or overbilling penalties.",
+                            why="A rate difference is a candidate discrepancy, not confirmed leakage or a penalty.",
                             proof=f"Job SHA:{digest(job)[:12]}, Inv SHA:{digest(target_inv)[:12]}, Rate SHA:{digest(target_rate)[:12]}",
                         )
                     )

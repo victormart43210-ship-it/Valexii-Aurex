@@ -13,6 +13,7 @@ NOT VERIFIED UNTIL LIVE STAGING ACCESS IS PROVIDED.
 from __future__ import annotations
 
 import os
+import re
 from collections.abc import Mapping
 from typing import Any
 from urllib.parse import urlparse
@@ -20,6 +21,7 @@ from urllib.parse import urlparse
 import httpx
 
 _JOB_FIELDS = ("id", "state", "kind", "createdAt", "updatedAt")
+_JOB_VALUE = re.compile(r"^[A-Za-z0-9_.:-]{1,80}$")
 
 
 class WebsiteAdapter:
@@ -50,8 +52,9 @@ class WebsiteAdapter:
             raise ValueError("job payload must be a mapping")
         sanitized: dict[str, Any] = {}
         for key in _JOB_FIELDS:
-            if key in payload:
-                sanitized[key] = payload[key]
+            value = payload.get(key)
+            if isinstance(value, str) and _JOB_VALUE.fullmatch(value):
+                sanitized[key] = value
         return sanitized
 
     def create_job(

@@ -189,7 +189,7 @@ function Dispater() {
               <p className="text-xs font-semibold uppercase text-primary">
                 Towing · Synthetic example
               </p>
-              <h3 className="mt-3 font-display text-2xl">Unbilled recovery job</h3>
+              <h3 className="mt-3 font-display text-2xl">Unbilled tow ticket</h3>
               <p className="mt-3 leading-7 text-muted-foreground">
                 Fictional tow ticket TOW-101 has a completion record but no matching invoice in the
                 supplied sample. An operator would inspect the original ticket before taking action.

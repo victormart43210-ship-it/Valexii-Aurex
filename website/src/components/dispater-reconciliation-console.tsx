@@ -91,9 +91,9 @@ export function DispaterReconciliationConsole() {
             aria-label="Select test fixture"
           >
             <option value="oilfield_demo_v1">
-              Synthetic Oilfield Discrepancy (Deliberate Leakage)
+              Synthetic Oilfield Discrepancy (Planted differences)
             </option>
-            <option value="clean_control_v1">Clean Control Dataset (Zero False Positives)</option>
+            <option value="clean_control_v1">Clean Control Dataset (No findings in this sample)</option>
           </select>
           <Button
             type="button"
@@ -210,7 +210,7 @@ export function DispaterReconciliationConsole() {
                 <div>
                   <p className="font-semibold text-sm">Control Dataset Clean</p>
                   <p className="text-xs">
-                    No billing anomalies or unbilled jobs detected. Zero false positives.
+                    This sample produced no findings. That is not proof of zero false positives.
                   </p>
                 </div>
               </div>

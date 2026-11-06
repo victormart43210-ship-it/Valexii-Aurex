@@ -102,7 +102,7 @@ def test_dispater_e2e_workflow_and_finding_structure():
     assert "Invoice INV-PP-104 billed $5000.00 vs approved rate of $4500.00" in xaeli["now"]
     assert "Discrepancy of $500.00 detected" in xaeli["changed"]
     assert "Issue corrected invoice or credit memo" in xaeli["next"]
-    assert "Deviating from contractual agreed rates causes revenue leakage" in xaeli["why"]
+    assert "candidate discrepancy" in xaeli["why"]
     assert "Rate SHA:" in xaeli["proof"]
 
 

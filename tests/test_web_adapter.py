@@ -47,6 +47,8 @@ def test_create_job_and_get_job(monkeypatch):
     assert set(posted) <= {"id", "state", "kind", "createdAt", "updatedAt"}
     assert "invoice_id" not in posted
     assert job["id"] == "job-1"
+    adapter.create_job({"kind": '{"invoice_id":"I1","amount":"100.00"}'})
+    assert "kind" not in adapter._client.calls[1][2]
     assert job["state"] in ("queued", "succeeded")
 
     res = adapter.get_job("job-1")
