@@ -6,7 +6,7 @@ import {
   runDispaterDemoReconciliation,
 } from "@/lib/dispater.functions";
 import type { DispaterReconciliationReport } from "@/lib/dispater-contract";
-import { dispaterLinkState } from "@/lib/dispater-link";
+import { dispaterLinkState, documentSourceLine, storedRunAgrees } from "@/lib/dispater-link";
 import { Button } from "@/components/ui/button";
 import {
   CheckCircle2,
@@ -29,8 +29,19 @@ export function DispaterReconciliationConsole() {
     "oilfield_demo_v1",
   );
   const [report, setReport] = useState<DispaterReconciliationReport | null>(null);
+  const [sourceLine, setSourceLine] = useState<string | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [storedMatch, setStoredMatch] = useState<"MATCH" | "UNCHECKED" | null>(null);
+
+  async function confirmStored(res: DispaterReconciliationReport) {
+    if (!res.run_id) {
+      setStoredMatch("UNCHECKED");
+      return;
+    }
+    const stored = await readFn({ data: { runId: res.run_id } });
+    if (!storedRunAgrees(res, stored)) throw new Error("DISPATER API returned an invalid report");
+    setStoredMatch("MATCH");
+  }
 
   async function handleRunDemo() {
     setBusy(true);
@@ -39,18 +50,8 @@ export function DispaterReconciliationConsole() {
     try {
       const res = await reconcileFn({ data: { fixture: selectedFixture } });
       setPresentation("SYNTHETIC DEMO");
-      if (res.run_id) {
-        const stored = await readFn({ data: { runId: res.run_id } });
-        if (
-          stored.receipt_sha256 !== res.receipt_sha256 ||
-          stored.financial_summary.confirmed_recovery_usd !== "0.00"
-        ) {
-          throw new Error("DISPATER API returned an invalid report");
-        }
-        setStoredMatch("MATCH");
-      } else {
-        setStoredMatch("UNCHECKED");
-      }
+      setSourceLine(null);
+      await confirmStored(res);
       setReport(res);
     } catch (err: unknown) {
       setErrorMsg(err instanceof Error ? err.message : "Reconciliation failed");
@@ -66,8 +67,9 @@ export function DispaterReconciliationConsole() {
     try {
       const admitted = await admitFn({ data: {} });
       setPresentation("SYNTHETIC DOCUMENT");
-      setStoredMatch(null);
-      setReport(admitted);
+      setSourceLine(documentSourceLine(admitted.source));
+      await confirmStored(admitted.report);
+      setReport(admitted.report);
     } catch (err: unknown) {
       setErrorMsg(err instanceof Error ? err.message : "Document admission failed");
       setReport(null);
@@ -171,7 +173,8 @@ export function DispaterReconciliationConsole() {
       {report && (
         <div className="mt-6 space-y-6">
           <p className="text-xs uppercase tracking-wider text-muted-foreground">
-            {presentation} · {report.receipt_binding ?? "RECEIPT UNBOUND"} · confirmed recovery stays
+            {presentation} · {report.receipt_binding ?? "RECEIPT UNBOUND"}
+            {sourceLine ? ` · source ${sourceLine}` : ""} · confirmed recovery stays
             ${report.financial_summary.confirmed_recovery_usd} · withheld $
             {report.financial_summary.withheld_unresolved_usd ?? "0.00"} · XAELI cannot approve recovery
             · you decide the next action · no vendor is contacted
@@ -254,8 +257,8 @@ export function DispaterReconciliationConsole() {
                     key={f.finding_id}
                     className="rounded-lg border border-border bg-background/80 p-5 space-y-3"
                   >
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <div className="flex flex-wrap items-center gap-2">
                         <span
                           className={`px-2 py-0.5 rounded text-[11px] font-bold ${
                             f.severity === "CRITICAL"
@@ -317,6 +320,14 @@ export function DispaterReconciliationConsole() {
                         </p>
                       </div>
                     </div>
+                    {f.evidence.length > 0 ? (
+                      <p className="font-mono text-[10px] text-muted-foreground">
+                        Sources:{" "}
+                        {f.evidence
+                          .map((item) => `${item.kind} ${item.record_sha256.slice(0, 12)}`)
+                          .join(" · ")}
+                      </p>
+                    ) : null}
                   </div>
                 ))}
               </div>

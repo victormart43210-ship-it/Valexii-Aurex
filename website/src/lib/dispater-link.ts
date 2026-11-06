@@ -1,5 +1,11 @@
 import type { DispaterReconciliationReport } from "./dispater-contract";
 
+export interface DocumentSourceSummary {
+  filename: string;
+  source_sha256: string;
+  rows: string[];
+}
+
 export function dispaterLinkState(
   busy: boolean,
   report: DispaterReconciliationReport | null,
@@ -11,4 +17,20 @@ export function dispaterLinkState(
   if (errorMsg.includes("not configured")) return "UNAVAILABLE";
   if (errorMsg.includes("unreachable")) return "DISCONNECTED";
   return "ERROR";
+}
+
+export function storedRunAgrees(
+  live: DispaterReconciliationReport,
+  stored: DispaterReconciliationReport,
+): boolean {
+  return (
+    stored.run_id === live.run_id &&
+    stored.receipt_sha256 === live.receipt_sha256 &&
+    stored.financial_summary.confirmed_recovery_usd === "0.00" &&
+    stored.financial_summary.identified_exposure_usd === live.financial_summary.identified_exposure_usd
+  );
+}
+
+export function documentSourceLine(source: DocumentSourceSummary): string {
+  return `${source.filename} · ${source.source_sha256.slice(0, 16)} · rows ${source.rows.join(", ") || "none"}`;
 }

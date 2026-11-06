@@ -35,7 +35,14 @@ export const admitSyntheticDispaterCsv = createServerFn({ method: "POST" })
       tenantId: process.env["DISPATER_TENANT_ID"],
       allowLocal: process.env["NODE_ENV"] !== "production",
     });
-    return admitted.report;
+    return {
+      report: admitted.report,
+      source: {
+        filename: admitted.ingestion.filename,
+        source_sha256: admitted.ingestion.source_sha256,
+        rows: admitted.ingestion.provenance.map((item) => item.row),
+      },
+    };
   });
 
 export const readDispaterStoredRun = createServerFn({ method: "POST" })

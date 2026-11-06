@@ -52,6 +52,7 @@ QUALIFICATION = {
     "UNBILLED_LABOR": "SUSPECTED_DISCREPANCY",
     "MISAPPLIED_PAYMENT": "INSUFFICIENT_EVIDENCE",
     "DUPLICATE_FIELD_TICKET": "INSUFFICIENT_EVIDENCE",
+    "DUPLICATE_LABOR_RECORD": "INSUFFICIENT_EVIDENCE",
     "OVERTIME_UNPRICED": "INSUFFICIENT_EVIDENCE",
 }
 _UNBILLED_CODES = frozenset({"UNBILLED_JOB", "UNBILLED_EQUIPMENT", "UNBILLED_LABOR"})
@@ -814,6 +815,23 @@ class RevenueLeakageEngine:
                 )
             )
             return
+        if labor and _duplicate_identity(labor, "role", "service_date"):
+            findings.append(
+                self._create_finding(
+                    exposure_class=UNVERIFIED,
+                    code="DUPLICATE_LABOR_RECORD",
+                    subject=job["job_id"],
+                    severity="HIGH",
+                    records=[("job", job), ("rate", rate)] + [("labor", row) for row in labor],
+                    exposure=Decimal("0.00"),
+                    now=f"Job {job['job_id']} has multiple labor records for the same role and service date.",
+                    changed="The unbilled estimate is withheld until the people and shifts can be distinguished.",
+                    next_action="Check the original records for separate workers or a duplicate entry.",
+                    why="A repeated role and date is not proof of two independent shifts.",
+                    proof="See the job, rate and labor record digests in this finding.",
+                )
+            )
+            return
         if equipment:
             hours = sum((parse_money(row["billable_hours"]) for row in equipment), Decimal("0.00"))
             code = "UNBILLED_EQUIPMENT"
@@ -863,6 +881,23 @@ class RevenueLeakageEngine:
                     changed="Those hours were not added together.",
                     next_action="Keep one ticket. Do not price both.",
                     why="Duplicate tickets for the same machine and day are not two shifts.",
+                    proof=f"Invoice digest: {digest(invoice)}",
+                )
+            )
+            return
+        if labor and _duplicate_identity(labor, "role", "service_date"):
+            findings.append(
+                self._create_finding(
+                    exposure_class=UNVERIFIED,
+                    code="DUPLICATE_LABOR_RECORD",
+                    subject=job["job_id"],
+                    severity="HIGH",
+                    records=[("job", job), ("invoice", invoice)] + [("labor", row) for row in labor],
+                    exposure=Decimal("0.00"),
+                    now=f"Job {job['job_id']} has two labor records for the same role and service date.",
+                    changed="Those hours were not added together.",
+                    next_action="Keep one record for that role and day, or show that the workers are different.",
+                    why="A repeated role and date is not proof of two independent shifts.",
                     proof=f"Invoice digest: {digest(invoice)}",
                 )
             )
