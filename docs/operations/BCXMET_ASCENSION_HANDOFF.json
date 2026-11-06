@@ -1,0 +1,17 @@
+{
+  "operation": "KUSANAGI CCXXVIII",
+  "repository": "victormart43210-ship-it/Valexii-Aurex",
+  "branch": "work/ccxxviii-evidence-kernel",
+  "base_commit": "974eecff4c3d1f554882a94903bbc873e0ea537f",
+  "apk": {"claimed_sha256": "835f3d2cdd9dac37f82744c488c502b32dc7a4af74158aab99b806e3608cca9d", "available": false, "analyzed": false},
+  "files_changed": ["aurex/evidence_kernel.py", "aurex/dispater_store.py", "website/src/lib/dispater-contract.ts", "website/src/lib/dispater-contract.test.ts", "tests/test_evidence_kernel.py", "docs/architecture/*BCXMET*", "docs/architecture/AUREX_EVIDENCE_INTEGRITY_KERNEL.md", "docs/operations/BCXMET_ASCENSION_*"],
+  "dependencies_introduced": [],
+  "tests": {"pytest": "612 passed", "ruff": "pass", "mypy_strict": "pass", "website_vitest": "156 passed", "tsc": "pass", "website_build": "pass"},
+  "security_findings": [
+    "FIXED: finding_history trusted unsigned columns",
+    "FIXED: frontend zod schema stripped receipt_auth/receipt_mac so exports could not be verified",
+    "OPEN: API exports include run_id/created_at outside the signed body; raw export fails verify_mac until removed"
+  ],
+  "not_done": ["APK analysis", "kernel wiring into engine/API/UI/XAELI", "KEKKAI quarantine", "job lifecycle fencing", "persisted recovery claims", "independent verification"],
+  "authority": {"production": "HOLD", "financial": "NONE", "paid_inference": "OFF"}
+}
