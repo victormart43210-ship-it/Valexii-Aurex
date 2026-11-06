@@ -1,8 +1,6 @@
 // Server-only handler for DISPATER reconciliation. No client secrets exposed.
 import {
-  DispaterDocumentIngestionSchema,
   DispaterReconciliationReportSchema,
-  type DispaterDocumentIngestion,
   type DispaterReconciliationReport,
 } from "./dispater-contract";
 
@@ -157,48 +155,5 @@ export async function executeDispaterReconciliation(
   }
   const parsed = DispaterReconciliationReportSchema.safeParse(await response.json());
   if (!parsed.success) throw new Error("DISPATER API returned an invalid report");
-  return parsed.data;
-}
-
-const SYNTHETIC_CSV = new TextEncoder().encode(
-  "invoices,invoice_id,job_id,amount,status\ninvoices,I-SYN,MISSING,10.00,open\n",
-);
-
-function bytesToBase64(bytes: Uint8Array): string {
-  let binary = "";
-  for (const byte of bytes) binary += String.fromCharCode(byte);
-  return btoa(binary);
-}
-
-export async function executeDispaterDocument(
-  config: DispaterServerConfig,
-  transport: typeof fetch = fetch,
-): Promise<DispaterDocumentIngestion> {
-  const { url, token, tenantId } = resolveDispaterConfig(config);
-  const endpoint = new URL("/v1/dispater/documents", url).toString();
-  let response: Response;
-  try {
-    response = await transport(endpoint, {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-        Accept: "application/json",
-      },
-      body: JSON.stringify({
-        tenant_id: tenantId,
-        filename: "synthetic-invoice.csv",
-        kind: "csv",
-        content_base64: bytesToBase64(SYNTHETIC_CSV),
-      }),
-      signal: AbortSignal.timeout(6000),
-    });
-  } catch {
-    throw new Error("DISPATER backend unreachable");
-  }
-  if (!response.ok) throw new Error(`DISPATER API error (${response.status})`);
-  const parsed = DispaterDocumentIngestionSchema.safeParse(await response.json());
-  if (!parsed.success) throw new Error("DISPATER API returned an invalid report");
-  if (parsed.data.report.tenant_id !== tenantId) throw new Error("DISPATER API returned an invalid report");
   return parsed.data;
 }

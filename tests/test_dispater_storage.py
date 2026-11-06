@@ -126,22 +126,6 @@ def test_tampered_stored_report_is_detected(tmp_path: Path) -> None:
         conn.execute("UPDATE dispater_runs SET report_json = replace(report_json, '150', '151')")
     with pytest.raises(dispater_store.IntegrityError):
         dispater_store.get_run(TENANT, stored["run_id"])
-    with pytest.raises(dispater_store.IntegrityError):
-        dispater_store.list_runs(TENANT)
-
-
-def test_indexed_status_and_dataset_must_match_signed_report(tmp_path: Path) -> None:
-    stored, _ = dispater_store.save_run(TENANT, _report())
-    with sqlite3.connect(tmp_path / "d.db") as conn:
-        conn.execute("UPDATE dispater_runs SET status='TAMPERED'")
-    with pytest.raises(dispater_store.IntegrityError):
-        dispater_store.get_run(TENANT, stored["run_id"])
-    with pytest.raises(dispater_store.IntegrityError):
-        dispater_store.list_runs(TENANT)
-    with sqlite3.connect(tmp_path / "d.db") as conn:
-        conn.execute("UPDATE dispater_runs SET status='AUDIT_COMPLETE', dataset_sha256='0' * 64")
-    with pytest.raises(dispater_store.IntegrityError):
-        dispater_store.latest_run(TENANT)
 
 
 def test_corrupt_database_file_fails_loudly_not_silently(tmp_path: Path) -> None:

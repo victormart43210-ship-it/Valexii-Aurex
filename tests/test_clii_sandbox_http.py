@@ -44,12 +44,5 @@ def test_real_sandbox_proxy_and_replay(tmp_path):
                 assert client.post('/__industrial', json={'fixture':'towing_v1'}, headers={'Origin':'https://evil.example'}).status_code == 403
                 assert client.post('/__industrial', json={'fixture':'towing_v1','records':['customer']}, headers=headers).status_code == 422
         finally:
-            try:
-                os.killpg(process.pid, signal.SIGINT)
-            except ProcessLookupError:
-                pass
-            try:
-                process.wait(timeout=10)
-            except subprocess.TimeoutExpired:
-                process.kill()
-                process.wait(timeout=10)
+            os.killpg(process.pid, signal.SIGINT)
+            process.wait(timeout=10)

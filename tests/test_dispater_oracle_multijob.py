@@ -17,9 +17,9 @@ def _money(c: int) -> str:
     return f"{c // 100}.{c % 100:02d}"
 
 
-def _build(rng: random.Random) -> tuple[dict[str, Any], int, int, int, int]:
+def _build(rng: random.Random) -> tuple[dict[str, Any], int, int, int]:
     jobs, rates, invoices = [], [], []
-    under = over = unbilled = withheld = 0
+    under = over = unbilled = 0
     for n in range(rng.randint(2, 8)):
         jid, cust = f"J{n}", f"C{n}"
         rate = rng.randint(100, 900_000)
@@ -33,7 +33,7 @@ def _build(rng: random.Random) -> tuple[dict[str, Any], int, int, int, int]:
             first, second = rate, rng.randint(1, rate)
             invoices += [{"invoice_id": f"I{n}a", "job_id": jid, "amount": _money(first), "status": "open"},
                          {"invoice_id": f"I{n}b", "job_id": jid, "amount": _money(second), "status": "open"}]
-            withheld += first + second  # no precedence signal, so neither bill is booked as overbilling
+            over += second  # invoice_id-ordered: 'a' is the primary charge, later ones are duplicates
         else:
             amt = {"exact": rate, "under": rate - rng.randint(1, rate), "over": rate + rng.randint(1, 5000)}[kind]
             invoices.append({"invoice_id": f"I{n}", "job_id": jid, "amount": _money(amt), "status": "open"})
@@ -41,17 +41,16 @@ def _build(rng: random.Random) -> tuple[dict[str, Any], int, int, int, int]:
             over += max(amt - rate, 0)
     ds = {"tenant_id": "t", "dataset_type": "SYNTHETIC_ONLY", "jobs": jobs, "rates": rates,
           "invoices": invoices, "payments": []}
-    return ds, under, over, unbilled, withheld
+    return ds, under, over, unbilled
 
 
 @pytest.mark.parametrize("seed", range(40))
 def test_multijob_matches_oracle_and_ignores_row_order(seed: int) -> None:
     rng = random.Random(seed)
-    ds, under, over, unbilled, withheld = _build(rng)
+    ds, under, over, unbilled = _build(rng)
     s = RevenueLeakageEngine("t").reconcile_records(ds)["financial_summary"]
     assert Decimal(s["potential_overbilling_usd"]) == Decimal(over) / 100
     assert Decimal(s["potential_underbilling_usd"]) == Decimal(under + unbilled) / 100
-    assert Decimal(s["withheld_unresolved_usd"]) == Decimal(withheld) / 100
     assert s["confirmed_recovery_usd"] == "0.00" and s["human_confirmed_discrepancy_usd"] == "0.00"
     shuffled = {**ds, "invoices": rng.sample(ds["invoices"], len(ds["invoices"]))}
     s2 = RevenueLeakageEngine("t").reconcile_records(shuffled)["financial_summary"]
@@ -66,9 +65,6 @@ def test_duplicate_exposure_is_independent_of_invoice_order() -> None:
             "payments": []}
     a = {"invoice_id": "I1", "job_id": "J1", "amount": "100.00", "status": "open"}
     b = {"invoice_id": "I2", "job_id": "J1", "amount": "60.00", "status": "open"}
-    outs = [
-        RevenueLeakageEngine("t").reconcile_records({**base, "invoices": list(p)})["financial_summary"]
-        for p in itertools.permutations([a, b])
-    ]
-    assert {row["potential_overbilling_usd"] for row in outs} == {"0.00"}
-    assert {row["withheld_unresolved_usd"] for row in outs} == {"160.00"}
+    outs = {RevenueLeakageEngine("t").reconcile_records({**base, "invoices": list(p)})["financial_summary"]["potential_overbilling_usd"]
+            for p in itertools.permutations([a, b])}
+    assert outs == {"60.00"}

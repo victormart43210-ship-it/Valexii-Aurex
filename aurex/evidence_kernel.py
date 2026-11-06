@@ -163,11 +163,6 @@ class QualificationError(ValueError):
     """A claim transition was refused."""
 
 
-def _identified_reviewer(reviewer: object) -> bool:
-    """A reviewer counts only when a human left a non-blank name."""
-    return isinstance(reviewer, str) and bool(reviewer.strip())
-
-
 def qualify(
     current: ClaimState,
     target: ClaimState,
@@ -195,7 +190,7 @@ def qualify(
             if isinstance(exc, QualificationError):
                 raise
             raise QualificationError("supporting evidence has unresolved provenance") from exc
-    if target is ClaimState.VERIFIED and (actor is not ActorKind.HUMAN or not _identified_reviewer(reviewer)):
+    if target is ClaimState.VERIFIED and (actor is not ActorKind.HUMAN or not reviewer):
         raise QualificationError("verification requires an identified human reviewer")
     return target
 
@@ -249,10 +244,6 @@ class RecoveryClaim:
     history: list[dict[str, Any]] = field(default_factory=list)
     recovered_amount: Decimal = Decimal("0")
 
-    def __post_init__(self) -> None:
-        if not isinstance(self.amount, Decimal) or not self.amount.is_finite() or self.amount <= 0:
-            raise QualificationError("claim amount must be a positive finite decimal")
-
     def advance(
         self,
         target: Outcome,
@@ -274,9 +265,7 @@ class RecoveryClaim:
             raise QualificationError("a model cannot advance a recovery claim")
         if not evidence_ids:
             raise QualificationError("each transition needs supporting evidence")
-        if target is not Outcome.VERIFIED_DISCREPANCY and (
-            actor is not ActorKind.HUMAN or not _identified_reviewer(reviewer)
-        ):
+        if target is not Outcome.VERIFIED_DISCREPANCY and (actor is not ActorKind.HUMAN or not reviewer):
             raise QualificationError("an identified human reviewer is required")
         try:
             if any(freshness_of(graph.get(e), now, timedelta(days=90)) is not Freshness.CURRENT for e in evidence_ids):
@@ -334,8 +323,6 @@ def challenge_finding(finding: dict[str, Any], tenant_id: str, known_obligations
             problems.append("invalid amount")
         if exposure.is_finite() and exposure < 0:
             problems.append("negative exposure")
-        if recovered.is_finite() and recovered < 0:
-            problems.append("negative recovery")
         if recovered.is_finite() and exposure.is_finite() and recovered > exposure:
             problems.append("recovery exceeds exposure")
     except ArithmeticError:

@@ -1,36 +1,73 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "handoff_version": "2.4.0",
-  "operation": "OPERATION_KUSANAGI_CCXLIX_SOVEREIGN_ASSURANCE",
-  "timestamp_utc": "2026-11-06T15:00:00Z",
+  "handoff_version": "2.0.0",
+  "operation": "OPERATION_KUSANAGI_CCXXXII",
+  "timestamp_utc": "2026-11-05T23:30:00Z",
   "canonical_repository": "victormart43210-ship-it/Valexii-Aurex",
   "base_branch": "main",
   "base_commit_sha": "34cda4bd8f207f5b1284093b87e4760d782a4903",
-  "working_branch": "work/kusanagi-ccxlix-sovereign-assurance",
+  "implementation_branch": "work/kusanagi-ccxxxii-pipeline",
+  "target": "36-month historical audit to independently qualified financial findings to continuous monitoring",
   "system_governance": {
     "production_release": "HOLD",
     "financial_authority": "NONE",
     "external_paid_inference": "OFF",
-    "customer_data_uploads": "PROHIBITED",
-    "uncontrolled_model_training": "DISABLED"
+    "customer_data": "PROHIBITED",
+    "autonomous_production_changes": "PROHIBITED"
   },
   "verification_summary": {
-    "pytest_backend_tests": "707 passed, 1 skipped",
+    "pytest_backend_tests": "643 passed, 1 skipped",
     "ruff_linter_errors": 0,
-    "mypy_strict_errors": "0 across 105 source files in aurex/",
-    "bun_frontend_tests": "157 passed across 23 test files",
+    "mypy_strict_errors": "0 across 88 source files in aurex/",
+    "bun_frontend_tests": "156 passed across 23 test files",
     "bun_production_build": "SUCCESS"
   },
-  "artifacts": {
-    "convergence_report": "docs/operations/CCXLIX_CONVERGENCE_REPORT.md",
-    "financial_assurance": "docs/operations/CCXLIX_FINANCIAL_ASSURANCE.json",
-    "model_vault_manifest": "docs/operations/CCXLIX_MODEL_VAULT_MANIFEST.json",
-    "independent_review": "docs/operations/CCXLIX_INDEPENDENT_REVIEW.md",
-    "chromebook_operator_guide": "docs/operations/THE_BIG_ONE_CHROMEBOOK_OPERATOR_GUIDE.md"
-  },
+  "delivered_components": [
+    {
+      "component": "International Open-Source Registry & Adapters",
+      "file": "aurex/dispater_international.py",
+      "registry": "docs/operations/INTERNATIONAL_OPEN_SOURCE_REGISTRY.json",
+      "status": "IMPLEMENTED_AND_TESTED"
+    },
+    {
+      "component": "Canonical Evidence Envelope & Provenance",
+      "file": "aurex/dispater_envelope.py",
+      "status": "IMPLEMENTED_AND_TESTED"
+    },
+    {
+      "component": "Unified 6-Stage Industrial Pipeline",
+      "file": "aurex/dispater_pipeline.py",
+      "status": "IMPLEMENTED_AND_TESTED"
+    },
+    {
+      "component": "Continuous Monitoring & Contract Invalidation",
+      "file": "aurex/dispater_monitoring.py",
+      "status": "IMPLEMENTED_AND_TESTED"
+    },
+    {
+      "component": "36-Month Golden Historical Audit Suite",
+      "file": "tests/test_dispater_36_month_pipeline.py",
+      "status": "VERIFIED_PASS"
+    },
+    {
+      "component": "Adversarial & Multi-Root Negative Tests",
+      "file": "tests/test_dispater_pipeline_adversarial.py",
+      "status": "VERIFIED_PASS"
+    },
+    {
+      "component": "Pipeline API Endpoints",
+      "file": "aurex/dispater_api.py",
+      "status": "IMPLEMENTED_AND_TESTED"
+    },
+    {
+      "component": "Frontend Client Bun Timeout Repair",
+      "file": "website/src/lib/aurex-client.server.ts",
+      "status": "VERIFIED_PASS"
+    }
+  ],
   "continuation_directives": [
-    "Maintain production release on HOLD pending owner merge authorization",
-    "Run USB model vault manager in default DRY RUN mode prior to any model archiving",
-    "Follow private operator guide on owner Chromebook for THE BIG ONE evaluation"
+    "Review implementation PR against canonical main",
+    "Schedule independent witness review on the 36-month audit pipeline",
+    "Maintain production release on HOLD pending owner merge authorization"
   ]
 }

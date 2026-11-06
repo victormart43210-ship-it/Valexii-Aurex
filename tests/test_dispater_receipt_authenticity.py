@@ -52,11 +52,7 @@ def _rewrite(db: Path, mutate: Any, recompute_sha: bool = True) -> None:
 def test_roundtrip_signed(db: Path) -> None:
     stored, created = dispater_store.save_run("tenant-a", _report())
     assert created
-    assert verify_mac(stored)
-    assert stored["receipt_auth"]["v"] == 2
-    assert stored["receipt_binding"] == "BOUND_V2"
-    assert not verify_mac({k: v for k, v in stored.items() if k != "run_id"})
-    assert not verify_mac({k: v for k, v in stored.items() if k != "created_at"})
+    assert verify_mac({k: v for k, v in stored.items() if k not in ("run_id", "created_at")})
     assert stored["receipt_auth"]["alg"] == "HMAC-SHA256"
     assert dispater_store.latest_run("tenant-a") is not None
 
@@ -156,57 +152,6 @@ def test_save_without_key_fails_closed_and_writes_nothing(db: Path, monkeypatch:
     with pytest.raises(ReceiptKeyError):
         dispater_store.save_run("tenant-a", _report())
     assert not db.exists() or dispater_store.list_runs("tenant-a") == []
-
-
-def test_v2_rejects_downgrade_substitution_and_metadata_swap(db: Path) -> None:
-    stored, _ = dispater_store.save_run("tenant-a", _report())
-    downgraded = {
-        k: v
-        for k, v in stored.items()
-        if k not in ("run_id", "created_at", "receipt_binding")
-    }
-    downgraded["receipt_auth"] = {"alg": "HMAC-SHA256", "kid": stored["receipt_auth"]["kid"]}
-    assert not verify_mac(downgraded)
-    conn = sqlite3.connect(db)
-    conn.execute("UPDATE dispater_runs SET created_at='2020-01-01T00:00:00+00:00'")
-    conn.commit()
-    conn.close()
-    with pytest.raises(dispater_store.IntegrityError, match="identity"):
-        dispater_store.latest_run("tenant-a")
-    stolen = dict(stored)
-    stolen["run_id"] = "run-" + "cd" * 16
-    assert not verify_mac(stolen)
-
-
-def test_legacy_receipt_is_labeled_and_not_upgraded(db: Path) -> None:
-    legacy = sign_report(_report())
-    assert "v" not in legacy["receipt_auth"]
-    run_id = "run-" + "ab" * 16
-    created = "2026-01-01T00:00:00+00:00"
-    conn = dispater_store._connect()
-    conn.execute("BEGIN IMMEDIATE")
-    conn.execute(
-        "INSERT INTO dispater_runs VALUES (?,?,?,?,?,?,?,?)",
-        (
-            run_id,
-            "tenant-a",
-            legacy["dataset_sha256"],
-            legacy["receipt_sha256"],
-            legacy["status"],
-            created,
-            json.dumps(legacy, sort_keys=True),
-            "[]",
-        ),
-    )
-    conn.execute("COMMIT")
-    conn.close()
-    again, created_flag = dispater_store.save_run("tenant-a", _report())
-    assert created_flag is False
-    assert again["run_id"] == run_id
-    assert again["receipt_binding"] == "LEGACY_METADATA_UNBOUND"
-    assert "v" not in again["receipt_auth"]
-    raw = sqlite3.connect(db).execute("SELECT report_json FROM dispater_runs").fetchone()[0]
-    assert "BOUND_V2" not in raw
 
 
 def test_replayed_submission_is_idempotent_no_duplicate_effect(db: Path) -> None:

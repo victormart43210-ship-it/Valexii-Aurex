@@ -123,13 +123,7 @@ def audit_synthetic(snapshot: dict[str, Any]) -> dict[str, Any]:
         if not relevant:
             add("UNBILLED_JOB", job["job_id"], [("job", job)], "Completed job has no invoice in supplied snapshot")
         if len(relevant) > 1:
-            add(
-                "DUPLICATE_INVOICE_UNRESOLVED",
-                job["job_id"],
-                [("job", job)] + [("invoice", inv) for inv in relevant],
-                "Multiple invoices reference this job. Precedence is not established, so no duplicate amount is booked.",
-                Decimal("0.00"),
-            )
+            add("MULTIPLE_INVOICES", job["job_id"], [("job", job)] + [("invoice", inv) for inv in relevant], "Multiple invoices reference this job; review before treating as duplicate")
         active = [
             rate for rate in rates
             if rate["customer_id"] == job["customer_id"]
@@ -149,50 +143,11 @@ def audit_synthetic(snapshot: dict[str, Any]) -> dict[str, Any]:
     for invoice in invoices:
         if invoice["job_id"] not in job_ids:
             add("ORPHAN_INVOICE", invoice["invoice_id"], [("invoice", invoice)], "Referenced job is missing from supplied snapshot")
-        applied = by_invoice[invoice["invoice_id"]]
-        total = sum((_money(p["amount"]) for p in applied), Decimal("0.00"))
-        amount = _money(invoice["amount"])
-        payment_rows = [("invoice", invoice)] + [("payment", p) for p in applied]
-        if len(applied) > 1:
-            add(
-                "SPLIT_OR_DUPLICATE_PAYMENT_UNRESOLVED",
-                invoice["invoice_id"],
-                payment_rows,
-                "Multiple payments cannot be proven as splits or duplicates. Net cash is applied once.",
-                Decimal("0.00"),
-            )
-        if invoice["status"] == "paid" and total != amount:
-            add(
-                "PAID_STATUS_UNRECONCILED",
-                invoice["invoice_id"],
-                payment_rows,
-                "Paid-marked invoice does not reconcile to supplied payment allocations",
-                total - amount,
-            )
-        elif invoice["status"] != "paid" and total == amount and total > 0:
-            add(
-                "STATUS_UNRECONCILED",
-                invoice["invoice_id"],
-                payment_rows,
-                "Payments equal the billed amount but the invoice is not marked paid",
-                Decimal("0.00"),
-            )
-        elif invoice["status"] != "paid" and total > amount:
-            add(
-                "OVERPAYMENT",
-                invoice["invoice_id"],
-                payment_rows,
-                "Payments exceed the billed amount. This is unapplied or excess cash, not confirmed recovery.",
-                total - amount,
-            )
-        elif invoice["status"] != "paid" and total > 0 and total < amount:
-            add(
-                "PARTIAL_PAYMENT",
-                invoice["invoice_id"],
-                payment_rows,
-                "Payments are short of the billed amount. Open balance is not automatically recoverable leakage.",
-                total - amount,
-            )
+        if invoice["status"] == "paid":
+            total = sum((_money(p["amount"]) for p in by_invoice[invoice["invoice_id"]]), Decimal("0.00"))
+            amount = _money(invoice["amount"])
+            if total != amount:
+                add("PAID_STATUS_UNRECONCILED", invoice["invoice_id"], [("invoice", invoice)] + [("payment", p) for p in by_invoice[invoice["invoice_id"]]], "Paid-marked invoice does not reconcile to supplied payment allocations", total - amount)
     for payment in payments:
         if payment["invoice_id"] not in invoice_ids:
             add("ORPHAN_PAYMENT", payment["payment_id"], [("payment", payment)], "Payment references an absent invoice")
@@ -206,7 +161,7 @@ def audit_synthetic(snapshot: dict[str, Any]) -> dict[str, Any]:
         "scope": "FICTIONAL DATA ONLY; SOURCE-SNAPSHOT MATCHING ONLY",
         "counts": {"jobs": len(jobs), "invoices": len(invoices), "payments": len(payments), "findings": len(findings)},
         "findings": findings,
-        "limits": "Missing records are unknown, not proof of a violation. No tax/DOT decisions, writeback, recovery estimates or customer-data admission. Negative payments and reversals are rejected rather than interpreted as recoveries.",
+        "limits": "Missing records are unknown, not proof of a violation. No tax/DOT decisions, writeback, recovery estimates or customer-data admission.",
     }
     report["self_issued_receipt_sha256"] = digest(report)
     return report

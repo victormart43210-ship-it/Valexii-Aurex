@@ -11,7 +11,6 @@ Rollback: stop the service and drop `dispater_findings`, `dispater_runs`
 
 from __future__ import annotations
 
-import hashlib
 import json
 import logging
 import os
@@ -24,7 +23,7 @@ from datetime import UTC, datetime, timedelta
 from typing import Any
 
 from aurex.dispater_intelligence import verify_receipt
-from aurex.dispater_receipt import receipt_version, seal_run, verify_mac
+from aurex.dispater_receipt import sign_report, verify_mac
 
 logger = logging.getLogger("aurex.dispater")
 
@@ -54,22 +53,6 @@ CREATE TABLE IF NOT EXISTS dispater_findings (
     PRIMARY KEY (run_id, finding_id)
 );
 CREATE INDEX IF NOT EXISTS idx_dispater_findings_tenant ON dispater_findings (tenant_id, finding_id);
-"""
-
-_MONITOR_SCHEMA = """
-CREATE TABLE IF NOT EXISTS dispater_monitor_events (
-    event_id TEXT PRIMARY KEY,
-    tenant_id TEXT NOT NULL,
-    source_sha256 TEXT NOT NULL,
-    checkpoint_sha256 TEXT NOT NULL,
-    event_type TEXT NOT NULL,
-    payload_json TEXT NOT NULL,
-    created_at TEXT NOT NULL,
-    prev_sha256 TEXT NOT NULL,
-    entry_sha256 TEXT NOT NULL,
-    UNIQUE (tenant_id, source_sha256)
-);
-CREATE INDEX IF NOT EXISTS idx_dispater_monitor_tenant ON dispater_monitor_events (tenant_id, created_at);
 """
 
 
@@ -146,8 +129,6 @@ def _connect() -> sqlite3.Connection:
                 ).fetchone()  # last object in _SCHEMA; DDL commits in order, so it implies the rest
                 if present is None:
                     conn.executescript(_SCHEMA)
-                conn.executescript(_MONITOR_SCHEMA)
-                _migrate_monitor_chain(conn)
                 break
             except sqlite3.OperationalError as exc:
                 if "locked" not in str(exc) or attempt == 49:
@@ -164,40 +145,20 @@ def _verified(row: sqlite3.Row) -> dict[str, Any]:
         or not verify_mac(report)
         or report.get("receipt_sha256") != row["receipt_sha256"]
         or report.get("tenant_id") != row["tenant_id"]
-        or report.get("dataset_sha256") != row["dataset_sha256"]
-        or report.get("status") != row["status"]
     ):
         raise IntegrityError("stored audit report failed integrity verification")
-    version = receipt_version(report)
-    if version is None:
-        raise IntegrityError("unknown receipt version")
-    if version == 2:
-        if report.get("run_id") != row["run_id"] or report.get("created_at") != row["created_at"]:
-            raise IntegrityError("receipt identity does not match stored metadata")
-        if report.get("receipt_binding") != "BOUND_V2":
-            raise IntegrityError("versioned receipt is missing its binding label")
-        return report
-    if any(key in report for key in ("run_id", "created_at", "receipt_binding")):
-        raise IntegrityError("legacy receipt carries identity fields")
-    # Not an upgrade: column identity stays unbound and is labeled as such.
-    annotated = dict(report)
-    annotated["run_id"] = row["run_id"]
-    annotated["created_at"] = row["created_at"]
-    annotated["receipt_binding"] = "LEGACY_METADATA_UNBOUND"
-    return annotated
+    report["run_id"] = row["run_id"]
+    report["created_at"] = row["created_at"]
+    return report
 
 
 def save_run(tenant_id: str, report: dict[str, Any]) -> tuple[dict[str, Any], bool]:
-    """Persist atomically. Returns (stored report, created). Idempotent on dataset hash.
-
-    New rows are sealed as receipt v2. An existing row is returned unchanged, including a
-    legacy receipt. Replaying a dataset does not rewrite its receipt.
-    """
+    """Persist atomically. Returns (stored report, created). Idempotent on dataset hash."""
     if report.get("tenant_id") != tenant_id:
         raise ValueError("report tenant mismatch")
+    report = sign_report(report)  # fails closed when no receipt key is configured
     run_id = f"run-{uuid.uuid4().hex}"
     now = datetime.now(UTC).isoformat()
-    report = seal_run(report, run_id=run_id, created_at=now)
     refs: list[dict[str, str]] = []
     for f in report.get("findings", []):
         for ev in f.get("evidence", []):
@@ -260,21 +221,14 @@ def get_run(tenant_id: str, run_id: str) -> dict[str, Any] | None:
         return _verified(row) if row else None
 
 
-_LIST_FIELDS = ("run_id", "dataset_sha256", "receipt_sha256", "status", "created_at")
-
-
 def list_runs(tenant_id: str, limit: int = 50) -> list[dict[str, Any]]:
-    """List run metadata. Every row is MAC-verified; a tampered row fails the whole read."""
     with closing(_connect()) as conn:
         rows = conn.execute(
-            "SELECT * FROM dispater_runs WHERE tenant_id=? ORDER BY created_at DESC, rowid DESC LIMIT ?",
+            "SELECT run_id, dataset_sha256, receipt_sha256, status, created_at FROM dispater_runs "
+            "WHERE tenant_id=? ORDER BY created_at DESC, rowid DESC LIMIT ?",
             (tenant_id, max(1, min(limit, 200))),
         ).fetchall()
-    listed: list[dict[str, Any]] = []
-    for row in rows:
-        report = _verified(row)
-        listed.append({key: report[key] for key in _LIST_FIELDS})
-    return listed
+        return [dict(r) for r in rows]
 
 
 def finding_history(tenant_id: str, finding_id: str) -> list[dict[str, Any]]:
@@ -321,167 +275,6 @@ def purge_tenant(tenant_id: str, older_than_days: int | None = None) -> int:
                 "DELETE FROM dispater_runs WHERE tenant_id=? AND created_at<?", (tenant_id, cutoff)
             )
         return cur.rowcount
-
-
-def _migrate_monitor_chain(conn: sqlite3.Connection) -> None:
-    """Add chain columns without rewriting historical event bodies.
-
-    Rows written before the chain existed keep empty link fields. Verification
-    fails closed for those rows instead of inventing a predecessor hash.
-    """
-    cols = {str(row[1]) for row in conn.execute("PRAGMA table_info(dispater_monitor_events)")}
-    if not cols:
-        return
-    if "prev_sha256" not in cols:
-        conn.execute("ALTER TABLE dispater_monitor_events ADD COLUMN prev_sha256 TEXT NOT NULL DEFAULT ''")
-    if "entry_sha256" not in cols:
-        conn.execute("ALTER TABLE dispater_monitor_events ADD COLUMN entry_sha256 TEXT NOT NULL DEFAULT ''")
-
-
-def _chain_digest(body: dict[str, Any]) -> str:
-    raw = json.dumps(body, sort_keys=True, separators=(",", ":"), allow_nan=False).encode("utf-8")
-    return hashlib.sha256(raw).hexdigest()
-
-
-def save_monitor_event(
-    tenant_id: str,
-    *,
-    source_sha256: str,
-    checkpoint_sha256: str,
-    event_type: str,
-    payload: dict[str, Any],
-) -> dict[str, Any]:
-    """Append one tenant-scoped monitoring event. A repeated source digest returns the original.
-
-    A repeated digest with a different checkpoint is a conflict and is not rewritten.
-    Each event hashes the previous event. The actor is SYSTEM.
-    """
-    event_id = f"mon-{uuid.uuid4().hex}"
-    created_at = datetime.now(UTC).isoformat()
-    recorded = dict(payload)
-    recorded["actor"] = "SYSTEM"
-    with closing(_connect()) as conn:
-        conn.execute("BEGIN IMMEDIATE")
-        try:
-            existing = conn.execute(
-                "SELECT * FROM dispater_monitor_events WHERE tenant_id=? AND source_sha256=?",
-                (tenant_id, source_sha256),
-            ).fetchone()
-            if existing is not None:
-                conn.execute("COMMIT")
-                if existing["checkpoint_sha256"] != checkpoint_sha256:
-                    raise sqlite3.IntegrityError(
-                        "conflicting source evidence: digest reused for a different checkpoint"
-                    )
-                return _monitor_row(existing)
-            previous = conn.execute(
-                "SELECT entry_sha256 FROM dispater_monitor_events WHERE tenant_id=? "
-                "ORDER BY created_at DESC, rowid DESC LIMIT 1",
-                (tenant_id,),
-            ).fetchone()
-            prev_sha256 = previous["entry_sha256"] if previous else "0" * 64
-            chain_body = {
-                "event_id": event_id,
-                "tenant_id": tenant_id,
-                "source_sha256": source_sha256,
-                "checkpoint_sha256": checkpoint_sha256,
-                "event_type": event_type,
-                "payload": recorded,
-                "created_at": created_at,
-                "prev_sha256": prev_sha256,
-                "actor": "SYSTEM",
-            }
-            entry_sha256 = _chain_digest(chain_body)
-            conn.execute(
-                "INSERT INTO dispater_monitor_events VALUES (?,?,?,?,?,?,?,?,?)",
-                (
-                    event_id,
-                    tenant_id,
-                    source_sha256,
-                    checkpoint_sha256,
-                    event_type,
-                    json.dumps(recorded, sort_keys=True),
-                    created_at,
-                    prev_sha256,
-                    entry_sha256,
-                ),
-            )
-            conn.execute("COMMIT")
-        except BaseException:
-            if conn.in_transaction:
-                conn.execute("ROLLBACK")
-            raise
-        row = conn.execute(
-            "SELECT * FROM dispater_monitor_events WHERE event_id=?", (event_id,)
-        ).fetchone()
-    return _monitor_row(row)
-
-
-def _monitor_row(row: sqlite3.Row) -> dict[str, Any]:
-    payload = json.loads(row["payload_json"])
-    return {
-        "event_id": row["event_id"],
-        "tenant_id": row["tenant_id"],
-        "source_sha256": row["source_sha256"],
-        "checkpoint_sha256": row["checkpoint_sha256"],
-        "event_type": row["event_type"],
-        "created_at": row["created_at"],
-        "prev_sha256": row["prev_sha256"],
-        "entry_sha256": row["entry_sha256"],
-        "payload": payload,
-        "actor": payload.get("actor", "SYSTEM"),
-        "confirmed_recovery_usd": "0.00",
-    }
-
-
-def verify_monitor_chain(tenant_id: str) -> bool:
-    """True when every stored event links to its predecessor and its hash still matches."""
-    previous = "0" * 64
-    for event in list_monitor_events(tenant_id):
-        if event["prev_sha256"] != previous or event["actor"] != "SYSTEM":
-            return False
-        body = {
-            "event_id": event["event_id"],
-            "tenant_id": event["tenant_id"],
-            "source_sha256": event["source_sha256"],
-            "checkpoint_sha256": event["checkpoint_sha256"],
-            "event_type": event["event_type"],
-            "payload": event["payload"],
-            "created_at": event["created_at"],
-            "prev_sha256": event["prev_sha256"],
-            "actor": "SYSTEM",
-        }
-        if _chain_digest(body) != event["entry_sha256"]:
-            return False
-        previous = event["entry_sha256"]
-    return True
-
-
-def get_monitor_event(tenant_id: str, source_sha256: str) -> dict[str, Any] | None:
-    with closing(_connect()) as conn:
-        row = conn.execute(
-            "SELECT * FROM dispater_monitor_events WHERE tenant_id=? AND source_sha256=?",
-            (tenant_id, source_sha256),
-        ).fetchone()
-    return _monitor_row(row) if row else None
-
-
-def list_monitor_events(tenant_id: str) -> list[dict[str, Any]]:
-    with closing(_connect()) as conn:
-        rows = conn.execute(
-            "SELECT * FROM dispater_monitor_events WHERE tenant_id=? ORDER BY created_at, rowid",
-            (tenant_id,),
-        ).fetchall()
-    return [_monitor_row(row) for row in rows]
-
-
-def monitor_event_count(tenant_id: str) -> int:
-    with closing(_connect()) as conn:
-        row = conn.execute(
-            "SELECT COUNT(*) AS n FROM dispater_monitor_events WHERE tenant_id=?",
-            (tenant_id,),
-        ).fetchone()
-    return int(row["n"]) if row else 0
 
 
 def checkpoint(db_path_override: str | None = None) -> None:

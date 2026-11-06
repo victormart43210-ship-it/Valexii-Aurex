@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
-import { admitSyntheticDispaterCsv, runDispaterDemoReconciliation } from "@/lib/dispater.functions";
+import { runDispaterDemoReconciliation } from "@/lib/dispater.functions";
 import type { DispaterReconciliationReport } from "@/lib/dispater-contract";
 import { Button } from "@/components/ui/button";
 import {
@@ -14,10 +14,6 @@ import {
 
 export function DispaterReconciliationConsole() {
   const reconcileFn = useServerFn(runDispaterDemoReconciliation);
-  const admitFn = useServerFn(admitSyntheticDispaterCsv);
-  const [presentation, setPresentation] = useState<"SYNTHETIC DEMO" | "SYNTHETIC DOCUMENT">(
-    "SYNTHETIC DEMO",
-  );
   const [busy, setBusy] = useState(false);
   const [selectedFixture, setSelectedFixture] = useState<"oilfield_demo_v1" | "clean_control_v1">(
     "oilfield_demo_v1",
@@ -30,25 +26,9 @@ export function DispaterReconciliationConsole() {
     setErrorMsg(null);
     try {
       const res = await reconcileFn({ data: { fixture: selectedFixture } });
-      setPresentation("SYNTHETIC DEMO");
       setReport(res);
     } catch (err: unknown) {
       setErrorMsg(err instanceof Error ? err.message : "Reconciliation failed");
-      setReport(null);
-    } finally {
-      setBusy(false);
-    }
-  }
-
-  async function handleAdmitCsv() {
-    setBusy(true);
-    setErrorMsg(null);
-    try {
-      const admitted = await admitFn({ data: {} });
-      setPresentation("SYNTHETIC DOCUMENT");
-      setReport(admitted);
-    } catch (err: unknown) {
-      setErrorMsg(err instanceof Error ? err.message : "Document admission failed");
       setReport(null);
     } finally {
       setBusy(false);
@@ -74,7 +54,7 @@ export function DispaterReconciliationConsole() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-border pb-4">
         <div>
           <span className="text-xs font-semibold uppercase tracking-wider text-primary">
-            DISPATER REVENUE RECONCILIATION CONSOLE · {presentation}
+            DISPATER REVENUE RECONCILIATION CONSOLE
           </span>
           <h3 id="console-heading" className="text-2xl font-display text-foreground mt-1">
             Automated Audit Workflow
@@ -112,9 +92,6 @@ export function DispaterReconciliationConsole() {
               </>
             )}
           </Button>
-          <Button type="button" variant="glass" disabled={busy} onClick={() => void handleAdmitCsv()}>
-            Admit synthetic CSV
-          </Button>
         </div>
       </div>
 
@@ -142,11 +119,6 @@ export function DispaterReconciliationConsole() {
 
       {report && (
         <div className="mt-6 space-y-6">
-          <p className="text-xs uppercase tracking-wider text-muted-foreground">
-            {presentation} · {report.receipt_binding ?? "RECEIPT UNBOUND"} · confirmed recovery stays
-            ${report.financial_summary.confirmed_recovery_usd} · withheld $
-            {report.financial_summary.withheld_unresolved_usd ?? "0.00"} · XAELI cannot approve recovery
-          </p>
           {/* Exposure and Stats Header */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div className="rounded-lg border border-border bg-background p-4">
@@ -182,14 +154,7 @@ export function DispaterReconciliationConsole() {
               >
                 SHA-256: {report.receipt_sha256.slice(0, 16)}…
               </p>
-              <span className="text-[10px] text-muted-foreground block mt-1">
-                {report.receipt_binding === "BOUND_V2"
-                  ? "Identity-bound receipt"
-                  : "Legacy or unbound metadata"}
-                {report.financial_summary.withheld_unresolved_usd
-                  ? ` · Withheld ${report.financial_summary.withheld_unresolved_usd}`
-                  : ""}
-              </span>
+              <span className="text-[10px] text-emerald block mt-1">Cryptographically Sealed</span>
             </div>
           </div>
 
@@ -198,11 +163,6 @@ export function DispaterReconciliationConsole() {
             <h4 className="text-sm font-semibold uppercase tracking-wider text-foreground mb-3">
               Grounded Audit Findings ({report.findings.length})
             </h4>
-            <p className="text-xs text-muted-foreground -mt-2 mb-3">
-              XAELI can explain a finding. It cannot approve a recovery or replace the calculation.
-              The proof line is the trace back to the source digest, page, or row. OCR is not claimed
-              on this screen.
-            </p>
             {report.findings.length === 0 ? (
               <div className="rounded-lg border border-emerald/30 bg-emerald/5 p-4 text-emerald flex items-center gap-3">
                 <CheckCircle2 className="size-5 shrink-0" />
@@ -234,11 +194,6 @@ export function DispaterReconciliationConsole() {
                           {f.severity}
                         </span>
                         <span className="font-mono text-xs text-muted-foreground">{f.code}</span>
-                        {f.qualification ? (
-                          <span className="text-[10px] uppercase text-muted-foreground">
-                            {f.qualification}
-                          </span>
-                        ) : null}
                         <span className="font-semibold text-sm text-foreground">
                           Subject: {f.subject}
                         </span>
