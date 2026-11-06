@@ -62,8 +62,26 @@ export const DispaterReconciliationReportSchema = z.object({
   created_at: z.string().optional(),
 });
 
+export const DispaterDocumentIngestionSchema = z.object({
+  authority_state: z.literal("HOLD"),
+  financial_authority: z.literal("NONE"),
+  ingestion_authenticated: z.literal(false),
+  ocr_status: z.string(),
+  ingestion: z.object({
+    source_sha256: z.string(),
+    filename: z.string(),
+    kind: z.string(),
+    processor: z.object({ name: z.string(), version: z.string(), model: z.null(), ocr: z.string() }),
+    provenance: z.array(z.object({ source_sha256: z.string(), row: z.string() }).passthrough()),
+    field_provenance: z.array(z.record(z.any())),
+    limits: z.string(),
+  }),
+  report: DispaterReconciliationReportSchema,
+});
+
 export type DispaterFinding = z.infer<typeof DispaterFindingSchema>;
 export type DispaterReconciliationReport = z.infer<typeof DispaterReconciliationReportSchema>;
+export type DispaterDocumentIngestion = z.infer<typeof DispaterDocumentIngestionSchema>;
 
 export type DispaterDemoState =
   | { status: "IDLE" }

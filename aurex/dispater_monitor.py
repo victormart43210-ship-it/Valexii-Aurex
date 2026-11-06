@@ -9,6 +9,7 @@ from __future__ import annotations
 
 from typing import Any
 
+from aurex import dispater_store
 from aurex.dispater_intelligence import InvalidSnapshot, RevenueLeakageEngine
 
 TABLE_IDS = {
@@ -16,6 +17,8 @@ TABLE_IDS = {
     "invoices": "invoice_id",
     "rates": "rate_id",
     "payments": "payment_id",
+    "equipment": "ticket_id",
+    "labor": "record_id",
 }
 
 
@@ -102,3 +105,43 @@ def monitor_increment(tenant_id: str, baseline: dict[str, Any], additions: dict[
     movement["identified_exposure_usd"] = after["financial_summary"]["identified_exposure_usd"]
     movement["withheld_unresolved_usd"] = after["financial_summary"]["withheld_unresolved_usd"]
     return movement
+
+
+def persist_increment(
+    tenant_id: str,
+    baseline: dict[str, Any],
+    additions: dict[str, Any],
+    source_sha256: str,
+) -> tuple[dict[str, Any], bool]:
+    """Store one monitoring checkpoint. The same source digest is a retry, not a new event."""
+    if not isinstance(source_sha256, str) or len(source_sha256) != 64:
+        raise InvalidSnapshot("source digest must be a sha256 hex string")
+    merged = merge_datasets(baseline, additions)
+    before = RevenueLeakageEngine(tenant_id).reconcile_records(baseline)
+    after = RevenueLeakageEngine(tenant_id).reconcile_records(merged)
+    existing = dispater_store.get_monitor_event(tenant_id, source_sha256)
+    if existing is not None:
+        if existing["checkpoint_sha256"] != after["dataset_sha256"]:
+            raise InvalidSnapshot("conflicting source evidence: digest reused for a different checkpoint")
+        return existing, False
+    stored, _created = dispater_store.save_run(tenant_id, after)
+    movement = diff_findings(before["findings"], after["findings"])
+    payload = {
+        "run_id": stored["run_id"],
+        "receipt_binding": stored.get("receipt_binding"),
+        "dataset_sha256": after["dataset_sha256"],
+        "events": movement["events"],
+        "identified_exposure_usd": after["financial_summary"]["identified_exposure_usd"],
+        "withheld_unresolved_usd": after["financial_summary"]["withheld_unresolved_usd"],
+        "confirmed_recovery_usd": "0.00",
+        "authority_state": "HOLD",
+        "financial_authority": "NONE",
+    }
+    event = dispater_store.save_monitor_event(
+        tenant_id,
+        source_sha256=source_sha256,
+        checkpoint_sha256=after["dataset_sha256"],
+        event_type="INCREMENT",
+        payload=payload,
+    )
+    return event, True

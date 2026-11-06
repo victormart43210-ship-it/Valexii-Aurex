@@ -67,19 +67,47 @@
     },
     {
       "name": "PaddleOCR",
-      "upstream": "not referenced by an import or dependency",
+      "upstream": "not a dependency of this branch",
       "version": "absent",
       "license": "not applicable",
-      "status": "UNAVAILABLE",
-      "role": "not used; PDF and images are rejected"
+      "status": "REJECTED",
+      "role": "not installed. PR #172 names an adapter that was not copied because it does not run OCR.",
+      "country_attribution": "not re-verified in this run"
     },
     {
-      "name": "PDF and spreadsheet parsers",
-      "upstream": "not in pyproject dependencies",
-      "version": "absent",
-      "license": "not applicable",
+      "name": "pypdf",
+      "upstream": "https://github.com/py-pdf/pypdf",
+      "version": "6.21.4 tested; pyproject constraint >=6.21.4,<7",
+      "license": "BSD-3-Clause",
+      "commercial_use": "compatible with the published BSD-3-Clause license; not a legal opinion",
+      "status": "INSTALLED_AND_TESTED",
+      "role": "Digital PDF text extraction only. No JavaScript execution.",
+      "integration": "aurex/dispater_documents.py",
+      "security_limits": "1 MB source, 40 pages, encrypted files rejected, empty pages fail closed",
+      "network": "none",
+      "cost": "$0"
+    },
+    {
+      "name": "openpyxl",
+      "upstream": "https://foss.heptapod.net/openpyxl/openpyxl",
+      "version": "3.1.5 tested; pyproject constraint >=3.1.5,<4",
+      "license": "MIT",
+      "commercial_use": "compatible with the published MIT license; not a legal opinion",
+      "status": "INSTALLED_AND_TESTED",
+      "role": "XLSX cell reading. Macros rejected. Numeric money cells rejected so binary floats are not used.",
+      "integration": "aurex/dispater_documents.py",
+      "security_limits": "8 sheets, 2000 rows, uncompressed zip cap, vbaProject.bin rejected",
+      "network": "none",
+      "cost": "$0"
+    },
+    {
+      "name": "Tesseract OCR",
+      "upstream": "https://github.com/tesseract-ocr/tesseract",
+      "version": "binary not present on this machine",
+      "license": "Apache-2.0 upstream; not executed",
       "status": "UNAVAILABLE",
-      "role": "rejected until a parser is reviewed and pinned"
+      "role": "Scanned PDFs and PNG/JPEG are rejected instead of being treated as extracted",
+      "live_ocr": "NOT RUN"
     },
     {
       "name": "Semgrep",
@@ -98,5 +126,6 @@
       "role": "not installed and not attributed beyond the existing docs",
       "country_attribution": "not re-verified in this run"
     }
-  ]
+  ],
+  "ccxxxix_recheck": "2026-11-06: tesseract, OCRmyPDF, Docling, and PaddleOCR were not installed. No SHA-256 of empty input is evidence that a model exists. OpenTelemetry's Python package imports on this machine and was not wired in. Playwright, OSV-Scanner, Syft, and Semgrep were not on PATH and were not run."
 }

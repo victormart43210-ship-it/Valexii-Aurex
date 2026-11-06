@@ -1,67 +1,44 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "handoff_version": "2.1.0",
-  "operation": "OPERATION_KUSANAGI_CCXXXII_CCXXXIV_CONVERGENCE",
-  "timestamp_utc": "2026-11-06T04:45:00Z",
+  "handoff_version": "2.2.0",
+  "operation": "OPERATION_KUSANAGI_CCXLII_THE_BIG_ONE",
+  "timestamp_utc": "2026-11-06T13:30:00Z",
   "canonical_repository": "victormart43210-ship-it/Valexii-Aurex",
   "base_branch": "main",
   "base_commit_sha": "34cda4bd8f207f5b1284093b87e4760d782a4903",
-  "converged_branch": "work/kusanagi-ccxxxii-pipeline-1185966213576242581",
+  "working_branch": "work/kusanagi-ccxlii-the-big-one",
   "integrated_branches": [
-    "origin/cursor/kusanagi-ccxxxiv-sovereign-beta-4082 (PR #171 candidate)",
-    "work/kusanagi-ccxxxii-pipeline-1185966213576242581 (Jules 6-stage candidate)"
+    "origin/cursor/kusanagi-ccxli-aurex-ascendancy-4082",
+    "work/kusanagi-ccxxxii-pipeline-1185966213576242581"
   ],
-  "target": "36-month industrial source records to document processing to canonical evidence to deterministic financial reconciliation to independent qualification to dashboard to continuous monitoring",
+  "target": "Real-company validation tooling (THE BIG ONE), unified 6-stage industrial pipeline, mathematical ascendancy, and continuous monitoring",
   "system_governance": {
     "production_release": "HOLD",
     "financial_authority": "NONE",
     "external_paid_inference": "OFF",
-    "customer_data": "PROHIBITED",
+    "customer_data": "PROHIBITED_IN_PUBLIC_REPOSITORY",
     "autonomous_production_changes": "PROHIBITED"
   },
   "verification_summary": {
-    "pytest_backend_tests": "664 passed, 1 skipped",
+    "pytest_backend_tests": "691 passed, 1 skipped",
     "ruff_linter_errors": 0,
-    "mypy_strict_errors": "0 across 90 source files in aurex/",
-    "bun_frontend_tests": "156 passed across 23 test files",
+    "mypy_strict_errors": "0 across 103 source files in aurex/",
+    "bun_frontend_tests": "157 passed across 23 test files",
     "bun_production_build": "SUCCESS"
   },
-  "converged_features": {
-    "receipt_v2": {
-      "signed_fields": ["run_id", "created_at", "dataset_sha256", "status", "findings", "limits"],
-      "receipt_binding": "BOUND_V2",
-      "downgrade_prevention": "ENFORCED"
-    },
-    "financial_authority": {
-      "single_engine": "aurex.dispater_intelligence.RevenueLeakageEngine",
-      "exposure_classes": ["POTENTIAL_UNDERBILLING", "POTENTIAL_OVERBILLING", "UNVERIFIED_EXPOSURE"],
-      "single_economic_event_exposure": "ENFORCED",
-      "partial_and_split_payment_checks": "ENFORCED",
-      "unpaid_receivables_as_recovered_cash": "PROHIBITED",
-      "confirmed_recovery_usd": "0.00"
-    },
-    "six_stage_industrial_pipeline": {
-      "stage_1_admission": "aurex/dispater_pipeline.py (5MB limits, SHA-256 byte hashing, tenant grants)",
-      "stage_2_processing": "aurex/dispater_international.py (deterministic structured + PaddleOCR fallback + Qwen advisory)",
-      "stage_3_normalization": "aurex/dispater_envelope.py (dispater.evidence.envelope.v1 with immutable provenance)",
-      "stage_4_reconciliation": "Deterministic Decimal-safe revenue reconciliation",
-      "stage_5_independent_verification": "aurex/evidence_kernel.py (multi-root independence, model self-witness prohibited)",
-      "stage_6_presentation": "NOW -> CHANGED -> NEXT -> WHY -> PROOF dashboard API"
-    },
-    "continuous_monitoring": {
-      "contract_supersession_invalidation": "ENFORCED (aurex/dispater_monitoring.py)",
-      "security_audit_events": "ENFORCED",
-      "incremental_typed_batch_intake": "ENFORCED (aurex/dispater_ingest.py, aurex/dispater_monitor.py)",
-      "historical_audit_mutation": "PROHIBITED"
-    },
-    "verified_36_month_golden_audits": [
-      "tests/test_dispater_golden_audit.py ($385.00 identified exposure, $150.00 withheld, $0.00 confirmed recovery)",
-      "tests/test_dispater_36_month_pipeline.py (72 documents across 36 months, month-7 overbilling, month-19 underbilling, contract invalidation, month-37 continuous intake)"
-    ]
+  "the_big_one_validation_infrastructure": {
+    "module": "aurex/the_big_one.py",
+    "tests": "tests/test_the_big_one_validation.py",
+    "operator_procedure": "docs/operations/THE_BIG_ONE_CHROMEBOOK_OPERATOR_GUIDE.md",
+    "read_only_discovery": "ENFORCED (original files inviolable)",
+    "digital_parsing_support": ["PDF (pypdf)", "XLSX (openpyxl)", "CSV", "JSON"],
+    "ocr_scans": "Categorized as REQUIRES_OCR without pretending mock OCR",
+    "macros": ".xlsm rejected as REJECTED_MACRO",
+    "privacy": "Zero customer records or unredacted line items committed to public GitHub"
   },
   "continuation_directives": [
     "Maintain production release on HOLD pending owner merge authorization",
-    "Review converged candidate PR on work/kusanagi-ccxxxii-pipeline-1185966213576242581",
-    "Run independent witness challenge before customer data admission"
+    "Run THE_BIG ONE private execution procedure on the owner's Chromebook against original records using docs/operations/THE_BIG_ONE_CHROMEBOOK_OPERATOR_GUIDE.md",
+    "Collect aggregate metrics only (file counts, eligibility breakdown, manifest SHA-256) without exposing private customer data"
   ]
 }

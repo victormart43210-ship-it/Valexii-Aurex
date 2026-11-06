@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
 import {
   DispaterConfigError,
+  executeDispaterDocument,
   executeDispaterReconciliation,
   getFixture,
   resolveDispaterConfig,
@@ -55,6 +56,37 @@ describe("dispater server config", () => {
     );
     expect(sent.tenant_id).toBe("tenant-x");
     expect(r.financial_summary.confirmed_recovery_usd).toBe("0.00");
+    const doc = (async (_u: unknown, init?: RequestInit) => {
+      const body = JSON.parse(String(init?.body)) as { tenant_id?: string; kind?: string };
+      expect(body.tenant_id).toBe("tenant-x");
+      expect(body.kind).toBe("csv");
+      return new Response(
+        JSON.stringify({
+          authority_state: "HOLD",
+          financial_authority: "NONE",
+          ingestion_authenticated: false,
+          ocr_status: "NOT_INSTALLED",
+          ingestion: {
+            source_sha256: "ab".repeat(32),
+            filename: "synthetic-invoice.csv",
+            kind: "csv",
+            processor: { name: "dispater_ingest", version: "v1", model: null, ocr: "NOT_INSTALLED" },
+            provenance: [{ source_sha256: "ab".repeat(32), row: "2" }],
+            field_provenance: [],
+            limits: "synthetic",
+          },
+          report: { ...REPORT, tenant_id: "tenant-x" },
+        }),
+        { status: 200 },
+      );
+    }) as typeof fetch;
+    const admitted = await executeDispaterDocument(
+      { serviceUrl: "https://a.example", serviceToken: TOKEN, tenantId: "tenant-x" },
+      doc,
+    );
+    expect(admitted.financial_authority).toBe("NONE");
+    expect(admitted.ingestion_authenticated).toBe(false);
+    expect(admitted.report.financial_summary.confirmed_recovery_usd).toBe("0.00");
     const fail = (async () => new Response("secret internal trace", { status: 500 })) as typeof fetch;
     await expect(
       executeDispaterReconciliation(
