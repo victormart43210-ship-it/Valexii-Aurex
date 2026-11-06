@@ -88,5 +88,6 @@
     "Landing on main requires the unmerged stack and owner approval. This branch is not independently mergeable to main.",
     "Production remains HOLD."
   ],
-  "next_executable_action": "Owner review of the stacked pull request. Do not merge, deploy, download weights, or process historical company rows."
+  "pull_request": "https://github.com/victormart43210-ship-it/Valexii-Aurex/pull/180",
+  "next_executable_action": "Owner review of pull request 180. Do not merge, deploy, download weights, or process historical company rows."
 }

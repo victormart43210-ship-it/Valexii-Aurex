@@ -30,4 +30,6 @@ Do not overwrite `docs/operations/CURSOR_CHATGPT_HANDOFF.json` or `docs/operatio
 
 ## Next action
 
-Wait for an owner review. Production is HOLD. Financial authority is NONE. Independent verification is PENDING.
+Wait for an owner review of draft pull request 180: https://github.com/victormart43210-ship-it/Valexii-Aurex/pull/180
+
+Production is HOLD. Financial authority is NONE. Independent verification is PENDING.
