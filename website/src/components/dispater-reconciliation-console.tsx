@@ -146,6 +146,7 @@ export function DispaterReconciliationConsole() {
             {presentation} · {report.receipt_binding ?? "RECEIPT UNBOUND"} · confirmed recovery stays
             ${report.financial_summary.confirmed_recovery_usd} · withheld $
             {report.financial_summary.withheld_unresolved_usd ?? "0.00"} · XAELI cannot approve recovery
+            · you decide the next action · no vendor is contacted
           </p>
           {/* Exposure and Stats Header */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">

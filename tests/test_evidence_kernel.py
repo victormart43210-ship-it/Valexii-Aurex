@@ -247,7 +247,7 @@ def test_signed_report_key_set_matches_frontend_contract(tmp_path: Path, monkeyp
     assert report is not None
     assert set(report) == {
         "authority_state", "counts", "created_at", "dataset_sha256", "financial_summary", "findings",
-        "human_review_required", "limits", "receipt_auth", "receipt_binding", "receipt_mac",
+        "human_review_required", "limits", "receipt_auth", "receipt_binding", "receipt_class", "receipt_mac",
         "receipt_sha256", "run_id", "schema", "status", "tenant_id",
     }
     assert report["receipt_binding"] == "BOUND_V2"

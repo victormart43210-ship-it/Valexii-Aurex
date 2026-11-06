@@ -26,6 +26,7 @@ export const DispaterFindingSchema = z.object({
   authority: z.string(),
   xaeli_explanation: DispaterXaeliSchema,
   finding_sha256: z.string(),
+  event_relation: z.string().optional(),
 });
 
 export const DispaterReconciliationReportSchema = z.object({
@@ -51,6 +52,7 @@ export const DispaterReconciliationReportSchema = z.object({
     human_confirmed_discrepancy_usd: z.string().optional(),
     confirmed_recovery_usd: z.string(),
     recovery_rate_disclaimer: z.string(),
+    event_separation: z.string().optional(),
   }),
   findings: z.array(DispaterFindingSchema),
   limits: z.string(),
@@ -58,6 +60,7 @@ export const DispaterReconciliationReportSchema = z.object({
   receipt_auth: z.object({ alg: z.string(), kid: z.string(), v: z.number().optional() }).optional(),
   receipt_mac: z.string().optional(),
   receipt_binding: z.string().optional(),
+  receipt_class: z.string().optional(),
   run_id: z.string().optional(),
   created_at: z.string().optional(),
 });

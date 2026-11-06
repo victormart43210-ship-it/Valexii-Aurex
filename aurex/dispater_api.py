@@ -231,6 +231,7 @@ class DocumentRequest(BaseModel):
     filename: str = Field(min_length=1, max_length=180)
     kind: Literal["csv", "json", "pdf", "xlsx", "png", "jpeg"]
     content_base64: str = Field(min_length=1, max_length=2_000_000)
+    declared_byte_length: int | None = Field(default=None, ge=0, le=5_000_000)
 
 
 @router.post("/documents")
@@ -240,6 +241,8 @@ def ingest_document(payload: DocumentRequest, principal: PrincipalDep) -> dict[s
     authorize_tenant(principal, payload.tenant_id)
     try:
         raw = base64.b64decode(payload.content_base64, validate=True)
+        if payload.declared_byte_length is not None and payload.declared_byte_length != len(raw):
+            raise IngestError("declared byte length does not match the received source bytes")
         batch = ingest_source(payload.tenant_id, payload.filename, raw, kind=payload.kind)
         report = RevenueLeakageEngine(tenant_id=payload.tenant_id).reconcile_records(batch["dataset"])
         stored, _created = dispater_store.save_run(payload.tenant_id, report)

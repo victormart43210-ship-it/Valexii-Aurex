@@ -21,6 +21,7 @@ import time
 import uuid
 from contextlib import closing
 from datetime import UTC, datetime, timedelta
+from pathlib import Path
 from typing import Any
 
 from aurex.dispater_intelligence import verify_receipt
@@ -342,7 +343,13 @@ def purge_tenant(tenant_id: str, older_than_days: int | None = None) -> int:
             if conn.in_transaction:
                 conn.execute("ROLLBACK")
             raise
-        return removed
+    remaining = monitor_event_count(tenant_id)
+    if remaining == 0:
+        _write_monitor_head(tenant_id, "0" * 64, 0)
+    else:
+        last = list_monitor_events(tenant_id)[-1]
+        _write_monitor_head(tenant_id, str(last["entry_sha256"]), remaining)
+    return removed
 
 
 def _migrate_monitor_chain(conn: sqlite3.Connection) -> None:
@@ -358,6 +365,53 @@ def _migrate_monitor_chain(conn: sqlite3.Connection) -> None:
         conn.execute("ALTER TABLE dispater_monitor_events ADD COLUMN prev_sha256 TEXT NOT NULL DEFAULT ''")
     if "entry_sha256" not in cols:
         conn.execute("ALTER TABLE dispater_monitor_events ADD COLUMN entry_sha256 TEXT NOT NULL DEFAULT ''")
+
+
+def _monitor_head_path() -> Path:
+    return Path(str(db_path()) + ".monitor-head.json")
+
+
+def _write_monitor_head(tenant_id: str, head: str, count: int) -> None:
+    """Record the chain head outside the event table. The MAC uses the receipt key.
+
+    A reader who can edit only the event table cannot hide a deleted tail. A reader
+    who also holds the receipt key can still rewrite both. This is not an outside witness.
+    """
+    from aurex.dispater_receipt import mac_mapping
+
+    body = {"count": count, "head": head, "tenant_id": tenant_id}
+    kid, mac = mac_mapping(body)
+    path = _monitor_head_path()
+    with _init_lock:
+        current: dict[str, Any] = {}
+        if path.exists():
+            current = json.loads(path.read_text())
+        current[tenant_id] = {**body, "kid": kid, "mac": mac}
+        temporary = path.with_name(path.name + ".tmp")
+        temporary.write_text(json.dumps(current, sort_keys=True))
+        temporary.replace(path)
+
+
+def _monitor_head_agrees(tenant_id: str, events: list[dict[str, Any]]) -> bool:
+    from aurex.dispater_receipt import verify_mapping_mac
+
+    path = _monitor_head_path()
+    if not path.exists():
+        return not events
+    try:
+        stored = json.loads(path.read_text()).get(tenant_id)
+    except (OSError, ValueError):
+        return False
+    if not events:
+        if not isinstance(stored, dict):
+            return True
+        return stored.get("count") == 0 and stored.get("head") == "0" * 64
+    if not isinstance(stored, dict):
+        return False
+    body = {"count": stored.get("count"), "head": stored.get("head"), "tenant_id": tenant_id}
+    if not verify_mapping_mac(body, kid=str(stored.get("kid", "")), mac=str(stored.get("mac", ""))):
+        return False
+    return stored.get("head") == events[-1]["entry_sha256"] and stored.get("count") == len(events)
 
 
 def _chain_digest(body: dict[str, Any]) -> str:
@@ -439,6 +493,11 @@ def save_monitor_event(
             if conn.in_transaction:
                 conn.execute("ROLLBACK")
             raise
+        count_row = conn.execute(
+            "SELECT COUNT(*) AS n FROM dispater_monitor_events WHERE tenant_id=?",
+            (tenant_id,),
+        ).fetchone()
+        _write_monitor_head(tenant_id, entry_sha256, int(count_row["n"]))
         row = conn.execute(
             "SELECT * FROM dispater_monitor_events WHERE event_id=?", (event_id,)
         ).fetchone()
@@ -495,7 +554,7 @@ def verify_monitor_chain(tenant_id: str) -> bool:
         if not verify_mapping_mac(body, kid=str(auth.get("kid", "")), mac=str(auth.get("mac", ""))):
             return False
         previous = event["entry_sha256"]
-    return True
+    return _monitor_head_agrees(tenant_id, list_monitor_events(tenant_id))
 
 
 def get_monitor_event(tenant_id: str, source_sha256: str) -> dict[str, Any] | None:

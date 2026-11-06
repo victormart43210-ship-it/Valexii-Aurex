@@ -644,7 +644,8 @@ class RevenueLeakageEngine:
 
         unbilled_jobs = [job for job in jobs if not by_job_invoices[job["job_id"]]]
         orphan_invoices = [inv for inv in invoices if inv["job_id"] not in job_ids]
-        if len(unbilled_jobs) == 1 and len(invoices) == 1 and len(orphan_invoices) == 1:
+        event_separation = _event_separation(unbilled_jobs, orphan_invoices, findings)
+        if event_separation == "WITHHELD_AMBIGUOUS":
             for finding in findings:
                 if finding["code"] not in {"UNBILLED_JOB", "ORPHAN_INVOICE"}:
                     continue
@@ -655,10 +656,18 @@ class RevenueLeakageEngine:
                 totals[finding["exposure_class"]] -= amount
                 withheld += amount
                 finding["exposure_usd"] = "0.00"
+                finding["event_relation"] = "WITHHELD_AMBIGUOUS"
                 finding["xaeli_explanation"]["changed"] += (
                     " Dollar exposure is withheld because this snapshot cannot prove"
                     " the unbilled job and the orphan invoice are different events."
                 )
+                finding["finding_sha256"] = digest(finding)
+        elif event_separation == "NOT_PROVEN":
+            for finding in findings:
+                if finding["code"] not in {"UNBILLED_JOB", "ORPHAN_INVOICE"}:
+                    continue
+                finding.pop("finding_sha256", None)
+                finding["event_relation"] = "NOT_PROVEN"
                 finding["finding_sha256"] = digest(finding)
         findings.sort(key=lambda x: (SEVERITY_RANK[x["severity"]], x["code"], x["subject"]))
         identified_exposure = sum(totals.values(), Decimal("0.00"))
@@ -686,12 +695,14 @@ class RevenueLeakageEngine:
                 "human_confirmed_discrepancy_usd": "0.00",
                 "confirmed_recovery_usd": "0.00",
                 "recovery_rate_disclaimer": "Identified exposure is a candidate for human review, not confirmed recovery.",
+                "event_separation": event_separation,
             },
             "findings": findings,
             "limits": (
                 "Deterministic synthetic revenue reconciliation only. Not tax, accounting, or legal advice. "
                 "No autonomous changes to ERP/billing software authorized. Human audit signature required."
             ),
+            "receipt_class": "UNSEALED",
         }
         audit_summary["receipt_sha256"] = digest(audit_summary)
         return audit_summary
@@ -923,6 +934,37 @@ class RevenueLeakageEngine:
         return finding_body
 
 
+def _event_separation(
+    unbilled_jobs: list[dict[str, Any]],
+    orphan_invoices: list[dict[str, Any]],
+    findings: list[dict[str, Any]],
+) -> str:
+    """Classify an unbilled job against an orphan invoice without inventing a join.
+
+    A different customer id on both records proves they are distinct. One unbilled job
+    and one orphan invoice with the same dollar amount, and no such proof, are withheld.
+    Different amounts stay in their own findings and are labeled NOT_PROVEN. The golden
+    ledger's $100 unbilled job and $40 orphan invoice are that case.
+    """
+    if not unbilled_jobs or not orphan_invoices:
+        return "NOT_APPLICABLE"
+    job_customers = {job["customer_id"] for job in unbilled_jobs}
+    orphan_customers = [invoice.get("customer_id", "") for invoice in orphan_invoices]
+    if all(customer and customer not in job_customers for customer in orphan_customers):
+        return "PROVEN_DISTINCT"
+    if len(unbilled_jobs) == 1 and len(orphan_invoices) == 1:
+        amounts = {
+            finding["code"]: parse_money(finding["exposure_usd"])
+            for finding in findings
+            if finding["code"] in {"UNBILLED_JOB", "ORPHAN_INVOICE"}
+        }
+        unbilled_amount = amounts.get("UNBILLED_JOB", Decimal("0.00"))
+        orphan_amount = amounts.get("ORPHAN_INVOICE", Decimal("0.00"))
+        if unbilled_amount > 0 and unbilled_amount == orphan_amount:
+            return "WITHHELD_AMBIGUOUS"
+    return "NOT_PROVEN"
+
+
 def verify_receipt(report: dict[str, Any]) -> bool:
     """True when the unkeyed hash matches. A versioned receipt also needs its HMAC.
 
@@ -940,6 +982,7 @@ def verify_receipt(report: dict[str, Any]) -> bool:
         report.get("receipt_auth")
         or report.get("receipt_mac")
         or report.get("receipt_binding") == "BOUND_V2"
+        or report.get("receipt_class") == "SEALED_V2"
     )
     if claims_mac:
         from aurex.dispater_receipt import verify_mac
@@ -958,7 +1001,10 @@ def receipt_authenticity(report: dict[str, Any]) -> str:
     if not sha_ok:
         return "FAIL"
     claims = bool(
-        report.get("receipt_auth") or report.get("receipt_mac") or report.get("receipt_binding") == "BOUND_V2"
+        report.get("receipt_auth")
+        or report.get("receipt_mac")
+        or report.get("receipt_binding") == "BOUND_V2"
+        or report.get("receipt_class") == "SEALED_V2"
     )
     if not claims:
         return "NONE"

@@ -10,7 +10,12 @@ from fastapi.testclient import TestClient
 
 from aurex import dispater_store
 from aurex.api import app
-from aurex.customer_sovereignty import external_contact, financial_action, training_reuse
+from aurex.customer_sovereignty import (
+    SovereigntyError,
+    external_contact,
+    financial_action,
+    training_reuse,
+)
 from aurex.dispater_intelligence import (
     RevenueLeakageEngine,
     digest,
@@ -20,6 +25,7 @@ from aurex.dispater_intelligence import (
 from aurex.dispater_monitor import persist_increment
 from aurex.dispater_receipt import seal_run
 from aurex.dispater_store import _chain_digest
+from aurex.egress import destination_allowed, transmit_financial_record
 
 TOKEN_A = "a" * 32
 
@@ -107,8 +113,14 @@ def test_stripped_receipt_is_integrity_only() -> None:
     stripped = {key: value for key, value in sealed.items() if key not in {"receipt_auth", "receipt_mac", "receipt_binding", "run_id", "created_at"}}
     body = {key: value for key, value in stripped.items() if key != "receipt_sha256"}
     stripped["receipt_sha256"] = digest(body)
-    assert verify_receipt(stripped) is True
-    assert receipt_authenticity(stripped) == "NONE"
+    assert stripped["receipt_class"] == "SEALED_V2"
+    assert verify_receipt(stripped) is False
+    assert receipt_authenticity(stripped) == "FAIL"
+    downgraded = {key: value for key, value in stripped.items() if key != "receipt_class"}
+    downgraded_body = {key: value for key, value in downgraded.items() if key != "receipt_sha256"}
+    downgraded["receipt_sha256"] = digest(downgraded_body)
+    assert verify_receipt(downgraded) is True
+    assert receipt_authenticity(downgraded) == "NONE"
 
 
 def test_monitor_mac_rejects_a_rehashed_payload(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
@@ -152,3 +164,40 @@ def test_monitor_mac_rejects_a_rehashed_payload(tmp_path: Path, monkeypatch: pyt
     assert dispater_store.purge_tenant("tenant-a") >= 0
     assert dispater_store.monitor_event_count("tenant-a") == 0
     assert dispater_store.list_runs("tenant-a") == []
+
+
+def test_table_only_truncation_fails_the_chain_head(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("AUREX_DISPATER_DB", str(tmp_path / "chain.db"))
+    persist_increment("tenant-a", _dataset(), {"tenant_id": "tenant-a", "dataset_type": "SYNTHETIC_ONLY"}, "ef" * 32)
+    assert dispater_store.verify_monitor_chain("tenant-a")
+    conn = sqlite3.connect(tmp_path / "chain.db")
+    conn.execute("DELETE FROM dispater_monitor_events")
+    conn.commit()
+    conn.close()
+    assert dispater_store.verify_monitor_chain("tenant-a") is False
+
+
+def test_declared_source_length_and_financial_egress_are_refused(client: TestClient) -> None:
+    import base64
+
+    denied = client.post(
+        "/v1/dispater/documents",
+        headers=_headers(TOKEN_A),
+        json={
+            "tenant_id": "tenant-a",
+            "filename": "rows.csv",
+            "kind": "csv",
+            "content_base64": base64.b64encode(b"abc").decode(),
+            "declared_byte_length": 99,
+        },
+    )
+    assert denied.status_code == 400
+    assert "byte length" in denied.text
+    assert destination_allowed("http://203.0.113.10:80/v1", purpose="LOCAL_INFERENCE") is False
+    assert destination_allowed("http://127.0.0.1:8080", purpose="EXPORT_FINANCIAL") is False
+    try:
+        transmit_financial_record("http://203.0.113.10/hook", {"invoice_id": "I1"})
+    except SovereigntyError as exc:
+        assert exc.reason == "FINANCIAL_EGRESS_PROHIBITED"
+    else:
+        raise AssertionError("financial egress")

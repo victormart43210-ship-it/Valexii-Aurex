@@ -262,6 +262,73 @@ def test_bound_receipt_cannot_drop_its_mac() -> None:
     assert verify_receipt(stripped) is False
 
 
+def test_equal_unbilled_and_orphan_amounts_are_withheld_beside_a_matched_invoice() -> None:
+    report = RevenueLeakageEngine("tenant-a").reconcile_records(
+        {
+            "tenant_id": "tenant-a",
+            "dataset_type": "SYNTHETIC_ONLY",
+            "jobs": [
+                {"job_id": "J1", "customer_id": "C1", "service_code": "S", "date": "2026-03-01"},
+                {"job_id": "J2", "customer_id": "C1", "service_code": "S", "date": "2026-03-02"},
+            ],
+            "rates": [
+                {
+                    "rate_id": "R1",
+                    "customer_id": "C1",
+                    "service_code": "S",
+                    "start": "2026-01-01",
+                    "end": "2026-12-31",
+                    "amount": "100.00",
+                }
+            ],
+            "invoices": [
+                {"invoice_id": "I1", "job_id": "J1", "amount": "100.00", "status": "open"},
+                {"invoice_id": "I9", "job_id": "MISSING", "amount": "100.00", "status": "open"},
+            ],
+            "payments": [],
+        }
+    )
+    summary = report["financial_summary"]
+    assert summary["identified_exposure_usd"] == "0.00"
+    assert summary["withheld_unresolved_usd"] == "200.00"
+    assert summary["event_separation"] == "WITHHELD_AMBIGUOUS"
+    assert summary["confirmed_recovery_usd"] == "0.00"
+
+
+def test_a_different_customer_keeps_the_unbilled_job_and_the_orphan_invoice() -> None:
+    report = RevenueLeakageEngine("tenant-a").reconcile_records(
+        {
+            "tenant_id": "tenant-a",
+            "dataset_type": "SYNTHETIC_ONLY",
+            "jobs": [{"job_id": "J1", "customer_id": "C1", "service_code": "S", "date": "2026-03-01"}],
+            "rates": [
+                {
+                    "rate_id": "R1",
+                    "customer_id": "C1",
+                    "service_code": "S",
+                    "start": "2026-01-01",
+                    "end": "2026-12-31",
+                    "amount": "100.00",
+                }
+            ],
+            "invoices": [
+                {
+                    "invoice_id": "I9",
+                    "job_id": "MISSING",
+                    "customer_id": "C2",
+                    "amount": "100.00",
+                    "status": "open",
+                }
+            ],
+            "payments": [],
+        }
+    )
+    summary = report["financial_summary"]
+    assert summary["identified_exposure_usd"] == "200.00"
+    assert summary["event_separation"] == "PROVEN_DISTINCT"
+    assert summary["confirmed_recovery_usd"] == "0.00"
+
+
 def test_one_unbilled_job_and_one_orphan_invoice_are_withheld() -> None:
     report = RevenueLeakageEngine("tenant-a").reconcile_records(
         {

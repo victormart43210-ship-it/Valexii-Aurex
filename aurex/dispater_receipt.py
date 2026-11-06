@@ -96,6 +96,7 @@ def seal_run(report: dict[str, Any], *, run_id: str, created_at: str) -> dict[st
     body["run_id"] = run_id
     body["created_at"] = created_at
     body["receipt_binding"] = "BOUND_V2"
+    body["receipt_class"] = "SEALED_V2"
     body["receipt_sha256"] = _content_digest(body)
     body["receipt_auth"] = {"alg": ALGORITHM, "kid": kid, "v": 2}
     body["receipt_mac"] = _mac(key, body)
