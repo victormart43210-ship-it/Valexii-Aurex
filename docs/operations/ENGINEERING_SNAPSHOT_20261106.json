@@ -1,0 +1,50 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "snapshot_version": "1.0.0",
+  "snapshot_date": "2026-11-06",
+  "operation": "OPERATION_KUSANAGI_CCXLV",
+  "source_repository": "victormart43210-ship-it/Valexii-Aurex",
+  "base_commit_sha": "34cda4bd8f207f5b1284093b87e4760d782a4903",
+  "governance_locks": {
+    "production_release": "HOLD",
+    "financial_authority": "NONE",
+    "external_paid_inference": "OFF",
+    "uncontrolled_model_training": "DISABLED",
+    "customer_data_uploads": "PROHIBITED"
+  },
+  "verification_status": {
+    "backend_pytest_tests": "694 passed, 1 skipped",
+    "ruff_linter_errors": 0,
+    "mypy_strict_errors": "0 across 104 source files in aurex/",
+    "bun_frontend_tests": "157 passed across 23 test files",
+    "bun_production_build": "SUCCESS"
+  },
+  "subsystem_status": {
+    "the_big_one_validation": {
+      "status": "IMPLEMENTED_AND_TESTED",
+      "operator_guide": "docs/operations/THE_BIG_ONE_CHROMEBOOK_OPERATOR_GUIDE.md",
+      "real_data_admitted": "NONE (SYNTHETIC FIXTURES ONLY)"
+    },
+    "dispater_industrial_pipeline": {
+      "status": "CONVERGED_AND_TESTED",
+      "stages_implemented": 6,
+      "reconciliation_engine": "RevenueLeakageEngine",
+      "receipt_version": "BOUND_V2"
+    },
+    "ascendancy_mathematics": {
+      "status": "CONVERGED_AND_TESTED",
+      "provenance_kernel": "aurex.ascendancy"
+    },
+    "continuous_monitoring": {
+      "status": "CONVERGED_AND_TESTED",
+      "contract_supersession": "ACTIVE",
+      "historical_preservation": "ENFORCED"
+    },
+    "aurex_ox_model_laboratory": {
+      "status": "FIRST_IMPLEMENTATION_VERIFIED",
+      "catalog_entries_count": 10,
+      "offline_benchmark_runner": "ACTIVE",
+      "hallucination_detection": "ACTIVE"
+    }
+  }
+}

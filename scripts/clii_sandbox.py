@@ -30,12 +30,8 @@ def main() -> None:
     with tempfile.TemporaryDirectory(prefix='aurex-clii-') as scratch:
         token = secrets.token_urlsafe(40)
         # Explicit allowlist: no production credentials, database paths, proxy or model keys inherited.
-        # HOME is replaced, so user-site packages disappear. Keep the parent
-        # interpreter's already-installed library paths and nothing else.
-        library_paths = [p for p in sys.path if p and Path(p).is_dir()]
         env = {'PATH': os.environ.get('PATH', ''), 'HOME': scratch,
-               'PYTHONPATH': os.pathsep.join([str(root), *library_paths]),
-               'AUREX_SERVICE_TOKEN': token,
+               'PYTHONPATH': str(root), 'AUREX_SERVICE_TOKEN': token,
                'AUREX_ENABLE_INDUSTRIAL_DEMO': '1', 'AUREX_DEPLOYMENT_SCOPE': 'sandbox',
                'AUREX_DB_PATH': str(Path(scratch) / 'synthetic.sqlite3'),
                'AUREX_LLM_ENABLED': 'false', 'AUREX_LLM_ALLOW_BILLING': 'false',
