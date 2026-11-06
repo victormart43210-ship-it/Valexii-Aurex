@@ -1,0 +1,46 @@
+{
+  "schema_version": "1.0",
+  "operation_id": "KUSANAGI_CCXXXVI",
+  "repository": "https://github.com/victormart43210-ship-it/Valexii-Aurex",
+  "branch": "work/ccxxxvi-continuity-verification",
+  "base_sha": "34cda4bd8f207f5b1284093b87e4760d782a4903",
+  "latest_checkpoint_sha": null,
+  "checkpoint_timestamp_utc": "2026-11-06T11:49:17.926283+00:00",
+  "active_pr": null,
+  "current_phase": "BASELINE_PERSISTENCE",
+  "last_completed_task": "C36-001: verified canonical remote, main, open #168-#172 and isolated branch",
+  "next_task": "Push continuity commit and verify remote HEAD; then pin clean checkouts for #171 and #172 review",
+  "completed_tasks": [
+    "C36-001"
+  ],
+  "pending_tasks": [
+    "C36-002",
+    "C36-003",
+    "C36-004",
+    "C36-005"
+  ],
+  "blockers": [
+    "Cursor CCXXXV branch not yet observed; recheck before touching product files",
+    "PR #171 and Jules #172 overlap; neither integrated",
+    "Prior CCXXV work remains in separate local worktree pending archival checkpoint",
+    "Independent verification REVIEW_PENDING; no commercial or staging validation"
+  ],
+  "changed_files": [
+    "docs/operations/WORK_CONTINUITY/RESUME.md",
+    "docs/operations/WORK_CONTINUITY/CHECKPOINT.json",
+    "docs/operations/WORK_CONTINUITY/PROGRESS_LOG.md",
+    "docs/operations/WORK_CONTINUITY/TASK_LEDGER.json",
+    "docs/operations/WORK_CONTINUITY/VERIFICATION.json",
+    "docs/operations/WORK_CONTINUITY/DEPENDENCY_MAP.md"
+  ],
+  "test_results": [],
+  "independent_review_status": "REVIEW_PENDING",
+  "cursor_overlap": {
+    "pr_170": "d2e3df77f72fffc00efcb72b6cc87716b2f04bc0",
+    "pr_171": "db4670ab78fa36c8a2b4b8b66df842350440e437",
+    "jules_pr_172": "46befcb04d2a98633876b4239775bedbf0b265ca",
+    "policy": "Work owns continuity and new verification artifacts only; no runtime edits"
+  },
+  "production_authority": "HOLD",
+  "financial_authority": "NONE"
+}

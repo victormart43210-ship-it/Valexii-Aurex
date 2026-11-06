@@ -1,0 +1,73 @@
+{
+  "schema_version": "1.0",
+  "tasks": [
+    {
+      "task_id": "C36-001",
+      "description": "Inspect current repository and active ownership",
+      "priority": "P0",
+      "dependencies": [],
+      "assigned_owner": "ChatGPT Work",
+      "status": "IMPLEMENTED",
+      "branch": "work/ccxxxvi-continuity-verification",
+      "commit_sha": null,
+      "verification_status": "NOT_VERIFIED",
+      "blockers": []
+    },
+    {
+      "task_id": "C36-002",
+      "description": "Persist and verify continuity infrastructure",
+      "priority": "P0",
+      "dependencies": [
+        "C36-001"
+      ],
+      "assigned_owner": "ChatGPT Work",
+      "status": "IN_PROGRESS",
+      "branch": "work/ccxxxvi-continuity-verification",
+      "commit_sha": null,
+      "verification_status": "NOT_VERIFIED",
+      "blockers": []
+    },
+    {
+      "task_id": "C36-003",
+      "description": "Preserve prior useful local CCXXV work as superseded archive",
+      "priority": "P0",
+      "dependencies": [
+        "C36-002"
+      ],
+      "assigned_owner": "ChatGPT Work",
+      "status": "NOT_STARTED",
+      "branch": "work/ccxxxvi-continuity-verification",
+      "commit_sha": null,
+      "verification_status": "NOT_VERIFIED",
+      "blockers": []
+    },
+    {
+      "task_id": "C36-004",
+      "description": "Independently challenge pinned Cursor #171 and Jules #172 with reproducible artifacts",
+      "priority": "P0",
+      "dependencies": [
+        "C36-002"
+      ],
+      "assigned_owner": "ChatGPT Work",
+      "status": "NOT_STARTED",
+      "branch": "work/ccxxxvi-continuity-verification",
+      "commit_sha": null,
+      "verification_status": "NOT_VERIFIED",
+      "blockers": []
+    },
+    {
+      "task_id": "C36-005",
+      "description": "Run compatible backend/frontend verification and final remote checkpoint",
+      "priority": "P1",
+      "dependencies": [
+        "C36-004"
+      ],
+      "assigned_owner": "ChatGPT Work",
+      "status": "NOT_STARTED",
+      "branch": "work/ccxxxvi-continuity-verification",
+      "commit_sha": null,
+      "verification_status": "NOT_VERIFIED",
+      "blockers": []
+    }
+  ]
+}
