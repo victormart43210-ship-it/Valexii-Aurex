@@ -40,7 +40,8 @@ def promotion_decision(
     """A model actor cannot promote itself, and this operation does not start training."""
     if method not in METHODS:
         raise CustomizationError("unknown customization method")
-    allowed = actor == "HUMAN" and evaluation_verified_by_other_party and method != "fine_tune"
+    # The actor string is not an authenticated customer. Nothing is promoted.
+    _ = (actor, evaluation_verified_by_other_party)
     return {
         "actor": actor,
         "method": method,
@@ -48,7 +49,9 @@ def promotion_decision(
         "deployed": False,
         "training_started": False,
         "weights_downloaded": False,
-        "eligible_for_synthetic_config": allowed,
-        "approval_state": "CANDIDATE" if not allowed else "SYNTHETIC_CONFIG_ONLY",
+        "eligible_for_synthetic_config": False,
+        "identity_verification": "UNVERIFIED",
+        "approval_state": "CANDIDATE",
         "financial_authority": "NONE",
+        "customer_data_in_training": False,
     }

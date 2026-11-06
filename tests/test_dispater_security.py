@@ -332,5 +332,9 @@ def test_financial_authority_remains_disabled(client: TestClient) -> None:
         "production_release": "HOLD",
         "financial_authority": "NONE",
         "external_paid_inference": "OFF",
+        "third_party_contact": "NONE",
+        "training_reuse": "NOT_AUTHORIZED",
+        "deletion": "NOT_IMPLEMENTED",
+        "customer_decides": True,
     }
     assert d["confirmed_recovery_usd"] == "0.00"

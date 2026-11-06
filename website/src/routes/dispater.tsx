@@ -115,6 +115,12 @@ function Dispater() {
           <DispaterActions />
         </div>
         <p className="mt-3 text-xs leading-6 text-muted-foreground">
+          DISPATER discovers discrepancies. You decide what to do. This page does not contact
+          vendors, operators, or customers about findings, and it does not start collections,
+          disputes, or payments. Potential exposure is not confirmed recovery. Records submitted
+          here are not used to train models. Encryption and zero-standing-access are not claimed.
+        </p>
+        <p className="mt-3 text-xs leading-6 text-muted-foreground">
           Audit and consultation links open a contact request; no appointment is booked
           automatically. Please do not send confidential financial, payroll, driver, or tax records.
         </p>

@@ -32,6 +32,9 @@ const ROWS = [
   ["Historical records", "NOT PROCESSED", "The private validation dataset stays closed. Local validation is not activated."],
   ["Live model connection", "NOT VERIFIED", "A mocked evaluation is not a live model."],
   ["Paid inference", "OFF", "The laboratory does not call a paid provider."],
+  ["Customer decision", "REQUIRED", "The software does not contact third parties or take a financial action on its own."],
+  ["Training reuse", "NOT AUTHORIZED", "Customer records are not a training set."],
+  ["Privacy claim", "LIMITED", "Tenant bearer tokens isolate API reads. Zero-knowledge encryption is not claimed."],
 ] as const;
 
 function DevelopmentStatus() {

@@ -27,6 +27,8 @@ def _auth(purpose: str, privacy: str, *, kind: str = "HUMAN", expires: datetime 
         "expires_at": NOW + timedelta(days=1) if expires is None else expires,
         "grantor_kind": kind,
         "reviewer_id": "reviewer-1",
+        "action": "SYNTHETIC_AUDIT_READ" if purpose == "SYNTHETIC_VALIDATION" else "HISTORICAL_REVIEW_READ",
+        "scope": "tenant-asc:rows",
     }
 
 
@@ -101,7 +103,11 @@ def test_historical_rows_are_admitted_by_digest_and_not_processed() -> None:
     assert dossier["admitted_row_byte_length_matches"] is True
     assert dossier["byte_length_scope"] == "NORMALIZED_ROWS_NOT_SOURCE_FILE"
     assert dossier["grantor_verified"] is False
+    assert dossier["authority_verification"] == "UNVERIFIED"
+    assert dossier["reviewer_binding"] == "TOKEN_NOT_SIGNATURE"
     assert dossier["synthetic_label_verified"] is False
+    assert dossier["dataset_classification_verification"] == "UNVERIFIED"
+    assert dossier["third_party_contact"] == "NONE"
     assert "jobs" not in dossier
     assert dossier["confirmed_recovery_usd"] == "0.00"
 

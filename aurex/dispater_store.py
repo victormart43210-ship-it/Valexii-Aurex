@@ -168,6 +168,10 @@ def _verified(row: sqlite3.Row) -> dict[str, Any]:
         or report.get("status") != row["status"]
     ):
         raise IntegrityError("stored audit report failed integrity verification")
+    from aurex.dispater_intelligence import receipt_authenticity
+
+    if receipt_authenticity(report) != "MAC":
+        raise IntegrityError("stored audit report is not an authenticated receipt")
     version = receipt_version(report)
     if version is None:
         raise IntegrityError("unknown receipt version")
@@ -380,6 +384,7 @@ def save_monitor_event(
                 (tenant_id,),
             ).fetchone()
             prev_sha256 = previous["entry_sha256"] if previous else "0" * 64
+            recorded.pop("chain_auth", None)
             chain_body = {
                 "event_id": event_id,
                 "tenant_id": tenant_id,
@@ -392,6 +397,11 @@ def save_monitor_event(
                 "actor": "SYSTEM",
             }
             entry_sha256 = _chain_digest(chain_body)
+            from aurex.dispater_receipt import mac_mapping
+
+            kid, mac = mac_mapping(chain_body)
+            stored_payload = dict(recorded)
+            stored_payload["chain_auth"] = {"alg": "HMAC-SHA256", "kid": kid, "mac": mac}
             conn.execute(
                 "INSERT INTO dispater_monitor_events VALUES (?,?,?,?,?,?,?,?,?)",
                 (
@@ -400,7 +410,7 @@ def save_monitor_event(
                     source_sha256,
                     checkpoint_sha256,
                     event_type,
-                    json.dumps(recorded, sort_keys=True),
+                    json.dumps(stored_payload, sort_keys=True),
                     created_at,
                     prev_sha256,
                     entry_sha256,
@@ -435,7 +445,11 @@ def _monitor_row(row: sqlite3.Row) -> dict[str, Any]:
 
 
 def verify_monitor_chain(tenant_id: str) -> bool:
-    """True when every stored event links to its predecessor and its hash still matches."""
+    """True when the unkeyed hash and the server MAC both match.
+
+    The MAC shows a holder of the receipt key wrote the event. It is not a human
+    signature and it does not prove the underlying records are true.
+    """
     previous = "0" * 64
     for event in list_monitor_events(tenant_id):
         if event["prev_sha256"] != previous or event["actor"] != "SYSTEM":
@@ -451,7 +465,16 @@ def verify_monitor_chain(tenant_id: str) -> bool:
             "prev_sha256": event["prev_sha256"],
             "actor": "SYSTEM",
         }
+        payload = dict(event["payload"])
+        auth = payload.pop("chain_auth", None)
+        body["payload"] = payload
         if _chain_digest(body) != event["entry_sha256"]:
+            return False
+        if not isinstance(auth, dict) or auth.get("alg") != "HMAC-SHA256":
+            return False
+        from aurex.dispater_receipt import verify_mapping_mac
+
+        if not verify_mapping_mac(body, kid=str(auth.get("kid", "")), mac=str(auth.get("mac", ""))):
             return False
         previous = event["entry_sha256"]
     return True

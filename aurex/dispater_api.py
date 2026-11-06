@@ -40,8 +40,14 @@ from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field, field_validator
 
 from aurex import dispater_store
+from aurex.customer_sovereignty import assert_no_effect
 from aurex.dispater_ingest import IngestError, ingest_source
-from aurex.dispater_intelligence import InvalidSnapshot, RevenueLeakageEngine, report_to_csv
+from aurex.dispater_intelligence import (
+    InvalidSnapshot,
+    RevenueLeakageEngine,
+    receipt_authenticity,
+    report_to_csv,
+)
 
 logger = logging.getLogger("aurex.dispater")
 
@@ -116,6 +122,10 @@ SYSTEM_STATE = {
     "production_release": "HOLD",
     "financial_authority": "NONE",
     "external_paid_inference": "OFF",
+    "third_party_contact": "NONE",
+    "training_reuse": "NOT_AUTHORIZED",
+    "deletion": "NOT_IMPLEMENTED",
+    "customer_decides": True,
 }
 
 
@@ -192,13 +202,14 @@ class ReconciliationRequest(BaseModel):
         return v
 
 
-def _internal_error(op: str) -> HTTPException:
-    logger.exception("dispater %s failed", op)
+def _internal_error(op: str, exc: BaseException | None = None) -> HTTPException:
+    logger.error("dispater %s failed (%s)", op, type(exc).__name__ if exc else "error")
     return HTTPException(status.HTTP_500_INTERNAL_SERVER_ERROR, "Internal DISPATER error")
 
 
 @router.post("/reconciliation")
 def run_reconciliation(payload: ReconciliationRequest, principal: PrincipalDep) -> dict[str, Any]:
+    assert_no_effect()
     authorize_tenant(principal, payload.tenant_id)
     try:
         report = RevenueLeakageEngine(tenant_id=payload.tenant_id).reconcile_records(
@@ -207,11 +218,11 @@ def run_reconciliation(payload: ReconciliationRequest, principal: PrincipalDep) 
     except InvalidSnapshot as exc:
         raise HTTPException(status.HTTP_400_BAD_REQUEST, str(exc)) from exc
     except Exception as exc:
-        raise _internal_error("reconciliation") from exc
+        raise _internal_error("reconciliation", exc) from exc
     try:
         stored, _created = dispater_store.save_run(payload.tenant_id, report)
     except Exception as exc:
-        raise _internal_error("persistence") from exc
+        raise _internal_error("persistence", exc) from exc
     return stored
 
 
@@ -225,6 +236,7 @@ class DocumentRequest(BaseModel):
 @router.post("/documents")
 def ingest_document(payload: DocumentRequest, principal: PrincipalDep) -> dict[str, Any]:
     """Ingest one synthetic document and reconcile it. The wrapper is not the receipt."""
+    assert_no_effect()
     authorize_tenant(principal, payload.tenant_id)
     try:
         raw = base64.b64decode(payload.content_base64, validate=True)
@@ -234,7 +246,7 @@ def ingest_document(payload: DocumentRequest, principal: PrincipalDep) -> dict[s
     except (IngestError, InvalidSnapshot) as exc:
         raise HTTPException(status.HTTP_400_BAD_REQUEST, str(exc)) from exc
     except Exception as exc:
-        raise _internal_error("document ingestion") from exc
+        raise _internal_error("document ingestion", exc) from exc
     return {
         "authority_state": "HOLD",
         "financial_authority": "NONE",
@@ -248,6 +260,9 @@ def ingest_document(payload: DocumentRequest, principal: PrincipalDep) -> dict[s
             "provenance": batch["provenance"],
             "field_provenance": batch["field_provenance"],
             "limits": batch["limits"],
+            "byte_length": batch["byte_length"],
+            "byte_length_matches_received_bytes": batch["byte_length_matches_received_bytes"],
+            "caller_declared_byte_length_accepted": False,
         },
         "report": stored,
     }
@@ -257,7 +272,7 @@ def _latest(tenant_id: str) -> dict[str, Any] | None:
     try:
         return dispater_store.latest_run(tenant_id)
     except Exception as exc:
-        raise _internal_error("read") from exc
+        raise _internal_error("read", exc) from exc
 
 
 @router.get("/findings")
@@ -333,7 +348,7 @@ def get_runs(
     try:
         runs = dispater_store.list_runs(tenant_id, limit)
     except Exception as exc:
-        raise _internal_error("history") from exc
+        raise _internal_error("history", exc) from exc
     return {"tenant_id": tenant_id, "runs": runs, "count": len(runs)}
 
 
@@ -341,7 +356,7 @@ def _run_or_404(tenant_id: str, run_id: str) -> dict[str, Any]:
     try:
         run = dispater_store.get_run(tenant_id, run_id)
     except Exception as exc:
-        raise _internal_error("read") from exc
+        raise _internal_error("read", exc) from exc
     if not run:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "Run not found")
     return run
@@ -364,8 +379,24 @@ def export_run(
     tenant_id: TenantQuery,
     format: Literal["json", "csv"] = "json",
 ) -> Response | dict[str, Any]:
+    assert_no_effect()
     authorize_tenant(principal, tenant_id)
     run = _run_or_404(tenant_id, run_id)
     if format == "csv":
-        return Response(report_to_csv(run), media_type="text/csv")
-    return run
+        return Response(
+            report_to_csv(run),
+            media_type="text/csv",
+            headers={
+                "Cache-Control": "no-store",
+                "X-Aurex-Third-Party-Release": "none",
+                "X-Aurex-Training-Reuse": "not-authorized",
+            },
+        )
+    return {
+        "export_authorization": "TENANT_BEARER",
+        "third_party_release": False,
+        "training_reuse": "NOT_AUTHORIZED",
+        "deletion": "NOT_IMPLEMENTED",
+        "receipt_authenticity": receipt_authenticity(run),
+        "report": run,
+    }

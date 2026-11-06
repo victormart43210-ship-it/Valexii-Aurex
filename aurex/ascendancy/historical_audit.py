@@ -42,15 +42,15 @@ def require_authorization(authorization: Mapping[str, Any], now: datetime) -> No
     expires = authorization.get("expires_at")
     if not isinstance(expires, datetime) or expires.tzinfo is None or expires.utcoffset() is None:
         raise AuditAuthorizationError("expiry needs a timezone")
-    if expires <= now:
-        raise AuditAuthorizationError("authorization is expired")
     real_now = datetime.now(UTC)
+    if abs(now - real_now) > timedelta(minutes=2):
+        raise AuditAuthorizationError("a caller clock is not a freshness authority")
     if expires <= real_now:
         raise AuditAuthorizationError("authorization is expired")
-    if abs(now - real_now) > timedelta(hours=48):
-        raise AuditAuthorizationError("decision clock is not fresh")
     if expires - real_now > timedelta(days=7):
         raise AuditAuthorizationError("authorization lifetime is too long")
+    if authorization.get("grantor_verified") is True or str(authorization.get("authority_verification", "")).upper() == "VERIFIED":
+        raise AuditAuthorizationError("a caller cannot verify its own authority")
     purpose = authorization.get("purpose")
     privacy = authorization.get("privacy_control")
     if purpose == "SYNTHETIC_VALIDATION" and privacy != "SYNTHETIC_ONLY":
@@ -70,6 +70,15 @@ def require_authorization(authorization: Mapping[str, Any], now: datetime) -> No
         raise AuditAuthorizationError("a human reviewer id is required")
     if reviewer.casefold() in {"human", "model", "system", "agent"} or reviewer in {auth_id, tenant}:
         raise AuditAuthorizationError("the reviewer id is not an independent person")
+    expected_action = {
+        "SYNTHETIC_VALIDATION": "SYNTHETIC_AUDIT_READ",
+        "AUTHORIZED_HISTORICAL_REVIEW": "HISTORICAL_REVIEW_READ",
+    }[str(purpose)]
+    if authorization.get("action") != expected_action:
+        raise AuditAuthorizationError("the action does not match the purpose")
+    scope = authorization.get("scope")
+    if not isinstance(scope, str) or not scope.startswith(f"{tenant}:"):
+        raise AuditAuthorizationError("the scope is not bound to the tenant")
 
 
 def normalize_invoices(
@@ -182,7 +191,14 @@ def run_authorized_audit(
         "admitted_row_byte_length_matches": True,
         "byte_length_scope": "NORMALIZED_ROWS_NOT_SOURCE_FILE",
         "grantor_verified": False,
+        "authority_verification": "UNVERIFIED",
+        "reviewer_binding": "TOKEN_NOT_SIGNATURE",
         "synthetic_label_verified": False,
+        "dataset_classification_verification": "UNVERIFIED",
+        "action": authorization.get("action"),
+        "scope": authorization.get("scope"),
+        "third_party_contact": "NONE",
+        "financial_action": "NONE",
         "read_only": True,
         "export_allowed": False,
         "rows_returned": False,

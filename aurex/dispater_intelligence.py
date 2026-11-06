@@ -948,6 +948,25 @@ def verify_receipt(report: dict[str, Any]) -> bool:
     return True
 
 
+def receipt_authenticity(report: dict[str, Any]) -> str:
+    """MAC, NONE, or FAIL. A matching unkeyed hash is NONE, not a signature."""
+    body = {k: v for k, v in report.items() if k not in ("receipt_sha256", "receipt_auth", "receipt_mac")}
+    try:
+        sha_ok = hmac_equal(digest(body), str(report.get("receipt_sha256", "")))
+    except (TypeError, ValueError):
+        return "FAIL"
+    if not sha_ok:
+        return "FAIL"
+    claims = bool(
+        report.get("receipt_auth") or report.get("receipt_mac") or report.get("receipt_binding") == "BOUND_V2"
+    )
+    if not claims:
+        return "NONE"
+    from aurex.dispater_receipt import verify_mac
+
+    return "MAC" if verify_mac(report) else "FAIL"
+
+
 def hmac_equal(a: str, b: str) -> bool:
     import hmac
 

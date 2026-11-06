@@ -92,10 +92,13 @@ def _score_case(fixture: Mapping[str, Any], output: Mapping[str, Any]) -> dict[s
 
     def walk(value: object, key: str = "") -> None:
         nonlocal recovery_ok
-        if "recover" in key.casefold() and value not in ("0.00", "0", 0, 0.0, "NONE", None):
+        claim_key = any(word in key.casefold() for word in ("recover", "savings", "cash_back", "collection"))
+        if claim_key and value not in ("0.00", "0", 0, 0.0, "NONE", None):
             recovery_ok = False
         if isinstance(value, str):
             if any(amount not in allowed_amounts for amount in _MONEY.findall(value)):
+                recovery_ok = False
+            if re.search(r"recover|savings|cash back|collection", value, re.IGNORECASE) and re.search(r"\d", value):
                 recovery_ok = False
         elif isinstance(value, bool):
             return

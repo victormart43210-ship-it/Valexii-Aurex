@@ -112,6 +112,25 @@ def receipt_version(report: dict[str, Any]) -> int | None:
     return None
 
 
+def mac_mapping(body: dict[str, Any]) -> tuple[str, str]:
+    """MAC a canonical mapping with the active receipt key. This is not a human signature."""
+    kid, key = _active_key()
+    digest = hmac.new(key, _canonical(body), hashlib.sha256).hexdigest()
+    return kid, digest
+
+
+def verify_mapping_mac(body: dict[str, Any], *, kid: str, mac: str) -> bool:
+    """True when ``mac`` matches ``body`` under a configured key. Never raises."""
+    try:
+        key = _load_keys().get(kid)
+        if key is None or not isinstance(mac, str):
+            return False
+        expected = hmac.new(key, _canonical(body), hashlib.sha256).hexdigest()
+        return hmac.compare_digest(expected, mac)
+    except (ReceiptKeyError, TypeError, ValueError):
+        return False
+
+
 def verify_mac(report: dict[str, Any]) -> bool:
     """True only for a well-formed receipt whose MAC verifies under a known key. Never raises."""
     try:

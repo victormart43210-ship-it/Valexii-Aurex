@@ -201,6 +201,8 @@ def test_financial_headlines_and_the_historical_gate_stay_closed() -> None:
             "expires_at": NOW + timedelta(days=1),
             "grantor_kind": "HUMAN",
             "reviewer_id": "reviewer-lab",
+            "action": "SYNTHETIC_AUDIT_READ",
+            "scope": "tenant-asc:rows",
         },
         NOW,
         dataset,
