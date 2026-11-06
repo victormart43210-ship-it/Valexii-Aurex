@@ -38,6 +38,7 @@ import { Route as VoynichRouteImport } from './routes/voynich'
 import { Route as XaeliRouteImport } from './routes/xaeli'
 import { Route as XaitaRouteImport } from './routes/xaita'
 import { Route as AdminAurexControlRouteImport } from './routes/admin.aurex-control'
+import { Route as AurexOxIndexRouteImport } from './routes/aurex-ox.index'
 import { Route as AurexOxModelLaboratoryRouteImport } from './routes/aurex-ox.model-laboratory'
 import { Route as EarlyAccessConfirmRouteImport } from './routes/early-access.confirm'
 
@@ -186,6 +187,11 @@ const AdminAurexControlRoute = AdminAurexControlRouteImport.update({
   path: '/admin/aurex-control',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AurexOxIndexRoute = AurexOxIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AurexOxRoute,
+} as any)
 const AurexOxModelLaboratoryRoute = AurexOxModelLaboratoryRouteImport.update({
   id: '/model-laboratory',
   path: '/model-laboratory',
@@ -229,12 +235,12 @@ export interface FileRoutesByFullPath {
   '/admin/aurex-control': typeof AdminAurexControlRoute
   '/aurex-ox/model-laboratory': typeof AurexOxModelLaboratoryRoute
   '/early-access/confirm': typeof EarlyAccessConfirmRoute
+  '/aurex-ox/': typeof AurexOxIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/aurex': typeof AurexRoute
-  '/aurex-ox': typeof AurexOxRouteWithChildren
   '/bcxmet': typeof BcxmetRoute
   '/build-with-us': typeof BuildWithUsRoute
   '/contact': typeof ContactRoute
@@ -262,6 +268,7 @@ export interface FileRoutesByTo {
   '/admin/aurex-control': typeof AdminAurexControlRoute
   '/aurex-ox/model-laboratory': typeof AurexOxModelLaboratoryRoute
   '/early-access/confirm': typeof EarlyAccessConfirmRoute
+  '/aurex-ox': typeof AurexOxIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -296,6 +303,7 @@ export interface FileRoutesById {
   '/admin/aurex-control': typeof AdminAurexControlRoute
   '/aurex-ox/model-laboratory': typeof AurexOxModelLaboratoryRoute
   '/early-access/confirm': typeof EarlyAccessConfirmRoute
+  '/aurex-ox/': typeof AurexOxIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -331,12 +339,12 @@ export interface FileRouteTypes {
     | '/admin/aurex-control'
     | '/aurex-ox/model-laboratory'
     | '/early-access/confirm'
+    | '/aurex-ox/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/about'
     | '/aurex'
-    | '/aurex-ox'
     | '/bcxmet'
     | '/build-with-us'
     | '/contact'
@@ -364,6 +372,7 @@ export interface FileRouteTypes {
     | '/admin/aurex-control'
     | '/aurex-ox/model-laboratory'
     | '/early-access/confirm'
+    | '/aurex-ox'
   id:
     | '__root__'
     | '/'
@@ -397,6 +406,7 @@ export interface FileRouteTypes {
     | '/admin/aurex-control'
     | '/aurex-ox/model-laboratory'
     | '/early-access/confirm'
+    | '/aurex-ox/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -637,6 +647,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminAurexControlRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/aurex-ox/': {
+      id: '/aurex-ox/'
+      path: '/'
+      fullPath: '/aurex-ox/'
+      preLoaderRoute: typeof AurexOxIndexRouteImport
+      parentRoute: typeof AurexOxRoute
+    }
     '/aurex-ox/model-laboratory': {
       id: '/aurex-ox/model-laboratory'
       path: '/model-laboratory'
@@ -656,10 +673,12 @@ declare module '@tanstack/react-router' {
 
 interface AurexOxRouteChildren {
   AurexOxModelLaboratoryRoute: typeof AurexOxModelLaboratoryRoute
+  AurexOxIndexRoute: typeof AurexOxIndexRoute
 }
 
 const AurexOxRouteChildren: AurexOxRouteChildren = {
   AurexOxModelLaboratoryRoute: AurexOxModelLaboratoryRoute,
+  AurexOxIndexRoute: AurexOxIndexRoute,
 }
 
 const AurexOxRouteWithChildren =
