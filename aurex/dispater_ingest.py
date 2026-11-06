@@ -20,12 +20,14 @@ from aurex.dispater_intelligence import sanitize_formula_field
 SCHEMA = "dispater.ingestion.v1"
 MAX_BYTES = 1_000_000
 MAX_ROWS = 2000
-TABLES = ("jobs", "invoices", "rates", "payments")
+TABLES = ("jobs", "invoices", "rates", "payments", "equipment", "labor")
 REQUIRED = {
     "jobs": ("job_id", "customer_id", "service_code", "date"),
     "invoices": ("invoice_id", "job_id", "amount", "status"),
     "rates": ("rate_id", "customer_id", "service_code", "start", "end", "amount"),
     "payments": ("payment_id", "invoice_id", "amount"),
+    "equipment": ("ticket_id", "job_id", "equipment_id", "service_date", "billable_hours", "standby_hours", "invoiced_hours"),
+    "labor": ("record_id", "job_id", "role", "service_date", "approved_hours", "billed_hours"),
 }
 
 
@@ -112,18 +114,34 @@ def ingest_source(tenant_id: str, filename: str, raw: bytes, *, kind: str) -> di
     """
     if not isinstance(tenant_id, str) or not tenant_id.strip():
         raise IngestError("tenant is required")
-    if kind not in ("csv", "json"):
-        raise IngestError("only csv and json sources are accepted")
+    if kind not in ("csv", "json", "pdf", "xlsx", "png", "jpeg"):
+        raise IngestError("unsupported source type")
     if not isinstance(filename, str) or "/" in filename or "\\" in filename or not filename:
         raise IngestError("filename must be a single path segment")
-    text = _decode(raw)
     source_sha256 = _digest(bytes(raw))
-    tables: dict[str, list[dict[str, str]]] = {name: [] for name in TABLES}
-    if kind == "csv":
-        table, rows = _rows_from_csv(text)
-        tables[table] = rows
+    field_provenance: list[dict[str, Any]] = []
+    if kind in ("png", "jpeg"):
+        from aurex.dispater_documents import reject_unparsed_image
+
+        reject_unparsed_image(bytes(raw), kind)
+    if kind in ("csv", "json"):
+        text = _decode(raw)
+        tables: dict[str, list[dict[str, str]]] = {name: [] for name in TABLES}
+        if kind == "csv":
+            table, rows = _rows_from_csv(text)
+            tables[table] = rows
+        else:
+            tables = _rows_from_json(text)
+    elif kind == "pdf":
+        from aurex.dispater_documents import extract_pdf
+
+        tables, field_provenance = extract_pdf(bytes(raw), source_sha256)
+    elif kind == "xlsx":
+        from aurex.dispater_documents import extract_xlsx
+
+        tables = extract_xlsx(bytes(raw))
     else:
-        tables = _rows_from_json(text)
+        raise IngestError("unsupported source type")
     provenance = []
     for name, rows in tables.items():
         for row in rows:
@@ -146,6 +164,8 @@ def ingest_source(tenant_id: str, filename: str, raw: bytes, *, kind: str) -> di
         "invoices": [{k: row[k] for k in REQUIRED["invoices"]} for row in tables["invoices"]],
         "rates": [{k: row[k] for k in REQUIRED["rates"]} for row in tables["rates"]],
         "payments": [{k: row[k] for k in REQUIRED["payments"]} for row in tables["payments"]],
+        "equipment": [{k: row[k] for k in REQUIRED["equipment"]} for row in tables["equipment"]],
+        "labor": [{k: row[k] for k in REQUIRED["labor"]} for row in tables["labor"]],
     }
     return {
         "schema": SCHEMA,
@@ -153,20 +173,23 @@ def ingest_source(tenant_id: str, filename: str, raw: bytes, *, kind: str) -> di
         "source_sha256": source_sha256,
         "filename": filename,
         "kind": kind,
-        "processor": {"name": "dispater_ingest", "version": SCHEMA, "model": None},
+        "processor": {"name": "dispater_ingest", "version": SCHEMA, "model": None, "ocr": "NOT_INSTALLED"},
+        "field_provenance": field_provenance,
         "authority_state": "HOLD",
         "financial_authority": "NONE",
         "dataset": dataset,
         "provenance": provenance,
-        "limits": "No OCR, PDF, or model extraction. Malformed and binary sources are rejected.",
+        "limits": "PDF text and XLSX cells are extracted locally. OCR is not installed. A model did not create these values.",
     }
 
 
 def reject_unverified_parser(filename: str) -> None:
-    """PDF, image, and spreadsheet bytes are not parsed by an unverified library."""
+    """Formats without a reviewed parser are rejected by name."""
     suffix = filename.lower().rsplit(".", 1)[-1] if "." in filename else ""
-    if suffix in {"pdf", "png", "jpg", "jpeg", "tif", "tiff", "xlsx", "xls"}:
-        raise IngestError(f"{suffix} parsing is not installed; source was not interpreted")
+    if suffix in {"pdf", "xlsx", "csv", "json"}:
+        return
+    if suffix in {"png", "jpg", "jpeg", "tif", "tiff"}:
+        raise IngestError("OCR runtime is not installed; the image was not interpreted")
     raise IngestError("unsupported source type")
 
 

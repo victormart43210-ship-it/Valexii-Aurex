@@ -19,7 +19,7 @@ import json
 import re
 from collections import defaultdict
 from datetime import date
-from decimal import Decimal, InvalidOperation
+from decimal import ROUND_HALF_UP, Decimal, InvalidOperation
 from typing import Any
 
 SCHEMA = "dispater.synthetic.revenue_intelligence.v1"
@@ -42,6 +42,13 @@ QUALIFICATION = {
     "OVERPAYMENT": "STATUS_INCONSISTENCY",
     "PARTIAL_PAYMENT": "STATUS_INCONSISTENCY",
     "SPLIT_OR_DUPLICATE_PAYMENT_UNRESOLVED": "INSUFFICIENT_EVIDENCE",
+    "EQUIPMENT_HOURS_MISMATCH": "SUSPECTED_DISCREPANCY",
+    "LABOR_HOURS_MISMATCH": "SUSPECTED_DISCREPANCY",
+    "EQUIPMENT_HOURS_UNPRICED": "INSUFFICIENT_EVIDENCE",
+    "HOURS_EVIDENCE_MISSING": "INSUFFICIENT_EVIDENCE",
+    "HOURS_SOURCE_CONFLICT": "INSUFFICIENT_EVIDENCE",
+    "UNBILLED_EQUIPMENT": "SUSPECTED_DISCREPANCY",
+    "UNBILLED_LABOR": "SUSPECTED_DISCREPANCY",
 }
 
 
@@ -111,6 +118,24 @@ def _validate_rows(
     return cleaned_rows
 
 
+def _optional_rows(payload: dict[str, Any], key: str, required_fields: set[str]) -> list[dict[str, Any]]:
+    if key not in payload or payload[key] is None:
+        return []
+    return _validate_rows(payload, key, required_fields)
+
+
+def _signed_payment(payment: dict[str, Any]) -> Decimal:
+    kind = payment.get("kind", "PAYMENT")
+    if kind not in ("PAYMENT", "REVERSAL"):
+        raise InvalidSnapshot("payment kind must be PAYMENT or REVERSAL")
+    amount = parse_money(payment["amount"])
+    return -amount if kind == "REVERSAL" else amount
+
+
+def _hours_amount(hours: Decimal, rate: Decimal) -> Decimal:
+    return (hours * rate).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+
+
 def _ensure_unique_ids(rows: list[dict[str, Any]], id_key: str, context: str) -> None:
     seen: set[str] = set()
     for row in rows:
@@ -162,11 +187,23 @@ class RevenueLeakageEngine:
             "payments",
             {"payment_id", "invoice_id", "amount"},
         )
+        equipment = _optional_rows(
+            dataset,
+            "equipment",
+            {"ticket_id", "job_id", "equipment_id", "service_date", "billable_hours", "standby_hours", "invoiced_hours"},
+        )
+        labor = _optional_rows(
+            dataset,
+            "labor",
+            {"record_id", "job_id", "role", "service_date", "approved_hours", "billed_hours"},
+        )
 
         _ensure_unique_ids(jobs, "job_id", "jobs")
         _ensure_unique_ids(invoices, "invoice_id", "invoices")
         _ensure_unique_ids(rates, "rate_id", "rates")
         _ensure_unique_ids(payments, "payment_id", "payments")
+        _ensure_unique_ids(equipment, "ticket_id", "equipment")
+        _ensure_unique_ids(labor, "record_id", "labor")
 
         for inv in invoices:
             if inv["status"] not in ("open", "paid", "disputed"):
@@ -193,6 +230,12 @@ class RevenueLeakageEngine:
         by_invoice_payments: dict[str, list[dict[str, Any]]] = defaultdict(list)
         for p in payments:
             by_invoice_payments[p["invoice_id"]].append(p)
+        equipment_by_job: dict[str, list[dict[str, Any]]] = defaultdict(list)
+        for ticket in equipment:
+            equipment_by_job[ticket["job_id"]].append(ticket)
+        labor_by_job: dict[str, list[dict[str, Any]]] = defaultdict(list)
+        for record in labor:
+            labor_by_job[record["job_id"]].append(record)
 
         findings: list[dict[str, Any]] = []
         totals = {UNDERBILLING: Decimal("0.00"), OVERBILLING: Decimal("0.00"), UNVERIFIED: Decimal("0.00")}
@@ -227,23 +270,31 @@ class RevenueLeakageEngine:
                     and r["service_code"] == svc
                     and parse_date(r["start"]) <= j_date <= parse_date(r["end"])
                 ]
-                potential_val = parse_money(applicable_rates[0]["amount"]) if len(applicable_rates) == 1 else Decimal("0.00")
-                totals[UNDERBILLING] += potential_val
-                findings.append(
-                    self._create_finding(
-                        exposure_class=UNDERBILLING,
-                        code="UNBILLED_JOB",
-                        subject=j_id,
-                        severity="HIGH",
-                        records=[("job", job)],
-                        exposure=potential_val,
-                        now=f"Completed job {j_id} has no invoice record in the snapshot.",
-                        changed=f"Job marked executed on {job['date']} without a generated billing reference.",
-                        next_action="Review field completion log and draft invoice according to agreed schedule.",
-                        why="Uninvoiced field work results in immediate unbilled revenue leakage.",
-                        proof=f"Job payload digest: {digest(job)}",
+                hourly = len(applicable_rates) == 1 and applicable_rates[0].get("unit") == "HOUR"
+                if hourly:
+                    self._append_unbilled_hours(
+                        findings, totals, job, applicable_rates[0], equipment_by_job[j_id], labor_by_job[j_id]
                     )
-                )
+                else:
+                    potential_val = (
+                        parse_money(applicable_rates[0]["amount"]) if len(applicable_rates) == 1 else Decimal("0.00")
+                    )
+                    totals[UNDERBILLING] += potential_val
+                    findings.append(
+                        self._create_finding(
+                            exposure_class=UNDERBILLING,
+                            code="UNBILLED_JOB",
+                            subject=j_id,
+                            severity="HIGH",
+                            records=[("job", job)],
+                            exposure=potential_val,
+                            now=f"Completed job {j_id} has no invoice record in the snapshot.",
+                            changed=f"Job marked executed on {job['date']} without a generated billing reference.",
+                            next_action="Review field completion log and draft invoice according to agreed schedule.",
+                            why="Uninvoiced field work results in immediate unbilled revenue leakage.",
+                            proof=f"Job payload digest: {digest(job)}",
+                        )
+                    )
 
             # Duplicate invoices. No field in this snapshot says which document supersedes another,
             # so the engine does not pick the lowest id or book the extras as overbilling.
@@ -312,10 +363,37 @@ class RevenueLeakageEngine:
                         proof=f"Overlapping rate digests: {', '.join(digest(r)[:16] for r in active_rates)}",
                     )
                 )
+            elif len(relevant_invoices) == 1 and active_rates[0].get("unit") == "HOUR":
+                self._append_priced_hours(
+                    findings,
+                    totals,
+                    job,
+                    active_rates[0],
+                    relevant_invoices[0],
+                    equipment_by_job[j_id],
+                    labor_by_job[j_id],
+                    rate_mismatch_ids,
+                )
             elif len(relevant_invoices) == 1:
-                # Exactly 1 active rate and 1 invoice: test for rate discrepancy
+                # Exactly 1 active flat rate and 1 invoice: test for rate discrepancy
                 target_rate = active_rates[0]
                 target_inv = relevant_invoices[0]
+                if equipment_by_job[j_id] or labor_by_job[j_id]:
+                    findings.append(
+                        self._create_finding(
+                            exposure_class=UNVERIFIED,
+                            code="EQUIPMENT_HOURS_UNPRICED",
+                            subject=j_id,
+                            severity="MEDIUM",
+                            records=[("job", job), ("invoice", target_inv)],
+                            exposure=Decimal("0.00"),
+                            now=f"Job {j_id} has hour records but the governing rate is not an hourly rate.",
+                            changed="Hour tickets were not converted into a second dollar total.",
+                            next_action="Attach an hourly rate or remove the hour tickets from this flat-rate job.",
+                            why="Pricing the same job twice, once flat and once by the hour, inflates exposure.",
+                            proof=f"Rate digest: {digest(target_rate)}",
+                        )
+                    )
                 billed_amt = parse_money(target_inv["amount"])
                 expected_amt = parse_money(target_rate["amount"])
                 diff = billed_amt - expected_amt
@@ -362,7 +440,7 @@ class RevenueLeakageEngine:
                 )
 
             payments_for_inv = by_invoice_payments[inv_id]
-            total_paid = sum((parse_money(p["amount"]) for p in payments_for_inv), Decimal("0.00"))
+            total_paid = sum((_signed_payment(p) for p in payments_for_inv), Decimal("0.00"))
             billed = parse_money(inv["amount"])
             delta = total_paid - billed
             code = None
@@ -375,7 +453,8 @@ class RevenueLeakageEngine:
                 code = "OVERPAYMENT"
             elif inv["status"] != "paid" and total_paid > 0 and delta < 0:
                 code = "PARTIAL_PAYMENT"
-            if len(payments_for_inv) > 1:
+            payment_kinds = {p.get("kind", "PAYMENT") for p in payments_for_inv}
+            if len(payments_for_inv) > 1 and payment_kinds == {"PAYMENT"}:
                 findings.append(
                     self._create_finding(
                         exposure_class=UNVERIFIED,
@@ -495,6 +574,162 @@ class RevenueLeakageEngine:
         }
         audit_summary["receipt_sha256"] = digest(audit_summary)
         return audit_summary
+
+    def _append_unbilled_hours(
+        self,
+        findings: list[dict[str, Any]],
+        totals: dict[str, Decimal],
+        job: dict[str, Any],
+        rate: dict[str, Any],
+        equipment: list[dict[str, Any]],
+        labor: list[dict[str, Any]],
+    ) -> None:
+        """An hourly rate is not a flat job price. Missing hour evidence books nothing."""
+        if equipment and labor:
+            findings.append(
+                self._create_finding(
+                    exposure_class=UNVERIFIED,
+                    code="HOURS_SOURCE_CONFLICT",
+                    subject=job["job_id"],
+                    severity="HIGH",
+                    records=[("job", job), ("rate", rate)],
+                    exposure=Decimal("0.00"),
+                    now=f"Job {job['job_id']} has both equipment and labor records and no invoice.",
+                    changed="Neither set of hours was priced.",
+                    next_action="Choose the governing hour source before calculating an unbilled amount.",
+                    why="Adding both sources would bill the same job twice.",
+                    proof=f"Rate digest: {digest(rate)}",
+                )
+            )
+            return
+        rows = equipment or labor
+        if not rows:
+            findings.append(
+                self._create_finding(
+                    exposure_class=UNVERIFIED,
+                    code="HOURS_EVIDENCE_MISSING",
+                    subject=job["job_id"],
+                    severity="MEDIUM",
+                    records=[("job", job), ("rate", rate)],
+                    exposure=Decimal("0.00"),
+                    now=f"Job {job['job_id']} has an hourly rate and no invoice or hour record.",
+                    changed="The hourly rate was not used as a flat job price.",
+                    next_action="Supply the equipment ticket or labor record before estimating unbilled revenue.",
+                    why="A missing ticket is not proof of a billable quantity.",
+                    proof=f"Rate digest: {digest(rate)}",
+                )
+            )
+            return
+        if equipment:
+            hours = sum((parse_money(row["billable_hours"]) for row in equipment), Decimal("0.00"))
+            code = "UNBILLED_EQUIPMENT"
+        else:
+            hours = sum((parse_money(row["approved_hours"]) for row in labor), Decimal("0.00"))
+            code = "UNBILLED_LABOR"
+        exposure = _hours_amount(hours, parse_money(rate["amount"]))
+        totals[UNDERBILLING] += exposure
+        findings.append(
+            self._create_finding(
+                exposure_class=UNDERBILLING,
+                code=code,
+                subject=job["job_id"],
+                severity="HIGH",
+                records=[("job", job), ("rate", rate)] + [("equipment" if equipment else "labor", row) for row in rows],
+                exposure=exposure,
+                now=f"Job {job['job_id']} has {hours} billable hours and no invoice.",
+                changed="Standby hours were not added. Only the recorded billable or approved hours were priced.",
+                next_action="Invoice the hours or record why the work was not billable.",
+                why="Completed hours without an invoice are unbilled revenue, not confirmed recovery.",
+                proof=f"Hourly rate digest: {digest(rate)}",
+            )
+        )
+
+    def _append_priced_hours(
+        self,
+        findings: list[dict[str, Any]],
+        totals: dict[str, Decimal],
+        job: dict[str, Any],
+        rate: dict[str, Any],
+        invoice: dict[str, Any],
+        equipment: list[dict[str, Any]],
+        labor: list[dict[str, Any]],
+        rate_mismatch_ids: set[str],
+    ) -> None:
+        """One dollar event for an hourly job. Standby is not automatically billed."""
+        if equipment and labor:
+            findings.append(
+                self._create_finding(
+                    exposure_class=UNVERIFIED,
+                    code="HOURS_SOURCE_CONFLICT",
+                    subject=job["job_id"],
+                    severity="HIGH",
+                    records=[("job", job), ("invoice", invoice), ("rate", rate)],
+                    exposure=Decimal("0.00"),
+                    now=f"Job {job['job_id']} has equipment and labor records against one hourly rate.",
+                    changed="No hour total was added to identified exposure.",
+                    next_action="Separate the governing source before treating either total as the bill.",
+                    why="Two hour sources for one job can double-count the same work.",
+                    proof=f"Invoice digest: {digest(invoice)}",
+                )
+            )
+            return
+        if not equipment and not labor:
+            findings.append(
+                self._create_finding(
+                    exposure_class=UNVERIFIED,
+                    code="HOURS_EVIDENCE_MISSING",
+                    subject=invoice["invoice_id"],
+                    severity="MEDIUM",
+                    records=[("job", job), ("invoice", invoice), ("rate", rate)],
+                    exposure=Decimal("0.00"),
+                    now=f"Invoice {invoice['invoice_id']} is governed by an hourly rate but has no hour record.",
+                    changed="The invoice amount was not compared with the hourly rate as if the rate were a flat price.",
+                    next_action="Attach the equipment ticket or labor record.",
+                    why="Without hours, the billed amount cannot be proven wrong.",
+                    proof=f"Rate digest: {digest(rate)}",
+                )
+            )
+            return
+        rate_amount = parse_money(rate["amount"])
+        billed = parse_money(invoice["amount"])
+        if equipment:
+            hours = sum((parse_money(row["billable_hours"]) for row in equipment), Decimal("0.00"))
+            code = "EQUIPMENT_HOURS_MISMATCH"
+            rows = [("equipment", row) for row in equipment]
+        else:
+            hours = sum((parse_money(row["approved_hours"]) for row in labor), Decimal("0.00"))
+            code = "LABOR_HOURS_MISMATCH"
+            rows = [("labor", row) for row in labor]
+        expected = _hours_amount(hours, rate_amount)
+        delta = billed - expected
+        if delta == 0:
+            return
+        if equipment:
+            invoiced_hours = sum((parse_money(row["invoiced_hours"]) for row in equipment), Decimal("0.00"))
+        else:
+            invoiced_hours = sum((parse_money(row["billed_hours"]) for row in labor), Decimal("0.00"))
+        exposure_class = UNDERBILLING if delta < 0 else OVERBILLING
+        exposure = abs(delta)
+        totals[exposure_class] += exposure
+        rate_mismatch_ids.add(invoice["invoice_id"])
+        findings.append(
+            self._create_finding(
+                exposure_class=exposure_class,
+                code=code,
+                subject=invoice["invoice_id"],
+                severity="HIGH" if exposure > Decimal("100.00") else "MEDIUM",
+                records=[("job", job), ("invoice", invoice), ("rate", rate)] + rows,
+                exposure=exposure,
+                now=(
+                    f"Invoice {invoice['invoice_id']} billed ${billed} against {hours} hours "
+                    f"at ${rate_amount} (${expected}). Invoiced hours on the ticket are {invoiced_hours}."
+                ),
+                changed="Standby was excluded. The invoice dollars were recorded once.",
+                next_action="Correct the invoice or the hour ticket. Do not add a second finding for the same hours.",
+                why="Hour and invoice disagreements are one economic event, not two recoveries.",
+                proof=f"Rate digest: {digest(rate)}; invoice digest: {digest(invoice)}",
+            )
+        )
 
     def _create_finding(
         self,

@@ -172,6 +172,8 @@ export function DispaterReconciliationConsole() {
             </h4>
             <p className="text-xs text-muted-foreground -mt-2 mb-3">
               XAELI can explain a finding. It cannot approve a recovery or replace the calculation.
+              The proof line is the trace back to the source digest, page, or row. OCR is not claimed
+              on this screen.
             </p>
             {report.findings.length === 0 ? (
               <div className="rounded-lg border border-emerald/30 bg-emerald/5 p-4 text-emerald flex items-center gap-3">

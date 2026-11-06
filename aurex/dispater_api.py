@@ -17,6 +17,7 @@ Security model (fail closed):
 
 from __future__ import annotations
 
+import base64
 import hashlib
 import hmac
 import json
@@ -39,6 +40,7 @@ from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field, field_validator
 
 from aurex import dispater_store
+from aurex.dispater_ingest import IngestError, ingest_source
 from aurex.dispater_intelligence import InvalidSnapshot, RevenueLeakageEngine, report_to_csv
 
 logger = logging.getLogger("aurex.dispater")
@@ -213,6 +215,44 @@ def run_reconciliation(payload: ReconciliationRequest, principal: PrincipalDep) 
     return stored
 
 
+class DocumentRequest(BaseModel):
+    tenant_id: str = Field(pattern=TENANT_PATTERN, max_length=64)
+    filename: str = Field(min_length=1, max_length=180)
+    kind: Literal["csv", "json", "pdf", "xlsx", "png", "jpeg"]
+    content_base64: str = Field(min_length=1, max_length=2_000_000)
+
+
+@router.post("/documents")
+def ingest_document(payload: DocumentRequest, principal: PrincipalDep) -> dict[str, Any]:
+    """Ingest one synthetic document and reconcile it. The wrapper is not the receipt."""
+    authorize_tenant(principal, payload.tenant_id)
+    try:
+        raw = base64.b64decode(payload.content_base64, validate=True)
+        batch = ingest_source(payload.tenant_id, payload.filename, raw, kind=payload.kind)
+        report = RevenueLeakageEngine(tenant_id=payload.tenant_id).reconcile_records(batch["dataset"])
+        stored, _created = dispater_store.save_run(payload.tenant_id, report)
+    except (IngestError, InvalidSnapshot) as exc:
+        raise HTTPException(status.HTTP_400_BAD_REQUEST, str(exc)) from exc
+    except Exception as exc:
+        raise _internal_error("document ingestion") from exc
+    return {
+        "authority_state": "HOLD",
+        "financial_authority": "NONE",
+        "ingestion_authenticated": False,
+        "ocr_status": "NOT_INSTALLED",
+        "ingestion": {
+            "source_sha256": batch["source_sha256"],
+            "filename": batch["filename"],
+            "kind": batch["kind"],
+            "processor": batch["processor"],
+            "provenance": batch["provenance"],
+            "field_provenance": batch["field_provenance"],
+            "limits": batch["limits"],
+        },
+        "report": stored,
+    }
+
+
 def _latest(tenant_id: str) -> dict[str, Any] | None:
     try:
         return dispater_store.latest_run(tenant_id)
@@ -251,6 +291,8 @@ def get_dashboard(principal: PrincipalDep, tenant_id: TenantQuery) -> dict[str, 
             "withheld_unresolved_usd": "0.00",
             "confirmed_recovery_usd": "0.00",
             "receipt_binding": None,
+            "monitoring_event_count": dispater_store.monitor_event_count(tenant_id),
+            "ocr_status": "NOT_INSTALLED",
             "finding_counts": {"total": 0, "critical": 0, "high": 0, "medium": 0},
             "recent_findings": [],
             "system_state": SYSTEM_STATE,
@@ -270,6 +312,8 @@ def get_dashboard(principal: PrincipalDep, tenant_id: TenantQuery) -> dict[str, 
         "human_confirmed_discrepancy_usd": "0.00",
         "confirmed_recovery_usd": "0.00",
         "receipt_binding": run.get("receipt_binding"),
+        "monitoring_event_count": dispater_store.monitor_event_count(tenant_id),
+        "ocr_status": "NOT_INSTALLED",
         "finding_counts": {
             "total": len(findings),
             "critical": sum(1 for f in findings if f.get("severity") == "CRITICAL"),

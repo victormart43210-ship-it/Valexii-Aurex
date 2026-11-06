@@ -69,11 +69,11 @@ def test_malformed_sources_are_rejected(raw: bytes) -> None:
         ingest_source("tenant-a", "bad.csv", raw, kind="csv")
 
 
-def test_pdf_and_spreadsheet_parsers_are_not_pretended() -> None:
-    with pytest.raises(IngestError, match="not installed"):
-        reject_unverified_parser("ticket.pdf")
-    with pytest.raises(IngestError, match="not installed"):
-        reject_unverified_parser("book.xlsx")
+def test_images_stay_unparsed_without_ocr() -> None:
+    reject_unverified_parser("ticket.pdf")
+    reject_unverified_parser("book.xlsx")
+    with pytest.raises(IngestError, match="OCR"):
+        reject_unverified_parser("scan.png")
 
 
 def test_monitor_is_idempotent_and_does_not_confirm_cash() -> None:

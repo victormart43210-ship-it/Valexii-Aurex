@@ -55,6 +55,20 @@ CREATE TABLE IF NOT EXISTS dispater_findings (
 CREATE INDEX IF NOT EXISTS idx_dispater_findings_tenant ON dispater_findings (tenant_id, finding_id);
 """
 
+_MONITOR_SCHEMA = """
+CREATE TABLE IF NOT EXISTS dispater_monitor_events (
+    event_id TEXT PRIMARY KEY,
+    tenant_id TEXT NOT NULL,
+    source_sha256 TEXT NOT NULL,
+    checkpoint_sha256 TEXT NOT NULL,
+    event_type TEXT NOT NULL,
+    payload_json TEXT NOT NULL,
+    created_at TEXT NOT NULL,
+    UNIQUE (tenant_id, source_sha256)
+);
+CREATE INDEX IF NOT EXISTS idx_dispater_monitor_tenant ON dispater_monitor_events (tenant_id, created_at);
+"""
+
 
 class IntegrityError(RuntimeError):
     """A stored report no longer matches its receipt hash."""
@@ -129,6 +143,7 @@ def _connect() -> sqlite3.Connection:
                 ).fetchone()  # last object in _SCHEMA; DDL commits in order, so it implies the rest
                 if present is None:
                     conn.executescript(_SCHEMA)
+                conn.executescript(_MONITOR_SCHEMA)
                 break
             except sqlite3.OperationalError as exc:
                 if "locked" not in str(exc) or attempt == 49:
@@ -302,6 +317,84 @@ def purge_tenant(tenant_id: str, older_than_days: int | None = None) -> int:
                 "DELETE FROM dispater_runs WHERE tenant_id=? AND created_at<?", (tenant_id, cutoff)
             )
         return cur.rowcount
+
+
+def save_monitor_event(
+    tenant_id: str,
+    *,
+    source_sha256: str,
+    checkpoint_sha256: str,
+    event_type: str,
+    payload: dict[str, Any],
+) -> dict[str, Any]:
+    """Append one tenant-scoped monitoring event. A repeated source digest returns the original."""
+    event_id = f"mon-{uuid.uuid4().hex}"
+    created_at = datetime.now(UTC).isoformat()
+    body = json.dumps(payload, sort_keys=True)
+    with closing(_connect()) as conn:
+        conn.execute("BEGIN IMMEDIATE")
+        try:
+            existing = conn.execute(
+                "SELECT * FROM dispater_monitor_events WHERE tenant_id=? AND source_sha256=?",
+                (tenant_id, source_sha256),
+            ).fetchone()
+            if existing is not None:
+                conn.execute("COMMIT")
+                return _monitor_row(existing)
+            conn.execute(
+                "INSERT INTO dispater_monitor_events VALUES (?,?,?,?,?,?,?)",
+                (event_id, tenant_id, source_sha256, checkpoint_sha256, event_type, body, created_at),
+            )
+            conn.execute("COMMIT")
+        except BaseException:
+            if conn.in_transaction:
+                conn.execute("ROLLBACK")
+            raise
+        row = conn.execute(
+            "SELECT * FROM dispater_monitor_events WHERE event_id=?", (event_id,)
+        ).fetchone()
+    return _monitor_row(row)
+
+
+def _monitor_row(row: sqlite3.Row) -> dict[str, Any]:
+    payload = json.loads(row["payload_json"])
+    return {
+        "event_id": row["event_id"],
+        "tenant_id": row["tenant_id"],
+        "source_sha256": row["source_sha256"],
+        "checkpoint_sha256": row["checkpoint_sha256"],
+        "event_type": row["event_type"],
+        "created_at": row["created_at"],
+        "payload": payload,
+        "confirmed_recovery_usd": "0.00",
+    }
+
+
+def get_monitor_event(tenant_id: str, source_sha256: str) -> dict[str, Any] | None:
+    with closing(_connect()) as conn:
+        row = conn.execute(
+            "SELECT * FROM dispater_monitor_events WHERE tenant_id=? AND source_sha256=?",
+            (tenant_id, source_sha256),
+        ).fetchone()
+    return _monitor_row(row) if row else None
+
+
+def list_monitor_events(tenant_id: str) -> list[dict[str, Any]]:
+    with closing(_connect()) as conn:
+        rows = conn.execute(
+            "SELECT * FROM dispater_monitor_events WHERE tenant_id=? ORDER BY created_at, rowid",
+            (tenant_id,),
+        ).fetchall()
+    return [_monitor_row(row) for row in rows]
+
+
+def monitor_event_count(tenant_id: str) -> int:
+    with closing(_connect()) as conn:
+        row = conn.execute(
+            "SELECT COUNT(*) AS n FROM dispater_monitor_events WHERE tenant_id=?",
+            (tenant_id,),
+        ).fetchone()
+    return int(row["n"]) if row else 0
 
 
 def checkpoint(db_path_override: str | None = None) -> None:
