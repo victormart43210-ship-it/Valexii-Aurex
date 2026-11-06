@@ -95,3 +95,5 @@ GitHub Actions on the pushed head `08d3f7a1e3304e7662b3591d57d1f3ecd3eee7c2` com
 PR 184 head was rechecked and was still `fa9d2254a2b2e15b7117c55ef6917d365357caf5`, with six successful workflows. This review branch starts there. CCLVI repairs and the duplicate-ticket withhold stay in the same engine.
 
 Tested code `ba6db1bac46e76317e6218301f1d71f051781636`. The website accepts confirmed recovery only as `0.00`. The DISPATER console reports its API link, and XAELI reports the model link as unavailable when staging is not configured. pytest 745 passed, 1 skipped. Website vitest 161 passed. XAELI live connection NOT_VERIFIED. Decision HOLD_WITH_BLOCKERS. Do not merge or deploy.
+
+GitHub Actions on `a4d9d85ab7d3ae7668659b01770f72c38eb6509e` completed success at 2:40 PM CT for offline-practice, both CI test jobs, verify, and integration. The Railway image workflow did not run on this SHA. Those greens do not authorize a merge.

@@ -28,7 +28,7 @@
     "xaeli_live": "NOT_VERIFIED",
     "browser": "DISPATER idle link DISCONNECTED. XAELI model link unavailable."
   },
-  "ci_status": "SUCCESS on fa9d225. PENDING on this branch until the push is observed.",
+  "ci_status": "SUCCESS on a4d9d85ab7d3ae7668659b01770f72c38eb6509e for offline-practice, both CI test jobs, verify, and integration. docker-build-and-smoke NOT_RUN on this SHA because the image workflow paths were not changed. SUCCESS on fa9d225 remains a separate SHA and included the image workflow.",
   "blockers": [
     "No live Qwen response was observed.",
     "No staging token was available, so the dashboard click was not executed against a real API.",
