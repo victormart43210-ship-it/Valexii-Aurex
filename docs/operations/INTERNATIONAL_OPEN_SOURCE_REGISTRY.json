@@ -76,6 +76,49 @@
       "test_evidence": "tests/test_dispater_pipeline_adversarial.py"
     }
   ],
+  "copilot_assurance": {
+    "operation": "OPERATION_KUSANAGI_CCXXXVIII",
+    "verified_on": "2026-11-06",
+    "method": "Local repository inspection and import checks only; no weights downloaded, no network inference.",
+    "components": {
+      "deterministic-structured-v1": {
+        "installed": "YES (in-repo parser, no third-party dependency)",
+        "runtime_verification": "PASS (tests/test_copilot_*.py)",
+        "commercial_use": "Apache-2.0 (own code)",
+        "security_limitations": "JSON/CSV only. Admission now refuses other media types, malformed JSON and non-object JSON."
+      },
+      "china-qwen-local": {
+        "installed": "NOT_VERIFIED (adapter code present; no model weights or Ollama runtime verified in this environment)",
+        "runtime_verification": "NOT_VERIFIED",
+        "commercial_use": "Apache-2.0 per registry; Qwen2.5 license varies by model size and was not re-verified",
+        "security_limitations": "Advisory only. The artifact digest was not independently verified. Output must never cross the authority boundary."
+      },
+      "china-paddleocr": {
+        "installed": "NO (package not installed)",
+        "runtime_verification": "NOT_VERIFIED",
+        "commercial_use": "Apache-2.0 per registry; not re-verified",
+        "security_limitations": "artifact_or_model_digest above is the SHA-256 of empty input (e3b0c442...b855), a placeholder, not an artifact digest. PDF/PNG/JPEG are refused at pipeline admission; no OCR runs."
+      },
+      "greece-finer-ord": {
+        "installed": "NO",
+        "runtime_verification": "NOT_VERIFIED",
+        "commercial_use": "CC-BY-SA-4.0 share-alike terms need legal review before commercial use",
+        "security_limitations": "import_path aurex.dispater_international.FiNERFinancialEntityAdapter does not exist."
+      },
+      "norway-scand-doc": {
+        "installed": "NO",
+        "runtime_verification": "NOT_VERIFIED",
+        "commercial_use": "CC-BY-4.0 per registry; not re-verified",
+        "security_limitations": "import_path does not exist; test_evidence does not exercise this component."
+      },
+      "uzbekistan-tashkent-lex": {
+        "installed": "NO",
+        "runtime_verification": "NOT_VERIFIED",
+        "commercial_use": "MIT per registry; not re-verified",
+        "security_limitations": "import_path does not exist; test_evidence does not exercise this component."
+      }
+    }
+  },
   "invariants": {
     "financial_authority": "NONE",
     "external_paid_inference": "OFF",
