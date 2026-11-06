@@ -66,7 +66,8 @@ def test_duplicate_evidence_cannot_corroborate() -> None:
 
 def test_missing_parent_and_cycle_fail_closed() -> None:
     g = EvidenceGraph(T, [rec("a", "x", "1", parents=("ghost",)), rec("b", "x", "2", parents=("ghost",))])
-    assert g.independent_root_count(["a", "b"]) == 1  # same unknown root: not independent
+    with pytest.raises(ValueError, match="unresolved evidence parent"):
+        g.independent_root_count(["a", "b"])
     g = EvidenceGraph(T, [rec("a", "x", "1", parents=("b",)), rec("b", "x", "2", parents=("a",))])
     with pytest.raises(ValueError, match="cycle"):
         g.roots("a")
@@ -270,3 +271,61 @@ def test_exported_report_still_verifies_independently(tmp_path: Path, monkeypatc
         assert not verify_mac(stripped)
     altered = {**report, "status": "TAMPERED"}
     assert not verify_mac(altered)
+
+
+def test_distinct_missing_parents_cannot_create_false_independence() -> None:
+    g = EvidenceGraph(T, [
+        rec("a", "source-a", "1", parents=("missing-a",)),
+        rec("b", "source-b", "2", parents=("missing-b",)),
+    ])
+    with pytest.raises(QualificationError, match="unresolved provenance"):
+        qualify(ClaimState.SUSPECTED, ClaimState.CORROBORATED,
+                actor=ActorKind.SYSTEM, graph=g, evidence_ids=("a", "b"), now=NOW)
+
+
+def test_confirmed_recovery_requires_original_claim_sources() -> None:
+    c = _claim()
+    c.state = Outcome.APPROVED_CLAIM
+    with pytest.raises(QualificationError, match="claim source evidence is required"):
+        c.advance(Outcome.CONFIRMED_RECOVERED, actor=ActorKind.HUMAN,
+                  evidence_ids=("bank",), graph=graph(), reviewer="r",
+                  received_amount=Decimal("50.00"), now=NOW)
+    assert c.state is Outcome.APPROVED_CLAIM
+    assert c.recovered_amount == 0
+
+
+def test_recovery_rejects_stale_and_unresolved_evidence() -> None:
+    g = EvidenceGraph(T, [
+        rec("stale", "s", "1", event_time=NOW - timedelta(days=200)),
+        rec("fresh", "s", "2"),
+        rec("orphan", "s", "3", parents=("missing",)),
+    ])
+    c = _claim()
+    with pytest.raises(QualificationError, match="CURRENT"):
+        c.advance(Outcome.VERIFIED_DISCREPANCY, actor=ActorKind.SYSTEM,
+                  evidence_ids=("stale", "fresh"), graph=g, now=NOW)
+    with pytest.raises(QualificationError, match="unresolved provenance"):
+        c.advance(Outcome.VERIFIED_DISCREPANCY, actor=ActorKind.SYSTEM,
+                  evidence_ids=("orphan", "fresh"), graph=g, now=NOW)
+
+
+def test_system_cannot_approve_or_confirm_recovery() -> None:
+    c = _claim()
+    c.state = Outcome.SUBMITTED_CLAIM
+    with pytest.raises(QualificationError, match="human reviewer"):
+        c.advance(Outcome.APPROVED_CLAIM, actor=ActorKind.SYSTEM,
+                  evidence_ids=("bank",), graph=graph(), reviewer="r", now=NOW)
+
+
+def test_nonfinite_financial_values_are_rejected() -> None:
+    for amount in ("NaN", "Infinity", "-Infinity"):
+        issues = challenge_finding({"evidence": [1], "exposure_usd": amount}, T, set())
+        assert "invalid amount" in issues
+        issues = challenge_finding({"evidence": [1], "exposure_usd": "100", "recovered_usd": amount}, T, set())
+        assert "invalid amount" in issues
+    c = _claim()
+    c.state = Outcome.APPROVED_CLAIM
+    with pytest.raises(QualificationError, match="received amount"):
+        c.advance(Outcome.CONFIRMED_RECOVERED, actor=ActorKind.HUMAN,
+                  evidence_ids=("bank",), graph=graph(), reviewer="r",
+                  received_amount=Decimal("NaN"), claim_source_ids=("pdf",), now=NOW)
