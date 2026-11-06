@@ -5,6 +5,7 @@ Routes under `/v1/dispater`:
 - GET  /findings
 - GET  /dashboard
 - GET  /runs, GET /runs/{run_id}, GET /runs/{run_id}/export?format=json|csv
+- POST /observations
 
 Security model (fail closed):
 - Bearer tokens are bound to tenants via AUREX_DISPATER_TENANT_GRANTS, a JSON object
@@ -24,6 +25,7 @@ import json
 import logging
 import os
 from dataclasses import dataclass
+from datetime import UTC, datetime, timedelta
 from typing import Annotated, Any, Literal
 
 from fastapi import (
@@ -40,6 +42,7 @@ from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field, field_validator
 
 from aurex import dispater_store
+from aurex.ascendancy.proposal import propose
 from aurex.customer_sovereignty import assert_no_effect
 from aurex.dispater_ingest import IngestError, ingest_source
 from aurex.dispater_intelligence import (
@@ -431,6 +434,46 @@ def export_run(
             "X-Aurex-Training-Reuse": "not-authorized",
         },
     )
+
+
+class ObservationRequest(BaseModel):
+    tenant_id: str = Field(pattern=TENANT_PATTERN, max_length=64)
+    source_sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
+    observed_at: datetime
+    hypothesis: str = Field(min_length=1, max_length=500)
+    counterevidence: list[str] = Field(default_factory=list, max_length=20)
+    effect: str | None = Field(default="NONE", max_length=40)
+
+    @field_validator("counterevidence")
+    @classmethod
+    def _bounded_lines(cls, value: list[str]) -> list[str]:
+        if any(len(item) > 200 for item in value):
+            raise ValueError("counterevidence line is too long")
+        return value
+
+
+@router.post("/observations")
+def post_observation(payload: ObservationRequest, principal: PrincipalDep) -> dict[str, Any]:
+    """Record an advisory observation. The caller cannot start an effect."""
+    assert_no_effect()
+    authorize_tenant(principal, payload.tenant_id)
+    observed = payload.observed_at
+    if observed.tzinfo is None:
+        raise HTTPException(status.HTTP_400_BAD_REQUEST, "observed_at requires a timezone")
+    result = propose(
+        {
+            "schema": "aurex.observation.v1",
+            "source_sha256": payload.source_sha256,
+            "observed_at": observed,
+            "hypothesis": payload.hypothesis,
+            "counterevidence": payload.counterevidence,
+            "effect": payload.effect,
+        },
+        now=datetime.now(UTC),
+        max_age=timedelta(hours=24),
+    )
+    result["tenant_id"] = payload.tenant_id
+    return result
 
 
 class DeletionRequest(BaseModel):

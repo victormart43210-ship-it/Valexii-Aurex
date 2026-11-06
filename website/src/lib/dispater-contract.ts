@@ -82,7 +82,47 @@ export const DispaterDocumentIngestionSchema = z.object({
   report: DispaterReconciliationReportSchema,
 });
 
+export const DispaterRunSummarySchema = z.object({
+  run_id: z.string().regex(/^run-[0-9a-f]{32}$/),
+  dataset_sha256: z.string(),
+  receipt_sha256: z.string(),
+  status: z.string(),
+  created_at: z.string(),
+});
+
+export const DispaterRunListSchema = z.object({
+  tenant_id: z.string(),
+  count: z.number().int().nonnegative(),
+  runs: z.array(DispaterRunSummarySchema).max(50),
+});
+
+export const DispaterVerifiedExportSchema = z.object({
+  export_authorization: z.literal("TENANT_BEARER"),
+  third_party_release: z.literal(false),
+  training_reuse: z.literal("NOT_AUTHORIZED"),
+  deletion: z.literal("NOT_IMPLEMENTED"),
+  receipt_authenticity: z.enum(["MAC", "NONE", "FAIL"]),
+  report: DispaterReconciliationReportSchema,
+});
+
+export const ObservationDecisionSchema = z.object({
+  schema: z.literal("aurex.proposal.v1"),
+  decision: z.enum(["RECORDED", "ABSTAIN", "REFUSED"]),
+  effect: z.literal("NONE"),
+  authority: z.literal("NONE"),
+  financial_authority: z.literal("NONE"),
+  production: z.literal("HOLD"),
+  launch: z.literal("NOT_STARTED"),
+  independent_verification: z.literal("NOT_VERIFIED"),
+  problems: z.array(z.string()),
+  tenant_id: z.string(),
+});
+
 export type DispaterFinding = z.infer<typeof DispaterFindingSchema>;
+export type DispaterRunList = z.infer<typeof DispaterRunListSchema>;
+export type DispaterRunSummary = z.infer<typeof DispaterRunSummarySchema>;
+export type DispaterVerifiedExport = z.infer<typeof DispaterVerifiedExportSchema>;
+export type ObservationDecision = z.infer<typeof ObservationDecisionSchema>;
 export type DispaterReconciliationReport = z.infer<typeof DispaterReconciliationReportSchema>;
 export type DispaterDocumentIngestion = z.infer<typeof DispaterDocumentIngestionSchema>;
 

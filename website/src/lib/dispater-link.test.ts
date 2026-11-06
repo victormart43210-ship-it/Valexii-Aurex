@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { DispaterReconciliationReport } from "./dispater-contract";
-import { dispaterLinkState, documentSourceLine, storedRunAgrees } from "./dispater-link";
+import { dispaterLinkState, documentSourceLine, isCurrentRequest, storedRunAgrees } from "./dispater-link";
 
 const REPORT = {
   schema: "s",
@@ -40,6 +40,11 @@ describe("dispater link state", () => {
     ).toBe(false);
     expect(storedRunAgrees(REPORT, { ...REPORT, receipt_sha256: "other" })).toBe(false);
     expect(storedRunAgrees(REPORT, { ...REPORT, run_id: "run-" + "b".repeat(32) })).toBe(false);
+  });
+
+  it("ignores an older audit response after a newer request starts", () => {
+    expect(isCurrentRequest(2, 2)).toBe(true);
+    expect(isCurrentRequest(1, 2)).toBe(false);
   });
 
   it("shows the synthetic document source without treating it as recovered money", () => {

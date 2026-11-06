@@ -1,12 +1,19 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import {
   admitSyntheticDispaterCsv,
+  exportVerifiedDispaterRun,
+  listDispaterStoredRuns,
   readDispaterStoredRun,
+  recordDispaterObservation,
   runDispaterDemoReconciliation,
 } from "@/lib/dispater.functions";
-import type { DispaterReconciliationReport } from "@/lib/dispater-contract";
-import { dispaterLinkState, documentSourceLine, storedRunAgrees } from "@/lib/dispater-link";
+import type {
+  DispaterReconciliationReport,
+  DispaterRunSummary,
+  ObservationDecision,
+} from "@/lib/dispater-contract";
+import { dispaterLinkState, documentSourceLine, isCurrentRequest, storedRunAgrees } from "@/lib/dispater-link";
 import { Button } from "@/components/ui/button";
 import {
   CheckCircle2,
@@ -21,6 +28,10 @@ export function DispaterReconciliationConsole() {
   const reconcileFn = useServerFn(runDispaterDemoReconciliation);
   const admitFn = useServerFn(admitSyntheticDispaterCsv);
   const readFn = useServerFn(readDispaterStoredRun);
+  const listFn = useServerFn(listDispaterStoredRuns);
+  const exportFn = useServerFn(exportVerifiedDispaterRun);
+  const observeFn = useServerFn(recordDispaterObservation);
+  const requestSeq = useRef(0);
   const [presentation, setPresentation] = useState<"SYNTHETIC DEMO" | "SYNTHETIC DOCUMENT">(
     "SYNTHETIC DEMO",
   );
@@ -32,61 +43,168 @@ export function DispaterReconciliationConsole() {
   const [sourceLine, setSourceLine] = useState<string | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [storedMatch, setStoredMatch] = useState<"MATCH" | "UNCHECKED" | null>(null);
+  const [history, setHistory] = useState<DispaterRunSummary[]>([]);
+  const [observation, setObservation] = useState<ObservationDecision | null>(null);
 
-  async function confirmStored(res: DispaterReconciliationReport) {
+  function beginRequest() {
+    requestSeq.current += 1;
+    return requestSeq.current;
+  }
+
+  async function refreshHistory(requestId: number) {
+    const listed = await listFn();
+    if (!isCurrentRequest(requestId, requestSeq.current)) return;
+    setHistory(listed.runs);
+  }
+
+  async function confirmStored(res: DispaterReconciliationReport, requestId: number) {
+    if (!isCurrentRequest(requestId, requestSeq.current)) return;
     if (!res.run_id) {
       setStoredMatch("UNCHECKED");
       return;
     }
     const stored = await readFn({ data: { runId: res.run_id } });
+    if (!isCurrentRequest(requestId, requestSeq.current)) return;
     if (!storedRunAgrees(res, stored)) throw new Error("DISPATER API returned an invalid report");
     setStoredMatch("MATCH");
   }
 
   async function handleRunDemo() {
+    const requestId = beginRequest();
     setBusy(true);
     setErrorMsg(null);
     setStoredMatch(null);
+    setObservation(null);
     try {
       const res = await reconcileFn({ data: { fixture: selectedFixture } });
+      if (!isCurrentRequest(requestId, requestSeq.current)) return;
       setPresentation("SYNTHETIC DEMO");
       setSourceLine(null);
-      await confirmStored(res);
+      await confirmStored(res, requestId);
+      if (!isCurrentRequest(requestId, requestSeq.current)) return;
       setReport(res);
+      try {
+        await refreshHistory(requestId);
+      } catch (historyError: unknown) {
+        if (!isCurrentRequest(requestId, requestSeq.current)) return;
+        setErrorMsg(historyError instanceof Error ? historyError.message : "Stored history could not be read");
+      }
     } catch (err: unknown) {
+      if (!isCurrentRequest(requestId, requestSeq.current)) return;
       setErrorMsg(err instanceof Error ? err.message : "Reconciliation failed");
       setReport(null);
     } finally {
-      setBusy(false);
+      if (isCurrentRequest(requestId, requestSeq.current)) setBusy(false);
     }
   }
 
   async function handleAdmitCsv() {
+    const requestId = beginRequest();
     setBusy(true);
     setErrorMsg(null);
+    setObservation(null);
     try {
       const admitted = await admitFn({ data: {} });
+      if (!isCurrentRequest(requestId, requestSeq.current)) return;
       setPresentation("SYNTHETIC DOCUMENT");
       setSourceLine(documentSourceLine(admitted.source));
-      await confirmStored(admitted.report);
+      await confirmStored(admitted.report, requestId);
+      if (!isCurrentRequest(requestId, requestSeq.current)) return;
       setReport(admitted.report);
+      try {
+        await refreshHistory(requestId);
+      } catch (historyError: unknown) {
+        if (!isCurrentRequest(requestId, requestSeq.current)) return;
+        setErrorMsg(historyError instanceof Error ? historyError.message : "Stored history could not be read");
+      }
     } catch (err: unknown) {
+      if (!isCurrentRequest(requestId, requestSeq.current)) return;
       setErrorMsg(err instanceof Error ? err.message : "Document admission failed");
       setReport(null);
     } finally {
-      setBusy(false);
+      if (isCurrentRequest(requestId, requestSeq.current)) setBusy(false);
     }
   }
 
-  function handleExportJson() {
-    if (!report) return;
-    const blob = new Blob([JSON.stringify(report, null, 2)], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `dispater-audit-report-${report.tenant_id}-${Date.now()}.json`;
-    a.click();
-    URL.revokeObjectURL(url);
+  async function handleReadHistory() {
+    const requestId = beginRequest();
+    setBusy(true);
+    setErrorMsg(null);
+    try {
+      await refreshHistory(requestId);
+    } catch (err: unknown) {
+      if (!isCurrentRequest(requestId, requestSeq.current)) return;
+      setErrorMsg(err instanceof Error ? err.message : "Stored history could not be read");
+    } finally {
+      if (isCurrentRequest(requestId, requestSeq.current)) setBusy(false);
+    }
+  }
+
+  async function handleOpenHistory(runId: string) {
+    const requestId = beginRequest();
+    setBusy(true);
+    setErrorMsg(null);
+    setObservation(null);
+    try {
+      const stored = await readFn({ data: { runId } });
+      if (!isCurrentRequest(requestId, requestSeq.current)) return;
+      if (stored.run_id !== runId || stored.financial_summary.confirmed_recovery_usd !== "0.00") {
+        throw new Error("DISPATER API returned an invalid report");
+      }
+      setPresentation("SYNTHETIC DEMO");
+      setSourceLine(null);
+      setStoredMatch("MATCH");
+      setReport(stored);
+    } catch (err: unknown) {
+      if (!isCurrentRequest(requestId, requestSeq.current)) return;
+      setErrorMsg(err instanceof Error ? err.message : "Stored run could not be read");
+      setReport(null);
+    } finally {
+      if (isCurrentRequest(requestId, requestSeq.current)) setBusy(false);
+    }
+  }
+
+  async function handleVerifiedExport() {
+    if (!report?.run_id || storedMatch !== "MATCH") return;
+    const requestId = beginRequest();
+    setBusy(true);
+    setErrorMsg(null);
+    try {
+      const exported = await exportFn({ data: { runId: report.run_id } });
+      if (!isCurrentRequest(requestId, requestSeq.current)) return;
+      if (!storedRunAgrees(report, exported.report) || exported.receipt_authenticity === "FAIL") {
+        throw new Error("DISPATER API returned an invalid report");
+      }
+      const blob = new Blob([JSON.stringify(exported, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `dispater-verified-export-${report.run_id}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch (err: unknown) {
+      if (!isCurrentRequest(requestId, requestSeq.current)) return;
+      setErrorMsg(err instanceof Error ? err.message : "Verified export failed");
+    } finally {
+      if (isCurrentRequest(requestId, requestSeq.current)) setBusy(false);
+    }
+  }
+
+  async function handleObservation() {
+    if (!report || !/^[0-9a-f]{64}$/.test(report.receipt_sha256)) return;
+    const requestId = beginRequest();
+    setBusy(true);
+    setErrorMsg(null);
+    try {
+      const decision = await observeFn({ data: { sourceSha256: report.receipt_sha256 } });
+      if (!isCurrentRequest(requestId, requestSeq.current)) return;
+      setObservation(decision);
+    } catch (err: unknown) {
+      if (!isCurrentRequest(requestId, requestSeq.current)) return;
+      setErrorMsg(err instanceof Error ? err.message : "Observation was not recorded");
+    } finally {
+      if (isCurrentRequest(requestId, requestSeq.current)) setBusy(false);
+    }
   }
 
   return (
@@ -138,8 +256,17 @@ export function DispaterReconciliationConsole() {
               </>
             )}
           </Button>
-          <Button type="button" variant="glass" disabled={busy} onClick={() => void handleAdmitCsv()} className="w-full sm:w-auto">
+          <Button type="button" variant="glass" disabled={busy} onClick={() => void handleAdmitCsv()} className="min-h-11 w-full sm:w-auto">
             Admit synthetic CSV
+          </Button>
+          <Button
+            type="button"
+            variant="glass"
+            disabled={busy}
+            onClick={() => void handleReadHistory()}
+            className="min-h-11 w-full sm:w-auto"
+          >
+            Read stored history
           </Button>
         </div>
       </div>
@@ -148,8 +275,37 @@ export function DispaterReconciliationConsole() {
         API link: {dispaterLinkState(busy, report, errorMsg)} · synthetic demonstration · not recovered revenue
       </p>
 
+      {history.length > 0 && (
+        <div className="mt-4 overflow-x-auto" aria-label="Stored audit history">
+          <p className="text-xs uppercase tracking-wider text-muted-foreground">
+            Stored runs for this tenant. Opening one reads the saved report. It does not create a recovery.
+          </p>
+          <ul className="mt-2 space-y-2">
+            {history.map((run) => (
+              <li key={run.run_id}>
+                <button
+                  type="button"
+                  className="min-h-11 w-full rounded-lg border border-border px-3 py-2 text-left font-mono text-[11px] text-muted-foreground hover:border-primary"
+                  disabled={busy}
+                  onClick={() => void handleOpenHistory(run.run_id)}
+                >
+                  {run.created_at} · {run.status} · {run.run_id.slice(0, 12)} · receipt {run.receipt_sha256.slice(0, 12)}
+                </button>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {observation && (
+        <p className="mt-4 text-xs uppercase tracking-wider text-muted-foreground" role="status">
+          ZAYLEE {observation.decision} · effect {observation.effect} · authority {observation.authority} · launch {observation.launch}
+          {observation.problems.length > 0 ? ` · ${observation.problems.join(", ")}` : ""}
+        </p>
+      )}
+
       {errorMsg && (
-        <div className="mt-4 rounded-lg border border-destructive/50 bg-destructive/10 p-4 text-destructive flex items-center gap-3">
+        <div role="alert" className="mt-4 rounded-lg border border-destructive/50 bg-destructive/10 p-4 text-destructive flex items-center gap-3">
           <ShieldAlert className="size-5 shrink-0" />
           <div>
             <p className="font-semibold text-sm">{dispaterLinkState(busy, report, errorMsg)}</p>
@@ -339,15 +495,28 @@ export function DispaterReconciliationConsole() {
               Production Release: <strong className="text-amber">HOLD</strong> · Financial
               Authority: <strong className="text-red">NONE</strong>
             </span>
-            <Button
-              type="button"
-              variant="glass"
-              size="sm"
-              onClick={handleExportJson}
-              className="flex items-center gap-2"
-            >
-              <Download className="size-4" /> Export Audit Report (JSON)
-            </Button>
+            <div className="flex flex-col gap-2 sm:flex-row">
+              <Button
+                type="button"
+                variant="glass"
+                size="sm"
+                onClick={() => void handleVerifiedExport()}
+                disabled={busy || storedMatch !== "MATCH" || !report.run_id}
+                className="flex min-h-11 items-center gap-2"
+              >
+                <Download className="size-4" /> Download verified export
+              </Button>
+              <Button
+                type="button"
+                variant="glass"
+                size="sm"
+                onClick={() => void handleObservation()}
+                disabled={busy || !/^[0-9a-f]{64}$/.test(report.receipt_sha256)}
+                className="min-h-11"
+              >
+                Record ZAYLEE observation
+              </Button>
+            </div>
           </div>
         </div>
       )}

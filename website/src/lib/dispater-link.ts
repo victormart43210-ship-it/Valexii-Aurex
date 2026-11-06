@@ -31,6 +31,10 @@ export function storedRunAgrees(
   );
 }
 
+export function isCurrentRequest(requestId: number, latestId: number): boolean {
+  return requestId === latestId;
+}
+
 export function documentSourceLine(source: DocumentSourceSummary): string {
   return `${source.filename} · ${source.source_sha256.slice(0, 16)} · rows ${source.rows.join(", ") || "none"}`;
 }

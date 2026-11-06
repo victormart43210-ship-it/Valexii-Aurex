@@ -3,8 +3,11 @@ import {
   DispaterConfigError,
   executeDispaterDocument,
   executeDispaterReconciliation,
+  exportVerifiedDispaterRun,
   getFixture,
+  listDispaterRuns,
   readDispaterRun,
+  recordSyntheticObservation,
   resolveDispaterConfig,
 } from "./dispater.server";
 
@@ -124,5 +127,80 @@ describe("dispater server config", () => {
         wrong,
       ),
     ).rejects.toThrow("DISPATER API returned an invalid report");
+  });
+  it("lists stored runs and refuses a failed receipt export", async () => {
+    const runId = "run-" + "a".repeat(32);
+    const listed = (async (url: string) => {
+      expect(url).toContain("limit=8");
+      return new Response(
+        JSON.stringify({
+          tenant_id: "tenant-x",
+          count: 1,
+          runs: [
+            {
+              run_id: runId,
+              dataset_sha256: "a",
+              receipt_sha256: "ab".repeat(32),
+              status: "AUDIT_COMPLETE",
+              created_at: "2026-11-06T22:00:00+00:00",
+            },
+          ],
+        }),
+        { status: 200 },
+      );
+    }) as typeof fetch;
+    const history = await listDispaterRuns(
+      { serviceUrl: "https://a.example", serviceToken: TOKEN, tenantId: "tenant-x" },
+      listed,
+    );
+    expect(history.runs[0]?.run_id).toBe(runId);
+    const failed = (async () =>
+      new Response(
+        JSON.stringify({
+          export_authorization: "TENANT_BEARER",
+          third_party_release: false,
+          training_reuse: "NOT_AUTHORIZED",
+          deletion: "NOT_IMPLEMENTED",
+          receipt_authenticity: "FAIL",
+          report: { ...REPORT, tenant_id: "tenant-x", run_id: runId },
+        }),
+        { status: 200 },
+      )) as typeof fetch;
+    await expect(
+      exportVerifiedDispaterRun(
+        { serviceUrl: "https://a.example", serviceToken: TOKEN, tenantId: "tenant-x" },
+        runId,
+        failed,
+      ),
+    ).rejects.toThrow("DISPATER API returned an invalid report");
+  });
+  it("records an observation only when the effect stays none", async () => {
+    const ok = (async (_url: string, init?: RequestInit) => {
+      const body = JSON.parse(String(init?.body)) as { effect?: string; tenant_id?: string };
+      expect(body.effect).toBe("NONE");
+      expect(body.tenant_id).toBe("tenant-x");
+      return new Response(
+        JSON.stringify({
+          schema: "aurex.proposal.v1",
+          decision: "RECORDED",
+          effect: "NONE",
+          authority: "NONE",
+          financial_authority: "NONE",
+          production: "HOLD",
+          launch: "NOT_STARTED",
+          independent_verification: "NOT_VERIFIED",
+          problems: [],
+          tenant_id: "tenant-x",
+        }),
+        { status: 200 },
+      );
+    }) as typeof fetch;
+    const decision = await recordSyntheticObservation(
+      { serviceUrl: "https://a.example", serviceToken: TOKEN, tenantId: "tenant-x" },
+      "ab".repeat(32),
+      ok,
+    );
+    expect(decision.decision).toBe("RECORDED");
+    expect(decision.effect).toBe("NONE");
   });
 });
