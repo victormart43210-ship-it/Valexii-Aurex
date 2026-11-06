@@ -9,7 +9,7 @@
   "cursor_review_branch": "cursor/kusanagi-cclvi-convergence-assurance-4082",
   "cursor_review_sha": "8323f6db245186b98f2bf2c99a9297e88849e15e",
   "last_verified_commit": null,
-  "last_pushed_commit": "0638ace8840a65c28fc5e3c1e7513da5fe282429",
+  "last_pushed_commit": "bdb09ec3bcf0d90fe8b2b4620fc2610100286f13",
   "last_passing_test_results": [
     {
       "command": "PYTHONPATH=. <venv>/python -m pytest tests/test_cclvii_local_proxy_isolation.py tests/test_adapter_security.py tests/test_local_inference.py tests/test_local_inference_redirects.py -q",
@@ -25,11 +25,12 @@
       "evidence": "docs/operations/cclvii-evidence/financial-tests.log"
     }
   ],
-  "current_task": "CCLVII-03 duplicate unbilled equipment repair tested",
+  "current_task": "CCLVII-04 API/import semantics repaired and focused tests green",
   "completed_tasks": [
     "Repository discovery; exact integration and current Cursor182 inspected",
     "Disabled inherited proxies in both backend local inference clients; focused23testsPASS",
-    "Duplicate unbilled equipment/date tickets withheld;37financial testsPASS;385/150/0 and10/0 unchanged"
+    "Duplicate unbilled equipment/date tickets withheld;37financial testsPASS;385/150/0 and10/0 unchanged",
+    "APIhourcollections/legacydigestpreserved;4formatfinancialmetadataretained;focusedtests/source reviewpassed"
   ],
   "unfinished_tasks": [
     "Reproduce high-risk defects outside Cursor182 repairs",
@@ -53,8 +54,8 @@
     176,
     159
   ],
-  "next_exact_action": "Verify financial savepoint, fix confirmed hours collection loss at reconciliation HTTP boundary, then run integrated tests",
-  "checkpoint_timestamp_utc": "2026-11-06T19:59:56.152233+00:00",
+  "next_exact_action": "Fetch pushed Workhead into cleanworktree, install/link exactlocked frontend deps, runfullpytestJUnit/Ruff/Mypy/Vitest/tsc/build/HTTPsandbox; inspectCIexacthead",
+  "checkpoint_timestamp_utc": "2026-11-06T20:05:20.620050+00:00",
   "environment": {
     "python": "3.12",
     "workspace": "isolated worktree from current Copilot integration; no main or shared branch mutation"

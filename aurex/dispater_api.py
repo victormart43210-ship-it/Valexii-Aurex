@@ -204,6 +204,8 @@ class ReconciliationRequest(BaseModel):
     invoices: list[dict[str, Any]] = Field(default_factory=list, max_length=MAX_ROWS)
     rates: list[dict[str, Any]] = Field(default_factory=list, max_length=MAX_ROWS)
     payments: list[dict[str, Any]] = Field(default_factory=list, max_length=MAX_ROWS)
+    equipment: list[dict[str, Any]] | None = Field(default=None, max_length=MAX_ROWS)
+    labor: list[dict[str, Any]] | None = Field(default=None, max_length=MAX_ROWS)
 
     @field_validator("dataset_type")
     @classmethod
@@ -223,8 +225,14 @@ def run_reconciliation(payload: ReconciliationRequest, principal: PrincipalDep) 
     assert_no_effect()
     authorize_tenant(principal, payload.tenant_id)
     try:
+        # Preserve legacy request identity when optional hour collections were absent.
+        dataset = payload.model_dump(exclude={"equipment", "labor"})
+        for collection in ("equipment", "labor"):
+            rows = getattr(payload, collection)
+            if rows is not None:
+                dataset[collection] = rows
         report = RevenueLeakageEngine(tenant_id=payload.tenant_id).reconcile_records(
-            payload.model_dump()
+            dataset
         )
     except InvalidSnapshot as exc:
         raise HTTPException(status.HTTP_400_BAD_REQUEST, str(exc)) from exc

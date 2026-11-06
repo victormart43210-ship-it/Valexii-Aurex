@@ -16,7 +16,7 @@ import openpyxl  # type: ignore[import-untyped]
 import pypdf
 from pypdf.errors import PdfReadError
 
-from aurex.dispater_ingest import REQUIRED, TABLES, IngestError, _cell
+from aurex.dispater_ingest import FIELDS, REQUIRED, TABLES, IngestError, _cell
 
 MAX_PAGES = 40
 MAX_SHEETS = 8
@@ -88,7 +88,7 @@ def extract_pdf(raw: bytes, source_sha256: str) -> tuple[dict[str, list[dict[str
         expected = REQUIRED[table]
         if any(not fields.get(key) for key in expected):
             raise IngestError(f"page {index} is missing a required field")
-        record = {key: fields[key] for key in expected}
+        record = {key: fields[key] for key in FIELDS[table] if key in fields}
         record["_row"] = str(index)
         tables[table].append(record)
         provenance.extend(fields_provenance)
@@ -139,7 +139,7 @@ def extract_xlsx(raw: bytes) -> dict[str, list[dict[str, str]]]:
                     continue
                 record: dict[str, str] = {}
                 for key, cell in zip(columns, row, strict=False):
-                    if key not in expected:
+                    if key not in FIELDS[sheet_name] or cell is None:
                         continue
                     if isinstance(cell, bool | int | float):
                         raise IngestError(f"sheet {sheet_name} row {index} uses a numeric cell; money must be text")

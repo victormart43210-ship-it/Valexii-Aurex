@@ -1,0 +1,30 @@
+{
+  "operation_id": "KUSANAGI_CCLVII",
+  "base_sha": "c4f45925e086bbb23b643e66707b224419d52b60",
+  "final_work_sha": null,
+  "status": "FOCUSED_PASS_FINAL_PENDING",
+  "focused": [
+    {
+      "command": "proxy23",
+      "result": "23passed",
+      "evidence": "docs/operations/cclvii-evidence/proxy-tests.log"
+    },
+    {
+      "command": "financial37",
+      "result": "37passed",
+      "evidence": "docs/operations/cclvii-evidence/financial-tests.log"
+    },
+    {
+      "command": "ingestion/API/tenant/golden",
+      "result": "exit0;68selectedtests; exactfullJUnitfollows",
+      "evidence": "docs/operations/cclvii-evidence/ingestion-tests.log"
+    }
+  ],
+  "full_pytest": "NOT_RUN_ON_FINAL_SHA",
+  "frontend": "NOT_RUN_ON_FINAL_SHA",
+  "ci": "NOT_RUN_ON_FINAL_SHA",
+  "independence": "SEPARATE_AGENT_SOURCE_REVIEW;EXTERNAL_ASSURANCE_REVIEW_PENDING",
+  "browser": "NOT_RUN; Playwrightpackagepresentbutchromiumexecutablemissing",
+  "production_release": "HOLD",
+  "financial_authority": "NONE"
+}

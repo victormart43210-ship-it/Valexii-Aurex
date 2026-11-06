@@ -30,6 +30,14 @@ REQUIRED = {
     "labor": ("record_id", "job_id", "role", "service_date", "approved_hours", "billed_hours"),
 }
 
+OPTIONAL = {
+    "invoices": ("customer_id",),
+    "rates": ("unit", "supersedes"),
+    "payments": ("kind", "job_id", "customer_id"),
+    "labor": ("overtime_hours",),
+}
+FIELDS = {name: (*required, *OPTIONAL.get(name, ())) for name, required in REQUIRED.items()}
+
 
 class IngestError(ValueError):
     """A source was rejected before it could become evidence."""
@@ -75,8 +83,8 @@ def _rows_from_csv(text: str) -> tuple[str, list[dict[str, str]]]:
             raise IngestError("csv exceeds the row limit")
         if None in row:
             raise IngestError(f"row {index} has extra columns")
-        record = {key: _cell(row.get(key, "")) for key in expected}
-        if any(not record[key] for key in expected):
+        record = {key: _cell(row[key]) for key in FIELDS[table] if row.get(key) not in (None, "")}
+        if any(not record.get(key) for key in expected):
             raise IngestError(f"row {index} is missing a required value")
         record["_row"] = str(index)
         rows.append(record)
@@ -101,8 +109,8 @@ def _rows_from_json(text: str) -> dict[str, list[dict[str, str]]]:
         for index, row in enumerate(rows, start=1):
             if not isinstance(row, dict):
                 raise IngestError(f"{name} row {index} must be an object")
-            record = {key: _cell(str(row.get(key, ""))) for key in REQUIRED[name]}
-            if any(not record[key] for key in REQUIRED[name]):
+            record = {key: _cell(str(row.get(key, ""))) for key in FIELDS[name] if key in row}
+            if any(not record.get(key) for key in REQUIRED[name]):
                 raise IngestError(f"{name} row {index} is missing a required value")
             record["_row"] = str(index)
             tables[name].append(record)
@@ -163,12 +171,10 @@ def ingest_source(tenant_id: str, filename: str, raw: bytes, *, kind: str) -> di
     dataset = {
         "tenant_id": tenant_id,
         "dataset_type": "SYNTHETIC_ONLY",
-        "jobs": [{k: row[k] for k in REQUIRED["jobs"]} for row in tables["jobs"]],
-        "invoices": [{k: row[k] for k in REQUIRED["invoices"]} for row in tables["invoices"]],
-        "rates": [{k: row[k] for k in REQUIRED["rates"]} for row in tables["rates"]],
-        "payments": [{k: row[k] for k in REQUIRED["payments"]} for row in tables["payments"]],
-        "equipment": [{k: row[k] for k in REQUIRED["equipment"]} for row in tables["equipment"]],
-        "labor": [{k: row[k] for k in REQUIRED["labor"]} for row in tables["labor"]],
+        **{
+            name: [{key: row[key] for key in FIELDS[name] if key in row} for row in rows]
+            for name, rows in tables.items()
+        },
     }
     return {
         "schema": SCHEMA,

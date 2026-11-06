@@ -45,6 +45,23 @@
       "red": "2failed1passed; duplicate tickets booked400",
       "green": "37passed; duplicate amount0, single ticket200; golden385/150/0 invoice10/0",
       "next_action": "Verify financial savepoint, fix confirmed hours collection loss at reconciliation HTTP boundary, then run integrated tests"
+    },
+    {
+      "timestamp_utc": "2026-11-06T20:05:20.620050+00:00",
+      "task_id": "CCLVII-04",
+      "status": "TESTED",
+      "action": "PreservehourcollectionsandfinancialoptionalfieldsacrosscanonicalAPIand4formatimport",
+      "files": [
+        "aurex/dispater_api.py",
+        "aurex/dispater_ingest.py",
+        "aurex/dispater_documents.py",
+        "tests/test_cclvii_hours_api.py",
+        "tests/test_cclvii_ingest_semantics.py"
+      ],
+      "red": "API3fail1pass;format4fail",
+      "green": "formatagent35pass;coordinator68selectedexit0;noexistingfixtureexpectationschanged",
+      "remote_checkpoint_sha": "bdb09ec3bcf0d90fe8b2b4620fc2610100286f13",
+      "next_action": "Fetch pushed Workhead into cleanworktree, install/link exactlocked frontend deps, runfullpytestJUnit/Ruff/Mypy/Vitest/tsc/build/HTTPsandbox; inspectCIexacthead"
     }
   ]
 }

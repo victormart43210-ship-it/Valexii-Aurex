@@ -1,0 +1,27 @@
+{
+  "operation_id": "KUSANAGI_CCLVII",
+  "owner": "ChatGPTWork",
+  "base_integration_sha": "c4f45925e086bbb23b643e66707b224419d52b60",
+  "work_branch": "work/kusanagi-cclvii-sovereign-execution",
+  "work_pr": 183,
+  "last_pushed_commit": "bdb09ec3bcf0d90fe8b2b4620fc2610100286f13",
+  "incorporate": [
+    "0638ace8840a65c28fc5e3c1e7513da5fe282429 proxyprivacy",
+    "bdb09ec3bcf0d90fe8b2b4620fc2610100286f13 duplicateunbilledtickets",
+    "nextWorkcommit API/importmetadata"
+  ],
+  "cursor182_sha": "8323f6db245186b98f2bf2c99a9297e88849e15e",
+  "next_exact_action": "Fetch pushed Workhead into cleanworktree, install/link exactlocked frontend deps, runfullpytestJUnit/Ruff/Mypy/Vitest/tsc/build/HTTPsandbox; inspectCIexacthead",
+  "remaining_blockers": [
+    "Conflicting customer IDs can override case/fullwidth-equivalent job reference ambiguity",
+    "Repeated PDF/XLSX field/header ambiguity can select last value",
+    "Delete DB rows, sidecar and server checkpoint together; no separate external witness",
+    "Finding columns plaintext; retention/deletion requests recorded only",
+    "Loopback port policy and allowlisted HTTP not deployment enforced"
+  ],
+  "do_not_merge_or_deploy": true,
+  "production_authority": "NONE",
+  "production_release": "HOLD",
+  "financial_authority": "NONE",
+  "third_party_contact": "PROHIBITED"
+}
