@@ -120,5 +120,18 @@
     "resume": "docs/operations/RESUME.md",
     "production": "HOLD",
     "financial_authority": "NONE"
+  },
+  "ccxlvii_note": {
+    "operation": "KUSANAGI_CCXLVII",
+    "recorded_at": "2026-11-06T14:57:00Z",
+    "note": "CI and CLIV on b5b9357 failed at pytest collection. The repair does not replace the CCXVIII or CCXLVI records.",
+    "failed_runs": [
+      "https://github.com/victormart43210-ship-it/Valexii-Aurex/actions/runs/42235274479",
+      "https://github.com/victormart43210-ship-it/Valexii-Aurex/actions/runs/42235274474"
+    ],
+    "classification": "test collection defect",
+    "production": "HOLD",
+    "financial_authority": "NONE",
+    "release_decision": "NO-GO"
   }
 }

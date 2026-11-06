@@ -89,5 +89,21 @@
     "Production remains HOLD."
   ],
   "pull_request": "https://github.com/victormart43210-ship-it/Valexii-Aurex/pull/180",
-  "next_executable_action": "Owner review of pull request 180. Do not merge, deploy, download weights, or process historical company rows."
+  "next_executable_action": "CCXLVII: the collection defect is repaired locally. Wait for GitHub CI and CLIV on the repair commit, then record the Opus reviewer findings. Do not merge.",
+  "ccxlvii": {
+    "operation": "KUSANAGI_CCXLVII",
+    "recorded_at": "2026-11-06T14:57:00Z",
+    "failed_head": "b5b935763f8c7658dcc1f8aa54d221a4fb7a5a50",
+    "classification": "test collection defect in tests/test_ox_laboratory.py",
+    "local_pytest_q": "695 passed, 1 skipped (training/tests/test_lora_smoke.py, torch absent), exit 0",
+    "github_rerun": "PENDING",
+    "decision": "NO-GO",
+    "reviewer": "Opus-class agent bc-74a1875d-ee1e-59f9-9b9e-0f6a8184a6ab was started read-only. Findings were not in hand at this record.",
+    "artifacts": [
+      "docs/operations/CCXLVII_CI_FAILURE_MATRIX.json",
+      "docs/operations/CCXLVII_DEPENDENCY_MATRIX.json",
+      "docs/operations/CCXLVII_INDEPENDENT_ASSURANCE.md",
+      "docs/operations/CCXLVII_RELEASE_DECISION.json"
+    ]
+  }
 }

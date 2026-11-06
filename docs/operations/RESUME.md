@@ -30,6 +30,12 @@ Do not overwrite `docs/operations/CURSOR_CHATGPT_HANDOFF.json` or `docs/operatio
 
 ## Next action
 
-Wait for an owner review of draft pull request 180: https://github.com/victormart43210-ship-it/Valexii-Aurex/pull/180
+## 2026-11-06 8:57 AM CT — CCXLVII
 
-Production is HOLD. Financial authority is NONE. Independent verification is PENDING.
+GitHub CI run 42235274479 and CLIV run 42235274474 failed on `b5b935763f8c7658dcc1f8aa54d221a4fb7a5a50`. Both died in `pytest -q` with exit 2 because `tests/test_ox_laboratory.py` imported the `tests` package. Ruff and mypy had already passed. The repair loads the golden fixture by path. Local `pytest -q` then exited 0 with 695 passed and 1 skipped (`training/tests/test_lora_smoke.py`, no torch).
+
+Do not merge pull request 180. Do not merge 172, 175, or 176. Pull request 172 head is now `47c23fcaa52923820e0c573f2e046d871da47fec` and adds `aurex/the_big_one.py`, which walks a directory. Leave it out.
+
+Release decision: NO-GO until GitHub reruns CI and CLIV on the repair commit and the Opus reviewer findings are recorded.
+
+Production is HOLD. Financial authority is NONE.

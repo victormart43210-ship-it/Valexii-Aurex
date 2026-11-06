@@ -2,18 +2,31 @@
 
 from __future__ import annotations
 
+import importlib.util
 from datetime import UTC, datetime, timedelta
 from decimal import Decimal
+from pathlib import Path
+from types import ModuleType
 
 from aurex.ascendancy.historical_audit import historical_validation_proposal, run_authorized_audit
-from aurex.dispater_intelligence import digest
+from aurex.dispater_intelligence import RevenueLeakageEngine, digest
 from aurex.ox.customization import customization_contract, promotion_decision
 from aurex.ox.evaluation import evaluate, injected_provider, mock_provider
 from aurex.ox.registry import EMPTY_SHA256, RegistryError, validate_registry
 from aurex.ox.replay import audit_replay_manifest
-from tests.test_dispater_golden_audit import EXPECTED
 
 NOW = datetime(2026, 11, 6, 14, 20, tzinfo=UTC)
+
+
+def _golden_fixture() -> ModuleType:
+    """Load the golden fixture by path. ``import tests`` is not available to ``pytest -q``."""
+    path = Path(__file__).resolve().parent / "test_dispater_golden_audit.py"
+    spec = importlib.util.spec_from_file_location("ccxlvii_golden_fixture", path)
+    if spec is None or spec.loader is None:
+        raise RuntimeError("golden fixture is missing")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
 
 
 def test_registry_rejects_self_approval_and_the_empty_digest() -> None:
@@ -105,9 +118,23 @@ def test_replay_manifest_ignores_the_clock_and_sees_a_changed_cent() -> None:
 
 
 def test_financial_headlines_and_the_historical_gate_stay_closed() -> None:
-    assert EXPECTED["identified_exposure_usd"] == "385.00"
-    assert EXPECTED["withheld_unresolved_usd"] == "150.00"
-    assert EXPECTED["confirmed_recovery_usd"] == "0.00"
+    # Seed arithmetic, restated here. It is not taken from the engine's summary.
+    under = Decimal("100.00")
+    over = Decimal("50.00") + Decimal("80.00")
+    unverified = Decimal("40.00") + Decimal("60.00") + Decimal("30.00") + Decimal("25.00")
+    withheld = Decimal("80.00") + Decimal("70.00")
+    identified_total = under + over + unverified
+    assert identified_total == Decimal("385.00")
+    assert withheld == Decimal("150.00")
+    golden = _golden_fixture()
+    report = RevenueLeakageEngine("golden").reconcile_records(golden.build_dataset())
+    summary = report["financial_summary"]
+    assert summary["identified_exposure_usd"] == f"{identified_total:.2f}"
+    assert summary["withheld_unresolved_usd"] == f"{withheld:.2f}"
+    assert summary["confirmed_recovery_usd"] == "0.00"
+    assert summary["confirmed_recovery_usd"] != summary["identified_exposure_usd"]
+    assert report["authority_state"] == "HOLD"
+    assert all(item["qualification"] != "CONFIRMED_DISCREPANCY" for item in report["findings"])
     identified = Decimal("110.00") - Decimal("100.00")
     dataset = {
         "tenant_id": "tenant-asc",

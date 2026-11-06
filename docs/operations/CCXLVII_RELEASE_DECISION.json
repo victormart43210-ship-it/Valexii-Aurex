@@ -1,0 +1,20 @@
+{
+  "operation": "KUSANAGI_CCXLVII",
+  "recorded_at": "2026-11-06T14:57:00Z",
+  "decision": "NO-GO",
+  "scope": "Do not merge pull request 180 and do not deploy.",
+  "reasons": [
+    "GitHub CI and CLIV failed on b5b935763f8c7658dcc1f8aa54d221a4fb7a5a50. The repair is local until those workflows pass on the new commit.",
+    "The independent reviewer had not returned findings when this decision was recorded.",
+    "The branch contains unmerged pull requests 171, 174, 177, and 178. It is not a direct merge to main.",
+    "Pull request 172 at 47c23fcaa52923820e0c573f2e046d871da47fec adds a directory inventory module and must not be merged in this operation.",
+    "Pull request 176 is CONFLICTING. Pull request 175 would replace shared financial files.",
+    "Production authority is HOLD. Financial authority is NONE."
+  ],
+  "production": "HOLD",
+  "financial_authority": "NONE",
+  "paid_inference": "OFF",
+  "training": "NOT_STARTED",
+  "historical_records": "NOT_PROCESSED",
+  "next_action": "Push the repair, wait for CI and CLIV on the new SHA, and record the Opus reviewer findings before any owner merge decision."
+}

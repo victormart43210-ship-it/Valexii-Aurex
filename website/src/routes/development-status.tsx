@@ -28,6 +28,10 @@ const ROWS = [
   ["XAELI", "Governed advisory assistant", "Explanations do not approve a recovery or replace the calculation."],
   ["BCXMET / MEDAURUS", "Cybersecurity platform", "Security authority stays separate from AUREX explanations."],
   ["Production", "HOLD", "This page is not a deployment and not a customer-data intake."],
+  ["Financial authority", "NONE", "Identified exposure is not customer revenue and is not confirmed recovery."],
+  ["Historical records", "NOT PROCESSED", "The private validation dataset stays closed. Local validation is not activated."],
+  ["Live model connection", "NOT VERIFIED", "A mocked evaluation is not a live model."],
+  ["Paid inference", "OFF", "The laboratory does not call a paid provider."],
 ] as const;
 
 function DevelopmentStatus() {
