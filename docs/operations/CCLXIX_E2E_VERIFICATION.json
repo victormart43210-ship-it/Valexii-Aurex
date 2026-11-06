@@ -30,8 +30,14 @@
       "reason": "The owner lock screen was not opened in this browser session. Its existing tests still require owner authentication."
     },
     "docker": {
-      "status": "NOT_RUN",
-      "reason": "The docker binary is not installed here."
+      "status": "PASS",
+      "local": "NOT_RUN",
+      "github_actions": "docker-build-and-smoke passed on 8fb16fc2851a6c6773a4aabf2273fcbbca82c8b8 at 2026-11-06T17:30:22-0600. The job built the image. It did not deploy."
+    },
+    "github_actions_on_8fb16fc": {
+      "status": "PASS",
+      "completed_by": "2026-11-06T17:31:44-0600",
+      "checks": ["offline-practice", "test", "test", "verify", "integration", "docker-build-and-smoke"]
     }
   },
   "performance": {

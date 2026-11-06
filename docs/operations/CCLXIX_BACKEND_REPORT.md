@@ -15,4 +15,4 @@ Commands:
 
 An in-process TestClient measured a mean of 0.0036 seconds across 20 identical reconciliation posts after one warmup. That figure is local process time for a repeated synthetic payload. It is not deployed latency, throughput, or memory use.
 
-`dispater-web` `node --test tests/*.test.mjs`: 25 passed. Docker was not run in this environment.
+`dispater-web` `node --test tests/*.test.mjs`: 25 passed. Docker was not run in this environment. GitHub Actions `docker-build-and-smoke` passed on `8fb16fc2851a6c6773a4aabf2273fcbbca82c8b8` at 5:30 PM CT. That job did not deploy.

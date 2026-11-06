@@ -15,10 +15,11 @@
     "Connected an advisory ZAYLEE observation that cannot launch an effect.",
     "Ignored stale DISPATER responses.",
     "Ran pytest, ruff, mypy, website tests, the website build, and dispater-web tests.",
-    "Exercised the mobile DISPATER console in headless Chrome."
+    "Exercised the mobile DISPATER console in headless Chrome.",
+    "Recorded six successful GitHub checks on 8fb16fc2851a6c6773a4aabf2273fcbbca82c8b8, including docker-build-and-smoke. The image job did not deploy."
   ],
   "outstanding": [
-    "GitHub Actions on this SHA.",
+    "GitHub Actions on the documentation note that records those checks.",
     "Local Docker.",
     "Live Qwen. The probe returned URLError.",
     "Fleet maintenance. No backend contract exists.",
