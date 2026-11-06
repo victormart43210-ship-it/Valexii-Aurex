@@ -237,5 +237,16 @@
     "financial_authority": "NONE",
     "local_assets": "LOCAL_ASSET_ACCESS_REQUIRED",
     "xaeli": "NOT_VERIFIED"
+  },
+  "cclxii_note": {
+    "operation": "KUSANAGI_CCLXII",
+    "recorded_at": "2026-11-06T22:04:13Z",
+    "note": "No CCLX recovery commit was found. PR 172 and PR 176 stay rejected by scripts/jules_import_boundary.py. This note does not replace earlier records.",
+    "tested_code_sha": "41ce726dd1664b4f85dce2e316285c4711a3b1c7",
+    "base_sha": "5285202699c362c7a10abcb02a8b5c8591517f7c",
+    "decision": "HOLD_WITH_BLOCKERS",
+    "production": "HOLD",
+    "financial_authority": "NONE",
+    "xaeli": "NOT_VERIFIED"
   }
 }

@@ -1,0 +1,41 @@
+{
+  "operation": "KUSANAGI_CCLXII",
+  "tested_code_sha": "41ce726dd1664b4f85dce2e316285c4711a3b1c7",
+  "journey": "browser button -> website server function -> local AUREX API -> deterministic reconciliation -> receipt -> page",
+  "local_only": true,
+  "service_token_in_browser_html": false,
+  "desktop": {
+    "url": "http://127.0.0.1:5176/dispater",
+    "api_link": "CONNECTED",
+    "identified_exposure_usd": "1750.00",
+    "withheld_unresolved_usd": "0.00",
+    "confirmed_recovery_usd": "0.00",
+    "findings": ["RATE_MISMATCH", "UNBILLED_JOB"],
+    "presentation": ["NOW", "CHANGED", "NEXT", "WHY", "PROOF"],
+    "receipt_binding": "BOUND_V2",
+    "receipt_sha256_prefix": "ba98418ab1a69b4f",
+    "authority": "HOLD",
+    "financial_authority": "NONE"
+  },
+  "mobile_390": {
+    "scroll_width": 390,
+    "client_width": 390,
+    "identified_exposure_usd": "1750.00",
+    "confirmed_recovery_usd": "0.00",
+    "controls": "stacked full width"
+  },
+  "unauthorized": {
+    "url": "http://127.0.0.1:5180/dispater",
+    "api_link": "ERROR",
+    "message": "DISPATER API error (401)",
+    "backend_body_visible": false
+  },
+  "unconfigured": "PASS in website/src/lib/dispater.test.ts. The dev server used for the browser was configured, so the browser did not show the unconfigured state.",
+  "golden_ledger": {
+    "identified_exposure_usd": "385.00",
+    "withheld_unresolved_usd": "150.00",
+    "confirmed_recovery_usd": "0.00",
+    "result": "PASS",
+    "note": "The website fixture is a different synthetic sample. Its $1750.00 is not the golden ledger."
+  }
+}

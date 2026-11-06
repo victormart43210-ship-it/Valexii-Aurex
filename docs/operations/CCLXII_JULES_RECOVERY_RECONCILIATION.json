@@ -1,0 +1,33 @@
+{
+  "operation": "KUSANAGI_CCLXII",
+  "tested_code_sha": "41ce726dd1664b4f85dce2e316285c4711a3b1c7",
+  "cclx_recovery": {
+    "status": "NOT_FOUND",
+    "searched": "git fetch, open pull requests, and branch names containing jules, cclx, or recovery",
+    "newest_jules_ref": "origin/jules-dispater-global-ascension-iii-6724337203253889766 at 27d20d32f765a55a883f2b8cf15c106238031d84"
+  },
+  "pending_import_boundary": {
+    "contract": "scripts/jules_import_boundary.py",
+    "auto_merge": false,
+    "protected_files": [
+      "aurex/customer_sovereignty.py",
+      "aurex/dispater_api.py",
+      "aurex/dispater_intelligence.py",
+      "aurex/dispater_receipt.py",
+      "aurex/dispater_store.py",
+      "aurex/egress.py",
+      "aurex/evidence_kernel.py"
+    ],
+    "pr_172": {
+      "sha": "a5b9cce016ca6072a2cd1094ba94eca9091e9664",
+      "decision": "REJECTED",
+      "protected_changes": 7
+    },
+    "pr_176": {
+      "sha": "27d20d32f765a55a883f2b8cf15c106238031d84",
+      "decision": "REJECTED",
+      "protected_changes": 7
+    }
+  },
+  "attribution": "The boundary and this review were written by Cursor. No Jules recovery commit was available to attribute."
+}
