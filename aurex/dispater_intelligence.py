@@ -694,7 +694,7 @@ class RevenueLeakageEngine:
                     " so the dollars stay separate and are not treated as one event."
                 )
                 finding["finding_sha256"] = digest(finding)
-        payment_keys = _orphan_payment_withhold(findings)
+        payment_keys = _orphan_payment_withhold(findings, payments, unbilled_jobs)
         if payment_keys:
             event_separation = "WITHHELD_AMBIGUOUS"
             for finding in findings:
@@ -985,29 +985,51 @@ def _customer_token(value: object) -> str:
     return "".join(ch for ch in text if ch.isalnum())
 
 
-def _orphan_payment_withhold(findings: list[dict[str, Any]]) -> set[tuple[str, str]]:
-    """Withhold an equal unbilled amount and an orphan payment. Unequal pairs stay.
+def _non_ascii_customer(value: object) -> bool:
+    text = unicodedata.normalize("NFKC", str(value or ""))
+    return any(ord(ch) > 127 for ch in text)
 
-    The golden ledger's $100 unbilled job and $25 orphan payment are unequal, so
-    both remain. Equal amounts are not proof they are one event, so both are
-    withheld instead of being added together.
+
+def _orphan_payment_withhold(
+    findings: list[dict[str, Any]],
+    payments: list[dict[str, Any]],
+    unbilled_jobs: list[dict[str, Any]],
+) -> set[tuple[str, str]]:
+    """Withhold one unbilled job and one orphan payment when the pair is ambiguous.
+
+    Equal amounts are not proof of one event. A shared job id is not proof either.
+    Both dollars are withheld in those two cases. A larger set is left alone:
+    pairing it would invent matches, and withholding every row because one extra
+    payment exists would hide unrelated exposure. The golden $100 job and $25
+    payment are unequal and have no shared job id, so both remain.
     """
     unbilled = [
         finding
         for finding in findings
         if finding["code"] in _UNBILLED_CODES and parse_money(finding["exposure_usd"]) > 0
     ]
-    payments = [
+    pay_findings = [
         finding
         for finding in findings
         if finding["code"] == "ORPHAN_PAYMENT" and parse_money(finding["exposure_usd"]) > 0
     ]
-    if not unbilled or not payments:
+    if len(unbilled) != 1 or len(pay_findings) != 1 or len(unbilled_jobs) != 1:
         return set()
-    if len(unbilled) == 1 and len(payments) == 1:
-        if parse_money(unbilled[0]["exposure_usd"]) != parse_money(payments[0]["exposure_usd"]):
-            return set()
-    return {(finding["code"], finding["subject"]) for finding in unbilled + payments}
+    payment = next(
+        (item for item in payments if item["payment_id"] == pay_findings[0]["subject"]),
+        None,
+    )
+    if payment is None:
+        return set()
+    same_amount = parse_money(unbilled[0]["exposure_usd"]) == parse_money(pay_findings[0]["exposure_usd"])
+    shared_job = str(payment.get("job_id", "")).casefold() == str(unbilled_jobs[0].get("job_id", "")).casefold()
+    shared_job = shared_job and bool(str(unbilled_jobs[0].get("job_id", "")))
+    if not same_amount and not shared_job:
+        return set()
+    return {
+        (unbilled[0]["code"], unbilled[0]["subject"]),
+        (pay_findings[0]["code"], pay_findings[0]["subject"]),
+    }
 
 
 def _event_separation(
@@ -1017,23 +1039,26 @@ def _event_separation(
 ) -> tuple[str, set[tuple[str, str]], set[tuple[str, str]]]:
     """Classify unbilled jobs against orphan invoices without inventing a join.
 
-    A different customer id proves an orphan invoice is a distinct event. Equal amounts
-    are not evidence of the same event. One unresolved pair with different amounts is
-    left in the identified total and labeled ``NO_RELATIONSHIP_EVIDENCE``. That is the
-    golden ledger's $100 unbilled job and $40 orphan invoice. A larger unresolved set
-    is withheld from the identified total.
+    A different customer id proves an orphan invoice is a distinct event only when
+    both ids survive case, width, punctuation, and lookalike folding as different
+    tokens, and neither still contains a non-ASCII character. Equal amounts are not
+    evidence of the same event. One unresolved pair with different amounts and no
+    shared job id stays identified and is labeled ``NO_RELATIONSHIP_EVIDENCE``.
+    That includes the golden $100 job and $40 invoice, and a same-customer pair
+    whose amounts differ. A larger unresolved set is withheld.
     """
     empty: set[tuple[str, str]] = set()
     if not unbilled_jobs or not orphan_invoices:
         return "NOT_APPLICABLE", empty, empty
     job_tokens = {_customer_token(job.get("customer_id")) for job in unbilled_jobs}
-    # A blank or confusable customer id is not proof of a different customer.
-    jobs_missing_customer = "" in job_tokens
+    # A blank, confusable, or still-non-ASCII customer id is not proof of a different customer.
+    jobs_missing_customer = "" in job_tokens or any(_non_ascii_customer(job.get("customer_id")) for job in unbilled_jobs)
     unresolved = [
         invoice
         for invoice in orphan_invoices
         if jobs_missing_customer
         or not _customer_token(invoice.get("customer_id"))
+        or _non_ascii_customer(invoice.get("customer_id"))
         or _customer_token(invoice.get("customer_id")) in job_tokens
     ]
     if not unresolved:
@@ -1063,10 +1088,7 @@ def _event_separation(
         )
         shared_job = str(unbilled_jobs[0].get("job_id", "")).casefold() == str(unresolved[0].get("job_id", "")).casefold()
         shared_job = shared_job and bool(str(unbilled_jobs[0].get("job_id", "")))
-        job_token = _customer_token(unbilled_jobs[0].get("customer_id"))
-        invoice_token = _customer_token(unresolved[0].get("customer_id"))
-        same_customer_token = bool(job_token) and job_token == invoice_token
-        if same_amount or shared_job or same_customer_token:
+        if same_amount or shared_job:
             return "WITHHELD_AMBIGUOUS", unbilled_keys | unresolved_keys, empty
         return "NO_RELATIONSHIP_EVIDENCE", empty, unbilled_keys | unresolved_keys
     return "WITHHELD_AMBIGUOUS", unbilled_keys | unresolved_keys, empty
