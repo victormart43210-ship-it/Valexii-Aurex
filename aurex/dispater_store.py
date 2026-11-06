@@ -23,7 +23,7 @@ from datetime import UTC, datetime, timedelta
 from typing import Any
 
 from aurex.dispater_intelligence import verify_receipt
-from aurex.dispater_receipt import sign_report, verify_mac
+from aurex.dispater_receipt import receipt_version, sign_report_v2, verify_mac
 
 logger = logging.getLogger("aurex.dispater")
 
@@ -147,8 +147,15 @@ def _verified(row: sqlite3.Row) -> dict[str, Any]:
         or report.get("tenant_id") != row["tenant_id"]
     ):
         raise IntegrityError("stored audit report failed integrity verification")
-    report["run_id"] = row["run_id"]
-    report["created_at"] = row["created_at"]
+    if receipt_version(report) == 2:
+        # Identity and time are signed: the row must agree, otherwise a receipt was moved.
+        if report.get("run_id") != row["run_id"] or report.get("created_at") != row["created_at"]:
+            raise IntegrityError("stored audit report does not match its signed run identity")
+    else:
+        # Legacy receipts never signed these; they are returned but visibly untrusted.
+        report["run_id"] = row["run_id"]
+        report["created_at"] = row["created_at"]
+        report["unauthenticated_fields"] = ["run_id", "created_at"]
     return report
 
 
@@ -156,9 +163,9 @@ def save_run(tenant_id: str, report: dict[str, Any]) -> tuple[dict[str, Any], bo
     """Persist atomically. Returns (stored report, created). Idempotent on dataset hash."""
     if report.get("tenant_id") != tenant_id:
         raise ValueError("report tenant mismatch")
-    report = sign_report(report)  # fails closed when no receipt key is configured
     run_id = f"run-{uuid.uuid4().hex}"
     now = datetime.now(UTC).isoformat()
+    report = sign_report_v2(report, run_id=run_id, created_at=now)  # fails closed without a key
     refs: list[dict[str, str]] = []
     for f in report.get("findings", []):
         for ev in f.get("evidence", []):

@@ -5,6 +5,8 @@ Routes under `/v1/dispater`:
 - GET  /findings
 - GET  /dashboard
 - GET  /runs, GET /runs/{run_id}, GET /runs/{run_id}/export?format=json|csv
+- POST /claims, GET /claims, GET /claims/{claim_id}, POST /claims/{claim_id}/advance, GET /quarantine
+  (recovery claims governed by aurex.evidence_kernel; reviewer identity is the authenticated principal)
 
 Security model (fail closed):
 - Bearer tokens are bound to tenants via AUREX_DISPATER_TENANT_GRANTS, a JSON object
@@ -38,8 +40,9 @@ from fastapi import (
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field, field_validator
 
-from aurex import dispater_store
+from aurex import dispater_claims, dispater_store
 from aurex.dispater_intelligence import InvalidSnapshot, RevenueLeakageEngine, report_to_csv
+from aurex.evidence_kernel import Outcome, QualificationError
 
 logger = logging.getLogger("aurex.dispater")
 
@@ -321,3 +324,109 @@ def export_run(
     if format == "csv":
         return Response(report_to_csv(run), media_type="text/csv")
     return run
+
+
+# ---- recovery claims (Evidence Integrity Kernel enforcement) --------------------------------
+
+CLAIM_ID = Annotated[str, Path(pattern=r"^clm-[0-9a-f]{32}$")]
+
+
+class ClaimCreate(BaseModel):
+    tenant_id: str = Field(pattern=TENANT_PATTERN, max_length=64)
+    run_id: str = Field(pattern=r"^run-[0-9a-f]{32}$")
+    finding_id: str = Field(min_length=1, max_length=200)
+
+
+class EvidenceItem(BaseModel):
+    source_system: str = Field(min_length=1, max_length=100)
+    source_record_id: str = Field(min_length=1, max_length=200)
+    content_sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
+    event_time: str = Field(max_length=40)
+    derived_from: list[dict[str, str]] = Field(default_factory=list, max_length=10)
+    transformations: list[str] = Field(default_factory=list, max_length=10)
+
+    @field_validator("derived_from")
+    @classmethod
+    def _parents(cls, v: list[dict[str, str]]) -> list[dict[str, str]]:
+        for p in v:
+            if set(p) != {"source_system", "source_record_id"} or any(not x or len(x) > 200 for x in p.values()):
+                raise ValueError("derived_from entries need source_system and source_record_id (<=200 chars)")
+        return v
+
+    @field_validator("transformations")
+    @classmethod
+    def _transforms(cls, v: list[str]) -> list[str]:
+        if any(len(t) > 100 for t in v):
+            raise ValueError("transformation labels must be <=100 chars")
+        return v
+
+
+class ClaimAdvance(BaseModel):
+    tenant_id: str = Field(pattern=TENANT_PATTERN, max_length=64)
+    target: Outcome
+    evidence: list[EvidenceItem] = Field(max_length=dispater_claims.MAX_EVIDENCE_PER_CALL)
+    received_amount: str | None = Field(default=None, max_length=32)
+
+
+def _reviewer(principal: Principal) -> str:
+    return f"principal:{principal.token_sha256[:16]}"
+
+
+def _claim_errors(exc: Exception, op: str) -> HTTPException:
+    if isinstance(exc, dispater_claims.ClaimNotFound):
+        return HTTPException(status.HTTP_404_NOT_FOUND, "Not found")
+    if isinstance(exc, dispater_claims.EvidenceConflict):
+        return HTTPException(status.HTTP_409_CONFLICT, f"Evidence quarantined: {exc}")
+    if isinstance(exc, (QualificationError, dispater_claims.ClaimInputError)):
+        return HTTPException(422, str(exc))
+    return _internal_error(op)
+
+
+@router.post("/claims")
+def create_claim(payload: ClaimCreate, principal: PrincipalDep) -> dict[str, Any]:
+    authorize_tenant(principal, payload.tenant_id)
+    try:
+        claim, _created = dispater_claims.create_claim(payload.tenant_id, payload.run_id, payload.finding_id)
+    except Exception as exc:
+        raise _claim_errors(exc, "claim-create") from exc
+    return claim
+
+
+@router.get("/claims")
+def list_claims(principal: PrincipalDep, tenant_id: TenantQuery) -> dict[str, Any]:
+    authorize_tenant(principal, tenant_id)
+    try:
+        return dispater_claims.list_claims(tenant_id)
+    except Exception as exc:
+        raise _claim_errors(exc, "claim-list") from exc
+
+
+@router.get("/claims/{claim_id}")
+def get_claim(claim_id: CLAIM_ID, principal: PrincipalDep, tenant_id: TenantQuery) -> dict[str, Any]:
+    authorize_tenant(principal, tenant_id)
+    try:
+        return dispater_claims.get_claim(tenant_id, claim_id)
+    except Exception as exc:
+        raise _claim_errors(exc, "claim-read") from exc
+
+
+@router.post("/claims/{claim_id}/advance")
+def advance_claim(claim_id: CLAIM_ID, payload: ClaimAdvance, principal: PrincipalDep) -> dict[str, Any]:
+    authorize_tenant(principal, payload.tenant_id)
+    try:
+        return dispater_claims.advance_claim(
+            payload.tenant_id, claim_id, payload.target,
+            [e.model_dump() for e in payload.evidence], _reviewer(principal), payload.received_amount,
+        )
+    except Exception as exc:
+        raise _claim_errors(exc, "claim-advance") from exc
+
+
+@router.get("/quarantine")
+def get_quarantine(principal: PrincipalDep, tenant_id: TenantQuery) -> dict[str, Any]:
+    authorize_tenant(principal, tenant_id)
+    try:
+        items = dispater_claims.list_quarantine(tenant_id)
+    except Exception as exc:
+        raise _internal_error("quarantine") from exc
+    return {"tenant_id": tenant_id, "count": len(items), "items": items}

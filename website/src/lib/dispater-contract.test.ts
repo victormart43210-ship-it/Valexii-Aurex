@@ -17,7 +17,9 @@ const SIGNED = {
   findings: [],
   limits: "l",
   receipt_sha256: "r",
-  receipt_auth: { alg: "HMAC-SHA256", kid: "k1" },
+  receipt_auth: { alg: "HMAC-SHA256", kid: "k1", v: 2 },
+  run_id: "run-" + "a".repeat(32),
+  created_at: "2026-11-06T00:00:00+00:00",
   receipt_mac: "ab".repeat(32),
 };
 
@@ -34,6 +36,16 @@ describe("receipt export round-trip", () => {
     expect(
       DispaterReconciliationReportSchema.safeParse({ ...SIGNED, receipt_auth: "x" }).success,
     ).toBe(false);
+  });
+  it("keeps the legacy untrusted-metadata marker through export", () => {
+    const legacy = {
+      ...SIGNED,
+      receipt_auth: { alg: "HMAC-SHA256", kid: "k1" },
+      unauthenticated_fields: ["run_id", "created_at"],
+    };
+    const out = JSON.parse(JSON.stringify(DispaterReconciliationReportSchema.parse(legacy)));
+    expect(out.unauthenticated_fields).toEqual(["run_id", "created_at"]);
+    expect(out.receipt_auth.v).toBeUndefined();
   });
   it("does not invent a MAC when the backend sent none", () => {
     const { receipt_mac: _m, receipt_auth: _a, ...unsigned } = SIGNED;

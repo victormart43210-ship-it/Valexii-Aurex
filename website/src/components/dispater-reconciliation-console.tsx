@@ -154,7 +154,19 @@ export function DispaterReconciliationConsole() {
               >
                 SHA-256: {report.receipt_sha256.slice(0, 16)}…
               </p>
-              <span className="text-[10px] text-emerald block mt-1">Cryptographically Sealed</span>
+              {report.receipt_mac && report.receipt_auth?.v === 2 ? (
+                <span className="text-[10px] text-emerald block mt-1">
+                  Keyed receipt v2 — run ID and time are signed. Not proof the source data is true.
+                </span>
+              ) : (
+                <span className="text-[10px] text-amber-400 block mt-1">
+                  Unverified here: legacy or unsigned receipt
+                  {report.unauthenticated_fields?.length
+                    ? ` — ${report.unauthenticated_fields.join(", ")} are untrusted`
+                    : ""}
+                  . Verify server-side.
+                </span>
+              )}
             </div>
           </div>
 
