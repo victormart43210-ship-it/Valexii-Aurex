@@ -59,3 +59,13 @@ Tested code `4d9beb1c4b0156799de88b31aff6f6eb2c0b46e8`. `pytest -q`: 709 passed,
 Customer contact, financial action, and training reuse are refused in `aurex/customer_sovereignty.py`. A reviewer token is not a signature. `SYNTHETIC_ONLY` stays unverified. The historical path still does not read source files.
 
 [Independent trust review](bc-1611271a-d149-5753-8b72-a42b7b07569c) reviewed `4d9beb1` on this same checkout and returned NO-GO. The assurance gate stays open. Do not merge pull request 180. GitHub CI on `e82d63c` does not cover this code.
+
+## 2026-11-06 11:27 AM CT — CCLI
+
+Tested code `6cf405f300cbeea20eea6e03b7c05e749c1c5b44`. `pytest -q`: 716 passed, 1 skipped (`training/tests/test_lora_smoke.py`, torch absent). Golden identified `385.00`, withheld `150.00`, confirmed `0.00`.
+
+One equal-dollar unbilled finding and one orphan invoice are withheld. The golden `$100` and `$40` pair stays identified and is labeled `NOT_PROVEN`. A monitor-head file sits beside the database and is not an outside witness. Customer copy no longer calls a clean sample zero false positives.
+
+[Independent financial review](bc-409de4ae-11b5-5f92-90f5-541c3c16d874) reviewed `6cf405f` from a separate worktree on this same machine and returned NO-GO. Independent assurance stays OPEN. Do not merge pull request 180. GitHub Actions on `cd0e571` do not cover this code.
+
+Next action: push this head and wait for GitHub Actions. Leave the pull request in draft.
