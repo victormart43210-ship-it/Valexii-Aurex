@@ -1,0 +1,27 @@
+{
+ "operation_id": "CCXXIV",
+ "status": "PARTIAL",
+ "repository": "victormart43210-ship-it/Valexii-Aurex",
+ "pr": {
+  "number": 162,
+  "url": "https://github.com/victormart43210-ship-it/Valexii-Aurex/pull/162"
+ },
+ "tested_base_sha": "e5115a613d0e7a28beda2266b47761db0b863428",
+ "patch_branch": "copilot/kusanagi-ccxxiv-receipt-auth",
+ "patch_note": "Bounded patch stacked on PR #162 branch (base=#162 branch); not a competing candidate. Final SHA = branch head; see git ls-remote.",
+ "jules_ccxxiii": "No published work found",
+ "changes": [
+  "aurex/dispater_receipt.py (HMAC receipts)",
+  "aurex/dispater_store.py (sign on save, verify on read, rollback masking fix)",
+  "aurex/dispater_intelligence.py (verify_receipt ignores MAC fields; invoice ordering determinism)",
+  "tests: receipt authenticity, multijob oracle, SIGKILL durability, conftest random key"
+ ],
+ "required_new_config": [
+  "AUREX_DISPATER_RECEIPT_KEYS (JSON kid->hex>=32 bytes)",
+  "AUREX_DISPATER_RECEIPT_ACTIVE_KID"
+ ],
+ "breaking": "Rows without a valid receipt_mac (pre-existing unsigned stored runs) now fail integrity verification (fail closed). Beta store is new; migrate/purge or re-run.",
+ "production": "HOLD",
+ "financial_authority": "NONE",
+ "rollback": "Revert the patch commit; unset receipt env vars; stored signed reports remain readable by old code only if receipt_sha256 check ignores extra fields (old verify_receipt would fail on MAC fields: purge DISPATER DB)."
+}
