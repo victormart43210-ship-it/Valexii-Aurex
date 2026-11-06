@@ -87,3 +87,5 @@ Copilot CCLV is pull request 181 at `c4f45925e086bbb23b643e66707b224419d52b60`. 
 Tested code `bd1c4d00559bed86d4e37aab103204cf95829769`. `pytest -q`: 732 passed, 1 skipped. Golden totals stay 385.00, 150.00, and 0.00, labeled `NO_RELATIONSHIP_EVIDENCE`.
 
 [Independent CCLVI assurance](bc-830eca93-bb80-5cf9-ae0e-199fdd02661c) reviewed that SHA from a separate worktree on this same machine and returned NO-GO. Copilot has not incorporated the repairs, so there is no reconciled SHA to re-review. Decision `HOLD_WITH_BLOCKERS`. Do not merge pull request 180 or 181. Production remains HOLD.
+
+GitHub Actions on the pushed head `08d3f7a1e3304e7662b3591d57d1f3ecd3eee7c2` completed success for offline-practice, both CI test jobs, verify, integration, and docker-build-and-smoke at 1:44 PM CT. Those greens do not authorize a merge.

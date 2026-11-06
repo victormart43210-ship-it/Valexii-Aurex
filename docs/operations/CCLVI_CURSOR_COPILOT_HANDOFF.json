@@ -43,7 +43,7 @@
     "dispater_web": "25 passed",
     "xaeli": "NOT_VERIFIED"
   },
-  "ci_status": "PENDING on the Cursor SHA. SUCCESS on upstream c4f45925. Do not reuse the upstream runs as proof of this SHA.",
+  "ci_status": "SUCCESS on pushed head 08d3f7a1e3304e7662b3591d57d1f3ecd3eee7c2 (six workflow runs). SUCCESS on upstream c4f45925 is a separate SHA.",
   "security_limitations": [
     "EXTERNAL_ANCHOR NOT_VERIFIED",
     "Application allowlist is not a production firewall",
