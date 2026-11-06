@@ -318,11 +318,11 @@ def challenge_finding(finding: dict[str, Any], tenant_id: str, known_obligations
         problems.append("duplicate obligation")
     try:
         exposure = Decimal(str(finding.get("exposure_usd", "0")))
+        recovered = Decimal(str(finding.get("recovered_usd", "0")))
         if not exposure.is_finite() or not recovered.is_finite():
             problems.append("invalid amount")
         if exposure.is_finite() and exposure < 0:
             problems.append("negative exposure")
-        recovered = Decimal(str(finding.get("recovered_usd", "0")))
         if recovered.is_finite() and exposure.is_finite() and recovered > exposure:
             problems.append("recovery exceeds exposure")
     except ArithmeticError:
