@@ -97,6 +97,23 @@ def test_partial_payment_and_overpayment_and_paid_shortfall() -> None:
     assert codes(run("t", invoices=inv("open"), payments=pay("120.00"))) == ["OVERPAYMENT"]
     assert codes(run("t", invoices=inv("paid"), payments=pay("60.00"))) == ["PAID_STATUS_UNRECONCILED"]
     assert codes(run("t", invoices=inv("open"), payments=[])) == []
+    assert codes(run("t", invoices=inv("paid"), payments=pay("100.00"))) == []
+
+
+@pytest.mark.parametrize("status", ["open", "disputed"])
+def test_cash_settled_invoice_left_unpaid_is_flagged(status: str) -> None:
+    inv = [{"invoice_id": "I1", "job_id": "J1", "amount": "100.00", "status": status}]
+    pay = [{"payment_id": "P1", "invoice_id": "I1", "amount": "100.00"}]
+    report = run("t", invoices=inv, payments=pay)
+    assert codes(report) == ["STATUS_UNRECONCILED"]
+    finding = report["findings"][0]
+    assert finding["exposure_usd"] == "0.00"
+    assert finding["exposure_class"] == "UNVERIFIED_EXPOSURE"
+    summary = report["financial_summary"]
+    assert summary["identified_exposure_usd"] == "0.00"
+    assert summary["unverified_exposure_usd"] == "0.00"
+    assert summary["potential_underbilling_usd"] == "0.00"
+    assert summary["potential_overbilling_usd"] == "0.00"
 
 
 def test_duplicate_invoices_orphans_and_missing_rate() -> None:
@@ -106,10 +123,41 @@ def test_duplicate_invoices_orphans_and_missing_rate() -> None:
         {"invoice_id": "I3", "job_id": "NOPE", "amount": "10.00", "status": "open"},
     ]
     r = run("t", invoices=dup, payments=[{"payment_id": "P1", "invoice_id": "NOPE", "amount": "5.00"}])
-    assert set(codes(r)) == {"MULTIPLE_INVOICES", "ORPHAN_INVOICE", "ORPHAN_PAYMENT"}
+    assert set(codes(r)) == {"DUPLICATE_INVOICE_UNRESOLVED", "ORPHAN_INVOICE", "ORPHAN_PAYMENT"}
+    # Two $100 bills are withheld, not booked as $100 of overbilling plus the $10 orphan again.
+    assert r["financial_summary"]["withheld_unresolved_usd"] == "200.00"
+    assert r["financial_summary"]["potential_overbilling_usd"] == "0.00"
+    assert r["financial_summary"]["unverified_exposure_usd"] == "15.00"
+    assert r["financial_summary"]["identified_exposure_usd"] == "15.00"
+    assert r["financial_summary"]["confirmed_recovery_usd"] == "0.00"
     assert r["findings"][0]["severity"] == "CRITICAL"  # severity ordering
-    r = run("t", rates=[])
-    assert "RATE_UNVERIFIED" in codes(r)
+    missing = run("t", rates=[])
+    assert "RATE_UNVERIFIED" in codes(missing)
+
+
+def test_overlapping_invoice_events_are_counted_once() -> None:
+    orphan = run(
+        "t",
+        jobs=[],
+        rates=[],
+        invoices=[{"invoice_id": "I9", "job_id": "MISSING", "amount": "100.00", "status": "paid"}],
+        payments=[{"payment_id": "P9", "invoice_id": "I9", "amount": "40.00"}],
+    )
+    assert orphan["financial_summary"]["identified_exposure_usd"] == "100.00"
+    assert orphan["financial_summary"]["unverified_exposure_usd"] == "100.00"
+    cash = next(f for f in orphan["findings"] if f["code"] == "PAID_STATUS_UNRECONCILED")
+    assert cash["exposure_usd"] == "0.00"
+    priced = run(
+        "t",
+        invoices=[{"invoice_id": "I1", "job_id": "J1", "amount": "150.00", "status": "open"}],
+        payments=[{"payment_id": "P1", "invoice_id": "I1", "amount": "40.00"}],
+    )
+    assert priced["financial_summary"]["potential_overbilling_usd"] == "50.00"
+    assert priced["financial_summary"]["unverified_exposure_usd"] == "0.00"
+    assert priced["financial_summary"]["identified_exposure_usd"] == "50.00"
+    partial = next(f for f in priced["findings"] if f["code"] == "PARTIAL_PAYMENT")
+    assert partial["exposure_usd"] == "0.00"
+    assert partial["qualification"] == "STATUS_INCONSISTENCY"
 
 
 def test_conflicting_rates_flagged_unverified() -> None:
@@ -240,13 +288,21 @@ def test_evidence_tampering_detected_and_not_leaked(client: TestClient, tmp_path
     res = client.get(f"/v1/dispater/runs/{run_id}?tenant_id=tenant-a", headers=_h(TOKEN_A))
     assert res.status_code == 500
     assert res.json() == {"detail": "Internal DISPATER error"}
+    listed = client.get("/v1/dispater/runs?tenant_id=tenant-a", headers=_h(TOKEN_A))
+    assert listed.status_code == 500
+    assert listed.json() == {"detail": "Internal DISPATER error"}
+    assert "AUDIT_COMPLETE" not in listed.text
     assert not verify_receipt(forged)
 
 
 def test_report_integrity_and_export(client: TestClient) -> None:
     rep = client.post("/v1/dispater/reconciliation", json=dataset("tenant-a"), headers=_h(TOKEN_A)).json()
-    body = {k: v for k, v in rep.items() if k not in ("run_id", "created_at")}
-    assert verify_receipt(body)
+    assert verify_receipt(rep)
+    assert rep["receipt_binding"] == "BOUND_V2"
+    assert rep["receipt_auth"]["v"] == 2
+    unbound = {k: v for k, v in rep.items() if k not in ("run_id", "created_at")}
+    assert not verify_receipt(unbound)
+    body = rep
     tampered = deepcopy(body)
     tampered["findings"][0]["exposure_usd"] = "0.00"
     assert not verify_receipt(tampered)

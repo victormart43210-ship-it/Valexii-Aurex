@@ -1,13 +1,17 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "handoff_version": "2.0.0",
-  "operation": "OPERATION_KUSANAGI_CCXXXII",
-  "timestamp_utc": "2026-11-05T23:30:00Z",
+  "handoff_version": "2.1.0",
+  "operation": "OPERATION_KUSANAGI_CCXXXII_CCXXXIV_CONVERGENCE",
+  "timestamp_utc": "2026-11-06T04:45:00Z",
   "canonical_repository": "victormart43210-ship-it/Valexii-Aurex",
   "base_branch": "main",
   "base_commit_sha": "34cda4bd8f207f5b1284093b87e4760d782a4903",
-  "implementation_branch": "work/kusanagi-ccxxxii-pipeline",
-  "target": "36-month historical audit to independently qualified financial findings to continuous monitoring",
+  "converged_branch": "work/kusanagi-ccxxxii-pipeline-1185966213576242581",
+  "integrated_branches": [
+    "origin/cursor/kusanagi-ccxxxiv-sovereign-beta-4082 (PR #171 candidate)",
+    "work/kusanagi-ccxxxii-pipeline-1185966213576242581 (Jules 6-stage candidate)"
+  ],
+  "target": "36-month industrial source records to document processing to canonical evidence to deterministic financial reconciliation to independent qualification to dashboard to continuous monitoring",
   "system_governance": {
     "production_release": "HOLD",
     "financial_authority": "NONE",
@@ -16,58 +20,48 @@
     "autonomous_production_changes": "PROHIBITED"
   },
   "verification_summary": {
-    "pytest_backend_tests": "643 passed, 1 skipped",
+    "pytest_backend_tests": "664 passed, 1 skipped",
     "ruff_linter_errors": 0,
-    "mypy_strict_errors": "0 across 88 source files in aurex/",
+    "mypy_strict_errors": "0 across 90 source files in aurex/",
     "bun_frontend_tests": "156 passed across 23 test files",
     "bun_production_build": "SUCCESS"
   },
-  "delivered_components": [
-    {
-      "component": "International Open-Source Registry & Adapters",
-      "file": "aurex/dispater_international.py",
-      "registry": "docs/operations/INTERNATIONAL_OPEN_SOURCE_REGISTRY.json",
-      "status": "IMPLEMENTED_AND_TESTED"
+  "converged_features": {
+    "receipt_v2": {
+      "signed_fields": ["run_id", "created_at", "dataset_sha256", "status", "findings", "limits"],
+      "receipt_binding": "BOUND_V2",
+      "downgrade_prevention": "ENFORCED"
     },
-    {
-      "component": "Canonical Evidence Envelope & Provenance",
-      "file": "aurex/dispater_envelope.py",
-      "status": "IMPLEMENTED_AND_TESTED"
+    "financial_authority": {
+      "single_engine": "aurex.dispater_intelligence.RevenueLeakageEngine",
+      "exposure_classes": ["POTENTIAL_UNDERBILLING", "POTENTIAL_OVERBILLING", "UNVERIFIED_EXPOSURE"],
+      "single_economic_event_exposure": "ENFORCED",
+      "partial_and_split_payment_checks": "ENFORCED",
+      "unpaid_receivables_as_recovered_cash": "PROHIBITED",
+      "confirmed_recovery_usd": "0.00"
     },
-    {
-      "component": "Unified 6-Stage Industrial Pipeline",
-      "file": "aurex/dispater_pipeline.py",
-      "status": "IMPLEMENTED_AND_TESTED"
+    "six_stage_industrial_pipeline": {
+      "stage_1_admission": "aurex/dispater_pipeline.py (5MB limits, SHA-256 byte hashing, tenant grants)",
+      "stage_2_processing": "aurex/dispater_international.py (deterministic structured + PaddleOCR fallback + Qwen advisory)",
+      "stage_3_normalization": "aurex/dispater_envelope.py (dispater.evidence.envelope.v1 with immutable provenance)",
+      "stage_4_reconciliation": "Deterministic Decimal-safe revenue reconciliation",
+      "stage_5_independent_verification": "aurex/evidence_kernel.py (multi-root independence, model self-witness prohibited)",
+      "stage_6_presentation": "NOW -> CHANGED -> NEXT -> WHY -> PROOF dashboard API"
     },
-    {
-      "component": "Continuous Monitoring & Contract Invalidation",
-      "file": "aurex/dispater_monitoring.py",
-      "status": "IMPLEMENTED_AND_TESTED"
+    "continuous_monitoring": {
+      "contract_supersession_invalidation": "ENFORCED (aurex/dispater_monitoring.py)",
+      "security_audit_events": "ENFORCED",
+      "incremental_typed_batch_intake": "ENFORCED (aurex/dispater_ingest.py, aurex/dispater_monitor.py)",
+      "historical_audit_mutation": "PROHIBITED"
     },
-    {
-      "component": "36-Month Golden Historical Audit Suite",
-      "file": "tests/test_dispater_36_month_pipeline.py",
-      "status": "VERIFIED_PASS"
-    },
-    {
-      "component": "Adversarial & Multi-Root Negative Tests",
-      "file": "tests/test_dispater_pipeline_adversarial.py",
-      "status": "VERIFIED_PASS"
-    },
-    {
-      "component": "Pipeline API Endpoints",
-      "file": "aurex/dispater_api.py",
-      "status": "IMPLEMENTED_AND_TESTED"
-    },
-    {
-      "component": "Frontend Client Bun Timeout Repair",
-      "file": "website/src/lib/aurex-client.server.ts",
-      "status": "VERIFIED_PASS"
-    }
-  ],
+    "verified_36_month_golden_audits": [
+      "tests/test_dispater_golden_audit.py ($385.00 identified exposure, $150.00 withheld, $0.00 confirmed recovery)",
+      "tests/test_dispater_36_month_pipeline.py (72 documents across 36 months, month-7 overbilling, month-19 underbilling, contract invalidation, month-37 continuous intake)"
+    ]
+  },
   "continuation_directives": [
-    "Review implementation PR against canonical main",
-    "Schedule independent witness review on the 36-month audit pipeline",
-    "Maintain production release on HOLD pending owner merge authorization"
+    "Maintain production release on HOLD pending owner merge authorization",
+    "Review converged candidate PR on work/kusanagi-ccxxxii-pipeline-1185966213576242581",
+    "Run independent witness challenge before customer data admission"
   ]
 }

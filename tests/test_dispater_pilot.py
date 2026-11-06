@@ -58,9 +58,44 @@ def test_duplicate_invoices_never_count_as_recovered_revenue() -> None:
     snap["invoices"].append({
         "invoice_id": "I2", "job_id": "J1", "amount": "150.00", "status": "open",
     })
-    codes = {f["code"] for f in audit_synthetic(snap)["findings"]}
-    assert "MULTIPLE_INVOICES" in codes
+    findings = audit_synthetic(snap)["findings"]
+    codes = {f["code"] for f in findings}
+    assert "DUPLICATE_INVOICE_UNRESOLVED" in codes
     assert "RATE_MISMATCH" not in codes
+    duplicate = next(f for f in findings if f["code"] == "DUPLICATE_INVOICE_UNRESOLVED")
+    assert duplicate["difference_usd"] == "0.00"
+
+
+def test_open_invoice_settled_in_cash_is_unreconciled() -> None:
+    snap = revenue_fixture()
+    snap["invoices"][0]["status"] = "open"
+    report = audit_synthetic(snap)
+    assert [(f["code"], f.get("difference_usd")) for f in report["findings"]] == [
+        ("STATUS_UNRECONCILED", "0.00")
+    ]
+    assert report["status"] == "HOLD"
+
+
+def test_partial_over_and_split_payments_do_not_become_recovery() -> None:
+    partial = revenue_fixture()
+    partial["invoices"][0]["status"] = "open"
+    partial["payments"][0]["amount"] = "40.00"
+    partial_codes = {f["code"]: f.get("difference_usd") for f in audit_synthetic(partial)["findings"]}
+    assert partial_codes["PARTIAL_PAYMENT"] == "-110.00"
+    over = revenue_fixture()
+    over["invoices"][0]["status"] = "open"
+    over["payments"][0]["amount"] = "200.00"
+    over_codes = {f["code"]: f.get("difference_usd") for f in audit_synthetic(over)["findings"]}
+    assert over_codes["OVERPAYMENT"] == "50.00"
+    split = revenue_fixture()
+    split["payments"] = [
+        {"payment_id": "P1", "invoice_id": "I1", "amount": "100.00"},
+        {"payment_id": "P2", "invoice_id": "I1", "amount": "50.00"},
+    ]
+    split_findings = audit_synthetic(split)["findings"]
+    assert [f["code"] for f in split_findings] == ["SPLIT_OR_DUPLICATE_PAYMENT_UNRESOLVED"]
+    assert split_findings[0]["difference_usd"] == "0.00"
+    assert audit_synthetic(split)["status"] == "HOLD"
 
 
 def test_paid_status_unreconciled() -> None:
