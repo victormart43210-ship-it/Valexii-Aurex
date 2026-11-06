@@ -1,25 +1,38 @@
 {
   "operation_id": "KUSANAGI_CCLVII",
-  "owner": "ChatGPTWork",
+  "owner": "ChatGPT Work",
+  "repository": "victormart43210-ship-it/Valexii-Aurex",
+  "base_main_sha": "34cda4bd8f207f5b1284093b87e4760d782a4903",
   "base_integration_sha": "c4f45925e086bbb23b643e66707b224419d52b60",
   "work_branch": "work/kusanagi-cclvii-sovereign-execution",
-  "work_pr": 183,
-  "last_pushed_commit": "bdb09ec3bcf0d90fe8b2b4620fc2610100286f13",
-  "incorporate": [
-    "0638ace8840a65c28fc5e3c1e7513da5fe282429 proxyprivacy",
-    "bdb09ec3bcf0d90fe8b2b4620fc2610100286f13 duplicateunbilledtickets",
-    "nextWorkcommit API/importmetadata"
+  "work_pr": "https://github.com/victormart43210-ship-it/Valexii-Aurex/pull/183",
+  "tested_code_sha": "a8ee5cb7abb1454058f693dc8165ae6dbad58117",
+  "last_pushed_commit": "a8ee5cb7abb1454058f693dc8165ae6dbad58117",
+  "repair_commits": [
+    "0638ace8840a65c28fc5e3c1e7513da5fe282429",
+    "bdb09ec3bcf0d90fe8b2b4620fc2610100286f13",
+    "a8ee5cb7abb1454058f693dc8165ae6dbad58117"
   ],
   "cursor182_sha": "8323f6db245186b98f2bf2c99a9297e88849e15e",
-  "next_exact_action": "Fetch pushed Workhead into cleanworktree, install/link exactlocked frontend deps, runfullpytestJUnit/Ruff/Mypy/Vitest/tsc/build/HTTPsandbox; inspectCIexacthead",
-  "remaining_blockers": [
+  "compatibility_overlay": "54 tests passed; no shared branch merge",
+  "financial_golden": {
+    "identified_exposure_usd": "385.00",
+    "withheld_unresolved_usd": "150.00",
+    "confirmed_recovery_usd": "0.00",
+    "invoice_discrepancy_usd": "10.00",
+    "confirmed_invoice_recovery_usd": "0.00",
+    "evidence": "Existing frozen expectations in golden/customer-sovereignty/laboratory tests passed; no fixture expectation edits"
+  },
+  "tests": "See CCLVII_VERIFICATION_REPORT.json",
+  "independent_assurance": "Source review only; external/human REVIEW_PENDING",
+  "next_exact_action": "Fetch Work PR183 actual head. Copilot should incorporate the three repair commits, then Cursor182. Run frozen golden and full suites on the new reconciled SHA; request Cursor review before any owner merge decision.",
+  "blockers": [
     "Conflicting customer IDs can override case/fullwidth-equivalent job reference ambiguity",
     "Repeated PDF/XLSX field/header ambiguity can select last value",
     "Delete DB rows, sidecar and server checkpoint together; no separate external witness",
     "Finding columns plaintext; retention/deletion requests recorded only",
     "Loopback port policy and allowlisted HTTP not deployment enforced"
   ],
-  "do_not_merge_or_deploy": true,
   "production_authority": "NONE",
   "production_release": "HOLD",
   "financial_authority": "NONE",

@@ -28,9 +28,9 @@
       "id": "B003",
       "severity": "HIGH",
       "problem": "HTTP request silently drops equipment/labor hour collections",
-      "status": "FIXED_PENDING_REMOTE_CHECK",
-      "commit": null,
-      "verification": "3red1pass initially; focusedAPI/tenant/documenttestsnowexit0",
+      "status": "FIXED",
+      "commit": "a8ee5cb7abb1454058f693dc8165ae6dbad58117",
+      "verification": "New regressions and full 741-pass suite; exact pushed code SHA tested; separate source review",
       "files": [
         "aurex/dispater_api.py"
       ]
@@ -39,9 +39,9 @@
       "id": "B004",
       "severity": "HIGH",
       "problem": "Normalization drops unit/supersession/reversal/attribution/overtime, changing financial meaning",
-      "status": "FIXED_PENDING_REMOTE_CHECK",
-      "commit": null,
-      "verification": "4formatsredfirst;35agentfocusedpass;68coordinatorfocusedchecks exit0",
+      "status": "FIXED",
+      "commit": "a8ee5cb7abb1454058f693dc8165ae6dbad58117",
+      "verification": "New regressions and full 741-pass suite; exact pushed code SHA tested; separate source review",
       "files": [
         "aurex/dispater_ingest.py",
         "aurex/dispater_documents.py"

@@ -8,40 +8,146 @@
   "integration_sha": "c4f45925e086bbb23b643e66707b224419d52b60",
   "cursor_review_branch": "cursor/kusanagi-cclvi-convergence-assurance-4082",
   "cursor_review_sha": "8323f6db245186b98f2bf2c99a9297e88849e15e",
-  "last_verified_commit": null,
-  "last_pushed_commit": "bdb09ec3bcf0d90fe8b2b4620fc2610100286f13",
+  "last_verified_commit": "a8ee5cb7abb1454058f693dc8165ae6dbad58117",
+  "last_pushed_commit": "a8ee5cb7abb1454058f693dc8165ae6dbad58117",
   "last_passing_test_results": [
     {
-      "command": "PYTHONPATH=. <venv>/python -m pytest tests/test_cclvii_local_proxy_isolation.py tests/test_adapter_security.py tests/test_local_inference.py tests/test_local_inference_redirects.py -q",
-      "result": "23 passed",
+      "tested_sha": "a8ee5cb7abb1454058f693dc8165ae6dbad58117",
+      "command": "PYTHONPATH=. AUREX_DB_PATH=<disposable> <venv>/python -m pytest -q --junitxml=<evidence>/pytest.xml",
       "exit_code": 0,
-      "evidence": "docs/operations/cclvii-evidence/proxy-tests.log",
-      "scope": "Working slice before remote commit; no real model calls"
+      "passed": 741,
+      "failed": 0,
+      "skipped": 1,
+      "status": "PASS",
+      "evidence": "docs/operations/cclvii-evidence/pytest.log",
+      "timestamp_recorded_utc": "2026-11-06T20:08:51.571828+00:00",
+      "skip_reason": "training/tests/test_lora_smoke.py: torch unavailable; no training or model weights installed"
     },
     {
-      "command": "PYTHONPATH=. <venv>/python -m pytest tests/test_cclvii_unbilled_hours.py tests/test_dispater_golden_audit.py tests/test_dispater_convergence.py tests/test_ox_laboratory.py tests/test_historical_audit.py -q",
-      "result": "37passed",
+      "tested_sha": "a8ee5cb7abb1454058f693dc8165ae6dbad58117",
+      "command": "<venv>/ruff check .",
       "exit_code": 0,
-      "evidence": "docs/operations/cclvii-evidence/financial-tests.log"
+      "passed": null,
+      "failed": 0,
+      "skipped": null,
+      "status": "PASS",
+      "evidence": "docs/operations/cclvii-evidence/ruff.log",
+      "timestamp_recorded_utc": "2026-11-06T20:08:51.571828+00:00"
+    },
+    {
+      "tested_sha": "a8ee5cb7abb1454058f693dc8165ae6dbad58117",
+      "command": "<venv>/mypy --strict aurex",
+      "exit_code": 0,
+      "passed": null,
+      "failed": 0,
+      "skipped": null,
+      "status": "PASS",
+      "evidence": "docs/operations/cclvii-evidence/mypy.log",
+      "timestamp_recorded_utc": "2026-11-06T20:08:51.571828+00:00",
+      "source_files": 109
+    },
+    {
+      "tested_sha": "a8ee5cb7abb1454058f693dc8165ae6dbad58117",
+      "command": "cd website && npx vitest run",
+      "exit_code": 0,
+      "passed": 157,
+      "failed": 0,
+      "skipped": 0,
+      "status": "PASS",
+      "evidence": "docs/operations/cclvii-evidence/vitest.log",
+      "timestamp_recorded_utc": "2026-11-06T20:08:51.571828+00:00"
+    },
+    {
+      "tested_sha": "a8ee5cb7abb1454058f693dc8165ae6dbad58117",
+      "command": "cd website && npx tsc --noEmit",
+      "exit_code": 0,
+      "passed": null,
+      "failed": 0,
+      "skipped": null,
+      "status": "PASS",
+      "evidence": "docs/operations/cclvii-evidence/tsc.log",
+      "timestamp_recorded_utc": "2026-11-06T20:08:51.571828+00:00"
+    },
+    {
+      "tested_sha": "a8ee5cb7abb1454058f693dc8165ae6dbad58117",
+      "command": "cd website && npm run build",
+      "exit_code": 0,
+      "passed": null,
+      "failed": 0,
+      "skipped": null,
+      "status": "PASS",
+      "evidence": "docs/operations/cclvii-evidence/website-build.log",
+      "timestamp_recorded_utc": "2026-11-06T20:08:51.571828+00:00"
+    },
+    {
+      "tested_sha": "a8ee5cb7abb1454058f693dc8165ae6dbad58117",
+      "command": "cd dispater-web && npm test",
+      "exit_code": 0,
+      "passed": 25,
+      "failed": 0,
+      "skipped": 0,
+      "status": "PASS",
+      "evidence": "docs/operations/cclvii-evidence/dispater-web.log",
+      "timestamp_recorded_utc": "2026-11-06T20:08:51.571828+00:00"
+    },
+    {
+      "tested_sha": "a8ee5cb7abb1454058f693dc8165ae6dbad58117",
+      "command": "cd dispater-web && npm run build",
+      "exit_code": 0,
+      "passed": null,
+      "failed": 0,
+      "skipped": null,
+      "status": "PASS",
+      "evidence": "docs/operations/cclvii-evidence/dispater-web-build.log",
+      "timestamp_recorded_utc": "2026-11-06T20:08:51.571828+00:00"
+    },
+    {
+      "tested_sha": "a8ee5cb7abb1454058f693dc8165ae6dbad58117",
+      "overlay_sha": "8323f6db245186b98f2bf2c99a9297e88849e15e",
+      "overlay_patch_sha256": "ac4cb6826e567d183cde9512effc185293a0ca8e3fac1cd316043c4de3ce4226",
+      "command": "git diff c4f45925 8323f6db -- aurex tests; git apply --check; git apply in disposable detached worktree; pytest selected financial/security suites",
+      "exit_code": 0,
+      "passed": 54,
+      "failed": 0,
+      "skipped": 0,
+      "status": "PASS",
+      "evidence": "docs/operations/cclvii-evidence/combined.xml",
+      "note": "Uncommitted disposable compatibility overlay; no merged/reconciled release SHA claimed"
+    },
+    {
+      "tested_sha": "a8ee5cb7abb1454058f693dc8165ae6dbad58117",
+      "command": "Bounded UTF-8 tracked-file secret-pattern scan",
+      "status": "PASS_BOUNDED_SCAN",
+      "scanned_files": 753,
+      "skipped_files": 24,
+      "pattern_hits": 0,
+      "exit_code": 0,
+      "evidence": "docs/operations/cclvii-evidence/secret-scan.json",
+      "limits": "Not entropy/history/provider validation. Binary/large/unreadable files skipped."
     }
   ],
-  "current_task": "CCLVII-04 API/import semantics repaired and focused tests green",
+  "current_task": "CCLVII-05 final verification recorded; final remote CI/readback pending",
   "completed_tasks": [
-    "Repository discovery; exact integration and current Cursor182 inspected",
-    "Disabled inherited proxies in both backend local inference clients; focused23testsPASS",
-    "Duplicate unbilled equipment/date tickets withheld;37financial testsPASS;385/150/0 and10/0 unchanged",
-    "APIhourcollections/legacydigestpreserved;4formatfinancialmetadataretained;focusedtests/source reviewpassed"
+    "Verified current main, integration #181 and Cursor #182",
+    "Created and remotely verified dedicated Work branch and checkpoints",
+    "Fixed local inference proxy prompt leak",
+    "Fixed duplicate unbilled equipment hours",
+    "Fixed API hour collection loss and four-format financial metadata loss",
+    "Separate agent source review completed; no critical/important bounded patch issue",
+    "Exact pushed code SHA:741 backend pass/1 skip,157 website,25 DISPATER-web; Ruff/Mypy/tsc/builds pass",
+    "Disposable Cursor182 compatibility overlay:54 pass"
   ],
   "unfinished_tasks": [
-    "Reproduce high-risk defects outside Cursor182 repairs",
-    "Implement bounded tested correction",
-    "Run golden/end-to-end/full-stack checks",
-    "Independent source review and final checkpoint"
+    "Copilot incorporation and Cursor review of exact reconciled SHA",
+    "Conflicting job/customer reference and parser ambiguity follow-ups",
+    "Independent external/human assurance, live Qwen, browser and deployment validation"
   ],
   "known_blockers": [
-    "Cursor182 bounded financial/sidecar/loopback repairs not yet in integration181",
-    "Production/live inference/external witness unverified",
-    "Prior Work173 remains historical, not integration base"
+    "Conflicting customer IDs can override case/fullwidth-equivalent job reference ambiguity",
+    "Repeated PDF/XLSX field/header ambiguity can select last value",
+    "Delete DB rows, sidecar and server checkpoint together; no separate external witness",
+    "Finding columns plaintext; retention/deletion requests recorded only",
+    "Loopback port policy and allowlisted HTTP not deployment enforced"
   ],
   "relevant_pr_numbers": [
     181,
@@ -54,8 +160,8 @@
     176,
     159
   ],
-  "next_exact_action": "Fetch pushed Workhead into cleanworktree, install/link exactlocked frontend deps, runfullpytestJUnit/Ruff/Mypy/Vitest/tsc/build/HTTPsandbox; inspectCIexacthead",
-  "checkpoint_timestamp_utc": "2026-11-06T20:05:20.620050+00:00",
+  "next_exact_action": "Fetch Work PR183 actual head. Copilot should incorporate the three repair commits, then Cursor182. Run frozen golden and full suites on the new reconciled SHA; request Cursor review before any owner merge decision.",
+  "checkpoint_timestamp_utc": "2026-11-06T20:08:51.571828+00:00",
   "environment": {
     "python": "3.12",
     "workspace": "isolated worktree from current Copilot integration; no main or shared branch mutation"

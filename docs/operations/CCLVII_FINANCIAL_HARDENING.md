@@ -1,9 +1,23 @@
 # CCLVII financial hardening
 
-Canonical engine retained; no duplicate financial service. Duplicate equipment identity/date is checked before pricing unbilled hours. Two8h tickets at25 previously booked400; now explicit DUPLICATE_FIELD_TICKET/INSUFFICIENT_EVIDENCE,0identified, with both ticket hashes and rate/job proof. A single ticket remains200. Distinct-machine/day source-review controls still price400.
+The existing engine remains canonical. No second financial engine or service was introduced.
 
-HTTP reconciliation carries optional equipment/labor collections with existing2000rowbounds. Absent/null collections preserve legacy dataset digest and idempotency; no automatic financial action. Explicitly supplied collections contribute to receipt identity.
+## Repairs
 
-Known optional financial fields survive all existing import formats: rate unit/supersedes, payment kind/job/customer attribution, invoice customer, labor overtime. Unknown fields remain excluded.8h×25now200throughbothAPIpaths;100payment−40reversalstays60ratherthan140. Frozen golden385identified/150withheld/0recovered and invoice10/0expectations were not edited. Focused suites and source review passed; exact final-sha verification follows.
+- Duplicate equipment identity and service date are checked before pricing unbilled hours. Two eight-hour tickets at $25/hour previously booked $400. The engine now returns `DUPLICATE_FIELD_TICKET`, `INSUFFICIENT_EVIDENCE`, zero identified exposure, and the job/rate/both-ticket digests. A single ticket still prices $200. Distinct equipment or service dates remain separate controls.
+- The reconciliation HTTP request carries optional equipment and labor collections, each bounded to 2,000 rows. Omitted/null collections preserve the old dataset digest and replay identity.
+- Existing JSON, CSV, PDF and XLSX parsers preserve supplied rate unit/supersession, payment direction/attribution, invoice customer, and labor overtime fields. Unknown fields stay excluded. Eight hours at $25 prices $200 through both API paths; a $100 payment less $40 reversal remains $60.
 
-Evidence qualification remains candidate/human-review-only. Source byte receipt verifies received content, not document authenticity or independent truth. NO_RELATIONSHIP_EVIDENCE and WITHHELD_AMBIGUOUS remain. Customer decides; no contact, settlement, payment or recovery authority. Case/confusable job relations and duplicate parser fields remain recorded blockers, not silently normalized.
+## Frozen financial contract
+
+| Metric | Verified expected result |
+|---|---:|
+| Identified exposure | $385.00 |
+| Withheld unresolved | $150.00 |
+| Confirmed recovery | $0.00 |
+| Synthetic invoice discrepancy | $10.00 |
+| Confirmed invoice recovery | $0.00 |
+
+Existing expectations were not edited. The full suite on `a8ee5cb7abb1454058f693dc8165ae6dbad58117` passed, including golden, historical, sovereignty and new boundary tests.
+
+`NO_RELATIONSHIP_EVIDENCE`, `WITHHELD_AMBIGUOUS`, customer-decides authority and no-contact restrictions remain. Neither a receipt nor an AI explanation creates financial authority. Received-byte verification is not source authenticity or independent evidence. Conflicting job/customer references and repeated parser fields remain recorded follow-up defects.
