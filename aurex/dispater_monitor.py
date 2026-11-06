@@ -116,12 +116,14 @@ def persist_increment(
     """Store one monitoring checkpoint. The same source digest is a retry, not a new event."""
     if not isinstance(source_sha256, str) or len(source_sha256) != 64:
         raise InvalidSnapshot("source digest must be a sha256 hex string")
-    existing = dispater_store.get_monitor_event(tenant_id, source_sha256)
-    if existing is not None:
-        return existing, False
     merged = merge_datasets(baseline, additions)
     before = RevenueLeakageEngine(tenant_id).reconcile_records(baseline)
     after = RevenueLeakageEngine(tenant_id).reconcile_records(merged)
+    existing = dispater_store.get_monitor_event(tenant_id, source_sha256)
+    if existing is not None:
+        if existing["checkpoint_sha256"] != after["dataset_sha256"]:
+            raise InvalidSnapshot("conflicting source evidence: digest reused for a different checkpoint")
+        return existing, False
     stored, _created = dispater_store.save_run(tenant_id, after)
     movement = diff_findings(before["findings"], after["findings"])
     payload = {

@@ -126,5 +126,6 @@
       "role": "not installed and not attributed beyond the existing docs",
       "country_attribution": "not re-verified in this run"
     }
-  ]
+  ],
+  "ccxxxix_recheck": "2026-11-06: tesseract, OCRmyPDF, Docling, and PaddleOCR were not installed. No SHA-256 of empty input is evidence that a model exists. OpenTelemetry's Python package imports on this machine and was not wired in. Playwright, OSV-Scanner, Syft, and Semgrep were not on PATH and were not run."
 }

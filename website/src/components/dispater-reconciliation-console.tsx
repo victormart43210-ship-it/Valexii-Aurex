@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
-import { runDispaterDemoReconciliation } from "@/lib/dispater.functions";
+import { admitSyntheticDispaterCsv, runDispaterDemoReconciliation } from "@/lib/dispater.functions";
 import type { DispaterReconciliationReport } from "@/lib/dispater-contract";
 import { Button } from "@/components/ui/button";
 import {
@@ -14,6 +14,10 @@ import {
 
 export function DispaterReconciliationConsole() {
   const reconcileFn = useServerFn(runDispaterDemoReconciliation);
+  const admitFn = useServerFn(admitSyntheticDispaterCsv);
+  const [presentation, setPresentation] = useState<"SYNTHETIC DEMO" | "SYNTHETIC DOCUMENT">(
+    "SYNTHETIC DEMO",
+  );
   const [busy, setBusy] = useState(false);
   const [selectedFixture, setSelectedFixture] = useState<"oilfield_demo_v1" | "clean_control_v1">(
     "oilfield_demo_v1",
@@ -26,9 +30,25 @@ export function DispaterReconciliationConsole() {
     setErrorMsg(null);
     try {
       const res = await reconcileFn({ data: { fixture: selectedFixture } });
+      setPresentation("SYNTHETIC DEMO");
       setReport(res);
     } catch (err: unknown) {
       setErrorMsg(err instanceof Error ? err.message : "Reconciliation failed");
+      setReport(null);
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function handleAdmitCsv() {
+    setBusy(true);
+    setErrorMsg(null);
+    try {
+      const admitted = await admitFn({ data: {} });
+      setPresentation("SYNTHETIC DOCUMENT");
+      setReport(admitted);
+    } catch (err: unknown) {
+      setErrorMsg(err instanceof Error ? err.message : "Document admission failed");
       setReport(null);
     } finally {
       setBusy(false);
@@ -54,7 +74,7 @@ export function DispaterReconciliationConsole() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-border pb-4">
         <div>
           <span className="text-xs font-semibold uppercase tracking-wider text-primary">
-            DISPATER REVENUE RECONCILIATION CONSOLE
+            DISPATER REVENUE RECONCILIATION CONSOLE · {presentation}
           </span>
           <h3 id="console-heading" className="text-2xl font-display text-foreground mt-1">
             Automated Audit Workflow
@@ -92,6 +112,9 @@ export function DispaterReconciliationConsole() {
               </>
             )}
           </Button>
+          <Button type="button" variant="glass" disabled={busy} onClick={() => void handleAdmitCsv()}>
+            Admit synthetic CSV
+          </Button>
         </div>
       </div>
 
@@ -119,6 +142,11 @@ export function DispaterReconciliationConsole() {
 
       {report && (
         <div className="mt-6 space-y-6">
+          <p className="text-xs uppercase tracking-wider text-muted-foreground">
+            {presentation} · {report.receipt_binding ?? "RECEIPT UNBOUND"} · confirmed recovery stays
+            ${report.financial_summary.confirmed_recovery_usd} · withheld $
+            {report.financial_summary.withheld_unresolved_usd ?? "0.00"} · XAELI cannot approve recovery
+          </p>
           {/* Exposure and Stats Header */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div className="rounded-lg border border-border bg-background p-4">

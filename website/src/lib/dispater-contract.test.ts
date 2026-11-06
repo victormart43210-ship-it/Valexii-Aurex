@@ -53,7 +53,7 @@ describe("receipt export round-trip", () => {
       report: SIGNED,
     });
     expect(parsed.report.financial_summary.confirmed_recovery_usd).toBe("0.00");
-    expect(parsed.ingestion.field_provenance[0]?.page).toBe(1);
+    expect(parsed.ingestion.field_provenance[0]?.["page"]).toBe(1);
     expect(parsed.financial_authority).toBe("NONE");
   });
   it("does not invent a MAC when the backend sent none", () => {

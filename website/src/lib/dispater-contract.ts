@@ -81,6 +81,7 @@ export const DispaterDocumentIngestionSchema = z.object({
 
 export type DispaterFinding = z.infer<typeof DispaterFindingSchema>;
 export type DispaterReconciliationReport = z.infer<typeof DispaterReconciliationReportSchema>;
+export type DispaterDocumentIngestion = z.infer<typeof DispaterDocumentIngestionSchema>;
 
 export type DispaterDemoState =
   | { status: "IDLE" }

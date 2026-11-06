@@ -49,6 +49,9 @@ QUALIFICATION = {
     "HOURS_SOURCE_CONFLICT": "INSUFFICIENT_EVIDENCE",
     "UNBILLED_EQUIPMENT": "SUSPECTED_DISCREPANCY",
     "UNBILLED_LABOR": "SUSPECTED_DISCREPANCY",
+    "MISAPPLIED_PAYMENT": "INSUFFICIENT_EVIDENCE",
+    "DUPLICATE_FIELD_TICKET": "INSUFFICIENT_EVIDENCE",
+    "OVERTIME_UNPRICED": "INSUFFICIENT_EVIDENCE",
 }
 
 
@@ -134,6 +137,45 @@ def _signed_payment(payment: dict[str, Any]) -> Decimal:
 
 def _hours_amount(hours: Decimal, rate: Decimal) -> Decimal:
     return (hours * rate).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+
+
+def _covering_rates(
+    rates: list[dict[str, Any]], customer: str, service: str, job_date: date
+) -> list[dict[str, Any]]:
+    """Rates in force on the job date. A successor with ``supersedes`` retires only that prior rate."""
+    covering = [
+        rate
+        for rate in rates
+        if rate["customer_id"] == customer
+        and rate["service_code"] == service
+        and parse_date(rate["start"]) <= job_date <= parse_date(rate["end"])
+    ]
+    inactive: set[str] = set()
+    for successor in covering:
+        previous = successor.get("supersedes", "")
+        if previous and parse_date(successor["start"]) <= job_date:
+            inactive.add(str(previous))
+    return [rate for rate in covering if rate["rate_id"] not in inactive]
+
+
+def _duplicate_identity(rows: list[dict[str, Any]], id_field: str, date_field: str) -> bool:
+    seen: set[tuple[str, str]] = set()
+    for row in rows:
+        key = (row[id_field], row[date_field])
+        if key in seen:
+            return True
+        seen.add(key)
+    return False
+
+
+def dependent_finding_ids(report: dict[str, Any], superseded_record: dict[str, Any]) -> list[str]:
+    """Findings whose evidence digest is exactly the superseded record. Unrelated findings stay."""
+    target = digest(superseded_record)
+    return [
+        str(finding["finding_id"])
+        for finding in report.get("findings", [])
+        if any(item.get("record_sha256") == target for item in finding.get("evidence", []))
+    ]
 
 
 def _ensure_unique_ids(rows: list[dict[str, Any]], id_key: str, context: str) -> None:
@@ -227,9 +269,19 @@ class RevenueLeakageEngine:
         for inv in invoices:
             by_job_invoices[inv["job_id"]].append(inv)
 
+        invoices_by_id = {inv["invoice_id"]: inv for inv in invoices}
+        misapplied: list[dict[str, Any]] = []
+        applicable_payments: list[dict[str, Any]] = []
+        for payment in payments:
+            declared_job = payment.get("job_id", "")
+            invoice = invoices_by_id.get(payment["invoice_id"])
+            if declared_job and invoice is not None and invoice["job_id"] != declared_job:
+                misapplied.append(payment)
+            else:
+                applicable_payments.append(payment)
         by_invoice_payments: dict[str, list[dict[str, Any]]] = defaultdict(list)
-        for p in payments:
-            by_invoice_payments[p["invoice_id"]].append(p)
+        for payment in applicable_payments:
+            by_invoice_payments[payment["invoice_id"]].append(payment)
         equipment_by_job: dict[str, list[dict[str, Any]]] = defaultdict(list)
         for ticket in equipment:
             equipment_by_job[ticket["job_id"]].append(ticket)
@@ -263,13 +315,7 @@ class RevenueLeakageEngine:
 
             # Unbilled ticket / job
             if not relevant_invoices:
-                applicable_rates = [
-                    r
-                    for r in rates
-                    if r["customer_id"] == cust_id
-                    and r["service_code"] == svc
-                    and parse_date(r["start"]) <= j_date <= parse_date(r["end"])
-                ]
+                applicable_rates = _covering_rates(rates, cust_id, svc, j_date)
                 hourly = len(applicable_rates) == 1 and applicable_rates[0].get("unit") == "HOUR"
                 if hourly:
                     self._append_unbilled_hours(
@@ -323,13 +369,7 @@ class RevenueLeakageEngine:
                 )
 
             # Rate matching & reconciliation
-            active_rates = [
-                r
-                for r in rates
-                if r["customer_id"] == cust_id
-                and r["service_code"] == svc
-                and parse_date(r["start"]) <= j_date <= parse_date(r["end"])
-            ]
+            active_rates = _covering_rates(rates, cust_id, svc, j_date)
             if len(active_rates) == 0:
                 findings.append(
                     self._create_finding(
@@ -440,6 +480,8 @@ class RevenueLeakageEngine:
                 )
 
             payments_for_inv = by_invoice_payments[inv_id]
+            if not payments_for_inv and any(item["invoice_id"] == inv_id for item in misapplied):
+                continue
             total_paid = sum((_signed_payment(p) for p in payments_for_inv), Decimal("0.00"))
             billed = parse_money(inv["amount"])
             delta = total_paid - billed
@@ -516,6 +558,28 @@ class RevenueLeakageEngine:
                         proof=f"Invoice SHA:{digest(inv)[:12]}, Payments: {len(payments_for_inv)} records",
                     )
                 )
+
+        for payment in misapplied:
+            amount = parse_money(payment["amount"])
+            totals[UNVERIFIED] += amount
+            findings.append(
+                self._create_finding(
+                    exposure_class=UNVERIFIED,
+                    code="MISAPPLIED_PAYMENT",
+                    subject=payment["payment_id"],
+                    severity="HIGH",
+                    records=[("payment", payment)],
+                    exposure=amount,
+                    now=(
+                        f"Payment {payment['payment_id']} names job {payment.get('job_id')} "
+                        f"but invoice {payment['invoice_id']} belongs to a different job."
+                    ),
+                    changed="The cash was not applied to the invoice and was not counted again as an orphan.",
+                    next_action="Reallocate the payment to the invoice's job or correct the payment record.",
+                    why="Applying the same cash to the invoice balance and to a wrong-job bucket would double-count it.",
+                    proof=f"Payment digest: {digest(payment)}",
+                )
+            )
 
         # 3. Payment-level evaluation (orphan payments)
         for payment in payments:
@@ -656,6 +720,39 @@ class RevenueLeakageEngine:
         rate_mismatch_ids: set[str],
     ) -> None:
         """One dollar event for an hourly job. Standby is not automatically billed."""
+        if equipment and _duplicate_identity(equipment, "equipment_id", "service_date"):
+            findings.append(
+                self._create_finding(
+                    exposure_class=UNVERIFIED,
+                    code="DUPLICATE_FIELD_TICKET",
+                    subject=job["job_id"],
+                    severity="HIGH",
+                    records=[("job", job), ("invoice", invoice)] + [("equipment", row) for row in equipment],
+                    exposure=Decimal("0.00"),
+                    now=f"Job {job['job_id']} has two tickets for the same equipment and service date.",
+                    changed="Those hours were not added together.",
+                    next_action="Keep one ticket. Do not price both.",
+                    why="Duplicate tickets for the same machine and day are not two shifts.",
+                    proof=f"Invoice digest: {digest(invoice)}",
+                )
+            )
+            return
+        if labor and any(parse_money(row.get("overtime_hours", "0.00")) > 0 for row in labor):
+            findings.append(
+                self._create_finding(
+                    exposure_class=UNVERIFIED,
+                    code="OVERTIME_UNPRICED",
+                    subject=job["job_id"],
+                    severity="MEDIUM",
+                    records=[("job", job), ("invoice", invoice), ("rate", rate)],
+                    exposure=Decimal("0.00"),
+                    now=f"Job {job['job_id']} records overtime and the rate is not an overtime rate.",
+                    changed="Overtime hours were withheld from the dollar total.",
+                    next_action="Supply an overtime rate or remove the overtime hours.",
+                    why="Pricing overtime at the straight-time rate would invent a recovery.",
+                    proof=f"Rate digest: {digest(rate)}",
+                )
+            )
         if equipment and labor:
             findings.append(
                 self._create_finding(

@@ -24,3 +24,16 @@ export const runDispaterDemoReconciliation = createServerFn({ method: "POST" })
     );
     return report;
   });
+
+export const admitSyntheticDispaterCsv = createServerFn({ method: "POST" })
+  .validator((input: unknown) => z.object({}).parse(input ?? {}))
+  .handler(async () => {
+    const { executeDispaterDocument } = await import("./dispater.server");
+    const admitted = await executeDispaterDocument({
+      serviceUrl: process.env["AUREX_SERVICE_URL"] ?? process.env["AUREX_STAGING_SERVICE_URL"],
+      serviceToken: process.env["AUREX_SERVICE_TOKEN"] ?? process.env["AUREX_STAGING_SERVICE_TOKEN"],
+      tenantId: process.env["DISPATER_TENANT_ID"],
+      allowLocal: process.env["NODE_ENV"] !== "production",
+    });
+    return admitted.report;
+  });
