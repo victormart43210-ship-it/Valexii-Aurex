@@ -36,6 +36,9 @@ class MonitoringEventKind(enum.StrEnum):
     INCREMENTAL_AUDIT_EVALUATED = "INCREMENTAL_AUDIT_EVALUATED"
 
 
+GENESIS_SHA256 = "0" * 64
+
+
 @dataclass(frozen=True)
 class MonitoringAuditLogEntry:
     entry_id: str
@@ -43,6 +46,7 @@ class MonitoringAuditLogEntry:
     event_kind: MonitoringEventKind
     timestamp_utc: str
     details: dict[str, Any]
+    prev_sha256: str = GENESIS_SHA256
     entry_sha256: str = ""
 
     def __post_init__(self) -> None:
@@ -53,8 +57,20 @@ class MonitoringAuditLogEntry:
                 "event_kind": self.event_kind.value,
                 "timestamp_utc": self.timestamp_utc,
                 "details": self.details,
+                "prev_sha256": self.prev_sha256,
             }
             object.__setattr__(self, "entry_sha256", compute_sha256(body))
+
+    def recompute_sha256(self) -> str:
+        body = {
+            "entry_id": self.entry_id,
+            "tenant_id": self.tenant_id,
+            "event_kind": self.event_kind.value,
+            "timestamp_utc": self.timestamp_utc,
+            "details": self.details,
+            "prev_sha256": self.prev_sha256,
+        }
+        return compute_sha256(body)
 
 
 class ContinuousMonitoringEngine:
@@ -79,9 +95,21 @@ class ContinuousMonitoringEngine:
             event_kind=kind,
             timestamp_utc=now_ts,
             details=details,
+            prev_sha256=self.audit_log[-1].entry_sha256 if self.audit_log else GENESIS_SHA256,
         )
         self.audit_log.append(entry)
         return entry
+
+    def verify_audit_chain(self) -> bool:
+        """True only if every entry hash matches its content and links to its predecessor."""
+        prev = GENESIS_SHA256
+        for entry in self.audit_log:
+            if entry.tenant_id != self.tenant_id or entry.prev_sha256 != prev:
+                return False
+            if entry.recompute_sha256() != entry.entry_sha256:
+                return False
+            prev = entry.entry_sha256
+        return True
 
     def record_historical_audit(self, audit_result: PipelineProcessingResult) -> None:
         """Register completed historical audit run and index findings."""
@@ -156,7 +184,7 @@ class ContinuousMonitoringEngine:
         """Execute incremental continuous reconciliation without overwriting historical runs."""
         res = self.pipeline.execute_audit_run(
             snapshot=new_snapshot,
-            actor_kind=ActorKind.HUMAN,
+            actor_kind=ActorKind.SYSTEM,  # an automated monitor is never a human reviewer
             reviewer_id="monitoring-engine-continuous",
         )
         self.log_security_event(

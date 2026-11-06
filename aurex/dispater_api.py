@@ -350,7 +350,10 @@ def run_pipeline_audit(
 
     pipeline = IndustrialAuditPipeline(tenant_id=tenant_id)
     snapshot = body.model_dump()
-    res = pipeline.execute_audit_run(snapshot)
+    try:
+        res = pipeline.execute_audit_run(snapshot)
+    except InvalidSnapshot as exc:
+        raise HTTPException(status.HTTP_400_BAD_REQUEST, str(exc)) from exc
     return {
         "run_id": res.run_id,
         "tenant_id": res.tenant_id,

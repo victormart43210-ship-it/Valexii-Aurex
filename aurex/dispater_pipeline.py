@@ -49,6 +49,8 @@ from aurex.evidence_kernel import (
 )
 
 MAX_SOURCE_BYTES = 5 * 1024 * 1024  # 5 MB ceiling
+# OCR/PDF/image/XLSX parsers are not verified in this build; those types are refused, not mocked.
+ADMITTED_MEDIA_TYPES = frozenset({"application/json", "text/csv", "application/csv"})
 
 
 @dataclass
@@ -78,6 +80,7 @@ class IndustrialAuditPipeline:
         self.reconciliation_engine = RevenueLeakageEngine(tenant_id=tenant_id)
         self.evidence_graph = EvidenceGraph(tenant_id=tenant_id)
         self.admitted_envelopes: dict[str, CanonicalEvidenceEnvelope] = {}
+        self._source_record_digests: dict[tuple[str, str], str] = {}
         self.active_contracts: dict[str, dict[str, Any]] = {}
 
     # STAGE 1: Source Admission
@@ -94,8 +97,19 @@ class IndustrialAuditPipeline:
         if not source_id or not source_record_id:
             raise ValueError("source_id and source_record_id are mandatory")
 
+        if media_type not in ADMITTED_MEDIA_TYPES:
+            raise ValueError(f"media type {media_type!r} is not admitted: no verified parser is installed")
+
         content_sha256 = compute_sha256(raw_bytes)
         envelope_id = f"env-{content_sha256[:16]}-{source_record_id}"
+
+        # Replay is idempotent and never rewrites an admitted envelope; a different payload for the
+        # same source record is conflicting evidence and fails closed.
+        known_digest = self._source_record_digests.get((source_id, source_record_id))
+        if known_digest is not None:
+            if known_digest != content_sha256:
+                raise ValueError("conflicting source evidence: record already admitted with different content")
+            return self.admitted_envelopes[envelope_id]
 
         # STAGE 2: Specialized Processing
         adapter_key = check_adapter_suitability(media_type)
@@ -118,6 +132,10 @@ class IndustrialAuditPipeline:
             provenance_fields.append(field_prov)
         else:
             struct_res = self.structured_adapter.process(raw_bytes, {"media_type": media_type})
+            if struct_res.get("status") != "SUCCESS":
+                raise ValueError(f"source rejected: {struct_res.get('status')}")
+            if not isinstance(struct_res.get("fields", {}), dict):
+                raise ValueError("source rejected: structured payload must be an object")
             preview = json.dumps(struct_res.get("fields", {}))[:200]
             for k, v in struct_res.get("fields", {}).items():
                 norm_val: Any = v
@@ -155,8 +173,6 @@ class IndustrialAuditPipeline:
             raw_payload_preview=preview,
         )
 
-        self.admitted_envelopes[envelope_id] = envelope
-
         # Register root evidence in Evidence Integrity Kernel
         ev_rec = EvidenceRecord(
             evidence_id=envelope_id,
@@ -168,6 +184,8 @@ class IndustrialAuditPipeline:
             parents=(),
         )
         self.evidence_graph.add(ev_rec)
+        self.admitted_envelopes[envelope_id] = envelope
+        self._source_record_digests[(source_id, source_record_id)] = content_sha256
 
         return envelope
 
@@ -221,11 +239,11 @@ class IndustrialAuditPipeline:
             ev_ids: list[str] = []
             for ev_item in f.get("evidence", []):
                 rec_hash = ev_item.get("record_sha256", "")
-                # Find matching envelope by hash or by subject/source record reference
+                # Exact content-hash match only: a record id that merely appears inside the subject
+                # string must not let an unrelated document corroborate a finding.
                 matched_env = next(
-                    (e for e in self.admitted_envelopes.values()
-                     if e.source_content_sha256 == rec_hash or e.source_record_id in f.get("subject", "")),
-                    None
+                    (e for e in self.admitted_envelopes.values() if e.source_content_sha256 == rec_hash),
+                    None,
                 )
                 if matched_env and matched_env.envelope_id not in ev_ids:
                     ev_ids.append(matched_env.envelope_id)
@@ -259,7 +277,12 @@ class IndustrialAuditPipeline:
             "admitted_documents": len(self.admitted_envelopes),
             "qualified_count": len(qualified_findings),
             "withheld_count": len(withheld_findings),
-            "exposure_summary": raw_report.get("summary", {}),
+            "exposure_summary": raw_report["financial_summary"],
+            "dataset_sha256": raw_report["dataset_sha256"],
+            "reconciliation_receipt_sha256": raw_report["receipt_sha256"],
+            "finding_qualifications": sorted(
+                [f["finding_sha256"], f["qualification"]] for f in qualified_findings + withheld_findings
+            ),
             "limits": "Deterministic revenue audit. AI is advisory only. Not financial authority.",
         }
         receipt_sha256 = digest(summary_payload)
@@ -269,7 +292,7 @@ class IndustrialAuditPipeline:
             tenant_id=self.tenant_id,
             timestamp_utc=now_ts,
             envelopes_admitted=len(self.admitted_envelopes),
-            reconciliation_summary=raw_report.get("summary", {}),
+            reconciliation_summary=raw_report["financial_summary"],
             qualified_findings=qualified_findings,
             withheld_findings=withheld_findings,
             audit_receipt_sha256=receipt_sha256,
