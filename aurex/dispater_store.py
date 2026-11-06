@@ -234,11 +234,34 @@ def list_runs(tenant_id: str, limit: int = 50) -> list[dict[str, Any]]:
 def finding_history(tenant_id: str, finding_id: str) -> list[dict[str, Any]]:
     with closing(_connect()) as conn:
         rows = conn.execute(
-            "SELECT run_id, finding_sha256, severity, exposure_usd FROM dispater_findings "
-            "WHERE tenant_id=? AND finding_id=? ORDER BY rowid",
+            "SELECT f.run_id, f.finding_sha256, f.severity, f.exposure_usd, r.* FROM dispater_findings f "
+            "JOIN dispater_runs r ON r.run_id=f.run_id AND r.tenant_id=f.tenant_id "
+            "WHERE f.tenant_id=? AND f.finding_id=? ORDER BY f.rowid",
             (tenant_id, finding_id),
         ).fetchall()
-        return [dict(r) for r in rows]
+    out: list[dict[str, Any]] = []
+    for row in rows:
+        # The findings table columns are unsigned; only values from the MAC-verified report count.
+        report = _verified(row)
+        match = next((f for f in report.get("findings", []) if f.get("finding_id") == finding_id), None)
+        if (
+            match is None
+            or match.get("finding_sha256") != row["finding_sha256"]
+            or match.get("severity") != row["severity"]
+            or str(match.get("exposure_usd")) != row["exposure_usd"]
+        ):
+            raise IntegrityError("finding history row does not match the verified report")
+        out.append(
+            {
+                "run_id": row["run_id"],
+                "finding_sha256": match["finding_sha256"],
+                "severity": match["severity"],
+                "exposure_usd": str(match["exposure_usd"]),
+                "receipt_sha256": report.get("receipt_sha256"),
+                "verified": True,
+            }
+        )
+    return out
 
 
 def purge_tenant(tenant_id: str, older_than_days: int | None = None) -> int:

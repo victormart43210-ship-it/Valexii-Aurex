@@ -52,7 +52,10 @@ export const DispaterReconciliationReportSchema = z.object({
   findings: z.array(DispaterFindingSchema),
   limits: z.string(),
   receipt_sha256: z.string(),
+  receipt_auth: z.object({ alg: z.string(), kid: z.string() }).optional(),
+  receipt_mac: z.string().optional(),
   run_id: z.string().optional(),
+  created_at: z.string().optional(),
 });
 
 export type DispaterFinding = z.infer<typeof DispaterFindingSchema>;
