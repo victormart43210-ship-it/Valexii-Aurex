@@ -54,7 +54,14 @@ QUALIFICATION = {
     "DUPLICATE_FIELD_TICKET": "INSUFFICIENT_EVIDENCE",
     "DUPLICATE_LABOR_RECORD": "INSUFFICIENT_EVIDENCE",
     "OVERTIME_UNPRICED": "INSUFFICIENT_EVIDENCE",
+    "UNBILLED_STORAGE_DAYS": "SUSPECTED_DISCREPANCY",
+    "STORAGE_OVERBILLED": "SUSPECTED_DISCREPANCY",
+    "INCORRECT_AFTER_HOURS_SURCHARGE": "SUSPECTED_DISCREPANCY",
+    "ADDON_UNVERIFIED": "INSUFFICIENT_EVIDENCE",
+    "DISPUTED_CHARGE": "INSUFFICIENT_EVIDENCE",
+    "DEPOSIT_RECONCILIATION_GAP": "INSUFFICIENT_EVIDENCE",
 }
+MAX_STORAGE_DAYS = 3650
 _UNBILLED_CODES = frozenset({"UNBILLED_JOB", "UNBILLED_EQUIPMENT", "UNBILLED_LABOR"})
 # Lowercase lookalikes only. This does not merge records. It only refuses to
 # treat a confusable id as proof that two events are different customers.
@@ -264,7 +271,12 @@ class RevenueLeakageEngine:
             {"record_id", "job_id", "role", "service_date", "approved_hours", "billed_hours"},
         )
 
+        deposits = _optional_rows(dataset, "deposits", {"deposit_id", "amount", "date", "reference"})
+        disputes = _optional_rows(dataset, "disputes", {"dispute_id", "invoice_id", "disputed_amount", "reason"})
+
         _ensure_unique_ids(jobs, "job_id", "jobs")
+        _ensure_unique_ids(deposits, "deposit_id", "deposits")
+        _ensure_unique_ids(disputes, "dispute_id", "disputes")
         _ensure_unique_ids(invoices, "invoice_id", "invoices")
         _ensure_unique_ids(rates, "rate_id", "rates")
         _ensure_unique_ids(payments, "payment_id", "payments")
@@ -289,11 +301,23 @@ class RevenueLeakageEngine:
         for p in payments:
             parse_money(p["amount"])
 
+        for d in deposits:
+            parse_money(d["amount"])
+            parse_date(d["date"])
+
+        for disp in disputes:
+            parse_money(disp["disputed_amount"])
+
         by_job_invoices: dict[str, list[dict[str, Any]]] = defaultdict(list)
         for inv in invoices:
             by_job_invoices[inv["job_id"]].append(inv)
 
         invoices_by_id = {inv["invoice_id"]: inv for inv in invoices}
+        by_invoice_disputes: dict[str, list[dict[str, Any]]] = defaultdict(list)
+        for disp in disputes:
+            if disp["invoice_id"] not in invoices_by_id:
+                raise InvalidSnapshot(f"Dispute {disp['dispute_id']} references unknown invoice {disp['invoice_id']!r}")
+            by_invoice_disputes[disp["invoice_id"]].append(disp)
         misapplied: list[dict[str, Any]] = []
         applicable_payments: list[dict[str, Any]] = []
         for payment in payments:
@@ -458,6 +482,7 @@ class RevenueLeakageEngine:
                             proof=f"Rate digest: {digest(target_rate)}",
                         )
                     )
+                self._append_addon_charges(findings, totals, job, target_inv, rates, cust_id, j_date)
                 billed_amt = parse_money(target_inv["amount"])
                 expected_amt = parse_money(target_rate["amount"])
                 diff = billed_amt - expected_amt
@@ -500,6 +525,33 @@ class RevenueLeakageEngine:
                         next_action="Locate valid job ticket or void orphan billing entry.",
                         why="Unbacked invoices fail external financial audits and revenue recognition standards.",
                         proof=f"Invoice payload digest: {digest(inv)}",
+                    )
+                )
+
+            remaining_disputable = (
+                Decimal("0.00")
+                if inv_id in orphan_ids or inv_id in duplicate_ids or inv_id in rate_mismatch_ids
+                else parse_money(inv["amount"])
+            )
+            for disp in by_invoice_disputes[inv_id]:
+                # A dispute is a claim, not proof. Dollars already held by another finding on this
+                # invoice are not counted again, and disputes never exceed the invoice amount.
+                counted_dispute = min(parse_money(disp["disputed_amount"]), remaining_disputable)
+                remaining_disputable -= counted_dispute
+                totals[UNVERIFIED] += counted_dispute
+                findings.append(
+                    self._create_finding(
+                        exposure_class=UNVERIFIED,
+                        code="DISPUTED_CHARGE",
+                        subject=disp["dispute_id"],
+                        severity="HIGH",
+                        records=[("invoice", inv), ("dispute", disp)],
+                        exposure=counted_dispute,
+                        now=f"Dispute {disp['dispute_id']} on invoice {inv_id} claims ${disp['disputed_amount']}.",
+                        changed="The disputed amount is held as unverified and is not treated as owed or as recovered.",
+                        next_action="Assemble proof of service for human adjudication before any collection action.",
+                        why="An unresolved dispute can neither be collected nor written off from this snapshot.",
+                        proof=f"Dispute SHA:{digest(disp)[:12]}, Inv SHA:{digest(inv)[:12]}",
                     )
                 )
 
@@ -642,6 +694,36 @@ class RevenueLeakageEngine:
                 )
             )
 
+        if deposits:
+            net_payments = sum((_signed_payment(p) for p in payments), Decimal("0.00"))
+            deposit_total = sum((parse_money(d["amount"]) for d in deposits), Decimal("0.00"))
+            if net_payments != deposit_total:
+                # The same dollars already appear in invoice and payment findings, so the gap is
+                # disclosed with zero exposure instead of being added to the identified total.
+                findings.append(
+                    self._create_finding(
+                        exposure_class=UNVERIFIED,
+                        code="DEPOSIT_RECONCILIATION_GAP",
+                        subject="BANK_DEPOSIT_BATCH",
+                        severity="HIGH",
+                        records=[
+                            (
+                                "deposit_summary",
+                                {"payments_total": str(net_payments), "deposits_total": str(deposit_total)},
+                            )
+                        ],
+                        exposure=Decimal("0.00"),
+                        now=(
+                            f"Deposits total ${deposit_total} vs net payments ${net_payments} "
+                            f"(variance ${abs(net_payments - deposit_total)})."
+                        ),
+                        changed="The variance is disclosed but not added to identified exposure.",
+                        next_action="Match each deposit reference to remittance records and the bank statement.",
+                        why="A payment ledger that disagrees with deposits cannot be its own witness.",
+                        proof=f"Deposit ids: {', '.join(sorted(d['deposit_id'] for d in deposits))}",
+                    )
+                )
+
         # 3. Payment-level evaluation (orphan payments)
         for payment in payments:
             p_id = payment["payment_id"]
@@ -752,6 +834,80 @@ class RevenueLeakageEngine:
         }
         audit_summary["receipt_sha256"] = digest(audit_summary)
         return audit_summary
+
+    def _append_addon_charges(
+        self,
+        findings: list[dict[str, Any]],
+        totals: dict[str, Decimal],
+        job: dict[str, Any],
+        invoice: dict[str, Any],
+        rates: list[dict[str, Any]],
+        customer: str,
+        job_date: date,
+    ) -> None:
+        """Storage-day and after-hours add-ons. The invoice must state each add-on amount explicitly."""
+        j_id = job["job_id"]
+        checks: list[tuple[str, str, str, Decimal]] = []
+        raw_days = job.get("storage_days")
+        if raw_days is not None:
+            if not re.fullmatch(r"[0-9]{1,4}", raw_days) or int(raw_days) > MAX_STORAGE_DAYS:
+                raise InvalidSnapshot(f"jobs[{j_id}].storage_days must be a whole number of days")
+            if int(raw_days) > 0:
+                checks.append(("STORAGE_DAILY", "storage_amount", "storage", Decimal(int(raw_days))))
+        flag = job.get("after_hours")
+        if flag is not None:
+            if flag not in ("true", "false"):
+                raise InvalidSnapshot(f"jobs[{j_id}].after_hours must be 'true' or 'false'")
+            if flag == "true":
+                checks.append(("AFTER_HOURS_SURCHARGE", "after_hours_amount", "after-hours", Decimal(1)))
+        for service, field, label, quantity in checks:
+            covering = _covering_rates(rates, customer, service, job_date)
+            if len(covering) != 1 or field not in invoice:
+                reason = "no single governing rate" if len(covering) != 1 else f"invoice does not state {field}"
+                findings.append(
+                    self._create_finding(
+                        exposure_class=UNVERIFIED,
+                        code="ADDON_UNVERIFIED",
+                        subject=f"{j_id}:{service}",
+                        severity="MEDIUM",
+                        records=[("job", job), ("invoice", invoice)],
+                        exposure=Decimal("0.00"),
+                        now=f"Job {j_id} declares {label} charges but the add-on cannot be priced: {reason}.",
+                        changed="No dollar exposure was assigned to the add-on.",
+                        next_action="Supply a single approved add-on rate and the invoiced add-on amount.",
+                        why="Assuming a missing amount is zero would invent underbilling.",
+                        proof=f"Job digest: {digest(job)}",
+                    )
+                )
+                continue
+            rate = covering[0]
+            expected = (parse_money(rate["amount"]) * quantity).quantize(Decimal("0.01"))
+            billed = parse_money(invoice[field])
+            diff = billed - expected
+            if diff == 0:
+                continue
+            exposure_class = UNDERBILLING if diff < 0 else OVERBILLING
+            if service == "STORAGE_DAILY":
+                code = "UNBILLED_STORAGE_DAYS" if diff < 0 else "STORAGE_OVERBILLED"
+            else:
+                code = "INCORRECT_AFTER_HOURS_SURCHARGE"
+            amount = abs(diff)
+            totals[exposure_class] += amount
+            findings.append(
+                self._create_finding(
+                    exposure_class=exposure_class,
+                    code=code,
+                    subject=invoice["invoice_id"],
+                    severity="HIGH" if code == "UNBILLED_STORAGE_DAYS" else "MEDIUM",
+                    records=[("job", job), ("invoice", invoice), ("rate", rate)],
+                    exposure=amount,
+                    now=f"Invoice {invoice['invoice_id']} bills {label} ${billed} vs approved ${expected}.",
+                    changed=f"A {label} difference of ${amount} is a candidate discrepancy, not confirmed leakage.",
+                    next_action="Review the add-on against the approved rate and issue a human-approved correction.",
+                    why="Add-on charges are priced from the approved rate schedule, never from the invoice itself.",
+                    proof=f"Job SHA:{digest(job)[:12]}, Rate SHA:{digest(rate)[:12]}",
+                )
+            )
 
     def _append_unbilled_hours(
         self,
