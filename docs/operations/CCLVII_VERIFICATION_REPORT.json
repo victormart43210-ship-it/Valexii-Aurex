@@ -1,0 +1,179 @@
+{
+  "operation_id": "KUSANAGI_CCLVII",
+  "tested_code_sha": "a8ee5cb7abb1454058f693dc8165ae6dbad58117",
+  "final_documentation_sha": null,
+  "source_tree_note": "A following documentation-only checkpoint records results. Its own SHA cannot be embedded in itself; final remote SHA and CI must be read back.",
+  "records": [
+    {
+      "tested_sha": "a8ee5cb7abb1454058f693dc8165ae6dbad58117",
+      "command": "PYTHONPATH=. AUREX_DB_PATH=<disposable> <venv>/python -m pytest -q --junitxml=<evidence>/pytest.xml",
+      "exit_code": 0,
+      "passed": 741,
+      "failed": 0,
+      "skipped": 1,
+      "status": "PASS",
+      "evidence": "docs/operations/cclvii-evidence/pytest.log",
+      "timestamp_recorded_utc": "2026-11-06T20:08:51.571828+00:00",
+      "skip_reason": "training/tests/test_lora_smoke.py: torch unavailable; no training or model weights installed"
+    },
+    {
+      "tested_sha": "a8ee5cb7abb1454058f693dc8165ae6dbad58117",
+      "command": "<venv>/ruff check .",
+      "exit_code": 0,
+      "passed": null,
+      "failed": 0,
+      "skipped": null,
+      "status": "PASS",
+      "evidence": "docs/operations/cclvii-evidence/ruff.log",
+      "timestamp_recorded_utc": "2026-11-06T20:08:51.571828+00:00"
+    },
+    {
+      "tested_sha": "a8ee5cb7abb1454058f693dc8165ae6dbad58117",
+      "command": "<venv>/mypy --strict aurex",
+      "exit_code": 0,
+      "passed": null,
+      "failed": 0,
+      "skipped": null,
+      "status": "PASS",
+      "evidence": "docs/operations/cclvii-evidence/mypy.log",
+      "timestamp_recorded_utc": "2026-11-06T20:08:51.571828+00:00",
+      "source_files": 109
+    },
+    {
+      "tested_sha": "a8ee5cb7abb1454058f693dc8165ae6dbad58117",
+      "command": "cd website && npx vitest run",
+      "exit_code": 0,
+      "passed": 157,
+      "failed": 0,
+      "skipped": 0,
+      "status": "PASS",
+      "evidence": "docs/operations/cclvii-evidence/vitest.log",
+      "timestamp_recorded_utc": "2026-11-06T20:08:51.571828+00:00"
+    },
+    {
+      "tested_sha": "a8ee5cb7abb1454058f693dc8165ae6dbad58117",
+      "command": "cd website && npx tsc --noEmit",
+      "exit_code": 0,
+      "passed": null,
+      "failed": 0,
+      "skipped": null,
+      "status": "PASS",
+      "evidence": "docs/operations/cclvii-evidence/tsc.log",
+      "timestamp_recorded_utc": "2026-11-06T20:08:51.571828+00:00"
+    },
+    {
+      "tested_sha": "a8ee5cb7abb1454058f693dc8165ae6dbad58117",
+      "command": "cd website && npm run build",
+      "exit_code": 0,
+      "passed": null,
+      "failed": 0,
+      "skipped": null,
+      "status": "PASS",
+      "evidence": "docs/operations/cclvii-evidence/website-build.log",
+      "timestamp_recorded_utc": "2026-11-06T20:08:51.571828+00:00"
+    },
+    {
+      "tested_sha": "a8ee5cb7abb1454058f693dc8165ae6dbad58117",
+      "command": "cd dispater-web && npm test",
+      "exit_code": 0,
+      "passed": 25,
+      "failed": 0,
+      "skipped": 0,
+      "status": "PASS",
+      "evidence": "docs/operations/cclvii-evidence/dispater-web.log",
+      "timestamp_recorded_utc": "2026-11-06T20:08:51.571828+00:00"
+    },
+    {
+      "tested_sha": "a8ee5cb7abb1454058f693dc8165ae6dbad58117",
+      "command": "cd dispater-web && npm run build",
+      "exit_code": 0,
+      "passed": null,
+      "failed": 0,
+      "skipped": null,
+      "status": "PASS",
+      "evidence": "docs/operations/cclvii-evidence/dispater-web-build.log",
+      "timestamp_recorded_utc": "2026-11-06T20:08:51.571828+00:00"
+    },
+    {
+      "tested_sha": "a8ee5cb7abb1454058f693dc8165ae6dbad58117",
+      "overlay_sha": "8323f6db245186b98f2bf2c99a9297e88849e15e",
+      "overlay_patch_sha256": "ac4cb6826e567d183cde9512effc185293a0ca8e3fac1cd316043c4de3ce4226",
+      "command": "git diff c4f45925 8323f6db -- aurex tests; git apply --check; git apply in disposable detached worktree; pytest selected financial/security suites",
+      "exit_code": 0,
+      "passed": 54,
+      "failed": 0,
+      "skipped": 0,
+      "status": "PASS",
+      "evidence": "docs/operations/cclvii-evidence/combined.xml",
+      "note": "Uncommitted disposable compatibility overlay; no merged/reconciled release SHA claimed"
+    },
+    {
+      "tested_sha": "a8ee5cb7abb1454058f693dc8165ae6dbad58117",
+      "command": "Bounded UTF-8 tracked-file secret-pattern scan",
+      "status": "PASS_BOUNDED_SCAN",
+      "scanned_files": 753,
+      "skipped_files": 24,
+      "pattern_hits": 0,
+      "exit_code": 0,
+      "evidence": "docs/operations/cclvii-evidence/secret-scan.json",
+      "limits": "Not entropy/history/provider validation. Binary/large/unreadable files skipped."
+    }
+  ],
+  "financial_golden": {
+    "identified_exposure_usd": "385.00",
+    "withheld_unresolved_usd": "150.00",
+    "confirmed_recovery_usd": "0.00",
+    "invoice_discrepancy_usd": "10.00",
+    "confirmed_invoice_recovery_usd": "0.00",
+    "evidence": "Existing frozen expectations in golden/customer-sovereignty/laboratory tests passed; no fixture expectation edits"
+  },
+  "environment": {
+    "python": "3.12.14",
+    "pytest": "8.4.2",
+    "ruff": "0.17.4",
+    "mypy": "1.20.2",
+    "node": "v24.22.1",
+    "frontend_dependencies": "unchanged lockfiles; existing npm-ci installation shared by symlink, not a dependency change",
+    "pypdf": "6.21.4",
+    "openpyxl": "3.1.5"
+  },
+  "integration_journey": {
+    "synthetic_JSON_upload_to_API_store_retrieval_dashboard": "PASS; new HTTP hour tests assert source digest, money, receipt identity, tenant denial",
+    "real_frontend_HTTP_proxy_to_canonical_API": "PASS; tests.test_clii_sandbox_http.test_real_sandbox_proxy_and_replay executed, not skipped",
+    "website_contracts_renderers": "157 Vitest PASS; TypeScript/build PASS",
+    "full_browser_financial_journey": "NOT_RUN: Playwright package exists but Chromium executable and system browser are absent",
+    "live_XAELI_Qwen": "NOT_VERIFIED; no model call made"
+  },
+  "ci": {
+    "tested_head": "a8ee5cb7abb1454058f693dc8165ae6dbad58117",
+    "observed": "four workflows SUCCESS and industrial sandbox workflow IN_PROGRESS at first lookup; final head recheck required"
+  },
+  "independent_review": {
+    "source_reviewer": "separate agent /root/cclvii_review",
+    "report": "docs/operations/CCLVII_SOURCE_REVIEW.md",
+    "critical_or_important_bounded_patch_findings": 0,
+    "external_human_assurance": "REVIEW_PENDING"
+  },
+  "production_release": "HOLD",
+  "financial_authority": "NONE",
+  "dependency_review": {
+    "new_runtime_dependencies": [],
+    "website_lock_sha256": "419b096ad484d2bd64df271ad2cd8469e6621204bf4590b335eec5d5610e7398",
+    "advisory_scan": "npm audit --json, exit1;14advisories:2high12moderate; scanned earlier identical lockfile, not rerun here",
+    "evidence": "docs/operations/cclvii-evidence/npm-audit-website.json",
+    "python_vulnerability_scan": "NOT_RUN",
+    "no_auto_upgrades": true
+  },
+  "junit_artifact": {
+    "compact": "docs/operations/cclvii-evidence/pytest.xml",
+    "raw_gzip": "docs/operations/cclvii-evidence/pytest.raw.xml.gz",
+    "raw_sha256": "8bb2455aef101e591f95065fb65440621069c3bb0ee0caf91d7d7ca76329f2b3",
+    "abbreviated_labels": [
+      {
+        "original_length": 1000038,
+        "name_sha256": "3b6904559913d55d9b365870d6206a6f70e1ace5625095a174d78769557d5d75"
+      }
+    ],
+    "note": "One million-character synthetic parameter ID abbreviated in XML label only. Counts/statuses unchanged; raw gzip retained."
+  }
+}

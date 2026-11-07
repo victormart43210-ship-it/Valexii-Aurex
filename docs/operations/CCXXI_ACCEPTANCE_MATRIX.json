@@ -1,0 +1,105 @@
+{
+ "operation": "CCXXI",
+ "verdict": "HOLD - BLOCKERS REMAIN",
+ "tested_code_commit": "cc1f88f49185ba3543e9e85d64e9b1a5edab0547",
+ "method": "Fresh git clone of the pushed branch, new venv, pip install -e '.[dev]'",
+ "reviewer": "GitHub Copilot (author of the fixes; not an independent witness)",
+ "gates": [
+  {
+   "gate": "Backend pytest",
+   "command": "python -m pytest -q tests",
+   "result": "PASS",
+   "level": "locally passed (fresh clone)",
+   "evidence": "533 passed, 1 skipped"
+  },
+  {
+   "gate": "Ruff",
+   "command": "ruff check .",
+   "result": "PASS",
+   "level": "locally passed (fresh clone)"
+  },
+  {
+   "gate": "Mypy strict, whole aurex package",
+   "command": "mypy --strict aurex",
+   "result": "PASS",
+   "level": "locally passed (fresh clone)",
+   "evidence": "82 source files; tests dir not included except 3 new test files (6 files checked)"
+  },
+  {
+   "gate": "dispater-web tests",
+   "command": "cd dispater-web && npm ci && npm test",
+   "result": "PASS",
+   "level": "locally passed (fresh clone)",
+   "evidence": "25/25 (node --test; project does not use Vitest)"
+  },
+  {
+   "gate": "dispater-web build",
+   "command": "npm run build",
+   "result": "PASS",
+   "level": "locally passed (fresh clone)"
+  },
+  {
+   "gate": "website build",
+   "command": "cd website && npm ci && npm run build",
+   "result": "PASS",
+   "level": "locally passed (fresh clone)",
+   "evidence": "vite/nitro build completed; website has no test script"
+  },
+  {
+   "gate": "Body-limit regression suite",
+   "command": "pytest tests/test_dispater_body_limit.py",
+   "result": "PASS",
+   "level": "locally passed",
+   "evidence": "12 tests"
+  },
+  {
+   "gate": "Storage suite",
+   "command": "pytest tests/test_dispater_storage.py",
+   "result": "PASS",
+   "level": "locally passed",
+   "evidence": "24 tests incl. concurrency, replacement, backup/restore, corruption"
+  },
+  {
+   "gate": "Tenant isolation",
+   "command": "pytest tests/test_dispater_security.py",
+   "result": "PASS",
+   "level": "locally passed",
+   "evidence": "24 tests carried from PR #160; no new tenant code written in CCXXI"
+  },
+  {
+   "gate": "Financial oracle",
+   "command": "pytest tests/test_dispater_oracle_differential.py tests/test_dispater_reconciliation.py",
+   "result": "PASS (limited scope)",
+   "level": "locally passed",
+   "evidence": "differential covers single-job rate/invoice only; credits/partial payments covered by pre-existing example tests, not differential"
+  },
+  {
+   "gate": "GitHub CI",
+   "result": "PASS",
+   "level": "GitHub CI passed",
+   "evidence": "6 checks green on cc1f88f: docker-build-and-smoke, integration, offline-practice, test x2, verify. Note: an earlier run on 04a9782 FAILED (race D-5), fixed."
+  },
+  {
+   "gate": "Synthetic E2E website -> API -> export -> restart",
+   "result": "NOT TESTED",
+   "level": "not tested"
+  },
+  {
+   "gate": "Container-replacement persistence on real volume",
+   "result": "BLOCKED",
+   "level": "blocked",
+   "evidence": "no staging/Railway access"
+  },
+  {
+   "gate": "Independent reproduction by another party",
+   "result": "NOT TESTED",
+   "level": "not tested"
+  },
+  {
+   "gate": "XAELI live/Qwen connectivity",
+   "result": "NOT TESTED",
+   "level": "not tested",
+   "evidence": "no live inference claimed"
+  }
+ ]
+}

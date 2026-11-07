@@ -1,0 +1,59 @@
+{
+ "candidate_sha_code": "a6b476dc27356a6514a595dfa3c99d924f556e6d",
+ "results": {
+  "backend_pytest": {
+   "status": "PASS",
+   "detail": "776 passed, 1 skipped"
+  },
+  "ruff": "PASS",
+  "mypy": {
+   "status": "PASS",
+   "detail": "111 source files"
+  },
+  "website_vitest": {
+   "status": "PASS",
+   "detail": "167 passed in 25 files"
+  },
+  "website_tsc": "PASS",
+  "website_build": "PASS",
+  "dispater_web_tests": {
+   "status": "PASS",
+   "detail": "25 passed"
+  },
+  "docker_build": "PASS",
+  "container_nonroot": {
+   "status": "PASS",
+   "detail": "uid 10001"
+  },
+  "container_health": {
+   "status": "PASS",
+   "detail": "/health 200"
+  },
+  "container_auth_failclosed": {
+   "status": "PASS",
+   "detail": "no token 401; wrong token/unconfigured DISPATER keys 503; no service token 503"
+  },
+  "sqlite_persistence_container": {
+   "status": "NOT_VERIFIED",
+   "detail": "authenticated live DISPATER flow not run (needs key provisioning); covered by in-process tests only"
+  },
+  "secret_scan": {
+   "status": "PASS",
+   "detail": "regex scan only (sk-, ghp_, AKIA, private key blocks); no dedicated scanner"
+  },
+  "browser_responsive_journeys": {
+   "status": "NOT_RUN"
+  },
+  "dependency_license_review": {
+   "status": "NOT_RUN"
+  },
+  "xaeli_qwen_live": {
+   "status": "BLOCKED",
+   "detail": "no private model endpoint configured in this environment; fail-closed status preserved; no live response fabricated"
+  },
+  "independent_review": {
+   "status": "PASS_WITH_LIMITS",
+   "detail": "separate code-review agent: no blocking issues; skimmed dispater_intelligence.py/dispater_store.py; did not review Dockerfile/.github line by line; not a human approval"
+  }
+ }
+}

@@ -1,0 +1,17 @@
+{
+  "operation": "KUSANAGI_CCLXI",
+  "tested_code_sha": "f480c518ffcb5360b2b084470dbdb71aeac68d32",
+  "decision": "HOLD_WITH_BLOCKERS",
+  "production": "HOLD",
+  "financial_authority": "NONE",
+  "paid_inference": "OFF",
+  "customer_data": "PROHIBITED",
+  "merge": "NOT_AUTHORIZED",
+  "external_anchor": "NOT_VERIFIED",
+  "independent_human_assurance": "OPEN",
+  "deletion_and_retention": "NOT_IMPLEMENTED",
+  "secret_scan": "NOT_RUN as a separate scanner. The new script contains no credentials.",
+  "dependency_license_review": "NOT_RUN. No dependency was added.",
+  "docker_image": "NOT_RUN on 0c85879c1b752b0f30a49d885296ad2204236bd7. The workflow path filter covers Dockerfile, pyproject.toml, aurex/, training/, and workstation/.",
+  "github_actions": "PASS for offline-practice, both CI test jobs, verify, and integration on 0c85879c1b752b0f30a49d885296ad2204236bd7 at 2026-11-06T15:14:00-0600. This does not authorize a merge."
+}

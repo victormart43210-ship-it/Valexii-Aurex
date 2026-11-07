@@ -1,0 +1,6 @@
+{
+ "main_sha": "34cda4bd8f207f5b1284093b87e4760d782a4903",
+ "branch": "integration/kusanagi-cclxvii-one-mainline",
+ "recover": "git fetch origin +refs/pull/*/head:refs/remotes/pr/*; git checkout integration/kusanagi-cclxvii-one-mainline",
+ "inventory": "docs/operations/CCLXVII_COMPLETE_PR_INVENTORY.json"
+}

@@ -1,0 +1,73 @@
+{
+  "schema": "aurex.cclxxvi.technology_selection.v1",
+  "base_sha": "061b97022797013ccd1395a377b9489e59ba83f3",
+  "measured_at": "2026-11-06T19:53:00-0600",
+  "independent_verification": "NOT_VERIFIED",
+  "selections": [
+    {
+      "name": "existing DISPATER Decimal engine",
+      "decision": "RETAINED",
+      "reason": "It already reconciles jobs, invoices, rates, payments, equipment, and labor. The golden synthetic totals remain 385.00 identified, 150.00 withheld, and 0.00 confirmed."
+    },
+    {
+      "name": "SQLite object-centric tables",
+      "decision": "ADOPTED_FOR_PERSISTENCE",
+      "reason": "Relationships extend the existing DISPATER database file. No graph database was added. At 50,000 synthetic rows, Python grouping took 0.0184s and SQLite took 0.0767s, so SQLite is not used as the faster calculator."
+    },
+    {
+      "name": "pypdf 6.21.4",
+      "decision": "RETAINED",
+      "license": "BSD-3-Clause",
+      "license_source": "installed package metadata"
+    },
+    {
+      "name": "openpyxl 3.1.5",
+      "decision": "RETAINED",
+      "license": "MIT",
+      "license_source": "installed package metadata",
+      "change": "Accepted spreadsheet values now keep sheet and cell. Empty cells without a coordinate no longer abort the read."
+    },
+    {
+      "name": "Docling 2.148.0",
+      "decision": "NOT_ADOPTED",
+      "package_license": "MIT",
+      "license_source": "https://pypi.org/pypi/docling/json",
+      "model_licenses": "NOT_REVIEWED",
+      "installed": false,
+      "reason": "The package was not imported. Uncertain scans stay uninterpreted."
+    },
+    {
+      "name": "DuckDB 2.0.0",
+      "decision": "NOT_ADOPTED",
+      "license": "MIT",
+      "license_source": "PyPI classifier License :: OSI Approved :: MIT License",
+      "measurement": {
+        "rows": 50000,
+        "fixture": "synthetic 0.10 and 0.20 hour strings",
+        "python_query_seconds": 0.015272,
+        "duckdb_query_seconds": 0.005096,
+        "decimal_totals_match": true,
+        "row_insert_path_seconds": 29.0039,
+        "note": "The 29s figure is repeated single-row inserts, not the query. The query comparison used data already loaded."
+      },
+      "reason": "The API still admits at most 2000 rows. At 2000 rows the Python path took 0.0007s. A faster query at 50,000 rows does not change the admitted workload, so the dependency was not added."
+    },
+    {
+      "name": "Polars 2.1.0",
+      "decision": "NOT_ADOPTED",
+      "license": "MIT",
+      "license_source": "PyPI license text is the MIT permission grant",
+      "measurement": {
+        "rows": 50000,
+        "polars_query_seconds": 0.003073,
+        "decimal_totals_match": true
+      },
+      "reason": "Same row-limit conclusion as DuckDB. The reconciliation money path remains Decimal in the existing engine."
+    },
+    {
+      "name": "OCEL 2.0 library",
+      "decision": "NOT_VENDORED",
+      "reason": "Objects, events, and qualified relationships follow the object-centric idea. No third-party process-mining package was imported."
+    }
+  ]
+}

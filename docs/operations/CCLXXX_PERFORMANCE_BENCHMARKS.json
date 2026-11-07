@@ -1,0 +1,9 @@
+{
+  "schema": "aurex.cclxxx.performance.v1",
+  "observed_at": "2026-11-06T22:20:00-0600",
+  "machine": "local agent environment, not a Chromebook and not Railway",
+  "readiness_200_calls_seconds": 0.0066,
+  "readiness_each_ms": 0.033,
+  "new_database_or_queue": "NONE",
+  "note": "DuckDB and Polars were already measured on pull request 196 and were not adopted. This check only timed the new readiness function."
+}

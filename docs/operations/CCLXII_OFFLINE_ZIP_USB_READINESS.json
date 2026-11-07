@@ -1,0 +1,29 @@
+{
+  "operation": "KUSANAGI_CCLXII",
+  "tested_code_sha": "41ce726dd1664b4f85dce2e316285c4711a3b1c7",
+  "command": "python3 scripts/valexii_offline_kit.py --dest /path/to/separate-work",
+  "optional_root": "python3 scripts/valexii_offline_kit.py --root /path/to/archives --dest /path/to/separate-work",
+  "default_search": ["home (one level)", "Downloads", "Desktop", "~/dispater-kit", "~/VALEXII_INSTALLER", "/mnt", "/media", "/mnt/shared/removable"],
+  "recorded_probe": {
+    "asset_status": "NO_ARCHIVES_FOUND",
+    "ocr": "OCR_PROGRESS_ABSENT",
+    "sqlite_checkpoints": 0,
+    "network_contact": "NOT_ATTEMPTED",
+    "missing": ["/home/ubuntu/Downloads", "/home/ubuntu/Desktop", "/home/ubuntu/dispater-kit", "/home/ubuntu/VALEXII_INSTALLER", "/mnt/shared/removable"]
+  },
+  "usb_counts": "NOT_REVALIDATED. The handoff counts were not read from a mounted manifest.",
+  "behaviors_tested": [
+    "duplicate filenames with different bytes stay separate",
+    "identical bytes are DUPLICATE_CONTENT and extract once",
+    "unsafe paths and source-folder writes are rejected",
+    "uncompressed size and compression-ratio limits reject bombs before extraction",
+    "a bad zip is REJECTED_INTEGRITY",
+    "a mismatched sidecar hash is REJECTED_MANIFEST",
+    "a partial extract resumes",
+    "a second complete run is ALREADY_PRESENT",
+    "hidden directories are not checkpoint sources",
+    "a missing repository is REPOSITORY_ABSENT"
+  ],
+  "chromebook_instruction": "Copy scripts/valexii_offline_kit.py to the Chromebook. Run it with a --dest that is not the USB folder. Do not start a model download.",
+  "downloads": "NOT_STARTED"
+}

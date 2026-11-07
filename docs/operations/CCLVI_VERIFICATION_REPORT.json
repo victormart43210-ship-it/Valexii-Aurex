@@ -1,0 +1,25 @@
+{
+  "operation": "KUSANAGI_CCLVI",
+  "tested_code_sha": "bd1c4d00559bed86d4e37aab103204cf95829769",
+  "upstream_cclv_sha": "c4f45925e086bbb23b643e66707b224419d52b60",
+  "upstream_cclv_status": "READY",
+  "commands": [
+    {"cmd": "pytest -q", "result": "732 passed, 1 skipped, exit 0", "skip": "training/tests/test_lora_smoke.py (torch absent)"},
+    {"cmd": "ruff check .", "result": "All checks passed"},
+    {"cmd": "mypy aurex", "result": "Success: no issues in 109 source files"},
+    {"cmd": "website npx vitest run", "result": "157 passed", "note": "website files unchanged from the CCLV candidate"},
+    {"cmd": "website npx tsc --noEmit", "result": "exit 0"},
+    {"cmd": "website npm run build", "result": "exit 0"},
+    {"cmd": "dispater-web npm test", "result": "25 passed"},
+    {"cmd": "XAELI probe 127.0.0.1:8080", "result": "URLError", "status": "NOT_VERIFIED"}
+  ],
+  "github_actions_on_pushed_head": "SUCCESS on 08d3f7a1e3304e7662b3591d57d1f3ecd3eee7c2 (six workflow runs: offline-practice, test, test, verify, integration, docker-build-and-smoke). The engine commit is an ancestor of this head.",
+  "github_actions_on_upstream_c4f45925": "SUCCESS (six workflow runs, 2026-11-06T19:19Z)",
+  "github_actions_on_77a97c1": "SUCCESS (six workflow runs). Historical. Not proof of this SHA.",
+  "independent_review": {
+    "reviewer": "bc-830eca93-bb80-5cf9-ae0e-199fdd02661c",
+    "sha": "bd1c4d00559bed86d4e37aab103204cf95829769",
+    "verdict": "NO-GO",
+    "limitation": "Same machine. Not organizational independence."
+  }
+}

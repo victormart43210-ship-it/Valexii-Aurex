@@ -1,0 +1,28 @@
+{
+  "operation": "KUSANAGI_CCLXII",
+  "tested_code_sha": "41ce726dd1664b4f85dce2e316285c4711a3b1c7",
+  "decision": "HOLD_WITH_BLOCKERS",
+  "production": "HOLD",
+  "financial_authority": "NONE",
+  "merge": "NOT_AUTHORIZED",
+  "deploy": "NOT_AUTHORIZED",
+  "checks": {
+    "pytest": "PASS 755 passed, 1 skipped",
+    "ruff": "PASS",
+    "mypy": "PASS 109 files",
+    "website_vitest": "PASS 161",
+    "website_production_build": "PASS",
+    "dispater_web_package": "NOT_RUN. Its sources were not changed.",
+    "browser_synthetic_audit": "PASS on the local servers described in CCLXII_DISPATER_END_TO_END.json",
+    "xaeli_live": "NOT_VERIFIED",
+    "usb_inventory": "NOT_REVALIDATED",
+    "secret_scan": "PASS for a pattern search of private-key and live-key prefixes in scripts, website/src, and aurex. No matches.",
+    "new_dependencies": "NONE",
+    "github_actions_on_e916359": "PASS for offline-practice, both CI test jobs, verify, and integration at 2026-11-06T16:07:00-0600. The tip includes tested code 41ce726. This does not authorize a merge.",
+    "github_actions_on_41ce726_alone": "NOT_RUN. That commit was not pushed by itself.",
+    "railway_image": "NOT_RUN. The path filter does not include scripts, tests, or website.",
+    "external_anchor": "NOT_VERIFIED",
+    "independent_human_assurance": "OPEN",
+    "post_9_9_108_run": "NOT_RUN"
+  }
+}

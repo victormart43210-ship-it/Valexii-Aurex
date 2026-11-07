@@ -1,0 +1,35 @@
+{
+ "main_sha": "34cda4bd8f207f5b1284093b87e4760d782a4903",
+ "branch": "integration/kusanagi-cclxvii-one-mainline",
+ "included_prs": [
+  163,
+  170,
+  171,
+  174,
+  177,
+  178,
+  180,
+  181,
+  182,
+  184,
+  185,
+  186,
+  187,
+  188,
+  189
+ ],
+ "classification_counts": {
+  "CONFLICTING": 24,
+  "CI_BLOCKED": 67,
+  "NEEDS_REVIEW": 9,
+  "STACKED": 14,
+  "SECURITY_BLOCKED": 2,
+  "READY_TO_INTEGRATE": 1
+ },
+ "merge_commits": [
+  "PR #188 tip (stack #184-#188)",
+  "PR #189"
+ ],
+ "conflicts_repaired": 0,
+ "not_integrated_note": "PR #183 (egress/financial evidence corrections), #172, #176 and 100+ others are NOT in the candidate; see inventory."
+}
