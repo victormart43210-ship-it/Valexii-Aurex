@@ -1,0 +1,23 @@
+{
+  "schema": "aurex.cclxxiv.recovery.v1",
+  "pr": 193,
+  "branch": "cursor/kusanagi-cclxx-forensic-ascendancy-4082",
+  "checkpoint_before_change": "c403bf99e07e22c576174b494a37a6177924dbed",
+  "main_sha": "061b97022797013ccd1395a377b9489e59ba83f3",
+  "merge_base": "f381db7cd121d76f0df9f67a8a5e2547733fe33d",
+  "merge_tree_exit": 0,
+  "main_incorporated": false,
+  "history_rewritten": false,
+  "force_push": false,
+  "merged_to_main": false,
+  "deployed": false,
+  "laboratory": "DISABLED",
+  "qwen": "LIVE_QWEN_NOT_VERIFIED",
+  "independent_review": "INDEPENDENT_REVIEW_PENDING",
+  "defects_repaired": [],
+  "decision": "HOLD_WITH_BLOCKERS",
+  "further_engineering_review": "GO",
+  "production_release": "NO-GO",
+  "merge_status": "NO-GO",
+  "next_safe_action": "Leave the pull request open for a reviewer who did not write the laboratory. Do not merge, deploy, or set AUREX_MANUSCRIPT_FORENSICS."
+}

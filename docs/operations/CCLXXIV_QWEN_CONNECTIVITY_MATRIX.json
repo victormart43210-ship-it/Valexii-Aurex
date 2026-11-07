@@ -1,0 +1,31 @@
+{
+  "schema": "aurex.cclxxiv.qwen_connectivity.v1",
+  "status": "LIVE_QWEN_NOT_VERIFIED",
+  "observed_at": "2026-11-06T19:25:00-0600",
+  "source_sha": "c403bf99e07e22c576174b494a37a6177924dbed",
+  "model_identifier_in_source": "qwen2.5-0.5b-instruct-q4_k_m",
+  "source_file": "aurex/xaeli_staging.py",
+  "earliest_failing_boundary": "AUREX_XAELI_STAGING_ENABLED is unset, so POST /v1/xaeli-staging/explain returns HTTP 503 before any model socket is opened.",
+  "private_route_boundary": "qwen-private-staging.railway.internal did not resolve from this environment (socket.gaierror, name not known). This process has no RAILWAY_ENVIRONMENT_ID. The private host was not treated as localhost.",
+  "real_model_text_received": false,
+  "paid_inference": "OFF",
+  "remote_services_changed": false,
+  "checks": [
+    {"name": "staging_flag", "observed": "unset", "code_effect": "HTTP 503 Staging disabled", "result": "BLOCKED"},
+    {"name": "operator_approval", "observed": "AUREX_XAELI_OPERATOR_APPROVED unset", "result": "NOT_REACHED"},
+    {"name": "budget", "observed": "not evaluated because staging is off", "result": "NOT_REACHED"},
+    {"name": "configured_base_url", "observed": "AUREX_QWEN_BASE_URL unset", "result": "NOT_CONFIGURED"},
+    {"name": "loopback_models", "probe": "http://127.0.0.1:8080/v1/models", "result": "URLError", "counts_as_private_railway": false},
+    {"name": "loopback_health", "probe": "http://127.0.0.1:8080/health", "result": "URLError", "counts_as_private_railway": false},
+    {"name": "private_dns", "host": "qwen-private-staging.railway.internal", "port": 8080, "result": "gaierror"},
+    {"name": "railway_flags", "AUREX_RAILWAY_PRIVATE_QWEN_ENABLED": null, "RAILWAY_ENVIRONMENT_ID": false, "result": "NOT_AVAILABLE"}
+  ],
+  "operator_verification": [
+    "Run this only inside the Railway private network. Do not print tokens.",
+    "Confirm the private name resolves and that GET /v1/models on that host returns the expected model id.",
+    "Set AUREX_QWEN_BASE_URL to http://qwen-private-staging.railway.internal:8080/v1, AUREX_RAILWAY_PRIVATE_QWEN_ENABLED to 1, and keep the process inside an environment that has RAILWAY_ENVIRONMENT_ID.",
+    "Set AUREX_XAELI_STAGING_ENABLED and AUREX_XAELI_OPERATOR_APPROVED to 1. Keep AUREX_BUDGET_USD at 0.",
+    "POST /v1/xaeli-staging/explain with the bearer and header x-aurex-operator-approval: synthetic-only. Use one of the three synthetic prompt literals.",
+    "Record execution, error_code, and whether generated_answer is non-empty. A non-empty answer is still not authority and is not LIVE_QWEN_VERIFIED until the model id and endpoint are independently recorded."
+  ]
+}
