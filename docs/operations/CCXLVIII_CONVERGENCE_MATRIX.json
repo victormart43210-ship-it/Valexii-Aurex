@@ -1,0 +1,74 @@
+{
+  "operation": "KUSANAGI_CCXLVIII",
+  "project": "PROJECT_SOVEREIGN_CONVERGENCE",
+  "recorded_at": "2026-11-06T15:27:40Z",
+  "recorded_at_america_chicago": "2026-11-06T09:27:40-0600",
+  "repository": "victormart43210-ship-it/Valexii-Aurex",
+  "pull_request": "https://github.com/victormart43210-ship-it/Valexii-Aurex/pull/180",
+  "branch": "cursor/kusanagi-ccxlvi-sovereign-ascendancy-4082",
+  "base_branch": "cursor/kusanagi-ccxli-aurex-ascendancy-4082",
+  "base_commit_sha": "9148634e75a66c1ab7f43fa4f08a039620661a9f",
+  "candidate_sha": "cf083f7f531207c1fe77fec6d127e53e52584123",
+  "prior_green_sha": "0f32769db5469d45e59434e34e803a95155b95fd",
+  "origin_main_sha": "34cda4bd8f207f5b1284093b87e4760d782a4903",
+  "production": "HOLD",
+  "financial_authority": "NONE",
+  "merge_authority": "NONE",
+  "dependencies": [
+    {
+      "pr": 170,
+      "branch": "cursor/fail-closed-audit-fixes-4082",
+      "sha": "d2e3df77f72fffc00efcb72b6cc87716b2f04bc0",
+      "disposition": "ALREADY_CONTAINED",
+      "evidence": "git merge-base --is-ancestor returned yes against cf083f7. Nothing was cherry-picked."
+    },
+    {
+      "pr": 171,
+      "sha": "db4670ab78fa36c8a2b4b8b66df842350440e437",
+      "disposition": "ALREADY_CONTAINED"
+    },
+    {
+      "pr": 174,
+      "sha": "2d0b62400e0ad40f2780f51b26ba0d09261cd724",
+      "disposition": "ALREADY_CONTAINED"
+    },
+    {
+      "pr": 177,
+      "sha": "cffef9d4adcb6ff0dfca04629cacdb93760dbde7",
+      "disposition": "ALREADY_CONTAINED"
+    },
+    {
+      "pr": 178,
+      "sha": "9148634e75a66c1ab7f43fa4f08a039620661a9f",
+      "disposition": "BASE_OF_PR_180"
+    },
+    {
+      "pr": 172,
+      "sha": "47c23fcaa52923820e0c573f2e046d871da47fec",
+      "disposition": "NOT_MERGED",
+      "reason": "Directory inventory in aurex/the_big_one.py was left out."
+    },
+    {
+      "pr": 175,
+      "sha": "425d05470cf1463cf2b5c93b1457c1923ceb6b25",
+      "disposition": "NOT_MERGED",
+      "reason": "Would replace the stabilized document parsers."
+    },
+    {
+      "pr": 176,
+      "sha": "27d20d32f765a55a883f2b8cf15c106238031d84",
+      "disposition": "NOT_MERGED",
+      "reason": "Conflicts with main and overlaps the shared engine."
+    }
+  ],
+  "github_on_prior_head_0f32769": {
+    "mergeable": "MERGEABLE",
+    "mergeStateStatus": "CLEAN",
+    "draft": true,
+    "checks": "6 completed SUCCESS on 0f32769. Those checks do not cover cf083f7."
+  },
+  "incorporated_in_this_operation": [
+    "75d93fc8499aefc5f30a3751f69c127c0a25c574",
+    "cf083f7f531207c1fe77fec6d127e53e52584123"
+  ]
+}

@@ -3,6 +3,10 @@ import { ProductComposition } from "@/components/visuals";
 import { PresentationOrb } from "@/components/presentation-orb";
 import portrait from "../../public/assets/xaeli-editorial-portrait.jpg.asset.json";
 import { createFileRoute } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
+import { useServerFn } from "@tanstack/react-start";
+import { readXaeliStagingStatus } from "@/lib/xaeli.functions";
+import type { XaeliLinkReport } from "@/lib/xaeli-status";
 import {
   CTA,
   EvidenceCard,
@@ -34,6 +38,33 @@ export const Route = createFileRoute("/xaeli")({
   }),
   component: Xaeli,
 });
+function XaeliModelLink() {
+  const readStatus = useServerFn(readXaeliStagingStatus);
+  const [report, setReport] = useState<XaeliLinkReport | { status: "loading" }>({ status: "loading" });
+  useEffect(() => {
+    let cancelled = false;
+    void readStatus()
+      .then((next) => {
+        if (!cancelled) setReport(next);
+      })
+      .catch(() => {
+        if (!cancelled) setReport({ status: "error", live: false, answer: null });
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [readStatus]);
+  const status = report.status;
+  return (
+    <p className="mt-6 text-sm leading-7 text-muted-foreground" role="status">
+      Model link: {status}.{" "}
+      {status === "connected" && "answer" in report && report.answer
+        ? `Staging answer, not financial or security authority: ${report.answer}`
+        : "No live model response is shown. The examples on this page are scripted."}
+    </p>
+  );
+}
+
 function Xaeli() {
   return (
     <PageShell>
@@ -47,6 +78,7 @@ function Xaeli() {
           being developed to explain evidence, uncertainty and options in BCXMET. The website shows
           scripted examples, not a connected AI assistant.
         </p>
+        <XaeliModelLink />
       </PageHero>
       <ReasoningSpine context="xaeli" />
       <section className="section-space" aria-labelledby="meet-xaeli">

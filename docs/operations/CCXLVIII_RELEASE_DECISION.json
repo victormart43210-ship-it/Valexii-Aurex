@@ -1,0 +1,49 @@
+{
+  "operation": "KUSANAGI_CCXLVIII",
+  "recorded_at": "2026-11-06T15:27:40Z",
+  "recorded_at_america_chicago": "2026-11-06T09:27:40-0600",
+  "repository": "victormart43210-ship-it/Valexii-Aurex",
+  "pull_request": "https://github.com/victormart43210-ship-it/Valexii-Aurex/pull/180",
+  "branch": "cursor/kusanagi-ccxlvi-sovereign-ascendancy-4082",
+  "code_sha": "cf083f7f531207c1fe77fec6d127e53e52584123",
+  "candidate_sha": "cf083f7f531207c1fe77fec6d127e53e52584123",
+  "decision": "NO-GO",
+  "decision_scope": "Merge of pull request 180 to main, production deployment, financial authority, and paid inference.",
+  "owner_authorization": "REQUIRED. This record does not grant it.",
+  "production": "HOLD",
+  "financial_authority": "NONE",
+  "paid_inference": "OFF",
+  "customer_data": "NOT_AUTHORIZED",
+  "merge_authority": "NONE",
+  "draft": true,
+  "independent_assurance_gate": "OPEN",
+  "reviewer": {
+    "name": "Independent financial review",
+    "id": "bc-8d014e21-f195-52e8-a120-cc026e7cfd43",
+    "shas_reviewed": [
+      "75d93fc8499aefc5f30a3751f69c127c0a25c574",
+      "cf083f7f531207c1fe77fec6d127e53e52584123"
+    ],
+    "verdict": "NO-GO",
+    "limitation": "Same checkout, machine, and interpreter as the implementing session. Not a separate runner. The documentation commit after cf083f7 was not part of that review."
+  },
+  "github_ci_on_candidate": "NOT_RUN. The six successful checks belong to 0f32769. Local tests were run on code SHA cf083f7. The following documentation commit does not change code. GitHub CI applies to the pushed branch head.",
+  "local_verification": {
+    "pytest": "705 passed, 1 skipped, exit 0",
+    "skip": "training/tests/test_lora_smoke.py because torch is absent",
+    "ruff": "exit 0",
+    "mypy": "104 files, exit 0",
+    "vitest": "157 passed, exit 0",
+    "website_build": "exit 0",
+    "dispater_web": "25 passed, build exit 0"
+  },
+  "reasons": [
+    "The reviewer and the implementer share one environment.",
+    "GitHub has not run on cf083f7.",
+    "Human authorization is still a string plus a reviewer token.",
+    "SYNTHETIC_ONLY and source-file bytes are not independently proven.",
+    "The XAELI staging runtime is not reachable from this environment.",
+    "Landing on main still requires the unmerged stack and a separate owner decision."
+  ],
+  "next_executable_action": "Push cf083f7 and the documentation commit. Wait for GitHub CI on the new head. Leave pull request 180 draft. Do not merge and do not deploy."
+}

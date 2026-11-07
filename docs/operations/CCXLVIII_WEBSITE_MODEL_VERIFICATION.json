@@ -1,0 +1,49 @@
+{
+  "operation": "KUSANAGI_CCXLVIII",
+  "recorded_at": "2026-11-06T15:27:40Z",
+  "recorded_at_america_chicago": "2026-11-06T09:27:40-0600",
+  "repository": "victormart43210-ship-it/Valexii-Aurex",
+  "candidate_sha": "cf083f7f531207c1fe77fec6d127e53e52584123",
+  "production": "HOLD",
+  "paid_inference": "OFF",
+  "models_installed_this_operation": [],
+  "website_changed": false,
+  "local_dev_server": "http://127.0.0.1:5173",
+  "routes": [
+    {"path": "/", "http_status": 200, "claim": "Public home. Not a production release."},
+    {"path": "/xaeli", "http_status": 200, "claim": "Scripted examples. The page says it is not a connected AI assistant."},
+    {"path": "/aurex", "http_status": 200, "claim": "Public demo is synthetic. Live benchmark is not claimed as verified."},
+    {"path": "/aurex/ox", "http_status": 404, "claim": "No such route. The laboratory is /aurex-ox."},
+    {"path": "/aurex-ox", "http_status": 200, "claim": "Offline laboratory. Production is on hold."},
+    {"path": "/aurex-ox/model-laboratory", "http_status": 200, "claim": "Research registry and offline evaluation. Live connection is not verified."},
+    {"path": "/development-status", "http_status": 200, "claim": "Production HOLD, financial authority NONE, historical records NOT PROCESSED, live model NOT VERIFIED, paid inference OFF."},
+    {"path": "/dispater", "http_status": 200, "claim": "Public DISPATER page. It does not claim a connected accounting system."},
+    {"path": "/dispater/showcase", "http_status": 404, "claim": "No such route. The synthetic demonstration is not a separate public path."}
+  ],
+  "frontend": {
+    "runner": "npx vitest run",
+    "vitest": "23 files, 157 passed, exit 0",
+    "tsc": "npx tsc --noEmit -p tsconfig.json exit 0",
+    "website_build": "npm run build exit 0",
+    "dispater_web_tests": "25 passed, 0 failed, exit 0",
+    "dispater_web_build": "npm run build exit 0",
+    "node": "v22.23.4"
+  },
+  "xaeli_staging": {
+    "historical_owner_observation": "The site records an owner-observed working staging interaction on 2026-10-27. This operation does not treat that note as a new test.",
+    "public_page": "Scripted. website/src has no call to /v1/xaeli-staging.",
+    "server_route": "POST /v1/xaeli-staging/explain in aurex/xaeli_staging.py, mounted in aurex/api.py with Depends(authenticate).",
+    "model_identifier": "qwen2.5-0.5b-instruct-q4_k_m",
+    "runtime": "LlamaCppAdapter default base URL http://127.0.0.1:8080/v1",
+    "current_independent_verification": "NOT_VERIFIED",
+    "blocker": "AUREX_XAELI_STAGING_ENABLED is not 1, AUREX_XAELI_OPERATOR_APPROVED is not 1, AUREX_QWEN_BASE_URL is unset, AUREX_BUDGET_USD is unset, and nothing accepted a connection on 127.0.0.1:8080 (URLError). No synthetic prompt was sent and no model response was fabricated.",
+    "response_contract_when_enabled": "state HOLD, authority NONE, independent_verification NOT VERIFIED, mode SYNTHETIC_DEMO_ONLY"
+  },
+  "aurex_ox": {
+    "registry": "Candidates cannot self-promote. Framework HUMAN_APPROVED is refused. validate_registry returns a copy.",
+    "evaluation": "Offline fixtures. Nested recovered_usd fails. Confirmed recovery in the score is 0.00.",
+    "training": "NOT_STARTED",
+    "live_connection": "NOT_VERIFIED",
+    "weights": "NOT_DOWNLOADED"
+  }
+}

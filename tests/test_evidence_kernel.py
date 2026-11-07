@@ -247,12 +247,13 @@ def test_signed_report_key_set_matches_frontend_contract(tmp_path: Path, monkeyp
     assert report is not None
     assert set(report) == {
         "authority_state", "counts", "created_at", "dataset_sha256", "financial_summary", "findings",
-        "human_review_required", "limits", "receipt_auth", "receipt_mac", "receipt_sha256", "run_id",
-        "schema", "status", "tenant_id",
+        "human_review_required", "limits", "receipt_auth", "receipt_binding", "receipt_class", "receipt_mac",
+        "receipt_sha256", "run_id", "schema", "status", "tenant_id",
     }
+    assert report["receipt_binding"] == "BOUND_V2"
     assert set(report["findings"][0]) == {
-        "authority", "code", "evidence", "exposure_class", "exposure_usd", "finding_id",
-        "finding_sha256", "severity", "subject", "xaeli_explanation",
+        "authority", "code", "evidence", "exposure_class", "exposure_event_id", "exposure_usd",
+        "finding_id", "finding_sha256", "qualification", "severity", "subject", "xaeli_explanation",
     }
 
 
@@ -263,10 +264,8 @@ def test_exported_report_still_verifies_independently(tmp_path: Path, monkeypatc
     report = dispater_store.get_run(T, run_id)
     assert report is not None
     exported = json.loads(json.dumps(report, indent=2))
-    exported.pop("run_id")
-    exported.pop("created_at")  # API-added fields outside the signed body are not part of the MAC
     assert verify_mac(exported)
-    for field in ("receipt_mac", "receipt_auth"):
+    for field in ("run_id", "created_at", "receipt_binding", "receipt_mac", "receipt_auth"):
         stripped = {k: v for k, v in report.items() if k != field}
         assert not verify_mac(stripped)
     altered = {**report, "status": "TAMPERED"}
@@ -315,6 +314,46 @@ def test_system_cannot_approve_or_confirm_recovery() -> None:
     with pytest.raises(QualificationError, match="human reviewer"):
         c.advance(Outcome.APPROVED_CLAIM, actor=ActorKind.SYSTEM,
                   evidence_ids=("bank",), graph=graph(), reviewer="r", now=NOW)
+
+
+def test_blank_reviewer_cannot_verify_or_approve() -> None:
+    kw: dict[str, Any] = {"graph": graph(), "evidence_ids": ["row", "bank"], "now": NOW}
+    for reviewer in (" ", "\t", ""):
+        with pytest.raises(QualificationError, match="reviewer"):
+            qualify(
+                ClaimState.CORROBORATED,
+                ClaimState.VERIFIED,
+                actor=ActorKind.HUMAN,
+                reviewer=reviewer,
+                **kw,
+            )
+    claim = _claim()
+    claim.state = Outcome.SUBMITTED_CLAIM
+    with pytest.raises(QualificationError, match="reviewer"):
+        claim.advance(
+            Outcome.APPROVED_CLAIM,
+            actor=ActorKind.HUMAN,
+            evidence_ids=("bank",),
+            graph=graph(),
+            reviewer=" ",
+            now=NOW,
+        )
+    assert claim.state is Outcome.SUBMITTED_CLAIM
+    assert claim.history == []
+
+
+def test_nonpositive_or_nonfinite_claim_amount_is_rejected() -> None:
+    for amount in (Decimal("0"), Decimal("-1.00"), Decimal("NaN"), Decimal("Infinity"), Decimal("-Infinity")):
+        with pytest.raises(QualificationError, match="claim amount"):
+            RecoveryClaim(T, "OBL-1", amount)
+
+
+def test_negative_recovery_is_challenged() -> None:
+    issues = challenge_finding(
+        {"evidence": [1], "exposure_usd": "10.00", "recovered_usd": "-0.01"}, T, set()
+    )
+    assert "negative recovery" in issues
+    assert "recovery exceeds exposure" not in issues
 
 
 def test_nonfinite_financial_values_are_rejected() -> None:

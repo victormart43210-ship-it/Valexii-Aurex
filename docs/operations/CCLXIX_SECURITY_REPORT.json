@@ -1,0 +1,48 @@
+{
+  "schema": "aurex.cclxix.security_report.v1",
+  "code_sha": "44b30cb68269e4a36e7edac3a4773b5b095ae7ef",
+  "reviewer": "the implementing agent",
+  "independent_review": "NOT_VERIFIED",
+  "findings": [
+    {
+      "id": "observation-effect",
+      "status": "REPAIRED",
+      "evidence": "tests/test_cclxix_observation.py posts effect DEPLOY. The response decision is REFUSED and effect is NONE."
+    },
+    {
+      "id": "observation-tenant",
+      "status": "PASS",
+      "evidence": "The same test requests tenant other and receives HTTP 403."
+    },
+    {
+      "id": "stale-observation",
+      "status": "PASS",
+      "evidence": "An observation dated three days earlier is REFUSED with STALE_EVIDENCE."
+    },
+    {
+      "id": "failed-export",
+      "status": "REPAIRED",
+      "evidence": "website/src/lib/dispater.test.ts rejects receipt_authenticity FAIL before the browser can download it."
+    },
+    {
+      "id": "stale-response",
+      "status": "REPAIRED",
+      "evidence": "isCurrentRequest drops an older request id. The console applies that check before writing the report."
+    },
+    {
+      "id": "secret-in-page",
+      "status": "PASS",
+      "evidence": "The local browser page text did not contain the service token."
+    },
+    {
+      "id": "rendered-html",
+      "status": "PASS",
+      "evidence": "History, export errors, and the observation decision are React text. The new UI does not use dangerouslySetInnerHTML."
+    }
+  ],
+  "not_performed": [
+    "A separate penetration test.",
+    "A WCAG conformance audit.",
+    "A live prompt-injection run against Qwen. The model endpoint returned URLError."
+  ]
+}

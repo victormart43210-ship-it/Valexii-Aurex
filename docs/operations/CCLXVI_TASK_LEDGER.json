@@ -1,0 +1,15 @@
+{
+  "schema": "aurex.cclxvi.task_ledger.v1",
+  "branch": "cursor/kusanagi-cclxvi-mainline-convergence-4082",
+  "code_sha": "22a093979180fd3d3af7a99f58d76e52f98c40b7",
+  "tasks": [
+    {"id": "inventory", "status": "DONE", "evidence": "docs/operations/CCLXVI_PR_CONVERGENCE_MATRIX.json"},
+    {"id": "financial-conflicts", "status": "DONE", "evidence": "PR 172 and PR 176 remain open and CONFLICTING. Duplicate labor is withheld in 22a0939."},
+    {"id": "frontend-backend", "status": "DONE", "evidence": "Local browser stored-run match for the synthetic audit and the CSV admission."},
+    {"id": "zaylee-foundation", "status": "DONE", "evidence": "aurex/ascendancy/proposal.py records a proposal and grants effect NONE. It does not start a second platform."},
+    {"id": "full-suite", "status": "DONE", "evidence": "773 passed, 1 skipped. Website 164 passed. Build passed."},
+    {"id": "docker", "status": "GITHUB_PASS_LOCAL_NOT_RUN", "evidence": "docker-build-and-smoke passed on 52208f257f199eaf49b7e22f07120c485a37a6c3. It did not deploy. The docker binary is absent in this environment."},
+    {"id": "independent-assurance", "status": "OPEN", "evidence": "The implementing agent is not an independent witness."},
+    {"id": "merge-to-main", "status": "NOT_DONE", "evidence": "main remains 34cda4bd8f207f5b1284093b87e4760d782a4903"}
+  ]
+}

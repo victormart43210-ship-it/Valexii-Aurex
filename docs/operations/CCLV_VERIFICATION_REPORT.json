@@ -1,0 +1,18 @@
+{
+  "tested_code_sha": "77a97c1f1e5f3749868bd39ad6aec73513b5e64f",
+  "note": "Records-only commit follows; it changes no code. GitHub Actions on the final PR head must be checked separately.",
+  "environment": "Python 3.12.3 venv, Node (npm ci), no bun available",
+  "local": [
+    {"cmd": "pytest -q -rs", "result": "727 passed, 2 skipped, 0 failed", "skips": ["training/tests/test_lora_smoke.py (torch absent)", "tests/test_clii_sandbox_http.py (needs npm ci in website; was not installed at run time)"]},
+    {"cmd": "pytest -q -k 'golden or no_contact or tenant or training or paid or double or monitor or receipt'", "result": "77 passed"},
+    {"cmd": "ruff check .", "result": "All checks passed"},
+    {"cmd": "mypy aurex", "result": "Success: no issues in 109 source files"},
+    {"cmd": "website: npx tsc --noEmit", "result": "exit 0"},
+    {"cmd": "website: npx vitest run", "result": "23 files, 157 tests passed"},
+    {"cmd": "website: npm run build", "result": "success"},
+    {"cmd": "detect-secrets scan", "result": "heuristic hits, untriaged (see security register)"}
+  ],
+  "github_actions_at_77a97c1": "6 check runs success (verify, docker-build-and-smoke, test, offline-practice, integration, test)",
+  "not_run": ["bun tests (bun not installed; npm/vitest used)", "dispater-web package tests", "synthetic end-to-end audit beyond pytest", "cross-tenant bypass fuzzing beyond existing tests", "dependency review", "XAELI live staging"],
+  "independent_review": "OPEN. Agent-only review; no organizational independence."
+}

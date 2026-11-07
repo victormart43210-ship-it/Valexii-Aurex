@@ -1,0 +1,82 @@
+{
+  "operation": "KUSANAGI_CCLII",
+  "recorded_at": "2026-11-06T19:03:56Z",
+  "recorded_at_america_chicago": "2026-11-06T13:03:56-0600",
+  "repository": "victormart43210-ship-it/Valexii-Aurex",
+  "pull_request": "https://github.com/victormart43210-ship-it/Valexii-Aurex/pull/180",
+  "branch": "cursor/kusanagi-ccxlvi-sovereign-ascendancy-4082",
+  "base_branch": "cursor/kusanagi-ccxli-aurex-ascendancy-4082",
+  "origin_main_sha": "34cda4bd8f207f5b1284093b87e4760d782a4903",
+  "tested_code_sha": "aa9ab47238324b25932767c8e0d20894d780b8d5",
+  "code_commits": [
+    "7ff7b7eee8110911710e5eb18b7e4030938307d3",
+    "a1706b7880a5510ec91d40b903c472b6a4b13f86",
+    "aa9ab47238324b25932767c8e0d20894d780b8d5"
+  ],
+  "prior_green_head": "3880be625bf8a36aee64892772b07737c5561a21",
+  "prior_github_workflows": "Six successful workflow runs on 3880be6. The handoff said five. Those runs do not cover aa9ab47.",
+  "scopes": {
+    "engineering_verification": {
+      "result": "CHECKS_PASSED",
+      "evidence": "pytest 728 passed, 1 skipped (training/tests/test_lora_smoke.py, torch absent), ruff exit 0, mypy 109 files exit 0. Website vitest 157, tsc, and build exit 0 on the console change contained in this history. dispater-web 25 passed and build exit 0; that package is unchanged."
+    },
+    "evidence_integrity": {
+      "result": "PARTIAL",
+      "evidence": "Received-byte labels and the second-key checkpoint match the tests. EXTERNAL_ANCHOR is NOT_VERIFIED. Deleting the rows and the checkpoint together is not detectable."
+    },
+    "privacy_verification": {
+      "result": "PARTIAL",
+      "evidence": "Tenant isolation, optional AES-GCM for the report blob, and non-destructive lifecycle requests are tested. Encryption at rest is not the default. No production firewall was verified."
+    },
+    "synthetic_demonstration": {
+      "result": "CONDITIONAL_GO",
+      "evidence": "The /dispater page labels the console as synthetic, keeps confirmed recovery at 0.00, and states that the customer decides. Conditional on not describing the demo as a pilot or as recovered revenue."
+    },
+    "independent_technical_review": {
+      "result": "COMPLETED_NO_GO",
+      "evidence": "Reviewer bc-e9b27565-bdc2-5023-830e-691bc4f6bc32 read aa9ab47 from /tmp/cclii-review. Same machine. Verdict NO-GO."
+    },
+    "independent_human_assurance": {
+      "result": "OPEN",
+      "evidence": "No qualified external human reviewer examined this commit."
+    },
+    "customer_pilot": {
+      "result": "NO-GO",
+      "evidence": "No customer deletion execution, no verified production egress, no identity provider, and no owner approval for customer data."
+    },
+    "production": {
+      "result": "NO-GO",
+      "evidence": "PRODUCTION HOLD. This operation has no deploy authority."
+    },
+    "merge": {
+      "result": "NO-GO",
+      "evidence": "Pull request 180 stays draft. Merge authority NONE."
+    }
+  },
+  "decision": "NO-GO",
+  "decision_scope": "Merge, production, customer pilot, customer data, financial authority, and third-party contact.",
+  "production": "HOLD",
+  "financial_authority": "NONE",
+  "third_party_contact": "NONE",
+  "training_reuse": "NOT_AUTHORIZED",
+  "paid_inference": "OFF",
+  "customer_data": "NOT_AUTHORIZED",
+  "merge_authority": "NONE",
+  "external_anchor": "NOT_VERIFIED",
+  "golden": {
+    "identified_exposure_usd": "385.00",
+    "withheld_unresolved_usd": "150.00",
+    "confirmed_recovery_usd": "0.00",
+    "invoice_discrepancy_usd": "10.00",
+    "confirmed_invoice_recovery_usd": "0.00"
+  },
+  "owner_approvals_still_required": [
+    "Merge of pull request 180",
+    "Any production deploy",
+    "Any use of customer records",
+    "Any third-party contact or financial action",
+    "Any paid inference or training",
+    "Any external human assurance required before a pilot"
+  ],
+  "next_executable_action": "Push this branch. Wait for GitHub Actions on the pushed head. Leave pull request 180 draft. Do not merge and do not deploy."
+}

@@ -1,0 +1,21 @@
+{
+  "operation": "KUSANAGI_CCLXI",
+  "tested_code_sha": "f480c518ffcb5360b2b084470dbdb71aeac68d32",
+  "blueprint": "NOT_IN_REPOSITORY",
+  "planes": {
+    "reasoning": "AUREX-OX registry and XAELI staging remain advisory. No new agents were added.",
+    "truth_and_state": "Receipts, the monitor chain, and the anchor sidecar remain. EXTERNAL_ANCHOR is NOT_VERIFIED. The system is not an outside witness.",
+    "safety_and_execution": "customer_sovereignty refuses contact, payment, and training. Egress is deny-by-default. Confirmed recovery is hardcoded 0.00."
+  },
+  "checks": {
+    "model_self_witness": "REFUSED by registry self_approval_allowed false and promotion ineligible",
+    "source_immutability": "PARTIAL. Received bytes are hashed. Source identity stays UNVERIFIED.",
+    "deny_by_default_execution": "PASS for financial transmission and unconfigured website calls",
+    "human_approval_for_consequential_action": "PASS. No consequential action is implemented.",
+    "revocation_propagation": "PARTIAL. Anchor revoked kids are refused. A full historical rewrite by a key holder is still possible.",
+    "adaptive_depth_d0_d4": "NOT_RUN. The blueprint matrix is not in this repository.",
+    "resilience_108_run": "NOT_RUN. No 108-case matrix was found to execute.",
+    "dry_run_commit_verify": "PARTIAL. Audit runs persist a receipt. There is no separate commit of a financial effect."
+  },
+  "decision": "HOLD. Missing blueprint cases were not invented."
+}

@@ -69,7 +69,7 @@ Returns tenant-level summary metrics, identified exposure, confirmed recovery ($
 ---
 
 ### `GET /v1/dispater/runs?tenant_id={tenant_id}` & `GET /v1/dispater/runs/{run_id}/export?tenant_id={tenant_id}&format=json|csv`
-Returns audit history runs and downloadable report exports.
+Returns audit history runs and downloadable report exports. JSON export is a wrapper: `report` is the sealed run, and `third_party_release` is false. CSV is the finding table with `Cache-Control: no-store`.
 
 ---
 

@@ -1,0 +1,17 @@
+{
+  "operation": "KUSANAGI_CCLXV",
+  "tested_code_sha": "cfbf5386e679696048318ad843aeb29b520654bb",
+  "status": "BLOCKED",
+  "reason": "No private runtime answered.",
+  "endpoint_attempted": "http://127.0.0.1:8080/v1/models",
+  "result": "URLError",
+  "staging_enabled": false,
+  "operator_approved": false,
+  "qwen_base_url": null,
+  "model_identity": "NOT_OBSERVED",
+  "artifact_digest": null,
+  "generated_response": null,
+  "paid_fallback": "OFF",
+  "scripted_substitute": false,
+  "production_settings_changed": false
+}

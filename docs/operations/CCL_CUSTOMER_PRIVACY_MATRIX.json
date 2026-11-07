@@ -1,0 +1,22 @@
+{
+  "operation": "KUSANAGI_CCL",
+  "recorded_at": "2026-11-06T16:21:25Z",
+  "recorded_at_america_chicago": "2026-11-06T10:21:25-0600",
+  "repository": "victormart43210-ship-it/Valexii-Aurex",
+  "branch": "cursor/kusanagi-ccxlvi-sovereign-ascendancy-4082",
+  "tested_code_sha": "4d9beb1c4b0156799de88b31aff6f6eb2c0b46e8",
+  "encryption_at_rest": "NOT_CLAIMED",
+  "zero_knowledge": "NOT_CLAIMED",
+  "zero_standing_access": "NOT_CLAIMED",
+  "controls": [
+    {"id": "tenant_default_deny", "state": "ENFORCED", "evidence": "Missing grants return 503. A token outside AUREX_DISPATER_TENANT_GRANTS returns 401. Cross-tenant reads return 403."},
+    {"id": "object_access", "state": "ENFORCED", "evidence": "Run, finding, dashboard, and export routes authorize the tenant before the read. Another tenant's run id under the caller's tenant returns 404."},
+    {"id": "admin_plaintext", "state": "NO_DISPATER_PATH", "evidence": "AUREX_ADMIN_TOKEN is not a DISPATER grant. The sovereignty test expects 401."},
+    {"id": "logs", "state": "NARROWED", "evidence": "DISPATER 500 logs record the operation and the exception type name."},
+    {"id": "external_inference", "state": "OFF", "evidence": "Paid inference stays off. The public site does not send customer books to a model."},
+    {"id": "training_reuse", "state": "REFUSED", "evidence": "training_reuse returns allowed false and training_started false. promotion_decision does not train."},
+    {"id": "export", "state": "TENANT_BEARER_ONLY", "evidence": "JSON export wraps the sealed report, sets third_party_release false, and sends Cache-Control no-store. CSV does the same for headers."},
+    {"id": "deletion", "state": "NOT_A_CUSTOMER_API", "evidence": "DELETE on a run returns 405. purge_tenant is a local maintenance function. A full purge now deletes that tenant's runs, cascaded findings, and monitor events in one transaction."},
+    {"id": "retention", "state": "DOCUMENTED_LIMIT", "evidence": "There is no customer retention policy API. An age-based purge can break monitor-chain verification, which then fails closed."}
+  ]
+}
