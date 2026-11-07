@@ -25,7 +25,6 @@ aurex/egress.py
 aurex/engine.py
 aurex/evaluation_worker.py
 aurex/evidence.py
-aurex/evidence_classes.py
 aurex/evidence_kernel.py
 aurex/execution_record.py
 aurex/fenced_worker.py
@@ -39,7 +38,6 @@ aurex/provenance.py
 aurex/qwen_rag.py
 aurex/railway_readiness.py
 aurex/railway_webhook.py
-aurex/readiness.py
 aurex/real_offline_probe.py
 aurex/remediation.py
 aurex/sovereign_studio.py
@@ -70,8 +68,6 @@ aurex/ascendancy/temporal.py
 aurex/challengers/__init__.py
 aurex/challengers/base.py
 aurex/challengers/rules.py
-aurex/commercial/__init__.py
-aurex/commercial/pilot_gate.py
 aurex/evals/__init__.py
 aurex/evals/anytime_watch.py
 aurex/evals/behavioral_consensus.py
@@ -115,14 +111,6 @@ aurex/ox/registry.py
 aurex/ox/replay.py
 aurex/protocol/__init__.py
 aurex/protocol/models.py
-aurex/relationships/__init__.py
-aurex/relationships/analytics.py
-aurex/relationships/api.py
-aurex/relationships/contracts.py
-aurex/relationships/documents.py
-aurex/relationships/explain.py
-aurex/relationships/log.py
-aurex/relationships/store.py
 aurex/workflows/budget.py
 aurex_foundation/__init__.py
 aurex_foundation/correlation.py
@@ -140,7 +128,6 @@ tests/test_adapter_security.py
 tests/test_api.py
 tests/test_ascendancy_audit.py
 tests/test_ascendancy_kernel.py
-tests/test_aurex_verified_zip_finder.py
 tests/test_cclvii_hours_api.py
 tests/test_cclvii_ingest_semantics.py
 tests/test_cclvii_local_proxy_isolation.py
@@ -151,9 +138,6 @@ tests/test_cclxv_audit_readback.py
 tests/test_cclxvi_labor_duplicates.py
 tests/test_cclxvi_pr_matrix.py
 tests/test_cclxvi_proposal.py
-tests/test_cclxxvi_relationships.py
-tests/test_cclxxvii_fullstack.py
-tests/test_cclxxx_readiness.py
 tests/test_clii_industrial_api.py
 tests/test_clii_sandbox_http.py
 tests/test_cliv_towing.py
@@ -184,7 +168,6 @@ tests/test_execution_record.py
 tests/test_experiment_failures.py
 tests/test_experiment_runner.py
 tests/test_fenced_worker_integrity.py
-tests/test_financial_pilot_gate.py
 tests/test_foundation_correlation.py
 tests/test_foundation_opa_gate.py
 tests/test_foundation_otel.py
