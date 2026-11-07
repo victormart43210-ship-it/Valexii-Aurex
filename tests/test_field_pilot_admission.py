@@ -1,14 +1,15 @@
 """Deterministic synthetic-only pilot admission tests."""
 import copy
 import json
-from datetime import datetime, timezone, timedelta
+from datetime import UTC, datetime, timedelta
 from hashlib import sha256
 from pathlib import Path
 
 import pytest
+
 from workstation.field_pilot_admission import GATES, SCHEMA, evaluate, load, main
 
-NOW = datetime(2026, 10, 20, 12, 0, tzinfo=timezone.utc)
+NOW = datetime(2026, 10, 20, 12, 0, tzinfo=UTC)
 
 
 def sample():

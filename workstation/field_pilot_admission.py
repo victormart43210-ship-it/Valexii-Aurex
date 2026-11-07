@@ -10,7 +10,7 @@ import argparse
 import hashlib
 import json
 import re
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from typing import Any
 
@@ -97,7 +97,7 @@ def evaluate(data: dict[str, Any], *, now: datetime, input_sha256: str = "NOT_PI
     if set(by_id) != set(GATES):
         raise ValueError("missing gate")
     blocked: list[dict[str, str]] = []
-    as_of = now.astimezone(timezone.utc)
+    as_of = now.astimezone(UTC)
     for key in GATES:
         rec = by_id[key]
         reason = None
@@ -116,7 +116,7 @@ def evaluate(data: dict[str, Any], *, now: datetime, input_sha256: str = "NOT_PI
                 if at.tzinfo is None or at.utcoffset() is None:
                     reason = "WITNESS_TIME_NOT_AWARE"
                 else:
-                    age = as_of - at.astimezone(timezone.utc)
+                    age = as_of - at.astimezone(UTC)
                     if age < -timedelta(minutes=5):
                         reason = "WITNESS_IN_FUTURE"
                     elif age > timedelta(days=FRESH_DAYS.get(key, 90)):
@@ -151,7 +151,7 @@ def main(argv: list[str] | None = None) -> int:
     args = p.parse_args(argv)
     try:
         input_data, digest = load(args.manifest)
-        report = evaluate(input_data, now=datetime.now(timezone.utc), input_sha256=digest)
+        report = evaluate(input_data, now=datetime.now(UTC), input_sha256=digest)
     except (OSError, UnicodeError, ValueError) as exc:
         print(json.dumps({"assessment": "HOLD_INVALID_INPUT", "production_release": "HOLD",
                           "error_category": type(exc).__name__}))
