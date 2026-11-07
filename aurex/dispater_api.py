@@ -522,3 +522,78 @@ def post_authorization_decision(payload: AuthorizationClaim, principal: Principa
     assert_no_effect()
     authorize_tenant(principal, payload.tenant_id)
     return authorization_decision(payload.model_dump())
+
+
+class PipelineIngestRequest(BaseModel):
+    source_id: str = Field(min_length=1, max_length=120)
+    source_record_id: str = Field(min_length=1, max_length=120)
+    document_category: str = Field(default="INVOICE")
+    media_type: str = Field(default="application/json")
+    payload_base64: str = Field(min_length=1, max_length=2_000_000)
+
+
+@router.post("/pipeline/audit")
+def run_pipeline_audit(body: ReconciliationRequest, principal: PrincipalDep) -> dict[str, Any]:
+    """Run the industrial audit pipeline. The result has no financial authority."""
+    assert_no_effect()
+    authorize_tenant(principal, body.tenant_id)
+    from aurex.dispater_pipeline import IndustrialAuditPipeline
+
+    pipeline = IndustrialAuditPipeline(tenant_id=body.tenant_id)
+    result = pipeline.execute_audit_run(body.model_dump())
+    return {
+        "run_id": result.run_id,
+        "tenant_id": result.tenant_id,
+        "timestamp_utc": result.timestamp_utc,
+        "envelopes_admitted": result.envelopes_admitted,
+        "summary": result.reconciliation_summary,
+        "qualified_findings": result.qualified_findings,
+        "withheld_findings": result.withheld_findings,
+        "receipt_sha256": result.audit_receipt_sha256,
+        "verification_status": result.verification_status,
+        "authority": "HUMAN_REVIEW_REQUIRED",
+        "financial_authority": "NONE",
+    }
+
+
+@router.post("/pipeline/ingest")
+def ingest_pipeline_document(
+    tenant_id: TenantQuery,
+    req: PipelineIngestRequest,
+    principal: PrincipalDep,
+) -> dict[str, Any]:
+    """Hash and record one synthetic document. This does not approve a payment."""
+    assert_no_effect()
+    authorize_tenant(principal, tenant_id)
+    from aurex.dispater_envelope import DocumentCategory
+    from aurex.dispater_monitoring import ContinuousMonitoringEngine
+
+    try:
+        raw_bytes = base64.b64decode(req.payload_base64, validate=True)
+    except Exception as exc:
+        raise HTTPException(status.HTTP_400_BAD_REQUEST, "Invalid base64 payload") from exc
+    category = {item.value: item for item in DocumentCategory}.get(
+        req.document_category, DocumentCategory.UNKNOWN
+    )
+    engine = ContinuousMonitoringEngine(tenant_id=tenant_id)
+    try:
+        env = engine.ingest_incremental_record(
+            source_id=req.source_id,
+            source_record_id=req.source_record_id,
+            category=category,
+            raw_bytes=raw_bytes,
+            media_type=req.media_type,
+        )
+    except ValueError as exc:
+        raise HTTPException(status.HTTP_400_BAD_REQUEST, str(exc)) from exc
+    return {
+        "status": "ADMITTED",
+        "envelope_id": env.envelope_id,
+        "content_sha256": env.source_content_sha256,
+        "tenant_id": env.tenant_id,
+        "source_record_id": env.source_record_id,
+        "byte_count": env.byte_count,
+        "schema_version": env.schema_version,
+        "recorded_at": env.ingested_at_utc,
+        "financial_authority": "NONE",
+    }
