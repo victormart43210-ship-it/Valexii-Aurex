@@ -126,3 +126,76 @@ def test_cli_outputs_status_and_bundle_directory(tmp_path: Path, capsys) -> None
     ]) == 0
     assert '"status": "PASS"' in capsys.readouterr().out
     assert (tmp_path / "AUREX_OX_XXV_STAGING_DIAGNOSTIC_v6_2/README.md").exists()
+
+
+def test_cli_rejects_archive_replaced_after_discovery(tmp_path: Path, monkeypatch, capsys) -> None:
+    archive = tmp_path / "AUREX_release.zip"
+    sha = _archive(archive)
+    original = finder.find_verified
+
+    def replace_after_find(*args):
+        found = original(*args)
+        replacement = tmp_path / "replacement.zip"
+        _archive(replacement, contents={"AUREX_release/replacement.txt": b"not verified"})
+        replacement.replace(found)
+        return found
+
+    monkeypatch.setattr(finder, "find_verified", replace_after_find)
+    assert finder.main([
+        "--fragment", "AUREX_release", "--sha256", sha,
+        "--search-root", str(tmp_path), "--extract-to", str(tmp_path),
+    ]) == 2
+    assert '"status": "HOLD"' in capsys.readouterr().out
+    assert not (tmp_path / "AUREX_release").exists()
+
+
+def test_file_directory_conflict_is_rejected_before_output(tmp_path: Path) -> None:
+    archive = tmp_path / "release.zip"
+    _archive(archive, contents={
+        "AUREX_release/first.txt": b"first",
+        "AUREX_release/node": b"file",
+        "AUREX_release/node/child": b"child",
+    })
+    with pytest.raises(finder.Hold, match="conflicts with a parent"):
+        finder.safe_extract(archive, tmp_path)
+    assert not (tmp_path / "AUREX_release").exists()
+
+
+def test_replaced_parent_cannot_redirect_new_file(tmp_path: Path, monkeypatch) -> None:
+    archive = tmp_path / "release.zip"
+    _archive(archive, contents={"AUREX_release/file.txt": b"approved"})
+    outside = tmp_path / "outside"
+    outside.mkdir()
+    real_open = finder.os.open
+
+    def replace_parent(path, flags, mode=0o777, *, dir_fd=None):
+        if path == "file.txt" and flags & finder.os.O_CREAT:
+            parent = tmp_path / "AUREX_release"
+            parent.rename(tmp_path / "original")
+            parent.symlink_to(outside)
+        return real_open(path, flags, mode, dir_fd=dir_fd)
+
+    monkeypatch.setattr(finder.os, "open", replace_parent)
+    with pytest.raises(finder.Hold):
+        finder.safe_extract(archive, tmp_path)
+    assert not (outside / "file.txt").exists()
+    assert not (tmp_path / "original/file.txt").exists()
+
+
+def test_skipped_file_replaced_during_extraction_holds(tmp_path: Path, monkeypatch) -> None:
+    archive = tmp_path / "release.zip"
+    _archive(archive, contents={"AUREX_release/old": b"approved", "AUREX_release/new": b"new"})
+    directory = tmp_path / "AUREX_release"
+    directory.mkdir()
+    old = directory / "old"
+    old.write_bytes(b"approved")
+    real_open = finder.os.open
+
+    def replace_existing(path, flags, mode=0o777, *, dir_fd=None):
+        if path == "new" and flags & finder.os.O_CREAT:
+            old.write_bytes(b"changed")
+        return real_open(path, flags, mode, dir_fd=dir_fd)
+
+    monkeypatch.setattr(finder.os, "open", replace_existing)
+    with pytest.raises(finder.Hold, match="output changed"):
+        finder.safe_extract(archive, tmp_path)

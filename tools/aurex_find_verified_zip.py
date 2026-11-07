@@ -12,8 +12,12 @@ import os
 import re
 import stat
 import sys
+import tempfile
 import zipfile
+from collections.abc import Iterator
+from contextlib import contextmanager
 from pathlib import Path, PurePosixPath
+from typing import IO, BinaryIO
 
 MAX_DEPTH = 6
 MAX_ENTRIES = 300
@@ -26,12 +30,33 @@ class Hold(Exception):
     """A fail-closed, user-safe archive condition."""
 
 
+def _hash_stream(stream: IO[bytes], *, limit: int, copy: BinaryIO | None = None) -> str:
+    digest = hashlib.sha256()
+    total = 0
+    while block := stream.read(1024 * 1024):
+        total += len(block)
+        if total > limit:
+            raise Hold("file exceeds allowed size")
+        digest.update(block)
+        if copy is not None:
+            copy.write(block)
+    return digest.hexdigest()
+
+
+def _open_regular(path: str | Path, *, dir_fd: int | None = None) -> BinaryIO:
+    fd = os.open(path, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK, dir_fd=dir_fd)
+    try:
+        if not stat.S_ISREG(os.fstat(fd).st_mode):
+            raise Hold("expected a regular file")
+        return os.fdopen(fd, "rb")
+    except BaseException:
+        os.close(fd)
+        raise
+
+
 def _digest(path: Path) -> str:
-    d = hashlib.sha256()
-    with path.open("rb") as f:
-        for block in iter(lambda: f.read(1024 * 1024), b""):
-            d.update(block)
-    return d.hexdigest()
+    with _open_regular(path) as stream:
+        return _hash_stream(stream, limit=MAX_ARCHIVE_BYTES)
 
 
 def find_verified(fragment: str, expected: str, roots: list[Path]) -> Path:
@@ -67,7 +92,7 @@ def find_verified(fragment: str, expected: str, roots: list[Path]) -> Path:
                     examined.add(identity)
                     if _digest(p) == expected:
                         matches.append(p)
-                except OSError:
+                except (Hold, OSError):
                     continue
     if not matches:
         raise Hold("no downloaded ZIP matched the provided SHA-256; do not bypass verification")
@@ -79,18 +104,18 @@ def _valid_members(z: zipfile.ZipFile) -> list[zipfile.ZipInfo]:
     if not members or len(members) > MAX_ENTRIES:
         raise Hold("ZIP entry count outside safe bounds")
     total = 0
-    seen: set[str] = set()
+    seen: dict[tuple[str, ...], bool] = {}
     roots: set[str] = set()
     for item in members:
         name = item.filename
         path = PurePosixPath(name)
         if (
-            "\\" in name or "\x00" in name or not name or path.is_absolute()
+            "\\" in name or "\x00" in item.orig_filename or not name or path.is_absolute()
             or any(p in {".", "..", ""} for p in name.rstrip("/").split("/"))
-            or len(path.parts) < 2 or name in seen
+            or len(path.parts) < 2 or path.parts in seen
         ):
             raise Hold("ZIP contains duplicate, absolute or unsafe member names")
-        seen.add(name)
+        seen[path.parts] = item.is_dir()
         roots.add(path.parts[0])
         mode = item.external_attr >> 16
         if stat.S_ISLNK(mode) or (stat.S_IFMT(mode) not in (0, stat.S_IFDIR, stat.S_IFREG)):
@@ -102,6 +127,9 @@ def _valid_members(z: zipfile.ZipFile) -> list[zipfile.ZipInfo]:
         total += item.file_size
         if total > MAX_EXPANDED_BYTES:
             raise Hold("ZIP expanded size exceeds allowed bound")
+    for parts in seen:
+        if any(seen.get(parts[:depth]) is False for depth in range(1, len(parts))):
+            raise Hold("ZIP file conflicts with a parent directory")
     if len(roots) != 1 or not next(iter(roots)).startswith("AUREX_"):
         raise Hold("ZIP must contain one AUREX release directory")
     if z.testzip() is not None:
@@ -109,61 +137,135 @@ def _valid_members(z: zipfile.ZipFile) -> list[zipfile.ZipInfo]:
     return members
 
 
-def safe_extract(archive: Path, destination: Path) -> tuple[str, int, int]:
-    """Preflight all entries and conflicts BEFORE writing, then create new files only."""
-    if not destination.is_dir() or destination.is_symlink():
-        raise Hold("extraction destination must be a real existing directory")
-    destination = destination.resolve(strict=True)
-    with zipfile.ZipFile(archive, "r") as z:
-        members = _valid_members(z)
-        paths: list[tuple[zipfile.ZipInfo, Path]] = []
-        matches = 0
-        dirs: set[Path] = set()
-        for item in members:
-            parts = PurePosixPath(item.filename).parts
-            target = destination.joinpath(*parts)
-            for parent in (target, *target.parents):
-                if parent == destination:
-                    break
-                if parent.is_symlink():
-                    raise Hold("symlink in extraction path")
+@contextmanager
+def _directory(
+    root: int, parts: tuple[str, ...], *, create: bool = False, private: bool = False,
+) -> Iterator[int]:
+    current = os.dup(root)
+    try:
+        for part in parts:
+            if create:
+                try:
+                    os.mkdir(part, mode=0o700, dir_fd=current)
+                except FileExistsError:
+                    pass
+            try:
+                child = os.open(
+                    part, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW, dir_fd=current
+                )
+            except FileNotFoundError:
+                raise
+            except OSError as exc:
+                raise Hold("unsafe or inaccessible extraction directory") from exc
+            os.close(current)
+            current = child
+            if private:
+                _require_private_directory(os.fstat(current))
+        yield current
+    finally:
+        os.close(current)
+
+
+def _require_private_directory(info: os.stat_result) -> None:
+    if info.st_uid != os.geteuid() or info.st_mode & 0o022:
+        raise Hold("choose an extraction directory owned by you and not writable by others")
+
+
+def _extract_members(z: zipfile.ZipFile, root: int) -> tuple[str, int, int]:
+    members = _valid_members(z)
+    pending: list[tuple[zipfile.ZipInfo, tuple[str, ...]]] = []
+    matches = 0
+    for item in members:
+        parts = PurePosixPath(item.filename).parts
+        try:
             if item.is_dir():
-                if target.exists() and not target.is_dir():
-                    raise Hold("existing path conflicts with a ZIP directory")
-                dirs.add(target)
+                with _directory(root, parts, private=True):
+                    pass
                 continue
-            if target.exists():
-                if not target.is_file() or _digest(target) != hashlib.sha256(z.read(item)).hexdigest():
-                    raise Hold("existing file differs; refusing to overwrite")
-                matches += 1
-            else:
-                paths.append((item, target))
-            dirs.add(target.parent)
-        for d in dirs:
-            for parent in (d, *d.parents):
-                if parent == destination:
-                    break
-                if parent.is_symlink() or (parent.exists() and not parent.is_dir()):
-                    raise Hold("unsafe parent directory")
-        for d in sorted(dirs, key=lambda p: len(p.parts)):
-            d.mkdir(mode=0o700, parents=True, exist_ok=True)
-        count = 0
-        for item, target in paths:
+            with _directory(root, parts[:-1], private=True) as parent:
+                try:
+                    with _open_regular(parts[-1], dir_fd=parent) as existing, z.open(item) as source:
+                        if (
+                            _hash_stream(existing, limit=MAX_EXPANDED_BYTES)
+                            != _hash_stream(source, limit=MAX_EXPANDED_BYTES)
+                        ):
+                            raise Hold("existing file differs; refusing to overwrite")
+                except FileNotFoundError:
+                    pending.append((item, parts))
+                except OSError as exc:
+                    raise Hold("unsafe or inaccessible existing file") from exc
+                else:
+                    matches += 1
+        except FileNotFoundError:
+            pending.append((item, parts))
+
+    written = 0
+    for item, parts in pending:
+        if item.is_dir():
+            with _directory(root, parts, create=True, private=True):
+                pass
+            continue
+        with _directory(root, parts[:-1], create=True, private=True) as parent:
             fd = os.open(
-                target, os.O_CREAT | os.O_EXCL | os.O_WRONLY | getattr(os, "O_NOFOLLOW", 0), 0o600
+                parts[-1], os.O_CREAT | os.O_EXCL | os.O_WRONLY | os.O_NOFOLLOW,
+                0o600, dir_fd=parent,
             )
             try:
-                with os.fdopen(fd, "wb") as out, z.open(item) as src:
-                    while block := src.read(1024 * 1024):
+                with os.fdopen(fd, "wb") as out, z.open(item) as source:
+                    with _directory(root, parts[:-1], private=True) as current:
+                        if not os.path.samestat(os.fstat(current), os.fstat(parent)):
+                            raise Hold("extraction directory changed during write")
+                    while block := source.read(1024 * 1024):
                         out.write(block)
-            except Exception:
+            except BaseException:
                 try:
-                    target.unlink()
+                    os.unlink(parts[-1], dir_fd=parent)
                 except OSError:
                     pass
                 raise
-            count += 1
-        return PurePosixPath(members[0].filename).parts[0], count, matches
+            written += 1
+    # Recheck the visible tree after writes, including any files skipped as identical.
+    for item in members:
+        parts = PurePosixPath(item.filename).parts
+        if item.is_dir():
+            with _directory(root, parts, private=True):
+                continue
+        with _directory(root, parts[:-1], private=True) as parent:
+            with _open_regular(parts[-1], dir_fd=parent) as output, z.open(item) as source:
+                if (
+                    _hash_stream(output, limit=MAX_EXPANDED_BYTES)
+                    != _hash_stream(source, limit=MAX_EXPANDED_BYTES)
+                ):
+                    raise Hold("extraction output changed during verification")
+    return PurePosixPath(members[0].filename).parts[0], written, matches
+
+
+def safe_extract(
+    archive: Path, destination: Path, *, expected_sha256: str | None = None,
+) -> tuple[str, int, int]:
+    """Extract a bounded snapshot into a destination controlled by the caller.
+
+    The final check describes the files at verification time. Keep the output
+    directory private before using any extracted file.
+    """
+    with _open_regular(archive) as source, tempfile.TemporaryFile() as snapshot:
+        actual = _hash_stream(source, limit=MAX_ARCHIVE_BYTES, copy=snapshot)
+        if expected_sha256 is not None and actual != expected_sha256:
+            raise Hold("ZIP changed after discovery; checksum verification failed")
+        snapshot.seek(0)
+        root = os.open("/", os.O_RDONLY | os.O_DIRECTORY)
+        try:
+            parts = Path(os.path.abspath(destination)).parts[1:]
+            with _directory(root, parts) as target, zipfile.ZipFile(snapshot) as z:
+                target_stat = os.fstat(target)
+                _require_private_directory(target_stat)
+                result = _extract_members(z, target)
+                with _directory(root, parts) as visible:
+                    if not os.path.samestat(os.fstat(visible), target_stat):
+                        raise Hold("extraction destination changed during verification")
+                return result
+        finally:
+            os.close(root)
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -178,7 +280,7 @@ def main(argv: list[str] | None = None) -> int:
         archive = find_verified(args.fragment, args.sha256, roots)
         root, written, existing = None, 0, 0
         if args.extract_to is not None:
-            root, written, existing = safe_extract(archive, args.extract_to.expanduser())
+            root, written, existing = safe_extract(archive, args.extract_to.expanduser(), expected_sha256=args.sha256)
         print(json.dumps({
             "status": "PASS", "zipPath": str(archive), "sha256": args.sha256,
             "bundleDirectory": str(args.extract_to.expanduser() / root) if root else None,
