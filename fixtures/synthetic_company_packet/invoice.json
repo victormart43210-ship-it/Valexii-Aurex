@@ -1,0 +1,9 @@
+{
+  "company_id": "fictional_northstar_001",
+  "declared_total_usd": "48000.00",
+  "id": "INV-1001",
+  "po_id": "PO-1001",
+  "quantity": 10,
+  "type": "invoice",
+  "unit_rate_usd": "4800.00"
+}

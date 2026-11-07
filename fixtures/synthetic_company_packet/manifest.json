@@ -1,0 +1,62 @@
+{
+  "company_id": "fictional_northstar_001",
+  "period": "2026-09",
+  "records": [
+    {
+      "file": "purchase_order.json",
+      "id": "PO-1001",
+      "sha256": "32083c99b6f281d05722d49d25c8a759726d09a03b52955b9eb003e3520b3447",
+      "type": "purchase_order"
+    },
+    {
+      "file": "invoice.json",
+      "id": "INV-1001",
+      "sha256": "db59cf097d9a73d41d3f4e97f9232efb53d514f2d6c0531155272019ac0185af",
+      "type": "invoice"
+    },
+    {
+      "file": "field_ticket.json",
+      "id": "FT-1001",
+      "sha256": "d012cba69c373be6aa014d632d4ba55e2be9a83d5262816d9cb247f20eeea426",
+      "type": "field_ticket"
+    },
+    {
+      "file": "payment.json",
+      "id": "PAY-1001",
+      "sha256": "60472bb0d6b7639d36628c4c07dd282bbeef3fa8d7976aab4d8236f8ba17e576",
+      "type": "payment"
+    },
+    {
+      "file": "bank_statement.json",
+      "id": "BANK-1001",
+      "sha256": "790f69fae0ea2135944135b07e7d1b8af85983540b3d3df2c1a189d4b3c68631",
+      "type": "bank_statement"
+    },
+    {
+      "file": "general_ledger.json",
+      "id": "GL-1001",
+      "sha256": "f2db4913820c4dbd0e27e0d1a87da35b2c14093af343f9c524650c6e37084d8a",
+      "type": "general_ledger"
+    },
+    {
+      "file": "tax_summary.json",
+      "id": "TAX-1001",
+      "sha256": "c09dd318b9618a9d595a04db530d20ed2075d9b5a6762d40f2498a2e25f8a42e",
+      "type": "tax_summary"
+    },
+    {
+      "file": "dot_checklist.json",
+      "id": "DOT-1001",
+      "sha256": "ed1f7a898abee09eabbf47477eff9001327bbbffb1b1b3e9b0775ae420602db4",
+      "type": "dot_checklist"
+    },
+    {
+      "file": "insurance_certificate.json",
+      "id": "INS-1001",
+      "sha256": "1ff09f8068a9046fc6ee9873aab4811914b7ac6dc205c2fda6c2df981ef7aaf1",
+      "type": "insurance_certificate"
+    }
+  ],
+  "synthetic": true,
+  "tenant": "demo-tenant"
+}
