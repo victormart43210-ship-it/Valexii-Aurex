@@ -1,0 +1,43 @@
+{
+  "operation": "KUSANAGI_CCLII",
+  "recorded_at": "2026-11-06T19:03:56Z",
+  "recorded_at_america_chicago": "2026-11-06T13:03:56-0600",
+  "repository": "victormart43210-ship-it/Valexii-Aurex",
+  "branch": "cursor/kusanagi-ccxlvi-sovereign-ascendancy-4082",
+  "pull_request": "https://github.com/victormart43210-ship-it/Valexii-Aurex/pull/180",
+  "tested_code_sha": "aa9ab47238324b25932767c8e0d20894d780b8d5",
+  "production_firewall": "NOT_VERIFIED",
+  "railway_egress_policy": "NOT_VERIFIED. No deployment network policy was tested. Application refusal is not that policy.",
+  "zero_knowledge": "NOT_CLAIMED",
+  "customer_exclusive_keys": "NOT_CLAIMED",
+  "encryption": {
+    "in_transit": "PLANNED for a deployed HTTPS host. Not verified on a production terminator in this session.",
+    "at_rest": "OPTIONAL_SERVER_KEY. AES-GCM from the cryptography library wraps the report blob when AUREX_DISPATER_DATA_KEYS holds an active 32-byte key. An empty object is NOT_CONFIGURED. Finding columns, source refs, and monitor payloads stay plaintext. The process that holds the key can decrypt. Backups are not encrypted by this code.",
+    "key_rotation": "A new key id can be added and selected. Old report envelopes open only while their key remains configured.",
+    "key_revocation": "Removing a data key makes those envelopes fail closed. Anchor kids listed as revoked do not verify.",
+    "tenant_key_boundary": "NOT_IMPLEMENTED. One server key covers every tenant.",
+    "recovery_after_key_loss": "FAIL_CLOSED. Lost key material is not recoverable from the ciphertext.",
+    "secret_logs": "Error logs record the operation and the exception type. Tests reject a secret path in the response body."
+  },
+  "egress": {
+    "application": "connector_destination_allowed denies a host that is not loopback and not listed in AUREX_EGRESS_ALLOWLIST. Financial transmission always raises FINANCIAL_EGRESS_PROHIBITED. WebsiteAdapter checks the pinned base URL before POST or GET.",
+    "container": "NOT_VERIFIED",
+    "host_firewall": "NOT_VERIFIED",
+    "cloud_policy": "NOT_VERIFIED",
+    "loopback_residual": "Any loopback port is allowed for the local-inference shape. An allowlisted host is not restricted to https or to one port."
+  },
+  "administration": {
+    "admin_bearer_is_not_a_dispater_grant": "IMPLEMENTED. Unknown bearer returns 401.",
+    "cross_tenant_read_and_export": "IMPLEMENTED. Wrong tenant is 403. Another tenant's run id is 404.",
+    "plaintext_database_access": "A process that can read the SQLite file can read finding columns and, when no data key is set, the report JSON."
+  },
+  "lifecycle": {
+    "customer_export": "IMPLEMENTED for the tenant bearer. third_party_release false. Cache-Control no-store.",
+    "retention_request": "RECORDED_NOT_ENFORCED. POST /v1/dispater/lifecycle/retention returns HOLD and does not delete.",
+    "deletion_request": "RECORDED_NOT_EXECUTED. POST /v1/dispater/lifecycle/deletion-request does not remove runs.",
+    "deletion_confirmation": "The response carries request_id, effect NONE, and reason DELETION_REQUIRES_SEPARATE_AUTHORIZATION.",
+    "backup_deletion": "NOT_IMPLEMENTED",
+    "legal_hold": "NOT_IMPLEMENTED",
+    "audit_record_retention": "NOT_IMPLEMENTED. purge_tenant remains a local maintenance function, not a customer API."
+  }
+}

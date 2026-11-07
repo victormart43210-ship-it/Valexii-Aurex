@@ -118,6 +118,7 @@ export const getAurexDiagnostics = createServerFn({ method: "GET" })
     const caps = health.ok ? await client.capabilities() : null;
     const ev = caps?.ok ? await client.evidence() : null;
     const budget = health.ok ? await client.budget() : null;
+    const jobs = health.ok ? await client.listJobs() : null;
     const backed =
       caps?.ok && ev?.ok
         ? caps.value.capabilities
@@ -130,10 +131,11 @@ export const getAurexDiagnostics = createServerFn({ method: "GET" })
       tokenSet: !!token,
       configured: client.configured,
       steps: {
-        health: code(health),
+        health: health.ok ? health.value.readiness : (health.error ?? "error"),
         capabilities: caps ? code(caps) : "skipped",
         evidence: ev ? code(ev) : "skipped",
         budget: budget ? code(budget) : "skipped",
+        jobs: jobs ? code(jobs) : "skipped",
       },
       remoteBudgetLimitUsd: budget?.ok ? budget.value.limitUsd : null,
       evidenceBackedCapabilities: backed,

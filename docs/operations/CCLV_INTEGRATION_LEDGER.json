@@ -1,0 +1,25 @@
+{
+  "integration_branch": "integration/kusanagi-cclv-sovereign-mainline",
+  "base_main_sha": "34cda4bd8f207f5b1284093b87e4760d782a4903",
+  "units": [
+    {
+      "source": "cursor/kusanagi-ccxlvi-sovereign-ascendancy-4082 (PRs #171 -> #174 -> #177 -> #178 -> #180; #170 and #163 are ancestors)",
+      "source_commit": "77a97c1f1e5f3749868bd39ad6aec73513b5e64f",
+      "method": "git merge --ff-only (linear stack, 35 commits, 0 behind main); no cherry-picks, no conflicts, no content edits",
+      "resulting_commit": "77a97c1f1e5f3749868bd39ad6aec73513b5e64f",
+      "tests": "see CCLV_VERIFICATION_REPORT.json"
+    }
+  ],
+  "attempted_and_excluded": [
+    {"pr": 168, "result": "conflict", "files": 8},
+    {"pr": 172, "result": "conflict", "files": 13},
+    {"pr": 175, "result": "conflict", "files": 2},
+    {"pr": 176, "result": "conflict", "files": 16},
+    {"pr": 159, "result": "conflict", "files": 4},
+    {"pr": 173, "result": "clean, deliberately not integrated (owner decision)"},
+    {"pr": 179, "result": "clean docs-only, not integrated"},
+    {"pr": 169, "result": "clean docs-only, not integrated"},
+    {"pr": 164, "result": "clean docs-only, not integrated"}
+  ],
+  "records_commit": "this commit adds only docs/operations/CCLV_* files on top of the integration source commit"
+}

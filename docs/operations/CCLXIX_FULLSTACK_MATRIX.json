@@ -1,0 +1,120 @@
+{
+  "schema": "aurex.cclxix.fullstack_matrix.v1",
+  "code_sha": "44b30cb68269e4a36e7edac3a4773b5b095ae7ef",
+  "base_sha": "ea8ab72686c77895e905db55a94f674dd58e504d",
+  "main_sha": "34cda4bd8f207f5b1284093b87e4760d782a4903",
+  "functions": [
+    {
+      "name": "DISPATER synthetic audit",
+      "route": "/dispater",
+      "component": "website/src/components/dispater-reconciliation-console.tsx",
+      "adapter": "runDispaterDemoReconciliation",
+      "endpoint": "POST /v1/dispater/reconciliation",
+      "auth": "server-side bearer and tenant grant",
+      "persistence": "SQLite run plus receipt",
+      "status": "CONNECTED"
+    },
+    {
+      "name": "DISPATER synthetic CSV admission",
+      "route": "/dispater",
+      "component": "website/src/components/dispater-reconciliation-console.tsx",
+      "adapter": "admitSyntheticDispaterCsv",
+      "endpoint": "POST /v1/dispater/documents",
+      "auth": "server-side bearer and tenant grant",
+      "persistence": "SQLite run plus source provenance",
+      "status": "CONNECTED"
+    },
+    {
+      "name": "DISPATER stored read-back",
+      "route": "/dispater",
+      "component": "website/src/components/dispater-reconciliation-console.tsx",
+      "adapter": "readDispaterStoredRun",
+      "endpoint": "GET /v1/dispater/runs/{run_id}",
+      "auth": "server-side bearer and tenant grant",
+      "persistence": "read",
+      "status": "CONNECTED"
+    },
+    {
+      "name": "DISPATER audit history",
+      "route": "/dispater",
+      "component": "website/src/components/dispater-reconciliation-console.tsx",
+      "adapter": "listDispaterStoredRuns",
+      "endpoint": "GET /v1/dispater/runs?limit=8",
+      "auth": "server-side bearer and tenant grant",
+      "persistence": "read of MAC-verified rows",
+      "status": "CONNECTED"
+    },
+    {
+      "name": "DISPATER verified export",
+      "route": "/dispater",
+      "component": "website/src/components/dispater-reconciliation-console.tsx",
+      "adapter": "exportVerifiedDispaterRun",
+      "endpoint": "GET /v1/dispater/runs/{run_id}/export?format=json",
+      "auth": "server-side bearer and tenant grant",
+      "persistence": "read",
+      "status": "CONNECTED"
+    },
+    {
+      "name": "ZAYLEE observation",
+      "route": "/dispater",
+      "component": "website/src/components/dispater-reconciliation-console.tsx",
+      "adapter": "recordDispaterObservation",
+      "endpoint": "POST /v1/dispater/observations",
+      "auth": "server-side bearer and tenant grant",
+      "persistence": "not stored; advisory response only",
+      "status": "CONNECTED"
+    },
+    {
+      "name": "XAELI live model",
+      "route": "/xaeli",
+      "component": "website/src/routes/xaeli.tsx",
+      "adapter": "readXaeliStagingStatus",
+      "endpoint": "POST /v1/xaeli-staging/explain",
+      "auth": "server-side bearer; probe requires operator approval",
+      "persistence": "none",
+      "status": "BLOCKED",
+      "reason": "127.0.0.1:8080/v1/models returned URLError. The page keeps scripted examples labeled as scripted."
+    },
+    {
+      "name": "XAELI scripted examples",
+      "route": "/xaeli",
+      "component": "website/src/routes/xaeli.tsx",
+      "adapter": "none",
+      "endpoint": "none",
+      "auth": "public page",
+      "persistence": "none",
+      "status": "MOCKED"
+    },
+    {
+      "name": "Owner administration",
+      "route": "/admin/aurex-control",
+      "component": "website/src/routes/admin.aurex-control.tsx",
+      "adapter": "checkAurexOwner",
+      "endpoint": "server function",
+      "auth": "Supabase session and owner id",
+      "persistence": "none for the lock screen",
+      "status": "CONNECTED",
+      "reason": "Fails closed when the owner is not configured. Not re-clicked in this browser session."
+    },
+    {
+      "name": "Fleet maintenance",
+      "route": "none",
+      "component": "none",
+      "adapter": "none",
+      "endpoint": "none",
+      "auth": "none",
+      "persistence": "none",
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "name": "BCXMET demonstrations",
+      "route": "/bcxmet",
+      "component": "website/src/routes/bcxmet.tsx",
+      "adapter": "none",
+      "endpoint": "none",
+      "auth": "public page",
+      "persistence": "none",
+      "status": "MOCKED"
+    }
+  ]
+}

@@ -1,5 +1,7 @@
 """KUSANAGI II boundary regression tests."""
 
+from datetime import UTC, datetime, timedelta
+
 import pytest
 from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
 
@@ -89,3 +91,37 @@ def test_valid_ed25519_signature_admits(monkeypatch: pytest.MonkeyPatch) -> None
         run_complete=True,
     )
     assert decision.status.value == "PASS"
+
+
+def test_future_ed25519_attestation_stays_on_hold(monkeypatch: pytest.MonkeyPatch) -> None:
+    manifest = make_manifest()
+    m_sha = "a" * 64
+    r_sha = "b" * 64
+    priv_key = Ed25519PrivateKey.generate()
+    pub_bytes = priv_key.public_key().public_bytes_raw()
+    monkeypatch.setenv("AUREX_TRUSTED_VERIFIER_VERIFIER_01", pub_bytes.hex())
+
+    att = VerificationAttestation(
+        experiment_id=manifest.experiment_id,
+        verifier_id=manifest.verifier.verifier_id,
+        verifier_family=manifest.verifier.family,
+        manifest_sha256=m_sha,
+        run_sha256=r_sha,
+        passed=True,
+        timestamp=datetime.now(UTC) + timedelta(seconds=10),
+        signature_scheme="ed25519",
+        public_key_hex=pub_bytes.hex(),
+    )
+    att_signed = att.model_copy(
+        update={"signature": priv_key.sign(att.digest().encode("utf-8")).hex()}
+    )
+
+    decision = decide_admission(
+        manifest=manifest,
+        manifest_sha256=m_sha,
+        run_sha256=r_sha,
+        attestation=att_signed,
+        ledger_valid=True,
+        run_complete=True,
+    )
+    assert decision.status is ResultStatus.HOLD

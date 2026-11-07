@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>DISPATER.AI — Synthetic Revenue & Audit Readiness</title>
+<style>
+:root{color-scheme:dark;background:#07101a;color:#eff8ff;font:16px system-ui,Arial,sans-serif}
+*{box-sizing:border-box}
+body{margin:0 auto;max-width:1100px;padding:26px 22px 64px;background:radial-gradient(circle at 80% 0%,#123d45,transparent 35%)}
+h1{font-family:Georgia,serif;font-size:clamp(30px,5vw,56px);letter-spacing:.03em;margin:12px 0}
+header p{max-width:780px;color:#c6d9e0;line-height:1.6}
+.badge{display:inline-block;border:1px solid #a98445;border-radius:12px;padding:7px 12px;color:#ffd993;font-size:13px;letter-spacing:.1em}
+b{color:#8ef3e4}.panel,.finding{border:1px solid #32505e;background:#091d2b;border-radius:16px;padding:21px;margin:16px 0;box-shadow:0 7px 25px #0002}
+button,.file{border:1px solid #4ca6a9;border-radius:9px;background:#0f3943;color:#f9ffff;padding:11px 14px;cursor:pointer;display:inline-block;font:inherit}
+button:hover,.file:hover{background:#14626a}
+button:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid #ffe1a1;outline-offset:2px}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}.file input{display:none}
+.dim{color:#aac1ca}.notice{color:#ffe1a1}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+strong{font-size:24px}label{display:block;margin:10px 0;color:#d4e7ed}
+select,textarea{display:block;background:#061b28;border:1px solid #48707b;color:#fff;padding:10px;border-radius:7px;width:100%;margin-top:7px;font:inherit}
+textarea{min-height:54px;resize:vertical}.fine{font-size:13px;color:#a6bdc5}
+code{color:#a8fff1}
+</style></head>
+<body>
+<header><span class="badge">CONCEPT PREVIEW · FICTIONAL DATA · NOT LIVE</span>
+<h1>DISPATER.AI</h1>
+<p><b>Revenue Intelligence & Audit Readiness</b> — a local synthetic demonstration connecting work tickets, example approved rates, invoices, payments and evidence inventories for towing and oilfield operations.</p>
+<p class="notice">AUREX rule-based audit: demonstration only. NVIDIA inference: <b>NOT RUN</b>. No IRS/DOT compliance conclusion, money movement, payroll or dispatch action is possible.</p></header>
+<section class="panel"><h2>1. Load fictional business records</h2><p class="dim">Use included examples or choose a fictional JSON demo file. Never use real company, customer, employee, driver or payroll records.</p>
+<div class="actions"><button id="towing">Towing example</button><button id="oilfield">Oilfield example</button>
+<label class="file">Choose fictional JSON <input id="upload" type="file" accept=".json,application/json"></label></div>
+<p id="loaded" class="fine" aria-live="polite">Choose a synthetic example to begin.</p></section>
+<section class="panel"><h2>2. Review evidence</h2>
+<div class="actions"><button id="run" disabled>Run AUREX audit</button><button id="save" disabled>Save demo manager review</button><button id="export" disabled>Export evidence report</button></div>
+<p id="status" class="notice" role="status">HOLD — No report generated.</p>
+<div id="counts" class="grid"></div><div id="findings"></div></section>
+<section class="panel"><h2>3. Boundaries</h2>
+<p class="dim">This interface is restricted to the local <code>127.0.0.1</code> demo server. Its SHA-256 hashes are self-issued consistency references, not independent attestations. Applicable tax and transportation requirements must be established by qualified reviewers. Any real deployment needs authenticated tenant isolation, encrypted storage, retention safeguards, regulatory review and independent testing.</p></section>
+<script>
+'use strict';
+let data=null,report=null;
+const $=id=>document.getElementById(id);
+function node(tag,value,cls){const e=document.createElement(tag);e.textContent=value||'';if(cls)e.className=cls;return e;}
+function notice(message){$('status').textContent=message;}
+function load(packageData){
+if(!packageData||packageData.dataset_type!=='SYNTHETIC_ONLY'||!packageData.revenue||!packageData.evidence||!packageData.review)throw Error('Only explicitly labelled synthetic DISPATER packages allowed');
+data=packageData;report=null;$('run').disabled=false;$('save').disabled=true;$('export').disabled=true;
+$('findings').replaceChildren();$('counts').replaceChildren();
+$('loaded').textContent='Loaded fictional '+packageData.sector+' example. NVIDIA remains NOT RUN.';
+notice('Ready — HOLD');
+}
+async function getExample(sector){
+try{const r=await fetch('/api/example/'+sector);if(!r.ok)throw Error('Cannot load example');load(await r.json());}
+catch(e){notice('ERROR / HOLD — '+e.message);}
+}
+$('towing').addEventListener('click',()=>getExample('towing'));
+$('oilfield').addEventListener('click',()=>getExample('oilfield'));
+$('upload').addEventListener('change',async event=>{
+const f=event.target.files[0];if(!f)return;
+try{if(f.size>524288)throw Error('File exceeds 512KiB');load(JSON.parse(await f.text()));}
+catch(e){notice('ERROR / HOLD — '+e.message);}finally{event.target.value='';}
+});
+async function audit(){
+if(!data)return;notice('Auditing fictional records...');
+try{
+const r=await fetch('/api/report',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});
+const parsed=await r.json();if(!r.ok)throw Error(parsed.error||'Audit rejected');
+report=parsed;render();
+notice('HOLD — '+report.counts.awaiting_review+' finding(s) awaiting manager review · NVIDIA NOT RUN');
+$('save').disabled=false;$('export').disabled=false;
+}catch(e){notice('FAIL / HOLD — '+e.message);}
+}
+$('run').addEventListener('click',audit);
+function render(){
+const c=report.counts;$('counts').replaceChildren();
+for(const [key,value] of Object.entries(c)){
+const section=node('div','','panel');section.append(node('strong',String(value)),node('p',key.replaceAll('_',' '),'dim'));$('counts').append(section);
+}
+$('findings').replaceChildren();
+if(!report.findings.length){$('findings').append(node('p','No findings in supplied fictional records; this does not establish compliance.'));return;}
+for(const f of report.findings){
+const article=node('article','','finding');article.dataset.id=f.finding_id;
+article.append(node('h3',f.code.replaceAll('_',' ')+' · '+f.domain),node('p',f.explanation),node('p','Subject: '+(f.subject||'not stated')+' · Finding ID: '+f.finding_id,'fine'));
+const label=node('label','Manager review (no financial authority)');
+const select=document.createElement('select');select.className='decision';
+for(const choice of ['NOT_REVIEWED','ACKNOWLEDGED','DISPUTED','REFER_TO_SPECIALIST']){
+const option=node('option',choice.replaceAll('_',' '));option.value=choice;select.append(option);}
+select.value=f.review.status;label.append(select);article.append(label);
+const noteLabel=node('label','Fictional review note');const note=document.createElement('textarea');
+note.className='note';note.maxLength=280;note.value=f.review.note||'';noteLabel.append(note);article.append(noteLabel);
+$('findings').append(article);
+}
+}
+$('save').addEventListener('click',async()=>{
+if(!report||!data)return;const decisions=[];
+for(const card of $('findings').children){
+const select=card.querySelector('.decision');
+if(!select||select.value==='NOT_REVIEWED')continue;
+decisions.push({finding_id:card.dataset.id,decision:select.value,note:card.querySelector('.note').value});
+}
+data.review.decisions=decisions;await audit();
+});
+$('export').addEventListener('click',()=>{
+if(!report)return;const b=new Blob([JSON.stringify(report,null,2)+'\n'],{type:'application/json'});
+const url=URL.createObjectURL(b),a=document.createElement('a');a.href=url;
+a.download='dispater-'+report.sector+'-SYNTHETIC-REPORT.json';a.click();
+setTimeout(()=>URL.revokeObjectURL(url),1200);
+});
+</script>
+</body></html>

@@ -1,0 +1,200 @@
+{
+  "job_id": "cliv_499816e4a0131fefefd0595033d458c2",
+  "state": "succeeded",
+  "evidence_id": "evidence_cliv_499816e4a0131fefefd0595033d458c2",
+  "recorded_at": "2026-10-25T12:17:48.518319+00:00",
+  "sha256": "9c25bf1063d759ac3af64d8f0d54bdf7317bf975b92c4c83a8f9622227c22542",
+  "observation_canonical": "{\"authority\": \"NONE\", \"calculation_version\": \"dispater-fixed-rate-v1\", \"candidate_amount_cents\": 385000, \"charges\": [{\"expected_cents\": 250000, \"quantity\": 1, \"service\": \"heavy_recovery\", \"unit_amount_cents\": 250000}, {\"expected_cents\": 90000, \"quantity\": 3, \"service\": \"wrecker_service\", \"unit_amount_cents\": 30000}, {\"expected_cents\": 45000, \"quantity\": 3, \"service\": \"scene_support\", \"unit_amount_cents\": 15000}], \"confirmed_revenue_cents\": 0, \"fixture\": \"heavy_recovery_v1\", \"reconciliation\": {\"counts\": {\"findings\": 3, \"invoices\": 3, \"jobs\": 3, \"payments\": 0}, \"dataset_sha256\": \"47e33505b0291fb2a6ffed2b92225fbd6249f819ae9feea2f1bdb5adbcd713e0\", \"findings\": [{\"authority\": \"HUMAN_REVIEW_REQUIRED\", \"code\": \"RATE_MISMATCH\", \"detail\": \"Invoice amount differs from uniquely applicable synthetic rate\", \"difference_usd\": \"-2500.00\", \"evidence\": [{\"kind\": \"job\", \"sha256\": \"582b235d24d7806e17764aba2e462ae7d95dd0ceab6787febfc9916f2e3d2a9f\"}, {\"kind\": \"invoice\", \"sha256\": \"e90cba2dcf10d222fce9a31207ef5d57e79b05cc000243066293e8aa1177f565\"}, {\"kind\": \"rate\", \"sha256\": \"e57ec15a124f017d40cef042d3a10c544fca2aaaf231c2c4b55662afa67b2487\"}], \"subject\": \"invoice-heavy_recovery\"}, {\"authority\": \"HUMAN_REVIEW_REQUIRED\", \"code\": \"RATE_MISMATCH\", \"detail\": \"Invoice amount differs from uniquely applicable synthetic rate\", \"difference_usd\": \"-450.00\", \"evidence\": [{\"kind\": \"job\", \"sha256\": \"4e93b7de4446996e365aca35af298e846ba8ba0ac4d5798a2dc2d156a6812dd3\"}, {\"kind\": \"invoice\", \"sha256\": \"3a08dc3838d15955ad32d1ec679abbb2a75f49cac7ac74365b2c11a137c06d93\"}, {\"kind\": \"rate\", \"sha256\": \"474c75cafd298020306b70b0ad1c07b9f28de6ef0d1ef9e7934b1225961ffc44\"}], \"subject\": \"invoice-scene_support\"}, {\"authority\": \"HUMAN_REVIEW_REQUIRED\", \"code\": \"RATE_MISMATCH\", \"detail\": \"Invoice amount differs from uniquely applicable synthetic rate\", \"difference_usd\": \"-900.00\", \"evidence\": [{\"kind\": \"job\", \"sha256\": \"abaffee93592d0df109154c6ff2f30b4c21a50e6af56820241709d83b947bed6\"}, {\"kind\": \"invoice\", \"sha256\": \"2b4df7b47c0149eef7a3a2649956e2f513d4725f36ebb21f0b0c1e2ca4217b1c\"}, {\"kind\": \"rate\", \"sha256\": \"ca85512221908aaa0bfd41574a2841f496ba75680f7edb15aeb808316372a672\"}], \"subject\": \"invoice-wrecker_service\"}], \"independent_verification\": \"NOT VERIFIED\", \"limits\": \"Missing records are unknown, not proof of a violation. No tax/DOT decisions, writeback, recovery estimates or customer-data admission.\", \"schema\": \"dispater.synthetic.revenue.v1\", \"scope\": \"FICTIONAL DATA ONLY; SOURCE-SNAPSHOT MATCHING ONLY\", \"self_issued_receipt_sha256\": \"e84f3c5ab34a28b7d523681a7fa684419f12dda96b45095cf78b2d9334a9b35f\", \"status\": \"HOLD\"}, \"release\": \"HOLD\", \"review\": \"NOT_REVIEWED\", \"review_actions\": [\"Verify dispatch, service evidence and rate approval with a human\"], \"schema\": \"aurex.synthetic.towing.v1\", \"source\": {\"dataset_type\": \"SYNTHETIC_ONLY\", \"invoices\": [{\"amount\": \"0.00\", \"invoice_id\": \"invoice-heavy_recovery\", \"job_id\": \"heavy_recovery\", \"status\": \"open\"}, {\"amount\": \"0.00\", \"invoice_id\": \"invoice-wrecker_service\", \"job_id\": \"wrecker_service\", \"status\": \"open\"}, {\"amount\": \"0.00\", \"invoice_id\": \"invoice-scene_support\", \"job_id\": \"scene_support\", \"status\": \"open\"}], \"jobs\": [{\"customer_id\": \"FICTIONAL\", \"date\": \"2026-10-25\", \"job_id\": \"heavy_recovery\", \"service_code\": \"heavy_recovery\"}, {\"customer_id\": \"FICTIONAL\", \"date\": \"2026-10-25\", \"job_id\": \"wrecker_service\", \"service_code\": \"wrecker_service\"}, {\"customer_id\": \"FICTIONAL\", \"date\": \"2026-10-25\", \"job_id\": \"scene_support\", \"service_code\": \"scene_support\"}], \"payments\": [], \"rates\": [{\"amount\": \"2500\", \"customer_id\": \"FICTIONAL\", \"end\": \"2026-12-31\", \"rate_id\": \"rate-heavy_recovery\", \"service_code\": \"heavy_recovery\", \"start\": \"2026-01-01\"}, {\"amount\": \"900\", \"customer_id\": \"FICTIONAL\", \"end\": \"2026-12-31\", \"rate_id\": \"rate-wrecker_service\", \"service_code\": \"wrecker_service\", \"start\": \"2026-01-01\"}, {\"amount\": \"450\", \"customer_id\": \"FICTIONAL\", \"end\": \"2026-12-31\", \"rate_id\": \"rate-scene_support\", \"service_code\": \"scene_support\", \"start\": \"2026-01-01\"}]}, \"source_sha256\": \"47e33505b0291fb2a6ffed2b92225fbd6249f819ae9feea2f1bdb5adbcd713e0\", \"synthetic\": true}",
+  "serialization": "json.dumps(sort_keys=True), UTF-8",
+  "observation": {
+    "schema": "aurex.synthetic.towing.v1",
+    "calculation_version": "dispater-fixed-rate-v1",
+    "fixture": "heavy_recovery_v1",
+    "source": {
+      "dataset_type": "SYNTHETIC_ONLY",
+      "jobs": [
+        {
+          "job_id": "heavy_recovery",
+          "customer_id": "FICTIONAL",
+          "service_code": "heavy_recovery",
+          "date": "2026-10-25"
+        },
+        {
+          "job_id": "wrecker_service",
+          "customer_id": "FICTIONAL",
+          "service_code": "wrecker_service",
+          "date": "2026-10-25"
+        },
+        {
+          "job_id": "scene_support",
+          "customer_id": "FICTIONAL",
+          "service_code": "scene_support",
+          "date": "2026-10-25"
+        }
+      ],
+      "rates": [
+        {
+          "rate_id": "rate-heavy_recovery",
+          "customer_id": "FICTIONAL",
+          "service_code": "heavy_recovery",
+          "start": "2026-01-01",
+          "end": "2026-12-31",
+          "amount": "2500"
+        },
+        {
+          "rate_id": "rate-wrecker_service",
+          "customer_id": "FICTIONAL",
+          "service_code": "wrecker_service",
+          "start": "2026-01-01",
+          "end": "2026-12-31",
+          "amount": "900"
+        },
+        {
+          "rate_id": "rate-scene_support",
+          "customer_id": "FICTIONAL",
+          "service_code": "scene_support",
+          "start": "2026-01-01",
+          "end": "2026-12-31",
+          "amount": "450"
+        }
+      ],
+      "invoices": [
+        {
+          "invoice_id": "invoice-heavy_recovery",
+          "job_id": "heavy_recovery",
+          "amount": "0.00",
+          "status": "open"
+        },
+        {
+          "invoice_id": "invoice-wrecker_service",
+          "job_id": "wrecker_service",
+          "amount": "0.00",
+          "status": "open"
+        },
+        {
+          "invoice_id": "invoice-scene_support",
+          "job_id": "scene_support",
+          "amount": "0.00",
+          "status": "open"
+        }
+      ],
+      "payments": []
+    },
+    "source_sha256": "47e33505b0291fb2a6ffed2b92225fbd6249f819ae9feea2f1bdb5adbcd713e0",
+    "charges": [
+      {
+        "service": "heavy_recovery",
+        "quantity": 1,
+        "unit_amount_cents": 250000,
+        "expected_cents": 250000
+      },
+      {
+        "service": "wrecker_service",
+        "quantity": 3,
+        "unit_amount_cents": 30000,
+        "expected_cents": 90000
+      },
+      {
+        "service": "scene_support",
+        "quantity": 3,
+        "unit_amount_cents": 15000,
+        "expected_cents": 45000
+      }
+    ],
+    "reconciliation": {
+      "schema": "dispater.synthetic.revenue.v1",
+      "dataset_sha256": "47e33505b0291fb2a6ffed2b92225fbd6249f819ae9feea2f1bdb5adbcd713e0",
+      "status": "HOLD",
+      "independent_verification": "NOT VERIFIED",
+      "scope": "FICTIONAL DATA ONLY; SOURCE-SNAPSHOT MATCHING ONLY",
+      "counts": {
+        "jobs": 3,
+        "invoices": 3,
+        "payments": 0,
+        "findings": 3
+      },
+      "findings": [
+        {
+          "code": "RATE_MISMATCH",
+          "subject": "invoice-heavy_recovery",
+          "detail": "Invoice amount differs from uniquely applicable synthetic rate",
+          "evidence": [
+            {
+              "kind": "job",
+              "sha256": "582b235d24d7806e17764aba2e462ae7d95dd0ceab6787febfc9916f2e3d2a9f"
+            },
+            {
+              "kind": "invoice",
+              "sha256": "e90cba2dcf10d222fce9a31207ef5d57e79b05cc000243066293e8aa1177f565"
+            },
+            {
+              "kind": "rate",
+              "sha256": "e57ec15a124f017d40cef042d3a10c544fca2aaaf231c2c4b55662afa67b2487"
+            }
+          ],
+          "authority": "HUMAN_REVIEW_REQUIRED",
+          "difference_usd": "-2500.00"
+        },
+        {
+          "code": "RATE_MISMATCH",
+          "subject": "invoice-scene_support",
+          "detail": "Invoice amount differs from uniquely applicable synthetic rate",
+          "evidence": [
+            {
+              "kind": "job",
+              "sha256": "4e93b7de4446996e365aca35af298e846ba8ba0ac4d5798a2dc2d156a6812dd3"
+            },
+            {
+              "kind": "invoice",
+              "sha256": "3a08dc3838d15955ad32d1ec679abbb2a75f49cac7ac74365b2c11a137c06d93"
+            },
+            {
+              "kind": "rate",
+              "sha256": "474c75cafd298020306b70b0ad1c07b9f28de6ef0d1ef9e7934b1225961ffc44"
+            }
+          ],
+          "authority": "HUMAN_REVIEW_REQUIRED",
+          "difference_usd": "-450.00"
+        },
+        {
+          "code": "RATE_MISMATCH",
+          "subject": "invoice-wrecker_service",
+          "detail": "Invoice amount differs from uniquely applicable synthetic rate",
+          "evidence": [
+            {
+              "kind": "job",
+              "sha256": "abaffee93592d0df109154c6ff2f30b4c21a50e6af56820241709d83b947bed6"
+            },
+            {
+              "kind": "invoice",
+              "sha256": "2b4df7b47c0149eef7a3a2649956e2f513d4725f36ebb21f0b0c1e2ca4217b1c"
+            },
+            {
+              "kind": "rate",
+              "sha256": "ca85512221908aaa0bfd41574a2841f496ba75680f7edb15aeb808316372a672"
+            }
+          ],
+          "authority": "HUMAN_REVIEW_REQUIRED",
+          "difference_usd": "-900.00"
+        }
+      ],
+      "limits": "Missing records are unknown, not proof of a violation. No tax/DOT decisions, writeback, recovery estimates or customer-data admission.",
+      "self_issued_receipt_sha256": "e84f3c5ab34a28b7d523681a7fa684419f12dda96b45095cf78b2d9334a9b35f"
+    },
+    "candidate_amount_cents": 385000,
+    "confirmed_revenue_cents": 0,
+    "synthetic": true,
+    "review_actions": [
+      "Verify dispatch, service evidence and rate approval with a human"
+    ],
+    "authority": "NONE",
+    "release": "HOLD",
+    "review": "NOT_REVIEWED"
+  },
+  "integrity": "CONSISTENT",
+  "verification": "NOT_VERIFIED",
+  "review": "NOT_REVIEWED",
+  "authority": "NONE",
+  "release": "HOLD",
+  "storage_limit": "Mutable SQLite; digest consistency is not immutable storage or independent proof"
+}

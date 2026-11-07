@@ -10,7 +10,19 @@ const id = z.string().regex(/^[a-z0-9][a-z0-9_-]{0,63}$/);
 const iso = z.string().datetime({ offset: true });
 
 export const HealthSchema = z
-  .object({ status: z.literal("ok"), version: z.string().max(32), time: iso })
+  .object({
+    process: z.literal("PROCESS_HEALTHY"),
+    readiness: z.enum(["READY", "DEGRADED"]),
+    stores: z
+      .object({
+        aurex: z.enum(["DURABLE", "EPHEMERAL", "DEPENDENCY_UNAVAILABLE"]),
+        dispater: z.enum(["DURABLE", "EPHEMERAL", "DEPENDENCY_UNAVAILABLE"]),
+      })
+      .strict(),
+    model: z.enum(["NOT_CONFIGURED", "MODEL_UNAVAILABLE", "CONFIGURED_UNVERIFIED"]),
+    version: z.string().max(32),
+    time: iso,
+  })
   .strict();
 
 export const CapabilitySchema = z
@@ -93,7 +105,7 @@ export function evidenceFresh(
 ): boolean {
   if (!e) return false;
   const t = Date.parse(e.collectedAt);
-  return Number.isFinite(t) && t <= now + 60_000 && now - t <= maxAgeMs;
+  return Number.isFinite(t) && t <= now && now - t <= maxAgeMs;
 }
 
 /** A capability is evidence-backed only if available, linked to fresh evidence for the same capability. */

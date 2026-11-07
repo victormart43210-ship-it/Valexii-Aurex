@@ -1,0 +1,19 @@
+{
+  "schema": "aurex.cclxxx.providers.v1",
+  "paid_inference": "OFF",
+  "invocation_during_health": "NOT_PERFORMED",
+  "providers": [
+    {
+      "provider": "llama.cpp",
+      "model": "qwen2.5-0.5b-instruct-q4_k_m",
+      "route": "POST /v1/xaeli-staging/explain",
+      "gates": ["AUREX_XAELI_STAGING_ENABLED=1", "AUREX_XAELI_OPERATOR_APPROVED=1", "x-aurex-operator-approval: synthetic-only", "AUREX_BUDGET_USD=0"],
+      "timeout_seconds": 90,
+      "retries": 0,
+      "current_availability": "NOT_CONFIGURED",
+      "reason": "Staging flags are unset in this environment and qwen-private-staging.railway.internal does not resolve here.",
+      "output_authority": "NONE",
+      "self_permission": "FORBIDDEN"
+    }
+  ]
+}

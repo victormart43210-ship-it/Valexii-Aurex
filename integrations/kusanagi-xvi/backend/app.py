@@ -34,3 +34,46 @@ def budgets():
 @app.get("/v1/jobs", dependencies=[Depends(authorize)])
 def jobs():
     return {"jobs": [], "nextCursor": None}
+
+# Public synthetic industrial audit: deterministic, read-only, no customer data.
+# Health does not imply audit authorization, verification, or deployment readiness.
+SYNTHETIC_CHARGES = (
+    ("heavy_recovery", 1, 2500),
+    ("wrecker_hours", 3, 300),
+    ("scene_support_hours", 3, 150),
+)
+
+@app.get("/v1/demo/industrial-audit")
+def industrial_audit_demo():
+    """Return a fictional towing exception for UI integration testing only."""
+    charges = [
+        {"code": code, "quantity": quantity, "unitPriceUsd": unit_price,
+         "amountUsd": quantity * unit_price}
+        for code, quantity, unit_price in SYNTHETIC_CHARGES
+    ]
+    candidate_total = sum(item["amountUsd"] for item in charges)
+    return {
+        "schemaVersion": "1.0",
+        "demoId": "synthetic-towing-heavy-recovery-001",
+        "industry": "towing_and_recovery",
+        "synthetic": True,
+        "dataClassification": "FICTIONAL",
+        "sourceVerified": False,
+        "independentVerification": "NOT_VERIFIED",
+        "auditRuntimeConnected": False,
+        "authority": "NONE",
+        "release": "HOLD",
+        "finding": {
+            "kind": "POTENTIAL_UNBILLED_SERVICES",
+            "status": "REVIEW_REQUIRED",
+            "candidateAmountUsd": candidate_total,
+            "confirmedRevenueUsd": 0,
+            "charges": charges,
+            "explanation": "Illustrative missing-invoice candidate; no real billing records checked.",
+        },
+        "gates": [
+            {"stage": stage, "status": "DEMONSTRATION_ONLY"}
+            for stage in ("EVIDENCE", "QUALIFICATION", "REALITY", "AUTHORITY", "EFFECT")
+        ],
+        "permittedEffects": [],
+    }

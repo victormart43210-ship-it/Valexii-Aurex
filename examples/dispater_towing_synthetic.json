@@ -1,0 +1,88 @@
+{
+  "dataset_type": "SYNTHETIC_ONLY",
+  "sector": "towing",
+  "revenue": {
+    "dataset_type": "SYNTHETIC_ONLY",
+    "jobs": [
+      {
+        "job_id": "TOW-100",
+        "customer_id": "CLUB-A",
+        "service_code": "HOOKUP",
+        "date": "2026-10-20"
+      },
+      {
+        "job_id": "TOW-101",
+        "customer_id": "CLUB-A",
+        "service_code": "RECOVERY",
+        "date": "2026-10-21"
+      }
+    ],
+    "rates": [
+      {
+        "rate_id": "RT-1",
+        "customer_id": "CLUB-A",
+        "service_code": "HOOKUP",
+        "start": "2026-01-01",
+        "end": "2026-12-31",
+        "amount": "180.00"
+      },
+      {
+        "rate_id": "RT-2",
+        "customer_id": "CLUB-A",
+        "service_code": "RECOVERY",
+        "start": "2026-01-01",
+        "end": "2026-12-31",
+        "amount": "300.00"
+      }
+    ],
+    "invoices": [
+      {
+        "invoice_id": "INV-100",
+        "job_id": "TOW-100",
+        "amount": "150.00",
+        "status": "paid"
+      }
+    ],
+    "payments": [
+      {
+        "payment_id": "PAY-100",
+        "invoice_id": "INV-100",
+        "amount": "140.00"
+      }
+    ]
+  },
+  "evidence": {
+    "dataset_type": "SYNTHETIC_ONLY",
+    "as_of": "2026-10-23",
+    "requirements": [
+      {
+        "rule_id": "DEMO-DOT-V-1",
+        "domain": "DOT",
+        "subject_id": "TRUCK-5",
+        "record_class": "ILLUSTRATIVE_VEHICLE_FILE",
+        "reviewed": true,
+        "applies": true
+      },
+      {
+        "rule_id": "DEMO-IRS-1",
+        "domain": "IRS",
+        "subject_id": "FISCAL-2026",
+        "record_class": "ILLUSTRATIVE_RECEIPT_INDEX",
+        "reviewed": true,
+        "applies": true
+      }
+    ],
+    "documents": [
+      {
+        "document_id": "D-1",
+        "rule_id": "DEMO-DOT-V-1",
+        "expires_on": "2026-09-01",
+        "copy_available": true
+      }
+    ]
+  },
+  "review": {
+    "reviewer_id": "DEMO_MANAGER",
+    "decisions": []
+  }
+}

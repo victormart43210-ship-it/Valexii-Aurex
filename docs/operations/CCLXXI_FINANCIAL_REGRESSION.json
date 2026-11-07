@@ -1,0 +1,9 @@
+{
+ "oracle": {
+  "identified_exposure": "385.00",
+  "withheld": "150.00",
+  "confirmed_recovery": "0.00"
+ },
+ "tests": "tests/test_dispater_golden_audit.py, test_dispater_oracle_*.py, test_cliv_towing.py, test_cclxi_synthetic_audit.py, test_dispater_security.py: 124 passed",
+ "status": "PASS"
+}

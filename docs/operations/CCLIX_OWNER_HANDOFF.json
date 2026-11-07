@@ -1,0 +1,47 @@
+{
+  "operation": "KUSANAGI_CCLIX",
+  "repository": "victormart43210-ship-it/Valexii-Aurex",
+  "branch": "cursor/kusanagi-cclix-website-convergence-4082",
+  "base_branch": "integration/kusanagi-cclviii-safe-convergence",
+  "base_sha": "fa9d2254a2b2e15b7117c55ef6917d365357caf5",
+  "tested_code_sha": "ba6db1bac46e76317e6218301f1d71f051781636",
+  "final_pushed_sha": "the docs commit that contains this file",
+  "origin_main_sha": "34cda4bd8f207f5b1284093b87e4760d782a4903",
+  "source_prs": [181, 182, 183, 184],
+  "decision": "HOLD_WITH_BLOCKERS",
+  "production": "HOLD",
+  "financial_authority": "NONE",
+  "completed": [
+    "Rechecked PR 184 head. It was still fa9d225, with six successful workflows.",
+    "Preserved CCLVI financial repairs and the CCLVIII duplicate-ticket withhold.",
+    "Rejected nonzero confirmed_recovery_usd in the website contract.",
+    "Showed DISPATER API link states and an XAELI model link that stays unavailable without a configured staging backend."
+  ],
+  "excluded": ["PR 172", "PR 176", "full replacement of the Cursor engine by CCLVII"],
+  "test_results": {
+    "pytest": "745 passed, 1 skipped",
+    "ruff": "PASS",
+    "mypy": "PASS",
+    "website_vitest": "161 passed",
+    "website_build": "PASS",
+    "dispater_web": "25 passed",
+    "xaeli_live": "NOT_VERIFIED",
+    "browser": "DISPATER idle link DISCONNECTED. XAELI model link unavailable."
+  },
+  "ci_status": "SUCCESS on a4d9d85ab7d3ae7668659b01770f72c38eb6509e for offline-practice, both CI test jobs, verify, and integration. docker-build-and-smoke NOT_RUN on this SHA because the image workflow paths were not changed. SUCCESS on fa9d225 remains a separate SHA and included the image workflow.",
+  "blockers": [
+    "No live Qwen response was observed.",
+    "No staging token was available, so the dashboard click was not executed against a real API.",
+    "External anchor NOT_VERIFIED.",
+    "Deletion and retention are not enforced.",
+    "Independent human assurance OPEN.",
+    "Railway and valexii.com deployment were not verified."
+  ],
+  "owner_actions": [
+    "Do not merge PR 184 or this review until the new SHA is reviewed.",
+    "If a live XAELI check is wanted, start the existing local Qwen adapter and set the staging flags. Do not turn on a paid provider.",
+    "Set the website server's DISPATER URL and token outside the browser before expecting CONNECTED.",
+    "Leave production on HOLD."
+  ],
+  "next_action": "Review this branch against PR 184. Do not deploy."
+}

@@ -1,0 +1,60 @@
+{
+  "operation": "KUSANAGI_CCLIX",
+  "recorded_at": "2026-11-06T20:38:00Z",
+  "origin_main_sha": "34cda4bd8f207f5b1284093b87e4760d782a4903",
+  "foundation_pr": 184,
+  "foundation_sha": "fa9d2254a2b2e15b7117c55ef6917d365357caf5",
+  "foundation_note": "The handoff SHA was rechecked and was still the head of PR 184 before this branch was created. GitHub showed six successful workflows on that SHA, not five.",
+  "items": [
+    {
+      "component": "Copilot CCLV foundation",
+      "source_pr": 181,
+      "source_commit": "c4f45925e086bbb23b643e66707b224419d52b60",
+      "inclusion": "INCLUDED",
+      "conflicting_files": [],
+      "verification": "Ancestor of fa9d225. Docs-only on top of the Cursor stack.",
+      "required_action": "NONE",
+      "remaining_risk": "Decision file on that PR still said CI was pending after the runs had succeeded."
+    },
+    {
+      "component": "Cursor CCLVI financial and egress repairs",
+      "source_pr": 182,
+      "source_commit": "bd1c4d00559bed86d4e37aab103204cf95829769",
+      "inclusion": "INCLUDED",
+      "conflicting_files": [],
+      "verification": "bd1c4d0 is an ancestor of fa9d225. Golden tests passed on this branch.",
+      "required_action": "PRESERVE",
+      "remaining_risk": "Several same-amount unbilled jobs plus one equal orphan payment stay identified."
+    },
+    {
+      "component": "GPT Work CCLVII non-overlapping repairs",
+      "source_pr": 183,
+      "source_commit": "6a48852a6fe07bbba90a3c7a7d74ee18ab35b9f7",
+      "inclusion": "PARTIAL",
+      "conflicting_files": ["aurex/dispater_intelligence.py"],
+      "verification": "630d41a staged local inference, hours API, and ingest files. 3038484 and fa9d225 then reconciled the duplicate-ticket withhold into the Cursor engine and added the regression test. The full CCLVII commit is not an ancestor.",
+      "required_action": "PRESERVE the reconciled ticket withhold. Do not replace the Cursor engine with the Work file.",
+      "remaining_risk": "PR 184 body still says the intelligence file was unchanged. That sentence is stale relative to fa9d225."
+    },
+    {
+      "component": "Jules pipeline and Global Ascension",
+      "source_pr": "172, 176",
+      "source_commit": "not imported",
+      "inclusion": "EXCLUDED",
+      "conflicting_files": ["aurex/dispater_intelligence.py", "aurex/dispater_store.py", "aurex/dispater_api.py"],
+      "verification": "Still conflicted competing engines. Not present as aurex/the_big_one.py.",
+      "required_action": "LEAVE EXCLUDED",
+      "remaining_risk": "A later merge of those branches would create a second financial path."
+    },
+    {
+      "component": "Website recovery contract and link states",
+      "source_pr": "this branch",
+      "source_commit": "ba6db1bac46e76317e6218301f1d71f051781636",
+      "inclusion": "ADDED",
+      "conflicting_files": [],
+      "verification": "Vitest 161 passed. Browser showed XAELI model link unavailable and DISPATER idle API link disconnected.",
+      "required_action": "OWNER configures staging URLs and tokens before a live call can succeed.",
+      "remaining_risk": "XAELI live connection remains NOT_VERIFIED."
+    }
+  ]
+}

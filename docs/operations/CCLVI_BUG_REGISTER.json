@@ -1,0 +1,58 @@
+{
+  "operation": "KUSANAGI_CCLVI",
+  "tested_code_sha": "bd1c4d00559bed86d4e37aab103204cf95829769",
+  "upstream_sha": "c4f45925e086bbb23b643e66707b224419d52b60",
+  "items": [
+    {
+      "id": "CCLVI-1",
+      "status": "FIXED",
+      "summary": "Punctuation and lookalike customer ids were treated as proof of a different customer.",
+      "repair": "Case, width, punctuation, and a small lookalike fold no longer count as PROVEN_DISTINCT. A remaining non-ASCII character also blocks that label. Equal one-to-one amounts are withheld. Unequal one-to-one amounts stay identified as NO_RELATIONSHIP_EVIDENCE.",
+      "tests": ["test_punctuation_and_lookalike_customer_ids_are_not_distinct", "test_a_cyrillic_lookalike_outside_the_small_map_is_not_distinct", "test_same_customer_with_different_amounts_stays_separate"]
+    },
+    {
+      "id": "CCLVI-2",
+      "status": "FIXED",
+      "summary": "One unbilled job and one orphan payment of the same amount were both identified.",
+      "repair": "That pair is withheld. A one-cent extra payment does not restore the pair. A payment that names the job id is withheld with that job. Several jobs at the same flat rate are not all withheld by one payment.",
+      "tests": ["test_an_equal_orphan_payment_is_withheld_and_an_unequal_one_stays"]
+    },
+    {
+      "id": "CCLVI-3",
+      "status": "FIXED",
+      "summary": "The monitor sidecar write could lose an update across processes, and the website connector treated every loopback port as allowed.",
+      "repair": "The sidecar write takes an exclusive file lock on this host. connector_destination_allowed no longer treats loopback as an implicit allow.",
+      "tests": ["test_unlisted_connector_destination_is_refused"]
+    },
+    {
+      "id": "CCLVI-4",
+      "status": "OPEN",
+      "summary": "Two or more unbilled jobs at the same amount plus an orphan payment of that amount stay identified. Withholding every job would hide unrelated flat-rate work. Pairing one job would invent a match.",
+      "dollars": "Two $100 jobs and one $100 orphan payment identify 300.00. Confirmed recovery stays 0.00."
+    },
+    {
+      "id": "CCLVI-5",
+      "status": "OPEN",
+      "summary": "ASCII lookalikes such as Cl versus C1, job ids that differ by punctuation, split payments, and an orphan invoice beside an orphan payment are not folded into a match.",
+      "reason": "Normalizing them would invent a relationship. They remain separate."
+    },
+    {
+      "id": "CCLVI-6",
+      "status": "OPEN",
+      "summary": "Deleting the monitor rows, the sidecar, and the anchor together is indistinguishable from a tenant that never wrote. The same principal who holds both server keys can rewrite the chain.",
+      "reason": "No external witness is available. EXTERNAL_ANCHOR stays NOT_VERIFIED."
+    },
+    {
+      "id": "CCLVI-7",
+      "status": "OPEN",
+      "summary": "A deletion request does not delete. Retention is not enforced. Backup deletion and legal hold are not implemented.",
+      "reason": "A partial destructive delete would be an unsafe stand-in for a policy decision."
+    },
+    {
+      "id": "CCLVI-8",
+      "status": "OPEN",
+      "summary": "XAELI staging was not connected. Jules CCLIII and CCLIV were not found as branches, commits, or pull requests.",
+      "reason": "No live model response was observed. No weights were downloaded."
+    }
+  ]
+}

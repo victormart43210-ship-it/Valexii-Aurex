@@ -1,0 +1,24 @@
+{
+  "operation": "KUSANAGI_CCLXV",
+  "tested_code_sha": "cfbf5386e679696048318ad843aeb29b520654bb",
+  "outside_witness": "NOT_PROVIDED. This session implemented the change and also ran the browser. That is not an independent witness.",
+  "checks": {
+    "pytest": "PASS 760 passed, 1 skipped",
+    "ruff": "PASS",
+    "mypy": "PASS 110 files",
+    "website_vitest": "PASS 162",
+    "website_production_build": "PASS",
+    "local_browser_audit": "PASS on this machine, SAME_SESSION",
+    "remote_staging_audit": "BLOCKED",
+    "xaeli_live_inference": "BLOCKED",
+    "model_benchmarks": "NOT_RUN",
+    "training_job": "NOT_STARTED",
+    "railway_image": "PASS for docker-build-and-smoke on f2ab253bf9f8e4bce55bc61d0c557446be2f78fc at 2026-11-06T16:28:00-0600. The job built the image. It did not deploy.",
+    "github_actions_on_f2ab253": "PASS for offline-practice, both CI test jobs, verify, integration, and docker-build-and-smoke. This does not authorize a merge.",
+    "github_actions_on_cfbf538_alone": "NOT_RUN. That commit was not pushed by itself.",
+    "prior_ci_6c99b3e": "PASS for five checks on that earlier documentation commit. It does not verify this SHA.",
+    "secret_in_frontend": "The local page text did not contain the test token.",
+    "external_anchor": "NOT_VERIFIED"
+  },
+  "decision": "HOLD_WITH_BLOCKERS"
+}

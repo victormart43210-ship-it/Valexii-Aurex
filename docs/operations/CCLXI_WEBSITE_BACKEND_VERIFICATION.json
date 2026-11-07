@@ -1,0 +1,16 @@
+{
+  "operation": "KUSANAGI_CCLXI",
+  "tested_code_sha": "f480c518ffcb5360b2b084470dbdb71aeac68d32",
+  "website_files_changed": false,
+  "checks": {
+    "vitest": "PASS 161",
+    "typescript_and_production_build": "PASS on ba6db1b. Website sources are unchanged since that commit, so the build was not repeated.",
+    "dispater_web": "PASS 25 on the prior tree. Package sources are unchanged.",
+    "dispater_link_states": "PRESENT from CCLIX",
+    "xaeli_live": "NOT_VERIFIED",
+    "xaeli_probe": "Flags off, AUREX_QWEN_BASE_URL unset, 127.0.0.1:8080 URLError",
+    "authenticated_browser_click": "NOT_RUN. No website service token is configured. The API demonstration used TestClient instead.",
+    "aurex_ox_indicators": "SEPARATE. Registry live_connection is NOT_VERIFIED and runtime is NOT_INSTALLED. They are not one green status."
+  },
+  "browser_on_this_commit": "NOT_RUN. No visual file changed."
+}

@@ -19,10 +19,20 @@ from aurex.database import (
     list_evidence,
     list_jobs,
 )
+from aurex.dispater_api import BodyLimitMiddleware
+from aurex.dispater_api import router as dispater_router
 from aurex.fenced_worker import cancel_job, claim_job, finalize_job
+from aurex.governance_math.industrial_api import router as industrial_demo_router
 from aurex.governance_math.research_api import router as research_advice_router
+from aurex.industrial_execution import router as towing_router
+from aurex.integrations.pilot_policy import review_synthetic_pilot
+from aurex.readiness import readiness
 from aurex.real_offline_probe import execute_sqlite_roundtrip
+from aurex.relationships.api import router as relationship_router
 from aurex.workflows.budget import BudgetGuard
+from aurex.xaeli_staging import router as xaeli_staging_router
+from aurex_foundation.correlation import CorrelationMiddleware
+from aurex_foundation.opa import evaluate_policy
 
 app = FastAPI(
     title="VALEXII-AUREX",
@@ -30,7 +40,11 @@ app = FastAPI(
     description="External evidence and challenge engine. AUREX never grants product authority.",
 )
 
+app.add_middleware(CorrelationMiddleware)
+app.add_middleware(BodyLimitMiddleware)
+
 budget_guard = BudgetGuard(limit_usd=Decimal("0.00"))
+MAX_BEARER_TOKEN_LENGTH = 512
 
 
 def get_token() -> str:
@@ -44,12 +58,11 @@ def get_token() -> str:
         )
 
     token = service_token or admin_token
-    # compare_digest(str, str) raises TypeError on non-ASCII strings. Treat
-    # malformed server secrets as configuration failures, never as a 500 on
-    # untrusted user input later in the authentication handler.
     if (
-        not token or len(token) < 32 or len(token) > 512
-        or not token.isascii() or token != token.strip()
+        not token
+        or not 32 <= len(token) <= MAX_BEARER_TOKEN_LENGTH
+        or not token.isascii()
+        or token != token.strip()
     ):
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -66,13 +79,14 @@ def authenticate(authorization: str | None = Header(default=None)) -> str:
             detail="Missing or malformed Authorization header",
         )
     supplied = authorization[7:]
-    # Never allow compare_digest to raise on attacker-controlled Unicode or
-    # unbounded header values. Do not normalize away ambiguous whitespace.
     if (
-        not supplied or len(supplied) > 512 or not supplied.isascii()
+        not supplied
+        or len(supplied) > MAX_BEARER_TOKEN_LENGTH
+        or not supplied.isascii()
         or supplied != supplied.strip()
-        or not hmac.compare_digest(supplied, expected)
     ):
+        raise HTTPException(status_code=401, detail="Malformed authorization credentials")
+    if not hmac.compare_digest(supplied, expected):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid authorization credentials",
@@ -82,6 +96,12 @@ def authenticate(authorization: str | None = Header(default=None)) -> str:
 
 # Opt-in, authenticated, advisory-only mathematics; no capability or authority claims.
 app.include_router(research_advice_router, dependencies=[Depends(authenticate)])
+app.include_router(industrial_demo_router, dependencies=[Depends(authenticate)])
+app.include_router(towing_router, dependencies=[Depends(authenticate)])
+app.include_router(xaeli_staging_router, dependencies=[Depends(authenticate)])
+# DISPATER enforces its own tenant-bound authorization (aurex.dispater_api).
+app.include_router(dispater_router)
+app.include_router(relationship_router)
 
 
 class JobCreateRequest(BaseModel):
@@ -139,11 +159,29 @@ class BudgetResponse(BaseModel):
 
 @app.get("/v1/health")
 @app.get("/health")
-def health() -> dict[str, str]:
-    return {
-        "status": "ok",
+def health() -> dict[str, Any]:
+    report = readiness()
+    body = {
+        "process": report["process"],
+        "readiness": report["readiness"],
+        "stores": report["stores"],
+        "model": report["model"],
         "version": "0.1.0a1",
         "time": datetime.now(UTC).isoformat(),
+    }
+    if report["readiness"] == "DEPENDENCY_UNAVAILABLE":
+        raise HTTPException(status_code=503, detail=body)
+    return body
+
+
+@app.get("/v1/providers")
+def providers(_: str = Depends(authenticate)) -> dict[str, Any]:
+    report = readiness()
+    return {
+        "authority": "NONE",
+        "effect": "NONE",
+        "paid_inference": "OFF",
+        "providers": [report["provider"]],
     }
 
 
@@ -239,6 +277,31 @@ def create_job_endpoint(
         raise HTTPException(status_code=422, detail="Unsupported probe")
     if not idempotency_key or len(idempotency_key) > 128:
         raise HTTPException(status_code=422, detail="Idempotency-Key required")
+    if os.environ.get("AUREX_OPA_PILOT_ENABLED") == "1":
+        if os.environ.get("AUREX_OPA_OPERATOR_APPROVED") != "1":
+            raise HTTPException(status_code=503, detail="Policy approval required")
+
+        if os.environ.get("AUREX_OPA_SYNTHETIC_ONLY") != "1":
+            raise HTTPException(status_code=503, detail="Synthetic-only policy gate required")
+
+        policy = evaluate_policy({
+            "kind": canonical_kind,
+            "synthetic": True,
+            "probe": "sqlite_roundtrip_v1",
+            "max_cost_usd": 0,
+        })
+
+        decision = review_synthetic_pilot(
+            synthetic=True,
+            explicit_operator_approval=True,
+            policy_response={
+                "result": {"allow": policy.disposition == "QUALIFIED"}
+            },
+        )
+
+        if not decision.permitted_for_review:
+            raise HTTPException(status_code=503, detail="Policy review HOLD")
+
     try:
         job = create_job(
             DEFAULT_DB_PATH, f"job-{secrets.token_hex(12)}", canonical_kind,
