@@ -5,8 +5,9 @@ import portrait from "../../public/assets/xaeli-editorial-portrait.jpg.asset.jso
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
-import { readXaeliStagingStatus } from "@/lib/xaeli.functions";
-import type { XaeliLinkReport } from "@/lib/xaeli-status";
+import { readXaeliStagingStatus, submitXaeliSynthetic } from "@/lib/xaeli.functions";
+import { XAELI_PROMPTS, type XaeliLinkReport, type XaeliPrompt } from "@/lib/xaeli-status";
+import { Button } from "@/components/ui/button";
 import {
   CTA,
   EvidenceCard,
@@ -40,7 +41,11 @@ export const Route = createFileRoute("/xaeli")({
 });
 function XaeliModelLink() {
   const readStatus = useServerFn(readXaeliStagingStatus);
-  const [report, setReport] = useState<XaeliLinkReport | { status: "loading" }>({ status: "loading" });
+  const submit = useServerFn(submitXaeliSynthetic);
+  const [report, setReport] = useState<XaeliLinkReport | { status: "loading" }>({
+    status: "loading",
+  });
+  const [pending, setPending] = useState<XaeliPrompt | null>(null);
   useEffect(() => {
     let cancelled = false;
     void readStatus()
@@ -54,14 +59,50 @@ function XaeliModelLink() {
       cancelled = true;
     };
   }, [readStatus]);
+  async function ask(prompt: XaeliPrompt) {
+    setPending(prompt);
+    setReport({ status: "loading" });
+    try {
+      setReport(await submit({ data: { prompt } }));
+    } catch {
+      setReport({ status: "error", live: false, answer: null });
+    } finally {
+      setPending(null);
+    }
+  }
   const status = report.status;
+  const answer = "answer" in report ? report.answer : null;
+  const errorCode = "errorCode" in report ? report.errorCode : null;
+  const canAsk =
+    status === "ready" || status === "connected" || status === "error" || status === "disconnected";
   return (
-    <p className="mt-6 text-sm leading-7 text-muted-foreground" role="status">
-      Model link: {status}.{" "}
-      {status === "connected" && "answer" in report && report.answer
-        ? `Staging answer, not financial or security authority: ${report.answer}`
-        : "No live model response is shown. The examples on this page are scripted."}
-    </p>
+    <div className="mt-6">
+      <p className="text-sm leading-7 text-muted-foreground" role="status">
+        Model link: {status === "loading" ? "checking" : status}.{" "}
+        {status === "connected" && answer
+          ? `Staging answer, not financial or security authority: ${answer}`
+          : status === "ready"
+            ? "Staging is configured. No model has been called yet."
+            : "No live model response is shown. The examples on this page are scripted."}
+        {errorCode ? ` Classified failure: ${errorCode}.` : ""}
+      </p>
+      {canAsk ? (
+        <div className="mt-4 flex flex-wrap gap-3">
+          {XAELI_PROMPTS.map((prompt) => (
+            <Button
+              key={prompt}
+              type="button"
+              variant="glass"
+              className="min-h-11"
+              disabled={pending !== null}
+              onClick={() => void ask(prompt)}
+            >
+              {pending === prompt ? "Asking…" : prompt}
+            </Button>
+          ))}
+        </div>
+      ) : null}
+    </div>
   );
 }
 

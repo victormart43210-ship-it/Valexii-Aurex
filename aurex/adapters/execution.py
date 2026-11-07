@@ -8,6 +8,7 @@ from typing import Literal
 from pydantic import BaseModel, ConfigDict, Field
 
 from aurex.adapters.base import GenerationSettings, ModelAdapter, ModelAnswer
+from aurex.adapters.openai_compatible import ModelTransportError
 from aurex.provenance import fingerprint
 
 
@@ -53,10 +54,13 @@ def _answer(adapter: ModelAdapter, prompt: str, spec: ModelSpec) -> ModelAnswer:
         ):
             raise ValueError("Invalid response identity or empty content")
         return answer
-    except Exception as exc:
+    except ModelTransportError as exc:
+        raise ExecutionFailure(exc.code) from None
+    except TimeoutError:
+        raise ExecutionFailure("TIMEOUT") from None
+    except Exception:
         # Do not serialize exception text, cause, headers, URLs, or traceback.
-        code = "TIMEOUT" if isinstance(exc, TimeoutError) else "PROVIDER_OR_SCHEMA_FAILURE"
-        raise ExecutionFailure(code) from exc
+        raise ExecutionFailure("PROVIDER_OR_SCHEMA_FAILURE") from None
 
 
 class InferenceClient:

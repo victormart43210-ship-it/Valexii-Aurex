@@ -2,11 +2,20 @@
 
 import json
 import os
+import urllib.error
 from typing import Any
 from urllib.parse import urlsplit
 from urllib.request import HTTPRedirectHandler, ProxyHandler, Request, build_opener
 
 from aurex.adapters.base import GenerationSettings, ModelAdapter, ModelAnswer
+
+
+class ModelTransportError(RuntimeError):
+    """A classified model failure. The message is a code, never a response or URL."""
+
+    def __init__(self, code: str) -> None:
+        super().__init__(code)
+        self.code = code
 
 
 class _NoRedirect(HTTPRedirectHandler):
@@ -58,10 +67,64 @@ class OpenAICompatibleAdapter(ModelAdapter):
         self.generation = generation or GenerationSettings()
         self.local_loopback = local_loopback
 
-    def answer(self, prompt: str) -> ModelAnswer:
+    def _request(self, path: str, body: bytes | None, timeout: float) -> dict[str, Any]:
         key = None if self.local_loopback else os.environ.get(self.api_key_env)
         if not self.local_loopback and not key:
-            raise RuntimeError(f"Missing credential environment variable: {self.api_key_env}")
+            raise ModelTransportError("AUTHENTICATION_FAILURE")
+        headers = {"Accept": "application/json"}
+        if body is not None:
+            headers["Content-Type"] = "application/json"
+        if key:
+            headers["Authorization"] = f"Bearer {key}"
+        request = Request(
+            f"{self.base_url}{path}",
+            data=body,
+            headers=headers,
+            method="POST" if body is not None else "GET",
+        )
+        try:
+            with build_opener(_NoRedirect(), ProxyHandler({})).open(
+                request, timeout=timeout
+            ) as response:
+                status = getattr(response, "status", 200)
+                data = response.read(2_000_001)
+        except TimeoutError:
+            raise ModelTransportError("TIMEOUT") from None
+        except urllib.error.HTTPError as exc:
+            code = {
+                401: "AUTHENTICATION_FAILURE",
+                403: "AUTHENTICATION_FAILURE",
+                404: "MODEL_UNAVAILABLE",
+                408: "TIMEOUT",
+                429: "MODEL_UNAVAILABLE",
+                503: "MODEL_UNAVAILABLE",
+            }.get(exc.code, "PROVIDER_OR_SCHEMA_FAILURE")
+            raise ModelTransportError(code) from None
+        except urllib.error.URLError as exc:
+            if isinstance(exc.reason, TimeoutError):
+                raise ModelTransportError("TIMEOUT") from None
+            raise ModelTransportError("MODEL_UNAVAILABLE") from None
+        except OSError:
+            raise ModelTransportError("MODEL_UNAVAILABLE") from None
+        if status != 200 or len(data) > 2_000_000:
+            raise ModelTransportError("PROVIDER_OR_SCHEMA_FAILURE")
+        try:
+            payload = json.loads(data.decode("utf-8"))
+        except (UnicodeDecodeError, json.JSONDecodeError):
+            raise ModelTransportError("PROVIDER_OR_SCHEMA_FAILURE") from None
+        if not isinstance(payload, dict):
+            raise ModelTransportError("PROVIDER_OR_SCHEMA_FAILURE")
+        return payload
+
+    def answer(self, prompt: str) -> ModelAnswer:
+        if not self.local_loopback:
+            listing = self._request("/models", None, min(10.0, self.timeout_seconds))
+            rows = listing.get("data")
+            identifiers = [
+                row.get("id") for row in rows if isinstance(row, dict)
+            ] if isinstance(rows, list) else []
+            if self.model not in identifiers:
+                raise ModelTransportError("MODEL_IDENTITY_MISMATCH")
         body = json.dumps(
             {
                 "model": self.model,
@@ -69,25 +132,16 @@ class OpenAICompatibleAdapter(ModelAdapter):
                 "messages": [{"role": "user", "content": prompt}],
             }
         ).encode()
-        request = Request(
-            f"{self.base_url}/chat/completions",
-            data=body,
-            headers={
-                "Content-Type": "application/json",
-                **({"Authorization": f"Bearer {key}"} if key else {}),
-            },
-            method="POST",
-        )
-        with build_opener(_NoRedirect(), ProxyHandler({})).open(
-            request, timeout=self.timeout_seconds
-        ) as response:
-            data = response.read(2_000_001)
-        if len(data) > 2_000_000:
-            raise ValueError("Model response exceeds allowed size")
-        payload = json.loads(data.decode("utf-8"))
-        content = payload["choices"][0]["message"]["content"]
+        payload = self._request("/chat/completions", body, self.timeout_seconds)
+        reported = payload.get("model")
+        if reported != self.model and (reported is not None or not self.local_loopback):
+            raise ModelTransportError("MODEL_IDENTITY_MISMATCH")
+        try:
+            content = payload["choices"][0]["message"]["content"]
+        except (KeyError, IndexError, TypeError):
+            raise ModelTransportError("PROVIDER_OR_SCHEMA_FAILURE") from None
         if not isinstance(content, str):
-            raise TypeError("Unexpected model content")
+            raise ModelTransportError("PROVIDER_OR_SCHEMA_FAILURE")
         usage = payload.get("usage") or {}
         return ModelAnswer(
             provider=self.provider,

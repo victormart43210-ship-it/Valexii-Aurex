@@ -108,3 +108,101 @@ def test_real_loopback_http_contract():
         server.shutdown()
         server.server_close()
         thread.join()
+
+
+def test_wrong_model_identity_is_not_a_success():
+    import threading
+    from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+
+    class Handler(BaseHTTPRequestHandler):
+        def log_message(self, *args):
+            pass
+
+        def do_POST(self):
+            self.rfile.read(int(self.headers["Content-Length"]))
+            body = json.dumps(
+                {"model": "not-the-requested-model", "choices": [{"message": {"content": "4"}}]}
+            ).encode()
+            self.send_response(200)
+            self.end_headers()
+            self.wfile.write(body)
+
+    server = ThreadingHTTPServer(("127.0.0.1", 0), Handler)
+    thread = threading.Thread(target=server.serve_forever, daemon=True)
+    thread.start()
+    try:
+        adapter = LlamaCppAdapter(model="fixture", base_url=f"http://127.0.0.1:{server.server_port}/v1")
+        record = InferenceClient(
+            adapter, ModelSpec(provider="llama.cpp", model="fixture", revision="test-only")
+        ).run("q", "2+2")
+        assert record.status == "FAIL"
+        assert record.output is None
+        assert record.error_code == "MODEL_IDENTITY_MISMATCH"
+        assert "not-the-requested-model" not in record.model_dump_json()
+    finally:
+        server.shutdown()
+        server.server_close()
+        thread.join()
+
+
+def test_upstream_auth_failure_is_classified_and_redacted():
+    import threading
+    from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+
+    class Handler(BaseHTTPRequestHandler):
+        def log_message(self, *args):
+            pass
+
+        def do_POST(self):
+            self.rfile.read(int(self.headers["Content-Length"]))
+            self.send_response(401)
+            self.end_headers()
+            self.wfile.write(b'{"error":"secret-token-value"}')
+
+    server = ThreadingHTTPServer(("127.0.0.1", 0), Handler)
+    thread = threading.Thread(target=server.serve_forever, daemon=True)
+    thread.start()
+    try:
+        adapter = LlamaCppAdapter(model="fixture", base_url=f"http://127.0.0.1:{server.server_port}/v1")
+        record = InferenceClient(
+            adapter, ModelSpec(provider="llama.cpp", model="fixture", revision="test-only")
+        ).run("q", "2+2")
+        assert record.status == "FAIL"
+        assert record.error_code == "AUTHENTICATION_FAILURE"
+        assert "secret-token-value" not in record.model_dump_json()
+    finally:
+        server.shutdown()
+        server.server_close()
+        thread.join()
+
+
+def test_private_listing_blocks_a_different_model_before_generation(monkeypatch):
+    import io
+    from types import SimpleNamespace
+
+    from aurex.adapters.openai_compatible import ModelTransportError
+
+    calls = []
+
+    def open_request(req, **kwargs):
+        calls.append(req.full_url)
+        assert req.get_header("Authorization") == "Bearer synthetic-upstream-key"
+        if req.full_url.endswith("/models"):
+            return io.BytesIO(b'{"data":[{"id":"other-model"}]}')
+        raise AssertionError("chat completion must not run")
+
+    monkeypatch.setenv("AUREX_RAILWAY_PRIVATE_QWEN_ENABLED", "1")
+    monkeypatch.setenv("RAILWAY_ENVIRONMENT_ID", "staging")
+    monkeypatch.setenv("AUREX_MODEL_API_KEY", "synthetic-upstream-key")
+    monkeypatch.setattr(
+        "aurex.adapters.openai_compatible.build_opener",
+        lambda *args: SimpleNamespace(open=open_request),
+    )
+    adapter = LlamaCppAdapter(
+        model="qwen2.5-0.5b-instruct-q4_k_m",
+        base_url="http://qwen-private-staging.railway.internal:8080/v1",
+    )
+    with pytest.raises(ModelTransportError) as caught:
+        adapter.answer("synthetic")
+    assert caught.value.code == "MODEL_IDENTITY_MISMATCH"
+    assert calls == ["http://qwen-private-staging.railway.internal:8080/v1/models"]
