@@ -1,0 +1,3 @@
+# CXCVIII XAELI website verification
+
+Status: BLOCKED by first live backend gate. No website changes, publication, Lovable credit operation, or live website test occurred. Existing design and owner interface preserved. Do not represent model-loaded logs or source tests as a website connection. After live AUREX probe succeeds, reuse the existing server-side owner adapter, never expose service credentials in browser code, and test synthetic labels, errors, loading, mobile and keyboard behavior. DISPATER explanation also remains BLOCKED; deterministic 12 minus10 hours times250 dollars is a fictional500-dollar candidate, not verified revenue.
