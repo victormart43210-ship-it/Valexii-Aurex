@@ -44,6 +44,7 @@ from pydantic import BaseModel, Field, field_validator
 from aurex import dispater_store
 from aurex.ascendancy.proposal import propose
 from aurex.customer_sovereignty import assert_no_effect
+from aurex.dispater_audit_package import AuditPackageEngine
 from aurex.dispater_ingest import IngestError, ingest_source
 from aurex.dispater_intelligence import (
     InvalidSnapshot,
@@ -293,6 +294,33 @@ def ingest_document(payload: DocumentRequest, principal: PrincipalDep) -> dict[s
         },
         "report": stored,
     }
+
+
+class AuditPackageRequest(BaseModel):
+    tenant_id: str = Field(pattern=TENANT_PATTERN, max_length=64)
+    documents: list[dict[str, Any]] = Field(default_factory=list, max_length=MAX_ROWS)
+    vehicles: list[dict[str, Any]] = Field(default_factory=list, max_length=MAX_ROWS)
+    drivers: list[dict[str, Any]] = Field(default_factory=list, max_length=MAX_ROWS)
+    include_reconciliation_report: bool = True
+
+
+@router.post("/audit-package/generate")
+def generate_audit_package(payload: AuditPackageRequest, principal: PrincipalDep) -> dict[str, Any]:
+    """Stateless, advisory package. Nothing is cached in memory; the caller keeps the returned manifest."""
+    assert_no_effect()
+    authorize_tenant(principal, payload.tenant_id)
+    engine = AuditPackageEngine(tenant_id=payload.tenant_id)
+    try:
+        evaluation = engine.evaluate_compliance(
+            documents=payload.documents, vehicles=payload.vehicles, drivers=payload.drivers
+        )
+    except (KeyError, TypeError, ValueError) as exc:
+        raise HTTPException(status.HTTP_422_UNPROCESSABLE_ENTITY, "Invalid audit package inputs") from exc
+    report = _latest(payload.tenant_id) if payload.include_reconciliation_report else None
+    try:
+        return engine.export_audit_package(evaluation, report)
+    except Exception as exc:
+        raise _internal_error("audit-package", exc) from exc
 
 
 def _latest(tenant_id: str) -> dict[str, Any] | None:
