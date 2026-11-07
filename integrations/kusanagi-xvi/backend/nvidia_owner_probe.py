@@ -16,7 +16,7 @@ def require_service(authorization: str = Header(default="")):
     expected = os.getenv("AUREX_SERVICE_TOKEN", "")
     if len(expected) < 32:
         raise HTTPException(503, "service not configured")
-    if not hmac.compare_digest(authorization, "Bearer " + expected):
+    if not hmac.compare_digest(authorization.encode("utf-8"), ("Bearer " + expected).encode("utf-8")):
         raise HTTPException(401, "unauthorized")
 
 
