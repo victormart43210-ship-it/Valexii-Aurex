@@ -117,7 +117,7 @@ def decide_admission(
     signed_at = attestation.timestamp
     if signed_at.tzinfo is None:
         return AdmissionDecision(status=ResultStatus.HOLD, rationale="attestation timestamp lacks timezone")
-    if not now - timedelta(minutes=5) <= signed_at <= now + timedelta(minutes=1):
+    if not now - timedelta(minutes=5) <= signed_at <= now:
         return AdmissionDecision(status=ResultStatus.HOLD, rationale="attestation timestamp is stale or in future")
     if not attestation.verify_signature(verifier_key):
         return AdmissionDecision(

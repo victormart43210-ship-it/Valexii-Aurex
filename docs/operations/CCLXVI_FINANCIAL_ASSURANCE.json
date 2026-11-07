@@ -1,0 +1,30 @@
+{
+  "schema": "aurex.cclxvi.financial_assurance.v1",
+  "code_sha": "22a093979180fd3d3af7a99f58d76e52f98c40b7",
+  "candidate_base": "7daeff45efecd5d0293ff8a75afd71b98e9d4df0",
+  "current_main": "34cda4bd8f207f5b1284093b87e4760d782a4903",
+  "financial_authority": "NONE",
+  "confirmed_recovery_usd": "0.00",
+  "golden_fixture": {
+    "command": "python3 -m pytest -q",
+    "result": "PASS",
+    "identified_exposure_usd": "385.00",
+    "withheld_unresolved_usd": "150.00",
+    "confirmed_recovery_usd": "0.00",
+    "oracle_changed": false
+  },
+  "checks": {
+    "duplicate_unbilled_equipment": "PASS. Existing CCLVII behavior remains. tests/test_cclvii_unbilled_hours.py passed inside the full suite.",
+    "duplicate_labor_same_role_and_date": "PASS. New withhold. Identified exposure stays 0.00 through the engine and POST /v1/dispater/reconciliation. Distinct roles still price.",
+    "equipment_hours_through_http": "PASS. tests/test_cclvii_hours_api.py passed inside the full suite.",
+    "document_normalization": "PASS. tests/test_cclvii_ingest_semantics.py passed. Hours, reversals, attribution, and source digests remain on the accepted rows.",
+    "decimal_arithmetic": "PASS. The engine prices with Decimal. The golden oracle is independent Decimal arithmetic.",
+    "tenant_isolation": "PASS. The hour API test rejects another tenant with 403. The new labor test reads the stored run only for its own tenant.",
+    "unsupported_findings_withheld": "PASS. Duplicate labor and duplicate equipment book 0.00 and INSUFFICIENT_EVIDENCE.",
+    "model_cannot_authorize_money": "PASS. aurex/ascendancy/proposal.py returns effect NONE, authority NONE, and launch NOT_STARTED.",
+    "receipts_not_independently_authenticated": "The local browser compared the stored receipt with the live receipt. That is the same session, not an independent witness.",
+    "customer_contact_and_recovery_actions": "DISABLED. The console states that no vendor is contacted and confirmed recovery stays 0.00.",
+    "pr_172": "CONFLICTING. It modifies aurex/dispater_api.py. Not merged.",
+    "pr_176": "CONFLICTING. Against current main its tree deletes aurex/dispater_receipt.py and aurex/evidence_kernel.py. GitHub reports a conflict. Not merged."
+  }
+}

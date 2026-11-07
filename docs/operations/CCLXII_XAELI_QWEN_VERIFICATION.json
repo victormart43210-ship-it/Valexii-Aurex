@@ -1,0 +1,16 @@
+{
+  "operation": "KUSANAGI_CCLXII",
+  "tested_code_sha": "41ce726dd1664b4f85dce2e316285c4711a3b1c7",
+  "status": "NOT_VERIFIED",
+  "staging_enabled": false,
+  "operator_approved": false,
+  "qwen_base_url": null,
+  "endpoint_attempted": "http://127.0.0.1:8080/v1/models",
+  "result": "URLError",
+  "model_identity": "NOT_OBSERVED",
+  "inference": "NOT_RUN",
+  "browser_token_exposed": false,
+  "external_paid_inference": "OFF",
+  "production_railway_changed": false,
+  "website_presentation": "The /xaeli page from CCLIX reports the model link unavailable when staging is not configured. That code was not replaced with a scripted live answer."
+}

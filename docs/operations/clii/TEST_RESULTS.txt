@@ -1,0 +1,17 @@
+CLII evidence, 2026-10-24 UTC
+PR133 initial9b6095b: GitHub CI40111954345 and canonical image/smoke PASS.
+Initial local baseline316 passed1skipped1warning.
+Endpoint malformed/auth tests: RED20failed1passed; GREEN21passed.
+CP002 full337passed1skipped1warning; RuffPASS; MyPy69PASS.
+New main d31d93e audit380passed1skipped1warning; RuffPASS; mypy aurex75PASS. Expanded foundation typing initially FAIL2 missing annotations; fixed, mypy80PASS.
+Frontend initial test discovery FAIL due tests directory outside configured include; moved under src/lib. RED missing implementation modules; GREEN4 focused tests.
+Full website150testsPASS, initial production buildPASS.
+Local sandbox initial HTTP FAIL502 readiness race; repaired launcher readiness. Real proxy->canonical API testPASS: towing, identical replay, oilfield, cross-origin403, customer-body422. Not a browser execution.
+Final Python385passed1skipped1warning; RuffPASS; MyPy80PASS.
+Reviewer focused35Python/4frontendPASS; malformed selector/duplicate/UTF8/stream-bound probesPASS.
+Reviewer fixture-reference mutation reproduced; RED1testfailed, GREEN150frontendtestsPASS after exact ID arrays.
+Strict TypeScript FAIL optional env properties undefined; repaired type declaration. Final check result recorded in recovery manifest after rerun.
+Browser NOT RUN: Chromium missing; Playwright download failed truncated/non-ZIP archive. No browser screenshot or successful click flow claimed.
+Industrial SQLite persistence NOT VERIFIED: intentionally stateless endpoint, no receipt issued. Existing generic SQLite tests do not establish industrial persistence.
+Live Railway/Lovable NOT RUN; no mutations/publish/merge by this session.
+Final tsc --noEmit PASS; final npm run build PASS.

@@ -1,0 +1,49 @@
+{
+  "schema": "aurex.cclxxvii.contract_matrix.v1",
+  "base_pr": 196,
+  "base_sha": "dfcc17d516d354c830a7d9236cb66fde01c93302",
+  "main_sha": "061b97022797013ccd1395a377b9489e59ba83f3",
+  "actions": [
+    {
+      "id": "dispater-reconciliation",
+      "route": "/dispater",
+      "action": "Run Synthetic Audit",
+      "endpoint": "POST /v1/dispater/reconciliation",
+      "auth": "server bearer, tenant from DISPATER_TENANT_ID",
+      "success": "report with confirmed_recovery_usd 0.00",
+      "failure": "error text, previous report cleared"
+    },
+    {
+      "id": "dispater-document",
+      "route": "/dispater",
+      "action": "Admit synthetic CSV",
+      "endpoint": "POST /v1/dispater/documents",
+      "auth": "server bearer",
+      "success": "source filename and stored report",
+      "failure": "error text, report cleared"
+    },
+    {
+      "id": "dispater-golden",
+      "route": "/dispater",
+      "action": "Run golden ledger",
+      "endpoint": "POST /v1/dispater/relationships",
+      "follow_up": [
+        "GET /v1/dispater/runs/{run_id}",
+        "GET /v1/dispater/relationships",
+        "GET /v1/dispater/explanations"
+      ],
+      "auth": "server bearer",
+      "success": "identified, withheld, and confirmed values from the API, plus chain coverage",
+      "failure": "error text, report and links cleared"
+    },
+    {
+      "id": "xaeli-status",
+      "route": "/xaeli",
+      "action": "page load",
+      "endpoint": "POST /v1/xaeli-staging/explain",
+      "auth": "server bearer and operator header, only when every staging flag is set",
+      "success": "connected only after a non-empty model answer",
+      "failure": "unavailable or disconnected, scripted examples remain labeled scripted"
+    }
+  ]
+}

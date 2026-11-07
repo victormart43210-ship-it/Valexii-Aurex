@@ -1,0 +1,53 @@
+{
+  "operation": "KUSANAGI CLIV IRON BRIDGE",
+  "checkpoint": 3,
+  "source_base": "c531661b9a1554fd80a2fa24540c9b69430f1081",
+  "branch": "work/kusanagi-cliv-iron-bridge",
+  "checkpoint_sha": "Resolve enclosing Git commit; self-referential SHA cannot be embedded",
+  "completed": [
+    "Canonical authenticated fixed towing execution, existing fenced worker and evidence_records",
+    "Idempotency and separately retrieved digest-checked receipt",
+    "Malformed bearer repaired, unknown legacy schema rejected before writes",
+    "Existing DISPATER source restored from deployed 3ba378e1805568b16fa39590d55bb578cb4c4a3e with assets preserved",
+    "Default-off server-only owner proxy and separate staging panel prepared"
+  ],
+  "tests": {
+    "python": "PASS 405 passed,1 skipped; proxy env removed for local tests",
+    "ruff": "PASS",
+    "mypy": "PASS 76 files",
+    "frontend": "PASS 25 tests; build PASS",
+    "live_authenticated_audit": "NOT RUN",
+    "nvidia_inference": "NOT RUN"
+  },
+  "railway": {
+    "deployment": "8fe3f398-4e6f-4bfa-8c79-da1b84ccefb4",
+    "sha": "f2db438f0020dbd455bcb5c7b21b7352d133bf2c",
+    "status": "SUCCESS platform only",
+    "root": "/integrations/kusanagi-xvi/backend",
+    "rollback_available": true
+  },
+  "findings": [
+    "PR140 public route not adopted",
+    "Railway still legacy app at f2db438; root candidate not deployed",
+    "Actual volume-instance isolation, backup, schema and UID access NOT VERIFIED",
+    "Railway OAuth secrets redacted; authenticated live request unavailable",
+    "Vercel team scope resolved; production unchanged",
+    "Owner-session cookie/login integration absent in DISPATER; default-off adapter fails closed"
+  ],
+  "next": [
+    "Inspect exact-head CI of PR141 and resolve any source failures",
+    "Obtain supported read-only volume-instance/backup/schema and secure staging credential access",
+    "Implement owner-session provisioning against existing identity provider before staging/browser acceptance"
+  ],
+  "restrictions": [
+    "No production change",
+    "No live credential rotation",
+    "No paid inference",
+    "No customer data"
+  ],
+  "release": "HOLD",
+  "utc": "2026-10-25T12:23:17.313159+00:00",
+  "prior_checkpoint": "8b852c0537dbc488b87c7b7cc89f9d347b301889",
+  "pr": 141,
+  "independent_review": "Separate agents reviewed base and CP002; integrity findings repaired RED to GREEN by coordinator; final repair independent retest NOT RUN"
+}

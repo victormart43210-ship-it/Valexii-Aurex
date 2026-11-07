@@ -1,0 +1,41 @@
+{
+  "operation": "KUSANAGI_CCLI",
+  "recorded_at": "2026-11-06T17:27:02Z",
+  "recorded_at_america_chicago": "2026-11-06T11:27:02-0600",
+  "repository": "victormart43210-ship-it/Valexii-Aurex",
+  "branch": "cursor/kusanagi-ccxlvi-sovereign-ascendancy-4082",
+  "pull_request": "https://github.com/victormart43210-ship-it/Valexii-Aurex/pull/180",
+  "tested_code_sha": "6cf405f300cbeea20eea6e03b7c05e749c1c5b44",
+  "production_egress_firewall": "NOT_VERIFIED",
+  "claim": "Application checks below are not a statement that a deployed network denies outbound traffic.",
+  "adversarial_tests": {
+    "tenant_a_cannot_read_tenant_b": "PASS in tests/test_dispater_security.py. Cross-tenant run id returns 404. A token for the wrong tenant returns 403.",
+    "tenant_a_cannot_export_tenant_b": "PASS. Export uses the same grant check.",
+    "admin_token_is_not_a_dispater_grant": "PASS. Unknown bearer returns 401.",
+    "malicious_invoice_does_not_send_records": "PASS. Ingest stores sanitized field text. external_contact refuses. No mail library is imported by the DISPATER API.",
+    "forged_human_approval_does_not_collect": "PASS. financial_action returns FORGED_OR_UNVERIFIED_APPROVAL and performs no ledger write.",
+    "replayed_instruction_does_not_pay": "PASS. There is no payment execution path. A replayed monitor source digest returns the original event and does not create a second one.",
+    "training_checkbox_does_not_start_lora": "PASS. training_reuse returns TRAINING_REUSE_NOT_AUTHORIZED. promotion_decision does not start training.",
+    "background_job_bypass": "NOT_APPLICABLE. No Celery or scheduler job in this tree sends customer records. The residual is a future worker, not a current bypass.",
+    "disabled_connector_does_not_transmit": "PASS for the sovereignty guard. WebsiteAdapter still posts to its configured base URL if a process constructs it. DISPATER API does not construct it.",
+    "failed_auth_does_not_log_record_bodies": "PASS. Error logs record the operation and the exception type."
+  },
+  "controls": {
+    "encryption_in_transit": "PLANNED for a deployed host. The public website can be served over HTTPS. This session did not verify a production TLS terminator.",
+    "encryption_at_rest": "NOT_IMPLEMENTED. SQLite is a local file. Zero-knowledge encryption is not claimed.",
+    "key_ownership": "The receipt HMAC key is a server secret supplied by the environment. The customer does not hold it in this build.",
+    "administrative_plaintext_access": "A process that can read the database file can read the stored reports. An admin bearer is not a DISPATER grant, which is a different control.",
+    "customer_controlled_retention": "NOT_IMPLEMENTED as a customer API.",
+    "customer_accessible_deletion": "NOT_IMPLEMENTED. DELETE /v1/dispater/runs/{id} returns 405. purge_tenant is a local maintenance function.",
+    "backup_deletion": "NOT_IMPLEMENTED. No backup system is in this tree.",
+    "export_authorization": "IMPLEMENTED for the bearer grant. The JSON export sets third_party_release false, training_reuse NOT_AUTHORIZED, and Cache-Control no-store.",
+    "audit_log_retention": "Monitor events live in the same SQLite file as the runs. Age-based purge can delete them. There is no separate retention guarantee.",
+    "private_inference": "ARCHITECTURAL OFFERING. local_inference allows only unauthenticated HTTP to loopback when approved is true. XAELI staging was not connected in this session.",
+    "deny_by_default_outbound": "IMPLEMENTED only in aurex/egress.py. transmit_financial_record always raises FINANCIAL_EGRESS_PROHIBITED. destination_allowed is true only for http loopback with an explicit port and purpose LOCAL_INFERENCE. No production code calls this module. It is not a firewall."
+  },
+  "xaeli_staging": {
+    "status": "NOT_VERIFIED",
+    "blocker": "AUREX_XAELI_STAGING_ENABLED is not 1, AUREX_XAELI_OPERATOR_APPROVED is not 1, AUREX_QWEN_BASE_URL is unset, and http://127.0.0.1:8080 refused a connection. No model response was fabricated."
+  },
+  "network_note": "railway_webhook does not open an outbound socket. web_adapter.py can POST to a configured base URL and now sends only short job-field tokens. That remaining path is operator configuration, not a proven network boundary."
+}

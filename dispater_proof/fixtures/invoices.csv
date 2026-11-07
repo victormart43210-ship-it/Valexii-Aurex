@@ -1,0 +1,5 @@
+invoice_id,dispatch_id,miles,base_charge,rate_per_mile,total
+I-100,D-100,12,75,3,111
+I-101,D-101,11,75,3,108
+I-102,D-999,7,75,3,96
+I-100,D-102,5,75,3,90

@@ -1,0 +1,63 @@
+{
+  "operation": "KUSANAGI_CCXLVII",
+  "recorded_at": "2026-11-06T14:57:00Z",
+  "recorded_at_america_chicago": "2026-11-06T08:57:00-0600",
+  "observed_head": "b5b935763f8c7658dcc1f8aa54d221a4fb7a5a50",
+  "workflows": [
+    {
+      "name": "CI",
+      "event": "pull_request",
+      "run_id": 42235274479,
+      "url": "https://github.com/victormart43210-ship-it/Valexii-Aurex/actions/runs/42235274479",
+      "job": "test",
+      "failed_step": "Run pytest -q",
+      "exit_code": 2,
+      "prior_steps": ["ruff check . passed", "mypy aurex passed"],
+      "classification": "test collection defect",
+      "cause": "tests/test_ox_laboratory.py imported tests.test_dispater_golden_audit. The workflow runs pytest, which does not import the tests directory as a package. python -m pytest had hidden the defect locally.",
+      "repair": "Load the golden fixture by file path and restate the 385.00 / 150.00 / 0.00 arithmetic in the laboratory test.",
+      "github_rerun": "PENDING until the repair commit is pushed"
+    },
+    {
+      "name": "CI",
+      "event": "push",
+      "run_id": 42235263445,
+      "url": "https://github.com/victormart43210-ship-it/Valexii-Aurex/actions/runs/42235263445",
+      "job": "test",
+      "failed_step": "Run pytest -q",
+      "classification": "same collection defect as the pull_request run",
+      "github_rerun": "PENDING"
+    },
+    {
+      "name": "CLIV canonical towing and DISPATER",
+      "event": "pull_request",
+      "run_id": 42235274474,
+      "url": "https://github.com/victormart43210-ship-it/Valexii-Aurex/actions/runs/42235274474",
+      "job": "integration",
+      "failed_step": "Run pytest -q",
+      "exit_code": 2,
+      "skipped_after_failure": ["npm ci", "npm test", "npm run build in dispater-web"],
+      "classification": "same collection defect. Not a towing-product failure.",
+      "local_follow_on": "After pytest was repaired locally, dispater-web npm test passed 25 and npm run build exited 0. Node on this machine is 22; the package asks for 24. GitHub uses Node 24.",
+      "github_rerun": "PENDING"
+    },
+    {
+      "name": "AUREX independent runner smoke checks",
+      "run_id": 42235274422,
+      "conclusion": "success",
+      "classification": "passing on b5b9357"
+    },
+    {
+      "name": "Canonical Railway image",
+      "run_id": 42235274425,
+      "conclusion": "success",
+      "classification": "passing on b5b9357"
+    },
+    {
+      "name": "CLII industrial source and sandbox",
+      "run_id": 42235274420,
+      "conclusion": "success",
+      "classification": "passing on b5b9357"
+    }
+  ]
+}

@@ -1,7 +1,10 @@
 """Operational AUREX HTTP API conforming to VALEXII Website contracts."""
 
+import hashlib
 import hmac
+import json
 import os
+import secrets
 from datetime import UTC, datetime
 from decimal import Decimal
 from typing import Any
@@ -11,18 +14,34 @@ from pydantic import BaseModel, ConfigDict, Field
 
 from aurex.database import (
     DEFAULT_DB_PATH,
+    create_job,
     get_job,
     list_evidence,
     list_jobs,
-    update_job_state,
 )
+from aurex.dispater_api import BodyLimitMiddleware
+from aurex.dispater_api import router as dispater_router
+from aurex.fenced_worker import cancel_job, claim_job, finalize_job
+from aurex.governance_math.industrial_api import router as industrial_demo_router
+from aurex.governance_math.research_api import router as research_advice_router
+from aurex.industrial_execution import router as towing_router
+from aurex.integrations.pilot_policy import review_synthetic_pilot
+from aurex.readiness import readiness
+from aurex.real_offline_probe import execute_sqlite_roundtrip
+from aurex.relationships.api import router as relationship_router
 from aurex.workflows.budget import BudgetGuard
+from aurex.xaeli_staging import router as xaeli_staging_router
+from aurex_foundation.correlation import CorrelationMiddleware
+from aurex_foundation.opa import evaluate_policy
 
 app = FastAPI(
     title="VALEXII-AUREX",
     version="0.1.0a1",
     description="External evidence and challenge engine. AUREX never grants product authority.",
 )
+
+app.add_middleware(CorrelationMiddleware)
+app.add_middleware(BodyLimitMiddleware)
 
 budget_guard = BudgetGuard(limit_usd=Decimal("0.00"))
 
@@ -53,7 +72,9 @@ def authenticate(authorization: str | None = Header(default=None)) -> str:
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Missing or malformed Authorization header",
         )
-    supplied = authorization[7:].strip()
+    supplied = authorization[7:]
+    if not supplied.isascii() or supplied != supplied.strip():
+        raise HTTPException(status_code=401, detail="Malformed authorization credentials")
     if not hmac.compare_digest(supplied, expected):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -62,10 +83,20 @@ def authenticate(authorization: str | None = Header(default=None)) -> str:
     return "authenticated"
 
 
+# Opt-in, authenticated, advisory-only mathematics; no capability or authority claims.
+app.include_router(research_advice_router, dependencies=[Depends(authenticate)])
+app.include_router(industrial_demo_router, dependencies=[Depends(authenticate)])
+app.include_router(towing_router, dependencies=[Depends(authenticate)])
+app.include_router(xaeli_staging_router, dependencies=[Depends(authenticate)])
+# DISPATER enforces its own tenant-bound authorization (aurex.dispater_api).
+app.include_router(dispater_router)
+app.include_router(relationship_router)
+
+
 class JobCreateRequest(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
-    kind: str = Field(pattern=r"^(regression_scan|benchmark|hypothesis_test)$")
+    kind: str = Field(pattern=r"^(regression_scan|regression-scan|benchmark|hypothesis_test)$")
     params: dict[str, Any] = Field(default_factory=dict)
     maxCostUsd: float = Field(default=0.0, ge=0.0, le=100.0)
 
@@ -117,11 +148,29 @@ class BudgetResponse(BaseModel):
 
 @app.get("/v1/health")
 @app.get("/health")
-def health() -> dict[str, str]:
-    return {
-        "status": "ok",
+def health() -> dict[str, Any]:
+    report = readiness()
+    body = {
+        "process": report["process"],
+        "readiness": report["readiness"],
+        "stores": report["stores"],
+        "model": report["model"],
         "version": "0.1.0a1",
         "time": datetime.now(UTC).isoformat(),
+    }
+    if report["readiness"] == "DEPENDENCY_UNAVAILABLE":
+        raise HTTPException(status_code=503, detail=body)
+    return body
+
+
+@app.get("/v1/providers")
+def providers(_: str = Depends(authenticate)) -> dict[str, Any]:
+    report = readiness()
+    return {
+        "authority": "NONE",
+        "effect": "NONE",
+        "paid_inference": "OFF",
+        "providers": [report["provider"]],
     }
 
 
@@ -130,15 +179,14 @@ def capabilities(_: str = Depends(authenticate)) -> CapabilitiesResponse:
     ev_records = list_evidence(DEFAULT_DB_PATH)
     latest_ev = ev_records[0] if ev_records else None
     ev_id = latest_ev["id"] if latest_ev else None
-    ev_time = latest_ev["collected_at"] if latest_ev else None
 
     return CapabilitiesResponse(
         capabilities=[
             CapabilityItem(
                 id="regression_scan",
-                available=False,
+                available=os.environ.get("AUREX_ENABLE_OFFLINE_LAB") == "1",
                 evidenceId=ev_id,
-                verifiedAt=ev_time,
+                verifiedAt=None,
             ),
             CapabilityItem(
                 id="memory_graph",
@@ -203,24 +251,82 @@ def create_job_endpoint(
     idempotency_key: str | None = Header(default=None, alias="Idempotency-Key"),
     _: str = Depends(authenticate),
 ) -> JobResponse:
-    if req.kind != "regression_scan":
+    canonical_kind = "regression_scan" if req.kind == "regression-scan" else req.kind
+    if canonical_kind != "regression_scan":
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=f"Job kind '{req.kind}' is currently unsupported or disabled",
         )
 
-    if req.maxCostUsd > 0.0:
-        raise HTTPException(
-            status_code=status.HTTP_402_PAYMENT_REQUIRED,
-            detail="Paid execution disabled; budget limit is $0.00",
+    if req.maxCostUsd > 0:
+        raise HTTPException(status_code=402, detail="Paid execution disabled")
+    if os.environ.get("AUREX_ENABLE_OFFLINE_LAB") != "1":
+        raise HTTPException(status_code=503, detail="Worker unavailable: offline worker disabled")
+    if req.params != {"probe": "sqlite_roundtrip_v1"}:
+        raise HTTPException(status_code=422, detail="Unsupported probe")
+    if not idempotency_key or len(idempotency_key) > 128:
+        raise HTTPException(status_code=422, detail="Idempotency-Key required")
+    if os.environ.get("AUREX_OPA_PILOT_ENABLED") == "1":
+        if os.environ.get("AUREX_OPA_OPERATOR_APPROVED") != "1":
+            raise HTTPException(status_code=503, detail="Policy approval required")
+
+        if os.environ.get("AUREX_OPA_SYNTHETIC_ONLY") != "1":
+            raise HTTPException(status_code=503, detail="Synthetic-only policy gate required")
+
+        policy = evaluate_policy({
+            "kind": canonical_kind,
+            "synthetic": True,
+            "probe": "sqlite_roundtrip_v1",
+            "max_cost_usd": 0,
+        })
+
+        decision = review_synthetic_pilot(
+            synthetic=True,
+            explicit_operator_approval=True,
+            policy_response={
+                "result": {"allow": policy.disposition == "QUALIFIED"}
+            },
         )
 
-    # Fail closed: no worker is registered to execute this job kind.
-    # Do not create a job, record evidence, or claim success until an actual
-    # authorized worker has completed the execution and persisted its output.
-    raise HTTPException(
-        status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-        detail="Regression worker unavailable; no job or evidence created",
+        if not decision.permitted_for_review:
+            raise HTTPException(status_code=503, detail="Policy review HOLD")
+
+    try:
+        job = create_job(
+            DEFAULT_DB_PATH, f"job-{secrets.token_hex(12)}", canonical_kind,
+            req.params, idempotency_key=idempotency_key, reservation_usd=0.0,
+        )
+    except ValueError as exc:
+        raise HTTPException(status_code=409, detail=str(exc)) from exc
+    job_id = str(job["id"])
+    resolved_job: dict[str, Any] | None = job
+    if job["state"] == "queued":
+        worker_id = "aurex-local-worker-1"
+        claimed = claim_job(DEFAULT_DB_PATH, job_id, worker_id)
+        if claimed is not None:
+            try:
+                observation = execute_sqlite_roundtrip(req.params)
+                digest = hashlib.sha256(
+                    json.dumps(observation, sort_keys=True).encode()
+                ).hexdigest()
+                resolved_job = finalize_job(
+                    DEFAULT_DB_PATH, job_id, worker_id,
+                    str(claimed["lease_token"]), int(claimed["lease_generation"]),
+                    observation, digest, f"ev-{secrets.token_hex(12)}",
+                )
+            except Exception:
+                # Do not rewrite a cancelled or superseded worker's terminal state.
+                raise HTTPException(status_code=503, detail="Probe not finalized; execution not verified") from None
+        else:
+            resolved_job = get_job(DEFAULT_DB_PATH, job_id)
+    else:
+        resolved_job = get_job(DEFAULT_DB_PATH, job_id)
+    if resolved_job is None:
+        raise HTTPException(status_code=500, detail="Job state unavailable")
+    return JobResponse(
+        id=resolved_job["id"], kind=resolved_job["kind"], state=resolved_job["state"],
+        createdAt=resolved_job["created_at"], updatedAt=resolved_job["updated_at"],
+        reservationUsd=resolved_job["reservation_usd"],
     )
 
 @app.get("/v1/jobs/{job_id}", response_model=JobResponse)
@@ -243,7 +349,7 @@ def cancel_job_endpoint(job_id: str, _: str = Depends(authenticate)) -> JobRespo
     j = get_job(DEFAULT_DB_PATH, job_id)
     if not j:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Job not found")
-    updated = update_job_state(DEFAULT_DB_PATH, job_id, "cancelled")
+    updated = cancel_job(DEFAULT_DB_PATH, job_id)
     if not updated:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Job not found")
     return JobResponse(

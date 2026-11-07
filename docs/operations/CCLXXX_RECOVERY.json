@@ -1,0 +1,10 @@
+{
+  "schema": "aurex.cclxxx.recovery.v1",
+  "started_from": "7a315e024bc8fa19d41534d5181f02a8e766fa7b",
+  "main_sha": "061b97022797013ccd1395a377b9489e59ba83f3",
+  "merged": false,
+  "production": "HOLD",
+  "financial_authority": "NONE",
+  "paid_inference": "OFF",
+  "next_safe_action": "Independent review of the #196, #199, #200 chain, then this health change. Do not merge from this operation."
+}

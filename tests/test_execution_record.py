@@ -25,6 +25,8 @@ def test_create_job_and_trace_context(tmp_db):
 def test_update_job_state_records_evidence_and_error(tmp_db):
     job_id = f"job-{uuid.uuid4().hex[:8]}"
     create_job(tmp_db, job_id, "regression_scan", {"a": 2})
+    running = update_job_state(tmp_db, job_id, "running", worker_id="worker-1")
+    assert running is not None
     ev = record_evidence(tmp_db, "ev-1", "regression_scan", "test_run", "abc123", "test evidence")
     updated = update_job_state(
         tmp_db,

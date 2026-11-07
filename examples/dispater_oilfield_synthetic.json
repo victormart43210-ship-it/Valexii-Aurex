@@ -1,0 +1,37 @@
+{
+  "dataset_type": "SYNTHETIC_ONLY",
+  "sector": "oilfield",
+  "revenue": {
+    "dataset_type": "SYNTHETIC_ONLY",
+    "jobs": [
+      {
+        "job_id": "WELL-10-TICKET",
+        "customer_id": "FIELD-OPERATOR",
+        "service_code": "FLOWBACK",
+        "date": "2026-10-20"
+      }
+    ],
+    "rates": [
+      {
+        "rate_id": "RT-FLOWBACK",
+        "customer_id": "FIELD-OPERATOR",
+        "service_code": "FLOWBACK",
+        "start": "2026-01-01",
+        "end": "2026-12-31",
+        "amount": "1250.00"
+      }
+    ],
+    "invoices": [],
+    "payments": []
+  },
+  "evidence": {
+    "dataset_type": "SYNTHETIC_ONLY",
+    "as_of": "2026-10-23",
+    "requirements": [],
+    "documents": []
+  },
+  "review": {
+    "reviewer_id": "DEMO_MANAGER",
+    "decisions": []
+  }
+}

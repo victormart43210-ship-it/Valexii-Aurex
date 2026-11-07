@@ -7,6 +7,14 @@ import { createBudgetLedger } from "@/lib/aurex-budget";
 const token = "t".repeat(32);
 const url = "https://aurex.example.com";
 const now = new Date().toISOString();
+const readyHealth = {
+  process: "PROCESS_HEALTHY",
+  readiness: "READY",
+  stores: { aurex: "DURABLE", dispater: "DURABLE" },
+  model: "NOT_CONFIGURED",
+  version: "0.1.0a1",
+  time: now,
+};
 const respond = (body: unknown, status = 200, headers: Record<string, string> = {}) =>
   (async () =>
     new Response(typeof body === "string" ? body : JSON.stringify(body), {
@@ -27,9 +35,9 @@ describe("client fails closed", () => {
   });
   it.each([
     ["non-JSON", "<html>", "malformed"],
-    ["wrong literal", { status: "up", version: "1", time: now }, "malformed"],
-    ["extra fields", { status: "ok", version: "1", time: now, secret: "x" }, "malformed"],
-    ["bad time", { status: "ok", version: "1", time: "yesterday" }, "malformed"],
+    ["old status field", { status: "ok", version: "1", time: now }, "malformed"],
+    ["extra fields", { ...readyHealth, secret: "x" }, "malformed"],
+    ["bad time", { ...readyHealth, time: "yesterday" }, "malformed"],
   ])("rejects malformed health: %s", async (_n, body, err) => {
     expect(await createAurexClient({ url, token, fetcher: respond(body) }).health()).toEqual({
       ok: false,
@@ -81,6 +89,40 @@ describe("client fails closed", () => {
       { ok: false, error: "timeout" },
     );
   });
+  it("classifies a controller abort as timeout even when fetch throws a generic error", async () => {
+    const slow = ((_u: unknown, init: RequestInit) =>
+      new Promise((_resolve, reject) => {
+        init.signal?.addEventListener("abort", () => reject(new Error("generic abort")));
+      })) as unknown as typeof fetch;
+    expect(await createAurexClient({ url, token, timeoutMs: 500, fetcher: slow }).health()).toEqual({
+      ok: false,
+      error: "timeout",
+    });
+  });
+  it("keeps genuine fetch failures classified as network errors", async () => {
+    const failing = (async () => { throw new Error("connection refused"); }) as typeof fetch;
+    expect(await createAurexClient({ url, token, fetcher: failing }).health()).toEqual({
+      ok: false,
+      error: "network",
+    });
+  });
+  it("applies the deadline to a stalled response body after successful headers", async () => {
+    let signal: AbortSignal | null | undefined;
+    const stalled = (async (_url: unknown, init?: RequestInit) => {
+      signal = init?.signal;
+      return new Response(new ReadableStream({
+        start(stream) {
+          signal?.addEventListener("abort", () => stream.error(signal?.reason), { once: true });
+        },
+      }));
+    }) as typeof fetch;
+    expect(await createAurexClient({ url, token, timeoutMs: 500, fetcher: stalled }).health()).toEqual({
+      ok: false,
+      error: "timeout",
+    });
+    expect(signal?.aborted).toBe(true);
+  });
+
   it("validates job inputs and idempotency keys before any request", async () => {
     let called = 0;
     const f = (async () => {
@@ -125,6 +167,40 @@ describe("client fails closed", () => {
     expect(r.ok).toBe(true);
     expect(seen).toEqual({ url: "https://aurex.example.com/v1/jobs", key: "k".repeat(20) });
   });
+  it("authenticates the five read-only service endpoints", async () => {
+    const paths: string[] = [];
+    const fetcher = (async (url: URL, init: RequestInit) => {
+      paths.push(url.pathname);
+      expect(init.method).toBe("GET");
+      expect(new Headers(init.headers).get("Authorization")).toBe("Bearer " + token);
+      const body =
+        url.pathname === "/v1/health" ? readyHealth
+          : url.pathname === "/v1/capabilities"
+            ? { capabilities: [] }
+            : url.pathname === "/v1/evidence"
+              ? { evidence: [] }
+              : url.pathname === "/v1/budgets"
+                ? { limitUsd: 0, reservedUsd: 0, spentUsd: 0, period: "month" }
+                : { jobs: [], nextCursor: null };
+      return new Response(JSON.stringify(body));
+    }) as unknown as typeof fetch;
+    const client = createAurexClient({ url, token, fetcher });
+    const results = await Promise.all([
+      client.health(),
+      client.capabilities(),
+      client.evidence(),
+      client.budget(),
+      client.listJobs(),
+    ]);
+    expect(results.every((result) => result.ok)).toBe(true);
+    expect(paths.sort()).toEqual([
+      "/v1/budgets",
+      "/v1/capabilities",
+      "/v1/evidence",
+      "/v1/health",
+      "/v1/jobs",
+    ]);
+  });
 });
 
 describe("stale evidence never supports a capability", () => {
@@ -148,6 +224,17 @@ describe("stale evidence never supports a capability", () => {
     expect(capabilityBacked(cap, [])).toBe(false);
     expect(capabilityBacked({ ...cap, available: false }, [ev(now)])).toBe(false);
     expect(evidenceFresh(null)).toBe(false);
+  });
+  it.each([
+    ["valid UTC time", { collectedAt: "2026-10-24T03:00:00.000Z" }, true],
+    ["valid offset time", { collectedAt: "2026-10-24T05:00:00.000+02:00" }, true],
+    ["expired time", { collectedAt: "2026-10-16T02:59:59.999Z" }, false],
+    ["malformed time", { collectedAt: "not-a-timestamp" }, false],
+    ["missing time", {}, false],
+    ["future time", { collectedAt: "2026-10-24T03:00:00.001Z" }, false],
+  ])("evaluates %s fail-closed", (_label, evidence, expected) => {
+    const fixedNow = Date.parse("2026-10-24T03:00:00.000Z");
+    expect(evidenceFresh(evidence as { collectedAt: string }, fixedNow)).toBe(expected);
   });
 });
 
