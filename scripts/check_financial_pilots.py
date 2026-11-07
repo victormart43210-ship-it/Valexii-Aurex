@@ -13,7 +13,7 @@ ROOT = Path(__file__).resolve().parent.parent
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from aurex.commercial.pilot_gate import evaluate_financial_pilots
+from aurex.commercial.pilot_gate import evaluate_financial_pilots  # noqa: E402
 
 MAX_INPUT_BYTES = 256 * 1024
 
