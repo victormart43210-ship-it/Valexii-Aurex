@@ -54,44 +54,54 @@ export function createAurexClient(cfg: ClientConfig) {
     };
     if (init.body !== undefined) headers["Content-Type"] = "application/json";
     if (init.idempotencyKey) headers["Idempotency-Key"] = init.idempotencyKey;
-    let res: Response;
+    const controller = new AbortController();
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    const deadline = new Promise<never>((_, reject) => {
+      timer = setTimeout(() => {
+        const error = new Error("AUREX request timed out");
+        error.name = "TimeoutError";
+        controller.abort(error);
+        reject(error);
+      }, timeoutMs);
+    });
     try {
-      res = await fetcher(new URL(`/v1${path}`, base), {
-        method,
-        headers,
-        redirect: "manual",
-        signal: AbortSignal.timeout(timeoutMs),
-        ...(init.body !== undefined ? { body: JSON.stringify(init.body) } : {}),
-      });
-    } catch (e) {
+      const res = await Promise.race([
+        fetcher(new URL(`/v1${path}`, base), {
+          method,
+          headers,
+          redirect: "manual",
+          signal: controller.signal,
+          ...(init.body !== undefined ? { body: JSON.stringify(init.body) } : {}),
+        }),
+        deadline,
+      ]);
+      if (res.status === 401 || res.status === 403)
+        return { ok: false, error: "unauthorized", status: res.status };
+      if (!res.ok) return { ok: false, error: "http_error", status: res.status };
+      const len = Number(res.headers.get("content-length") ?? "0");
+      if (len > MAX_RESPONSE_BYTES) return { ok: false, error: "too_large" };
+      const text = await Promise.race([res.text(), deadline]);
+      if (text.length > MAX_RESPONSE_BYTES) return { ok: false, error: "too_large" };
+      let json: unknown;
+      try {
+        json = JSON.parse(text);
+      } catch {
+        return { ok: false, error: "malformed" };
+      }
+      const parsed = schema.safeParse(json);
+      return parsed.success ? { ok: true, value: parsed.data } : { ok: false, error: "malformed" };
+    } catch (error) {
+      const name = (error as Error)?.name;
       return {
         ok: false,
         error:
-          (e as Error)?.name === "TimeoutError" || (e as Error)?.name === "AbortError"
+          controller.signal.aborted || name === "TimeoutError" || name === "AbortError"
             ? "timeout"
             : "network",
       };
+    } finally {
+      clearTimeout(timer);
     }
-    if (res.status === 401 || res.status === 403)
-      return { ok: false, error: "unauthorized", status: res.status };
-    if (!res.ok) return { ok: false, error: "http_error", status: res.status };
-    const len = Number(res.headers.get("content-length") ?? "0");
-    if (len > MAX_RESPONSE_BYTES) return { ok: false, error: "too_large" };
-    let text: string;
-    try {
-      text = await res.text();
-    } catch {
-      return { ok: false, error: "network" };
-    }
-    if (text.length > MAX_RESPONSE_BYTES) return { ok: false, error: "too_large" };
-    let json: unknown;
-    try {
-      json = JSON.parse(text);
-    } catch {
-      return { ok: false, error: "malformed" };
-    }
-    const parsed = schema.safeParse(json);
-    return parsed.success ? { ok: true, value: parsed.data } : { ok: false, error: "malformed" };
   }
 
   const idOk = (s: string) => /^[a-z0-9][a-z0-9_-]{0,63}$/.test(s);
