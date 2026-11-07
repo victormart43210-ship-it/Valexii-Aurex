@@ -90,6 +90,10 @@ def post_relationships(payload: RelationshipRequest, principal: PrincipalDep) ->
         "effect": "NONE",
         "confirmed_recovery_usd": summary["confirmed_recovery_usd"],
         "identified_exposure_usd": summary["identified_exposure_usd"],
+        "withheld_unresolved_usd": summary["withheld_unresolved_usd"],
+        "potential_underbilling_usd": summary["potential_underbilling_usd"],
+        "potential_overbilling_usd": summary["potential_overbilling_usd"],
+        "unverified_exposure_usd": summary["unverified_exposure_usd"],
         "dataset_sha256": stored_report["dataset_sha256"],
         "run_id": stored_report["run_id"],
         "relationships": {

@@ -61,6 +61,13 @@ export const exportVerifiedDispaterRun = createServerFn({ method: "POST" })
     return exportRun(currentDispaterConfig(), data.runId);
   });
 
+export const runGoldenLedger = createServerFn({ method: "POST" })
+  .validator((input: unknown) => z.object({}).parse(input ?? {}))
+  .handler(async () => {
+    const { currentDispaterConfig, executeGoldenLedger } = await import("./dispater.server");
+    return executeGoldenLedger(currentDispaterConfig());
+  });
+
 export const recordDispaterObservation = createServerFn({ method: "POST" })
   .validator((input: unknown) =>
     z.object({ sourceSha256: z.string().regex(/^[0-9a-f]{64}$/) }).parse(input),
