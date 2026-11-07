@@ -20,7 +20,9 @@ def test_health_public():
     client = TestClient(app)
     res = client.get("/v1/health")
     assert res.status_code == 200
-    assert res.json()["status"] == "ok"
+    body = res.json()
+    assert body["process"] == "PROCESS_HEALTHY"
+    assert body["readiness"] in {"READY", "DEGRADED"}
 
 
 def test_unauthenticated_request_denied(monkeypatch):

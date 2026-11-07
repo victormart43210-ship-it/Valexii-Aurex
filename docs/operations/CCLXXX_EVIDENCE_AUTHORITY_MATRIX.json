@@ -1,0 +1,17 @@
+{
+  "schema": "aurex.cclxxx.evidence.v1",
+  "classes": ["OBSERVED", "CALCULATED", "INFERRED", "UNVERIFIED", "WITHHELD", "CONFIRMED"],
+  "map": {
+    "CALCULATED_DISCREPANCY": "CALCULATED",
+    "SUSPECTED_EXPOSURE": "INFERRED",
+    "UNVERIFIED_INTERPRETATION": "UNVERIFIED",
+    "WITHHELD_UNRESOLVED": "WITHHELD"
+  },
+  "confirmed_from_this_path": "FORBIDDEN",
+  "golden": {
+    "identified_exposure_usd": "385.00",
+    "withheld_unresolved_usd": "150.00",
+    "confirmed_recovery_usd": "0.00"
+  },
+  "model_output": "UNVERIFIED until an independent source check exists"
+}

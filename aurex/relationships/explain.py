@@ -8,6 +8,7 @@ from __future__ import annotations
 
 from typing import Any
 
+from aurex.evidence_classes import evidence_class_for_claim
 from aurex.relationships.contracts import CLAIM_BY_QUALIFICATION, EXPLANATION_VERSION
 
 
@@ -43,6 +44,10 @@ def explain_finding(finding: dict[str, Any]) -> dict[str, Any]:
         "confirmed_recovery_usd": "0.00",
         "unverified_interpretation": claim == "UNVERIFIED_INTERPRETATION",
         "claim_class": claim,
+        "evidence_class": evidence_class_for_claim(
+            claim,
+            withheld=str(finding.get("exposure_class") or "") == "WITHHELD_UNRESOLVED",
+        ),
         "workflow": {
             "now": workflow.get("now"),
             "changed": workflow.get("changed"),

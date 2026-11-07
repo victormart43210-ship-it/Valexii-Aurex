@@ -1,0 +1,15 @@
+{
+  "schema": "aurex.cclxxx.fullstack.v1",
+  "decision": "PARTIAL_WITH_BLOCKERS",
+  "preserved": {
+    "pr_196": "dfcc17d516d354c830a7d9236cb66fde01c93302",
+    "pr_199": "68056f2b219dde3bfebcbfb36405eac5987fe6d4",
+    "pr_200": "7a315e024bc8fa19d41534d5181f02a8e766fa7b"
+  },
+  "golden": {"identified": "385.00", "withheld": "150.00", "confirmed": "0.00"},
+  "browser_retest_this_commit": false,
+  "reason": "This commit changes health, provider inventory, and the explanation evidence class. The DISPATER page contract was not edited.",
+  "website_vitest": "168 passed",
+  "public_site": "NOT_TESTED",
+  "qwen_live": false
+}
