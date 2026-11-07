@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { DispaterReconciliationReport } from "./dispater-contract";
-import { dispaterLinkState, documentSourceLine, isCurrentRequest, storedRunAgrees } from "./dispater-link";
+import { chainCoverage, dataOrigin, dispaterLinkState, documentSourceLine, isCurrentRequest, storedRunAgrees } from "./dispater-link";
 
 const REPORT = {
   schema: "s",
@@ -45,6 +45,17 @@ describe("dispater link state", () => {
   it("ignores an older audit response after a newer request starts", () => {
     expect(isCurrentRequest(2, 2)).toBe(true);
     expect(isCurrentRequest(1, 2)).toBe(false);
+  });
+
+  it("marks a missing industrial link as absent and does not call an API error live data", () => {
+    const coverage = chainCoverage([{ object_type: "job" }, { object_type: "invoice" }]);
+    expect(coverage.find((item) => item.type === "job")?.status).toBe("PRESENT");
+    expect(coverage.find((item) => item.type === "equipment")?.status).toBe("NOT_IN_SOURCE");
+    expect(coverage.find((item) => item.type === "contract")?.status).toBe("NOT_IN_SOURCE");
+    expect(dataOrigin("CONNECTED")).toBe("LIVE DATA");
+    expect(dataOrigin("LOADING")).toBe("LOADING");
+    expect(dataOrigin("ERROR")).toBe("UNAVAILABLE");
+    expect(dataOrigin("DISCONNECTED")).toBe("UNAVAILABLE");
   });
 
   it("shows the synthetic document source without treating it as recovered money", () => {
