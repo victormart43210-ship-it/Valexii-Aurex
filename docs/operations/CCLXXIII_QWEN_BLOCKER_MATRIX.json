@@ -1,0 +1,54 @@
+{
+  "schema": "aurex.cclxxiii.qwen_blocker_matrix.v1",
+  "status": "LIVE_QWEN_NOT_VERIFIED",
+  "observed_at": "2026-11-06T19:00:00-0600",
+  "model_identifier_in_source": "qwen2.5-0.5b-instruct-q4_k_m",
+  "source": "aurex/xaeli_staging.py",
+  "route": "POST /v1/xaeli-staging/explain",
+  "checks": [
+    {
+      "name": "staging_flag",
+      "expected": "AUREX_XAELI_STAGING_ENABLED=1",
+      "observed": "unset",
+      "result": "BLOCKED"
+    },
+    {
+      "name": "operator_approval",
+      "expected": "AUREX_XAELI_OPERATOR_APPROVED=1 and header synthetic-only",
+      "observed": "environment unset",
+      "result": "BLOCKED"
+    },
+    {
+      "name": "configured_base_url",
+      "expected": "AUREX_QWEN_BASE_URL or the loopback default",
+      "observed": "AUREX_QWEN_BASE_URL unset. Default in source is http://127.0.0.1:8080/v1",
+      "result": "NOT_CONFIGURED"
+    },
+    {
+      "name": "loopback_models",
+      "probe": "http://127.0.0.1:8080/v1/models",
+      "result": "URLError"
+    },
+    {
+      "name": "loopback_health",
+      "probe": "http://127.0.0.1:8080/health",
+      "result": "URLError"
+    },
+    {
+      "name": "railway_private_network",
+      "expected": "AUREX_RAILWAY_PRIVATE_QWEN_ENABLED=1, RAILWAY_ENVIRONMENT_ID, and base URL http://qwen-private-staging.railway.internal:8080/v1",
+      "observed": "This session is not a Railway environment. The private URL was not called.",
+      "result": "NOT_AVAILABLE"
+    },
+    {
+      "name": "paid_fallback",
+      "observed": "The llama.cpp adapter allows loopback or that one private Railway URL. No paid provider was configured or called.",
+      "result": "OFF"
+    },
+    {
+      "name": "model_generated_response",
+      "result": "NOT_RECEIVED"
+    }
+  ],
+  "manuscript_dependency": "The imaging routes do not call XAELI or Qwen."
+}

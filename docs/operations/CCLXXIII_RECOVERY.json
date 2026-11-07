@@ -1,0 +1,31 @@
+{
+  "schema": "aurex.cclxxiii.recovery.v1",
+  "pr": 193,
+  "branch": "cursor/kusanagi-cclxx-forensic-ascendancy-4082",
+  "pr_base_branch": "cursor/kusanagi-cclxix-fullstack-ascendancy-4082",
+  "pr_base_sha_at_review": "f381db7cd121d76f0df9f67a8a5e2547733fe33d",
+  "main_sha": "061b97022797013ccd1395a377b9489e59ba83f3",
+  "main_note": "main advanced by merge of pull request 194. A dry git merge-tree of this branch with that main exited 0. The merge was not applied and this branch was not rebased.",
+  "implementation_sha": "64dadbfd673186fbe65bc653a4658d866178ca8a",
+  "evidence_note_sha": "2812c8a4f22bf66d4b1e87d11527abf4fbfce32c",
+  "tested_sha": "b6c35efbb8514f6b64c948c852cbb5fda48ac0a0",
+  "decision": "HOLD_WITH_BLOCKERS",
+  "production_authority": "NONE",
+  "financial_authority": "NONE",
+  "merge_authority": "NONE",
+  "deployment_authority": "NONE",
+  "laboratory": "NOT_ACTIVATED",
+  "qwen": "LIVE_QWEN_NOT_VERIFIED",
+  "defects_repaired": [],
+  "evidence_added": [
+    "Negative tests for unset, empty, disabled, ENABLED, 1, true, and padded gate values on examine, spectral, and templates."
+  ],
+  "outstanding": [
+    "GitHub Actions on b6c35ef and on the documentation commit that cites it.",
+    "An independent reviewer.",
+    "Live Qwen.",
+    "Local Docker.",
+    "This branch is not main. Pull request 194 moved main and was not merged into this PR."
+  ],
+  "next_safe_action": "Leave the pull request open. Do not merge, deploy, or set AUREX_MANUSCRIPT_FORENSICS."
+}

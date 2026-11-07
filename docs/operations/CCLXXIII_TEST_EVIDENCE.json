@@ -1,0 +1,30 @@
+{
+  "schema": "aurex.cclxxiii.test_evidence.v1",
+  "tested_sha": "b6c35efbb8514f6b64c948c852cbb5fda48ac0a0",
+  "tested_at": "2026-11-06T19:03:00-0600",
+  "working_tree": "clean",
+  "independent_reviewer": "NOT_VERIFIED",
+  "commands": [
+    {"command": "python3 -m ruff check .", "exit_code": 0, "result": "pass"},
+    {"command": "python3 -m mypy aurex", "exit_code": 0, "result": "119 files, no issues"},
+    {"command": "python3 -m pytest -q --tb=line", "exit_code": 0, "result": "789 passed, 1 skipped, 9.28s"},
+    {"command": "npx tsc --noEmit", "cwd": "website", "exit_code": 0, "result": "pass"},
+    {"command": "npx vitest run", "cwd": "website", "exit_code": 0, "result": "169 passed"},
+    {"command": "command -v docker", "exit_code": 1, "result": "docker_absent. Local Docker NOT_RUN."}
+  ],
+  "gate_cases_on_this_sha": {
+    "file": "tests/test_cclxx_forensics.py",
+    "values_rejected": ["unset", "", "disabled", "ENABLED", "1", "true", " enabled", "enabled "],
+    "routes_rejected": [
+      "POST /v1/manuscript-forensics/examine",
+      "POST /v1/manuscript-forensics/spectral",
+      "GET /v1/manuscript-forensics/templates"
+    ],
+    "status_when_rejected": "HTTP 200, enabled false, no png_base64"
+  },
+  "not_this_sha": {
+    "353430a84ab2ba0b262d56a80a435e1a28ccf99b": "Earlier local suite was 781 passed. That count is not evidence for b6c35ef.",
+    "2812c8a4f22bf66d4b1e87d11527abf4fbfce32c": "GitHub Actions passed on this documentation SHA. Those six checks are not evidence for b6c35ef."
+  },
+  "github_actions_on_tested_sha": "NOT_RUN"
+}
