@@ -1,0 +1,75 @@
+{
+  "operation": "KUSANAGI_CCLI",
+  "recorded_at": "2026-11-06T17:27:02Z",
+  "recorded_at_america_chicago": "2026-11-06T11:27:02-0600",
+  "repository": "victormart43210-ship-it/Valexii-Aurex",
+  "pull_request": "https://github.com/victormart43210-ship-it/Valexii-Aurex/pull/180",
+  "branch": "cursor/kusanagi-ccxlvi-sovereign-ascendancy-4082",
+  "base_branch": "cursor/kusanagi-ccxli-aurex-ascendancy-4082",
+  "tested_code_sha": "6cf405f300cbeea20eea6e03b7c05e749c1c5b44",
+  "code_commits": [
+    "ba5a6d9f9c0d8c23f7e16c4b34bad183d0b66597",
+    "c4f608892caa64e9c79c5a0d66aa7f716b4866e6",
+    "2181793f0f64224ee5260a7afceb069bfca580d6",
+    "6cf405f300cbeea20eea6e03b7c05e749c1c5b44"
+  ],
+  "prior_green_head": "cd0e571485045fd9d8357be71f586290fdf60e39",
+  "scopes": {
+    "engineering_verification": {
+      "result": "CHECKS_PASSED",
+      "evidence": "pytest 716 passed, 1 skipped (torch absent), ruff exit 0, mypy 106 files exit 0, website vitest 157, tsc, website build, dispater-web 25 and build. Website checks ran on 2181793; 6cf405f does not change website/ or dispater-web/."
+    },
+    "independent_assurance": {
+      "result": "OPEN",
+      "evidence": "Reviewer bc-409de4ae-11b5-5f92-90f5-541c3c16d874 read 6cf405f from a separate worktree on the same machine. Verdict NO-GO. This is not an outside human witness."
+    },
+    "synthetic_demonstration": {
+      "result": "CONDITIONAL_GO",
+      "evidence": "The public console and /dispater use generated fixtures, keep confirmed recovery at 0.00, and state that the customer decides and vendors are not contacted. Conditional on not describing NOT_PROVEN dollars as recovered revenue and not describing the demo as a pilot."
+    },
+    "customer_pilot": {
+      "result": "NO-GO",
+      "evidence": "No customer deletion API, no verified production egress firewall, no encryption-at-rest claim, no identity provider, and no owner approval for customer data."
+    },
+    "production": {
+      "result": "NO-GO",
+      "evidence": "PRODUCTION HOLD. This operation has no deploy authority."
+    },
+    "merge": {
+      "result": "NO-GO",
+      "evidence": "Pull request 180 stays draft. Merge authority NONE."
+    }
+  },
+  "decision": "NO-GO",
+  "decision_scope": "Merge, production, customer pilot, customer data, financial authority, and third-party contact.",
+  "production": "HOLD",
+  "financial_authority": "NONE",
+  "third_party_contact": "NONE",
+  "training_reuse": "NOT_AUTHORIZED",
+  "paid_inference": "OFF",
+  "customer_data": "NOT_AUTHORIZED",
+  "merge_authority": "NONE",
+  "golden": {
+    "identified_exposure_usd": "385.00",
+    "withheld_unresolved_usd": "150.00",
+    "confirmed_recovery_usd": "0.00",
+    "invoice_discrepancy_usd": "10.00",
+    "confirmed_invoice_recovery_usd": "0.00"
+  },
+  "critical_residuals": [
+    "Monitor head and receipts share the server key and the same machine. Deleting the sidecar with the rows is not detectable.",
+    "Multi-row unbilled and orphan amounts stay identified under NOT_PROVEN.",
+    "Unlabeled uploads are stamped SYNTHETIC_ONLY without verifying the bytes.",
+    "WebsiteAdapter can still post short tokens to a configured base URL.",
+    "XAELI staging NOT_VERIFIED.",
+    "GitHub Actions have not run on 6cf405f."
+  ],
+  "owner_approvals_still_required": [
+    "Merge of pull request 180",
+    "Any production deploy",
+    "Any use of customer records",
+    "Any third-party contact or financial action",
+    "Any paid inference or training"
+  ],
+  "next_executable_action": "Push this branch. Wait for GitHub Actions on the pushed head. Leave pull request 180 draft. Do not merge and do not deploy."
+}

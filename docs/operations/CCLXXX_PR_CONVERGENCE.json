@@ -1,0 +1,20 @@
+{
+  "schema": "aurex.cclxxx.prs.v1",
+  "observed_at": "2026-11-06T22:20:00-0600",
+  "main_sha": "061b97022797013ccd1395a377b9489e59ba83f3",
+  "open_pull_requests": 96,
+  "heads_contained_in_main": 0,
+  "conflicting": 42,
+  "drafts": 71,
+  "merged_by_this_operation": 0,
+  "closed_by_this_operation": 0,
+  "ready_to_merge": 0,
+  "authorization": "NONE",
+  "chain": [
+    {"number": 196, "sha": "dfcc17d516d354c830a7d9236cb66fde01c93302", "role": "relationship engine", "review": "PENDING"},
+    {"number": 199, "sha": "68056f2b219dde3bfebcbfb36405eac5987fe6d4", "role": "golden ledger page", "review": "PENDING", "depends_on": 196},
+    {"number": 200, "sha": "7a315e024bc8fa19d41534d5181f02a8e766fa7b", "role": "settled labels and restart readback", "review": "PENDING", "depends_on": 199}
+  ],
+  "isolated": {"number": 193, "role": "manuscript laboratory, not part of DISPATER money"},
+  "prior_matrix": "docs/operations/CCLXXIX_PR_CONVERGENCE_MATRIX.json"
+}

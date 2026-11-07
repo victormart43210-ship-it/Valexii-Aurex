@@ -2,9 +2,9 @@
 
 import re
 import uuid
-from collections.abc import Awaitable, Callable
 from contextvars import ContextVar
-from typing import Any
+
+from starlette.types import ASGIApp, Message, Receive, Scope, Send
 
 request_id_context: ContextVar[str] = ContextVar(
     "aurex_request_id",
@@ -23,14 +23,14 @@ def correlation_id(incoming: str | None = None) -> str:
 class CorrelationMiddleware:
     """ASGI middleware that attaches a validated X-Request-ID."""
 
-    def __init__(self, app: Callable[..., Awaitable[None]]) -> None:
+    def __init__(self, app: ASGIApp) -> None:
         self.app = app
 
     async def __call__(
         self,
-        scope: dict[str, Any],
-        receive: Callable[..., Awaitable[Any]],
-        send: Callable[..., Awaitable[None]],
+        scope: Scope,
+        receive: Receive,
+        send: Send,
     ) -> None:
         if scope.get("type") != "http":
             await self.app(scope, receive, send)
@@ -45,7 +45,7 @@ class CorrelationMiddleware:
         rid = correlation_id(incoming)
         token = request_id_context.set(rid)
 
-        async def send_with_id(message: dict[str, Any]) -> None:
+        async def send_with_id(message: Message) -> None:
             if message["type"] == "http.response.start":
                 message = dict(message)
                 response_headers = list(message.get("headers", []))

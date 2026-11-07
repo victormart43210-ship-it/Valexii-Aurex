@@ -131,7 +131,7 @@ export const getAurexDiagnostics = createServerFn({ method: "GET" })
       tokenSet: !!token,
       configured: client.configured,
       steps: {
-        health: code(health),
+        health: health.ok ? health.value.readiness : (health.error ?? "error"),
         capabilities: caps ? code(caps) : "skipped",
         evidence: ev ? code(ev) : "skipped",
         budget: budget ? code(budget) : "skipped",

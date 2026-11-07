@@ -1,0 +1,20 @@
+{
+  "decision": "DO_NOT_MERGE_YET",
+  "pr_status": "DRAFT",
+  "mainline_merge_eligibility": "CONDITIONAL - blocked on gates below",
+  "customer_pilot_eligibility": "NO-GO",
+  "production_eligibility": "NO-GO (HOLD)",
+  "financial_authority": "NONE",
+  "gates": {
+    "no_unresolved_critical_regression": "PASS on tested SHA (no failures observed)",
+    "financial_invariants": "PASS (golden/duplicate/no-contact tests green)",
+    "privacy_authority_boundaries": "PASS as tested; assurance gaps OPEN",
+    "tests_on_exact_commit": "PASS locally on 77a97c1; records commit changes docs only",
+    "github_workflows_on_final_head": "PENDING",
+    "current_with_main": "PASS (0 behind 34cda4b at creation)",
+    "independent_technical_review": "OPEN",
+    "owner_approval": "NOT OBTAINED"
+  },
+  "rollback": "Do not merge, or revert the merge commit; main prior SHA 34cda4bd8f207f5b1284093b87e4760d782a4903. Branch is disposable.",
+  "release_authority": "A mainline merge does not authorize deployment, pilot, training, or financial action."
+}

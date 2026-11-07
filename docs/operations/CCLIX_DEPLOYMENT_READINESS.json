@@ -1,0 +1,27 @@
+{
+  "operation": "KUSANAGI_CCLIX",
+  "tested_code_sha": "ba6db1bac46e76317e6218301f1d71f051781636",
+  "production": "HOLD",
+  "deployed": false,
+  "railway": {
+    "status": "NOT_VERIFIED",
+    "source": "aurex/railway_readiness.py is a read-only assessment. No Railway API credentials were present and no deploy command was run.",
+    "owner_action": "Provide a read-only snapshot of the staging service SHA, health check, and private network route if a staging smoke test is authorized. Do not grant this agent production deploy rights."
+  },
+  "valexii_com": {
+    "repository_frontend": "website/",
+    "separate_package": "dispater-web/",
+    "lovable_project": "NOT CONNECTED from this checkout",
+    "live_dns_https": "NOT_VERIFIED"
+  },
+  "xaeli": {
+    "status": "NOT_VERIFIED",
+    "blocker": "AUREX_XAELI_STAGING_ENABLED is not 1, AUREX_QWEN_BASE_URL is unset, and 127.0.0.1:8080 refused a connection.",
+    "owner_action": "Approve a local Qwen process and the existing staging flags. Do not enable a paid provider."
+  },
+  "dispater_dashboard": {
+    "code_path": "CONNECTED in source through the server function",
+    "this_machine": "DISCONNECTED / UNAVAILABLE until AUREX_SERVICE_URL and a 32-character token are set",
+    "owner_action": "Set the staging URL and tenant grant on the website server, not in the browser."
+  }
+}

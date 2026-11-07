@@ -1,0 +1,26 @@
+{
+  "operation": "KUSANAGI_CCLXI",
+  "tested_code_sha": "f480c518ffcb5360b2b084470dbdb71aeac68d32",
+  "current_engine": "aurex/dispater_intelligence.py RevenueLeakageEngine",
+  "jules_ccxxxii": {
+    "pr": 172,
+    "sha": "a5b9cce016ca6072a2cd1094ba94eca9091e9664",
+    "modules_absent_here": ["aurex/dispater_pipeline.py", "aurex/dispater_international.py", "aurex/dispater_envelope.py", "aurex/dispater_monitoring.py"],
+    "modules_present_here": ["aurex/dispater_intelligence.py", "aurex/dispater_api.py", "aurex/evidence_kernel.py", "aurex/dispater_monitor.py"],
+    "decision": "INTENTIONALLY_EXCLUDED",
+    "reasons": [
+      "Merging the branch removes customer sovereignty, the OX registry, the anchor, ingest, and receipt binding.",
+      "IndustrialAuditPipeline reads raw_report['summary']; this engine emits financial_summary.",
+      "PaddleOCRAdapter returns FALLBACK_MOCKED text and a 0.90 confidence when Paddle is absent. That is not OCR.",
+      "QwenLocalInferenceAdapter returns a 0.95 confidence without calling a model.",
+      "The current engine already performs deterministic reconciliation. A second calculator was not added."
+    ]
+  },
+  "jules_global_ascension": {
+    "pr": 176,
+    "sha": "27d20d32f765a55a883f2b8cf15c106238031d84",
+    "decision": "INTENTIONALLY_EXCLUDED",
+    "reason": "The branch deletes the evidence kernel and receipt module relative to this head."
+  },
+  "jules_cclx": {"status": "NOT_FOUND", "evidence": "No branch, tag, or commit message for CCLX was found."}
+}

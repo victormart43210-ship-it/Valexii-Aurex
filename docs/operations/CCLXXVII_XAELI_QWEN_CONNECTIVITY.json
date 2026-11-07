@@ -1,0 +1,20 @@
+{
+  "schema": "aurex.cclxxvii.qwen.v1",
+  "status": "LIVE_QWEN_NOT_VERIFIED",
+  "observed_at": "2026-11-06T21:02:00-0600",
+  "website": {
+    "route": "/xaeli",
+    "rendered": "Model link: unavailable. No live model response is shown. The examples on this page are scripted."
+  },
+  "flags": {
+    "AUREX_XAELI_STAGING_ENABLED": null,
+    "AUREX_QWEN_BASE_URL": false
+  },
+  "private_dns": {
+    "host": "qwen-private-staging.railway.internal",
+    "result": "gaierror name not known"
+  },
+  "real_model_text_received": false,
+  "paid_inference": "OFF",
+  "blocker": "This process is not on the Railway private network, and the staging flags are unset, so the website does not send a model request."
+}

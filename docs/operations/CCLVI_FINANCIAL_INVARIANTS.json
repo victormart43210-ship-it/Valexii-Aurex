@@ -1,0 +1,27 @@
+{
+  "operation": "KUSANAGI_CCLVI",
+  "tested_code_sha": "bd1c4d00559bed86d4e37aab103204cf95829769",
+  "golden": {
+    "identified_exposure_usd": "385.00",
+    "withheld_unresolved_usd": "150.00",
+    "confirmed_recovery_usd": "0.00",
+    "invoice_discrepancy_usd": "10.00",
+    "confirmed_invoice_recovery_usd": "0.00",
+    "event_separation": "NO_RELATIONSHIP_EVIDENCE",
+    "observed": "PASS on tests/test_dispater_golden_audit.py"
+  },
+  "rules": [
+    "Equal amounts are not proof of one event.",
+    "A different customer id is proof of a distinct event only after case, width, punctuation, and lookalike folding, and only when no non-ASCII character remains.",
+    "One unresolved unbilled job and one unresolved orphan invoice with different amounts and no shared job id stay identified and are labeled NO_RELATIONSHIP_EVIDENCE.",
+    "A shared job id, including letter case only, withholds the pair.",
+    "One orphan payment withholds the unbilled job when the amounts match, or when the payment names that job. Extra unmatched payments stay. Several jobs at the same amount are not all withheld.",
+    "Confirmed recovery is hardcoded 0.00. Suspected exposure is not recovered revenue."
+  ],
+  "authority": {
+    "financial_authority": "NONE",
+    "customer_decides": true,
+    "third_party_contact": "NONE",
+    "training_reuse": "NOT_AUTHORIZED"
+  }
+}

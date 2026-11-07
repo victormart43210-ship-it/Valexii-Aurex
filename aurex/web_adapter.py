@@ -13,13 +13,18 @@ NOT VERIFIED UNTIL LIVE STAGING ACCESS IS PROVIDED.
 from __future__ import annotations
 
 import os
+import re
 from collections.abc import Mapping
 from typing import Any
 from urllib.parse import urlparse
 
 import httpx
 
+from aurex.customer_sovereignty import SovereigntyError
+from aurex.egress import connector_destination_allowed
+
 _JOB_FIELDS = ("id", "state", "kind", "createdAt", "updatedAt")
+_JOB_VALUE = re.compile(r"^[A-Za-z0-9_.:+-]{1,80}$")
 
 
 class WebsiteAdapter:
@@ -35,8 +40,14 @@ class WebsiteAdapter:
             raise ValueError("base_url must include a scheme and host")
 
         self.base_url = base_url.rstrip("/")
+        self._pinned_base = self.base_url
         self.token_env = service_token_env
         self._client = httpx.Client(base_url=self.base_url, timeout=10.0)
+
+    def _destination_allowed(self) -> bool:
+        if self.base_url != self._pinned_base:
+            return False
+        return connector_destination_allowed(self._pinned_base)
 
     def _auth_header(self) -> dict[str, str]:
         token = os.environ.get(self.token_env)
@@ -50,8 +61,9 @@ class WebsiteAdapter:
             raise ValueError("job payload must be a mapping")
         sanitized: dict[str, Any] = {}
         for key in _JOB_FIELDS:
-            if key in payload:
-                sanitized[key] = payload[key]
+            value = payload.get(key)
+            if isinstance(value, str) and _JOB_VALUE.fullmatch(value):
+                sanitized[key] = value
         return sanitized
 
     def create_job(
@@ -59,13 +71,15 @@ class WebsiteAdapter:
         payload: Mapping[str, Any],
         idempotency_key: str | None = None,
     ) -> dict[str, Any]:
+        if not self._destination_allowed():
+            raise SovereigntyError("EGRESS_DESTINATION_NOT_ALLOWLISTED")
         headers = self._auth_header()
         if idempotency_key:
             headers["Idempotency-Key"] = idempotency_key
 
         response = self._client.post(
             "/v1/jobs",
-            json=dict(payload),
+            json=self._sanitize_job(payload),
             headers=headers,
         )
         response.raise_for_status()
@@ -75,6 +89,8 @@ class WebsiteAdapter:
         return self._sanitize_job(data)
 
     def get_job(self, job_id: str) -> dict[str, Any]:
+        if not self._destination_allowed():
+            raise SovereigntyError("EGRESS_DESTINATION_NOT_ALLOWLISTED")
         headers = self._auth_header()
         response = self._client.get(f"/v1/jobs/{job_id}", headers=headers)
         if response.status_code == 404:

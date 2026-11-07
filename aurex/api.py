@@ -19,13 +19,18 @@ from aurex.database import (
     list_evidence,
     list_jobs,
 )
+from aurex.dispater_api import BodyLimitMiddleware
+from aurex.dispater_api import router as dispater_router
 from aurex.fenced_worker import cancel_job, claim_job, finalize_job
 from aurex.governance_math.industrial_api import router as industrial_demo_router
 from aurex.governance_math.research_api import router as research_advice_router
 from aurex.industrial_execution import router as towing_router
 from aurex.integrations.pilot_policy import review_synthetic_pilot
+from aurex.readiness import readiness
 from aurex.real_offline_probe import execute_sqlite_roundtrip
+from aurex.relationships.api import router as relationship_router
 from aurex.workflows.budget import BudgetGuard
+from aurex.xaeli_staging import router as xaeli_staging_router
 from aurex_foundation.correlation import CorrelationMiddleware
 from aurex_foundation.opa import evaluate_policy
 
@@ -36,6 +41,7 @@ app = FastAPI(
 )
 
 app.add_middleware(CorrelationMiddleware)
+app.add_middleware(BodyLimitMiddleware)
 
 budget_guard = BudgetGuard(limit_usd=Decimal("0.00"))
 
@@ -81,6 +87,10 @@ def authenticate(authorization: str | None = Header(default=None)) -> str:
 app.include_router(research_advice_router, dependencies=[Depends(authenticate)])
 app.include_router(industrial_demo_router, dependencies=[Depends(authenticate)])
 app.include_router(towing_router, dependencies=[Depends(authenticate)])
+app.include_router(xaeli_staging_router, dependencies=[Depends(authenticate)])
+# DISPATER enforces its own tenant-bound authorization (aurex.dispater_api).
+app.include_router(dispater_router)
+app.include_router(relationship_router)
 
 
 class JobCreateRequest(BaseModel):
@@ -138,11 +148,29 @@ class BudgetResponse(BaseModel):
 
 @app.get("/v1/health")
 @app.get("/health")
-def health() -> dict[str, str]:
-    return {
-        "status": "ok",
+def health() -> dict[str, Any]:
+    report = readiness()
+    body = {
+        "process": report["process"],
+        "readiness": report["readiness"],
+        "stores": report["stores"],
+        "model": report["model"],
         "version": "0.1.0a1",
         "time": datetime.now(UTC).isoformat(),
+    }
+    if report["readiness"] == "DEPENDENCY_UNAVAILABLE":
+        raise HTTPException(status_code=503, detail=body)
+    return body
+
+
+@app.get("/v1/providers")
+def providers(_: str = Depends(authenticate)) -> dict[str, Any]:
+    report = readiness()
+    return {
+        "authority": "NONE",
+        "effect": "NONE",
+        "paid_inference": "OFF",
+        "providers": [report["provider"]],
     }
 
 

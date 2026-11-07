@@ -29,7 +29,13 @@ class OpenAICompatibleAdapter(ModelAdapter):
         local_loopback: bool = False,
     ) -> None:
         url = urlsplit(base_url)
-        allowed_scheme = "http" if local_loopback else "https"
+        private_qwen = (
+            base_url == "http://qwen-private-staging.railway.internal:8080/v1"
+            and provider == "llama.cpp"
+            and os.environ.get("AUREX_RAILWAY_PRIVATE_QWEN_ENABLED") == "1"
+            and bool(os.environ.get("RAILWAY_ENVIRONMENT_ID"))
+        )
+        allowed_scheme = "http" if local_loopback or private_qwen else "https"
         if local_loopback and url.hostname not in ("127.0.0.1", "::1"):
             raise ValueError("Local inference requires a literal loopback address")
         if (
