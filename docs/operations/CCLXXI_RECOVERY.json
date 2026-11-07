@@ -1,0 +1,6 @@
+{
+ "main_sha_before": "34cda4bd8f207f5b1284093b87e4760d782a4903",
+ "branch": "integration/kusanagi-cclxxi-final",
+ "candidate": "a6b476dc27356a6514a595dfa3c99d924f556e6d",
+ "recover": "git fetch origin +refs/pull/*/head:refs/remotes/pr/*; git checkout integration/kusanagi-cclxxi-final"
+}
