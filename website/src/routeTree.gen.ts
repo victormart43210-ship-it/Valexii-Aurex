@@ -41,6 +41,7 @@ import { Route as AdminAurexControlRouteImport } from './routes/admin.aurex-cont
 import { Route as AurexOxIndexRouteImport } from './routes/aurex-ox.index'
 import { Route as AurexOxModelLaboratoryRouteImport } from './routes/aurex-ox.model-laboratory'
 import { Route as EarlyAccessConfirmRouteImport } from './routes/early-access.confirm'
+import { Route as ResearchManuscriptForensicsRouteImport } from './routes/research_.manuscript-forensics'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -202,6 +203,12 @@ const EarlyAccessConfirmRoute = EarlyAccessConfirmRouteImport.update({
   path: '/early-access/confirm',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ResearchManuscriptForensicsRoute =
+  ResearchManuscriptForensicsRouteImport.update({
+    id: '/research_/manuscript-forensics',
+    path: '/research/manuscript-forensics',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -235,6 +242,7 @@ export interface FileRoutesByFullPath {
   '/admin/aurex-control': typeof AdminAurexControlRoute
   '/aurex-ox/model-laboratory': typeof AurexOxModelLaboratoryRoute
   '/early-access/confirm': typeof EarlyAccessConfirmRoute
+  '/research/manuscript-forensics': typeof ResearchManuscriptForensicsRoute
   '/aurex-ox/': typeof AurexOxIndexRoute
 }
 export interface FileRoutesByTo {
@@ -268,6 +276,7 @@ export interface FileRoutesByTo {
   '/admin/aurex-control': typeof AdminAurexControlRoute
   '/aurex-ox/model-laboratory': typeof AurexOxModelLaboratoryRoute
   '/early-access/confirm': typeof EarlyAccessConfirmRoute
+  '/research/manuscript-forensics': typeof ResearchManuscriptForensicsRoute
   '/aurex-ox': typeof AurexOxIndexRoute
 }
 export interface FileRoutesById {
@@ -303,6 +312,7 @@ export interface FileRoutesById {
   '/admin/aurex-control': typeof AdminAurexControlRoute
   '/aurex-ox/model-laboratory': typeof AurexOxModelLaboratoryRoute
   '/early-access/confirm': typeof EarlyAccessConfirmRoute
+  '/research_/manuscript-forensics': typeof ResearchManuscriptForensicsRoute
   '/aurex-ox/': typeof AurexOxIndexRoute
 }
 export interface FileRouteTypes {
@@ -339,6 +349,7 @@ export interface FileRouteTypes {
     | '/admin/aurex-control'
     | '/aurex-ox/model-laboratory'
     | '/early-access/confirm'
+    | '/research/manuscript-forensics'
     | '/aurex-ox/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -372,6 +383,7 @@ export interface FileRouteTypes {
     | '/admin/aurex-control'
     | '/aurex-ox/model-laboratory'
     | '/early-access/confirm'
+    | '/research/manuscript-forensics'
     | '/aurex-ox'
   id:
     | '__root__'
@@ -406,6 +418,7 @@ export interface FileRouteTypes {
     | '/admin/aurex-control'
     | '/aurex-ox/model-laboratory'
     | '/early-access/confirm'
+    | '/research_/manuscript-forensics'
     | '/aurex-ox/'
   fileRoutesById: FileRoutesById
 }
@@ -440,6 +453,7 @@ export interface RootRouteChildren {
   XaitaRoute: typeof XaitaRoute
   AdminAurexControlRoute: typeof AdminAurexControlRoute
   EarlyAccessConfirmRoute: typeof EarlyAccessConfirmRoute
+  ResearchManuscriptForensicsRoute: typeof ResearchManuscriptForensicsRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -668,6 +682,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof EarlyAccessConfirmRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/research_/manuscript-forensics': {
+      id: '/research_/manuscript-forensics'
+      path: '/research/manuscript-forensics'
+      fullPath: '/research/manuscript-forensics'
+      preLoaderRoute: typeof ResearchManuscriptForensicsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -715,6 +736,7 @@ const rootRouteChildren: RootRouteChildren = {
   XaitaRoute: XaitaRoute,
   AdminAurexControlRoute: AdminAurexControlRoute,
   EarlyAccessConfirmRoute: EarlyAccessConfirmRoute,
+  ResearchManuscriptForensicsRoute: ResearchManuscriptForensicsRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
