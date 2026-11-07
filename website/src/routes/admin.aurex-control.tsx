@@ -181,6 +181,16 @@ function Console() {
               </div>
             ))}
             <div>
+              <dt className="text-muted-foreground">Persisted job outcomes</dt>
+              <dd>
+                {diag.data.jobOutcomes
+                  ? Object.entries(diag.data.jobOutcomes)
+                      .map(([name, count]) => `${name} ${count}`)
+                      .join(", ") || "none"
+                  : "unknown"}
+              </dd>
+            </div>
+            <div>
               <dt className="text-muted-foreground">Remote budget limit</dt>
               <dd>
                 {diag.data.remoteBudgetLimitUsd === null

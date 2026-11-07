@@ -46,6 +46,18 @@ export const JobSchema = z
     createdAt: iso,
     updatedAt: iso,
     reservationUsd: z.number().min(0).max(10_000),
+    execution: z.enum(["queued", "active", "stale", "confirmed", "failed", "cancelled", "unknown"]).optional(),
+    outcome: z
+      .enum([
+        "NOT_STARTED",
+        "IN_PROGRESS",
+        "CONFIRMED",
+        "EXECUTION_FAILURE",
+        "LEASE_EXPIRED",
+        "CANCELLED",
+        "UNKNOWN",
+      ])
+      .optional(),
   })
   .strict();
 export const JobListSchema = z

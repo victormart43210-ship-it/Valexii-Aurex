@@ -21,7 +21,14 @@ from aurex.database import (
 )
 from aurex.dispater_api import BodyLimitMiddleware
 from aurex.dispater_api import router as dispater_router
-from aurex.fenced_worker import cancel_job, claim_job, fail_job, finalize_job
+from aurex.fenced_worker import (
+    cancel_job,
+    claim_job,
+    classify_job,
+    fail_job,
+    finalize_job,
+    recover_expired_leases,
+)
 from aurex.governance_math.industrial_api import router as industrial_demo_router
 from aurex.governance_math.research_api import router as research_advice_router
 from aurex.industrial_execution import router as towing_router
@@ -119,6 +126,22 @@ class JobResponse(BaseModel):
     createdAt: str
     updatedAt: str
     reservationUsd: float
+    execution: str = "unknown"
+    outcome: str = "UNKNOWN"
+
+
+def _job_response(row: dict[str, Any]) -> JobResponse:
+    execution, outcome = classify_job(row)
+    return JobResponse(
+        id=row["id"],
+        kind=row["kind"],
+        state=row["state"],
+        createdAt=row["created_at"],
+        updatedAt=row["updated_at"],
+        reservationUsd=row["reservation_usd"],
+        execution=execution,
+        outcome=outcome,
+    )
 
 
 class JobListResponse(BaseModel):
@@ -241,19 +264,9 @@ def capabilities(_: str = Depends(authenticate)) -> CapabilitiesResponse:
 
 @app.get("/v1/jobs", response_model=JobListResponse)
 def get_jobs(_: str = Depends(authenticate)) -> JobListResponse:
+    recover_expired_leases(DEFAULT_DB_PATH)
     raw_jobs = list_jobs(DEFAULT_DB_PATH)
-    res = [
-        JobResponse(
-            id=j["id"],
-            kind=j["kind"],
-            state=j["state"],
-            createdAt=j["created_at"],
-            updatedAt=j["updated_at"],
-            reservationUsd=j["reservation_usd"],
-        )
-        for j in raw_jobs
-    ]
-    return JobListResponse(jobs=res, nextCursor=None)
+    return JobListResponse(jobs=[_job_response(j) for j in raw_jobs], nextCursor=None)
 
 
 @app.post("/v1/jobs", response_model=JobResponse)
@@ -336,6 +349,8 @@ def create_job_endpoint(
                     raise HTTPException(
                         status_code=503, detail="Job persistence unavailable; execution not verified"
                     ) from None
+                else:
+                    recover_expired_leases(DEFAULT_DB_PATH)
                 raise HTTPException(status_code=503, detail="Probe not finalized; execution not verified") from None
         else:
             resolved_job = get_job(DEFAULT_DB_PATH, job_id)
@@ -343,25 +358,15 @@ def create_job_endpoint(
         resolved_job = get_job(DEFAULT_DB_PATH, job_id)
     if resolved_job is None:
         raise HTTPException(status_code=500, detail="Job state unavailable")
-    return JobResponse(
-        id=resolved_job["id"], kind=resolved_job["kind"], state=resolved_job["state"],
-        createdAt=resolved_job["created_at"], updatedAt=resolved_job["updated_at"],
-        reservationUsd=resolved_job["reservation_usd"],
-    )
+    return _job_response(resolved_job)
 
 @app.get("/v1/jobs/{job_id}", response_model=JobResponse)
 def get_job_endpoint(job_id: str, _: str = Depends(authenticate)) -> JobResponse:
+    recover_expired_leases(DEFAULT_DB_PATH)
     j = get_job(DEFAULT_DB_PATH, job_id)
     if not j:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Job not found")
-    return JobResponse(
-        id=j["id"],
-        kind=j["kind"],
-        state=j["state"],
-        createdAt=j["created_at"],
-        updatedAt=j["updated_at"],
-        reservationUsd=j["reservation_usd"],
-    )
+    return _job_response(j)
 
 
 @app.post("/v1/jobs/{job_id}/cancel", response_model=JobResponse)
@@ -372,14 +377,7 @@ def cancel_job_endpoint(job_id: str, _: str = Depends(authenticate)) -> JobRespo
     updated = cancel_job(DEFAULT_DB_PATH, job_id)
     if not updated:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Job not found")
-    return JobResponse(
-        id=updated["id"],
-        kind=updated["kind"],
-        state=updated["state"],
-        createdAt=updated["created_at"],
-        updatedAt=updated["updated_at"],
-        reservationUsd=updated["reservation_usd"],
-    )
+    return _job_response(updated)
 
 
 @app.get("/v1/evidence", response_model=EvidenceListResponse)

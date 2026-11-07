@@ -129,6 +129,67 @@ def fail_job(
         conn.close()
 
 
+def recover_expired_leases(db_path: str) -> int:
+    """Persist an unobserved crash as failure. A live lease is not touched.
+
+    No evidence row is written, so an expired lease cannot become a success.
+    """
+    conn = get_db(db_path)
+    try:
+        conn.execute("BEGIN IMMEDIATE")
+        _ensure_generation(conn)
+        now = _now().isoformat()
+        cur = conn.execute(
+            """UPDATE jobs SET state='failed', updated_at=?, error_json=?,
+               lease_token=NULL, lease_expires_at=NULL
+               WHERE state='running' AND (lease_expires_at IS NULL OR lease_expires_at<=?)""",
+            (now, json.dumps({"kind": "LEASE_EXPIRED"}), now),
+        )
+        conn.commit()
+        return cur.rowcount
+    except BaseException:
+        conn.rollback()
+        raise
+    finally:
+        conn.close()
+
+
+def classify_job(row: dict[str, Any], now: str | None = None) -> tuple[str, str]:
+    """Map a stored row to a public execution label and a redacted outcome.
+
+    The label is derived from the persisted state. It is not a second status column.
+    """
+    state = row.get("state")
+    if state == "queued":
+        return "queued", "NOT_STARTED"
+    if state == "succeeded":
+        return "confirmed", "CONFIRMED"
+    if state == "cancelled":
+        return "cancelled", "CANCELLED"
+    if state == "failed":
+        kind = None
+        raw = row.get("error_json")
+        if isinstance(raw, str) and raw:
+            try:
+                parsed = json.loads(raw)
+            except json.JSONDecodeError:
+                parsed = None
+            if isinstance(parsed, dict):
+                kind = parsed.get("kind")
+        if kind == "EXECUTION_FAILURE":
+            return "failed", "EXECUTION_FAILURE"
+        if kind == "LEASE_EXPIRED":
+            return "failed", "LEASE_EXPIRED"
+        return "unknown", "UNKNOWN"
+    if state == "running":
+        expiry = row.get("lease_expires_at")
+        current = now or _now().isoformat()
+        if isinstance(expiry, str) and expiry > current:
+            return "active", "IN_PROGRESS"
+        return "stale", "UNKNOWN"
+    return "unknown", "UNKNOWN"
+
+
 def cancel_job(db_path: str, job_id: str) -> dict[str, Any] | None:
     conn = get_db(db_path)
     try:

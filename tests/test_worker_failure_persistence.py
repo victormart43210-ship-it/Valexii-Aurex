@@ -162,3 +162,63 @@ def test_success_and_failure_race_has_one_terminal_outcome(tmp_path):
         assert job['state'] in {'succeeded', 'failed'}
         assert len(list_evidence(db)) == (1 if job['state'] == 'succeeded' else 0)
         assert job['lease_token'] is None
+
+
+def test_expired_lease_read_becomes_failed_without_evidence(tmp_path, monkeypatch):
+    from aurex.database import create_job
+    from aurex.fenced_worker import claim_job
+
+    db = str(tmp_path / 'crashed.db')
+    monkeypatch.setattr(api, 'DEFAULT_DB_PATH', db)
+    monkeypatch.setenv('AUREX_SERVICE_TOKEN', 'a' * 32)
+    monkeypatch.delenv('AUREX_ADMIN_TOKEN', raising=False)
+    create_job(db, 'job-crash', 'regression_scan', {'probe': 'sqlite_roundtrip_v1'})
+    claim_job(db, 'job-crash', 'worker')
+    conn = get_db(db)
+    conn.execute('UPDATE jobs SET lease_expires_at=? WHERE id=?',
+                 ((datetime.now(UTC) - timedelta(seconds=5)).isoformat(), 'job-crash'))
+    conn.commit()
+    conn.close()
+    response = TestClient(api.app).get(
+        '/v1/jobs/job-crash', headers={'Authorization': 'Bearer ' + 'a' * 32})
+    assert response.status_code == 200
+    body = response.json()
+    assert body['state'] == 'failed'
+    assert body['execution'] == 'failed'
+    assert body['outcome'] == 'LEASE_EXPIRED'
+    stored = get_job(db, 'job-crash')
+    assert stored['state'] == 'failed'
+    assert json.loads(stored['error_json']) == {'kind': 'LEASE_EXPIRED'}
+    assert 'secret' not in response.text
+    assert list_evidence(db) == []
+
+
+def test_live_lease_stays_running_and_a_new_request_does_not_reuse_it(tmp_path, monkeypatch):
+    db = str(tmp_path / 'live.db')
+    monkeypatch.setattr(api, 'DEFAULT_DB_PATH', db)
+    monkeypatch.setenv('AUREX_SERVICE_TOKEN', 'a' * 32)
+    monkeypatch.delenv('AUREX_ADMIN_TOKEN', raising=False)
+    monkeypatch.setenv('AUREX_ENABLE_OFFLINE_LAB', '1')
+
+    def broken(_params):
+        raise RuntimeError('private-stack-trace')
+
+    monkeypatch.setattr(api, 'execute_sqlite_roundtrip', broken)
+    client = TestClient(api.app)
+    headers = {'Authorization': 'Bearer ' + 'a' * 32}
+    first = client.post('/v1/jobs', headers={**headers, 'Idempotency-Key': 'once'},
+                        json={'kind': 'regression_scan', 'params': {'probe': 'sqlite_roundtrip_v1'}})
+    assert first.status_code == 503
+    again = client.post('/v1/jobs', headers={**headers, 'Idempotency-Key': 'twice'},
+                        json={'kind': 'regression_scan', 'params': {'probe': 'sqlite_roundtrip_v1'}})
+    assert again.status_code == 503
+    jobs = list_jobs(db)
+    assert len(jobs) == 2
+    assert {job['state'] for job in jobs} == {'failed'}
+    assert list_evidence(db) == []
+    replay = client.post('/v1/jobs', headers={**headers, 'Idempotency-Key': 'once'},
+                         json={'kind': 'regression_scan', 'params': {'probe': 'sqlite_roundtrip_v1'}})
+    assert replay.status_code == 200
+    assert replay.json()['state'] == 'failed'
+    assert replay.json()['outcome'] == 'EXECUTION_FAILURE'
+    assert len(list_jobs(db)) == 2

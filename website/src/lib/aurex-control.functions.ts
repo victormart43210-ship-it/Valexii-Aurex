@@ -139,5 +139,12 @@ export const getAurexDiagnostics = createServerFn({ method: "GET" })
       },
       remoteBudgetLimitUsd: budget?.ok ? budget.value.limitUsd : null,
       evidenceBackedCapabilities: backed,
+      jobOutcomes: jobs?.ok
+        ? jobs.value.jobs.reduce<Record<string, number>>((counts, job) => {
+            const key = job.outcome ?? "UNKNOWN";
+            counts[key] = (counts[key] ?? 0) + 1;
+            return counts;
+          }, {})
+        : null,
     };
   });
