@@ -1,3 +1,5 @@
+import { DispaterCommandCenter } from "@/components/dispater-command-center";
+import { DispaterReconciliationConsole } from "@/components/dispater-reconciliation-console";
 import dispaterHero from "../../public/assets/dispater-hero.jpg.asset.json";
 import { ReasoningSpine } from "@/components/reasoning-spine";
 import { DomainReasoning } from "@/components/domain-reasoning";
@@ -174,6 +176,10 @@ function Dispater() {
             records or connected accounting and dispatch systems; NVIDIA explanations and
             customer-data processing are not enabled on this public page.
           </p>
+          <div className="my-8 space-y-8">
+            <DispaterCommandCenter />
+            <DispaterReconciliationConsole />
+          </div>
           <div className="mt-8 grid gap-5 lg:grid-cols-2">
             <article className="rounded-xl border border-primary/40 bg-card p-6">
               <p className="text-xs font-semibold uppercase text-primary">

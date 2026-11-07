@@ -1,0 +1,67 @@
+{
+ "operation_id": "CCXXIV",
+ "status": "PARTIAL",
+ "production": "HOLD",
+ "financial_authority": "NONE",
+ "repository": "victormart43210-ship-it/Valexii-Aurex",
+ "candidate_pr": 162,
+ "base_sha_under_test": "e5115a613d0e7a28beda2266b47761db0b863428",
+ "gates": {
+  "jules_coordination": {
+   "status": "PARTIAL",
+   "evidence": "No CCXXIII PR/branch/comment published as of 2026-11-05; #159 advanced to 08cf6b4 (d901ddc, 08cf6b4) touching api.py/dispater_api.py/docs only; Issue #152 has 0 comments. File ownership posted."
+  },
+  "receipt_authenticity": {
+   "status": "PASS_LOCAL",
+   "evidence": "Unkeyed SHA-256 receipt was forgeable by DB writers (confirmed); added HMAC-SHA256 receipt_mac + key id, fail-closed. tests/test_dispater_receipt_authenticity.py (16 tests)."
+  },
+  "request_replay_nonce": {
+   "status": "NOT_IMPLEMENTED",
+   "evidence": "Requests use bearer tokens with no per-principal durable nonce. Submissions are idempotent on (tenant, dataset_sha256) so replay has no duplicate effect (tested). Durable nonce/timestamp is an owner decision."
+  },
+  "rfc8785": {
+   "status": "NOT_CONFORMANT",
+   "evidence": "sort_keys/compact JSON used; adequate for string/decimal-string payloads, not full RFC 8785 number/unicode rules."
+  },
+  "storage": {
+   "status": "PASS_LOCAL_BLOCKED_STAGING",
+   "evidence": "Existing tests + new SIGKILL mid-write test; real Railway volume test BLOCKED: no staging/volume access; Dockerfile creates /data only."
+  },
+  "financial_oracle": {
+   "status": "PARTIAL",
+   "scenarios": {
+    "externally_researched": 0,
+    "implemented": 41,
+    "passing": 41,
+    "failing": 0,
+    "blocked": "contract amendments, rate changes mid-period, equipment-hour/unit conversion, currency, stale-source cases not modelled by engine"
+   },
+   "finding": "Duplicate-invoice exposure depended on input row order ($60 vs $100); fixed by sorting by invoice_id. Owner must confirm the duplicate-exposure semantic."
+  },
+  "shared_regression": {
+   "status": "PASS_LOCAL",
+   "evidence": "Full pytest 591 passed/1 skipped; no changes to XAELI/Qwen/auth/frontend."
+  },
+  "end_to_end_website_to_backend": {
+   "status": "NOT_RUN",
+   "evidence": "API-level flow (reconcile, findings, dashboard, export, tenant isolation) covered by pytest; no browser/website-to-API run, no staging."
+  },
+  "frontend": {
+   "status": "PASS_LOCAL",
+   "evidence": "dispater-web: npm test 25/25, npm run build OK. website/ not run."
+  },
+  "ci": {
+   "status": "PARTIAL",
+   "evidence": "CI green on e5115a6 (5 workflows). CI for the new patch commit pending/unverified at time of writing."
+  },
+  "release_gate": {
+   "status": "NOT_MET",
+   "evidence": "No 108-run battery, staging, shadow/canary, SLO, owner authorization. Stage: EXPERIMENTAL."
+  }
+ },
+ "local_results": {
+  "pytest": "591 passed, 1 skipped",
+  "ruff": "pass",
+  "mypy_strict_aurex_aurex_foundation": "pass (88 files)"
+ }
+}
