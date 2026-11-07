@@ -1,22 +1,15 @@
 // Server-only handler for DISPATER reconciliation. No client secrets exposed.
-import goldenLedger from "./golden-ledger.json";
 import {
   DispaterDocumentIngestionSchema,
   DispaterReconciliationReportSchema,
   DispaterRunListSchema,
   DispaterVerifiedExportSchema,
-  FindingExplanationSchema,
   ObservationDecisionSchema,
-  RelationshipPostSchema,
-  RelationshipReadSchema,
   type DispaterDocumentIngestion,
   type DispaterReconciliationReport,
   type DispaterRunList,
   type DispaterVerifiedExport,
-  type FindingExplanation,
   type ObservationDecision,
-  type RelationshipPost,
-  type RelationshipRead,
 } from "./dispater-contract";
 
 const OILFIELD_SYNTHETIC_FIXTURE: Record<string, unknown> = {
@@ -145,39 +138,6 @@ export function resolveDispaterConfig(config: DispaterServerConfig): {
 
 export function getFixture(name: "oilfield_demo_v1" | "clean_control_v1"): Record<string, unknown> {
   return name === "clean_control_v1" ? CLEAN_CONTROL_FIXTURE : OILFIELD_SYNTHETIC_FIXTURE;
-}
-
-export function goldenLedgerDataset(): Record<string, unknown> {
-  return {
-    ...goldenLedger,
-    companies: [{ company_id: "CO-GOLDEN", customer_id: "C1" }],
-    contracts: [{ contract_id: "K-GOLDEN", job_id: "J00" }],
-    approvals: [
-      { approval_id: "A-GOLDEN", invoice_id: "I00", disposition: "PENDING_HUMAN_REVIEW" },
-    ],
-  };
-}
-
-async function dispaterFetch(
-  endpoint: string,
-  token: string,
-  init: { method: "GET" | "POST"; body?: string },
-  transport: typeof fetch,
-): Promise<Response> {
-  try {
-    return await transport(endpoint, {
-      method: init.method,
-      headers: {
-        Authorization: `Bearer ${token}`,
-        Accept: "application/json",
-        ...(init.body ? { "Content-Type": "application/json" } : {}),
-      },
-      ...(init.body ? { body: init.body } : {}),
-      signal: AbortSignal.timeout(6000),
-    });
-  } catch {
-    throw new Error("DISPATER backend unreachable");
-  }
 }
 
 export async function executeDispaterReconciliation(
@@ -341,104 +301,6 @@ export async function recordSyntheticObservation(
     throw new Error("DISPATER API returned an invalid report");
   }
   return parsed.data;
-}
-
-export async function executeDispaterRelationships(
-  config: DispaterServerConfig,
-  dataset: Record<string, unknown>,
-  transport: typeof fetch = fetch,
-): Promise<RelationshipPost> {
-  const { url, token, tenantId } = resolveDispaterConfig(config);
-  const endpoint = new URL("/v1/dispater/relationships", url).toString();
-  const response = await dispaterFetch(
-    endpoint,
-    token,
-    { method: "POST", body: JSON.stringify({ ...dataset, tenant_id: tenantId }) },
-    transport,
-  );
-  if (!response.ok) throw new Error(`DISPATER API error (${response.status})`);
-  const parsed = RelationshipPostSchema.safeParse(await response.json());
-  if (!parsed.success) throw new Error("DISPATER API returned an invalid report");
-  return parsed.data;
-}
-
-export async function readDispaterRelationships(
-  config: DispaterServerConfig,
-  datasetSha256: string,
-  transport: typeof fetch = fetch,
-): Promise<RelationshipRead> {
-  const { url, token, tenantId } = resolveDispaterConfig(config);
-  if (!/^[0-9a-f]{64}$/.test(datasetSha256)) throw new Error("DISPATER API returned an invalid report");
-  const endpoint = new URL("/v1/dispater/relationships", url);
-  endpoint.searchParams.set("tenant_id", tenantId);
-  endpoint.searchParams.set("dataset_sha256", datasetSha256);
-  const response = await dispaterFetch(endpoint.toString(), token, { method: "GET" }, transport);
-  if (!response.ok) throw new Error(`DISPATER API error (${response.status})`);
-  const parsed = RelationshipReadSchema.safeParse(await response.json());
-  if (!parsed.success || parsed.data.tenant_id !== tenantId || parsed.data.dataset_sha256 !== datasetSha256) {
-    throw new Error("DISPATER API returned an invalid report");
-  }
-  return parsed.data;
-}
-
-export async function readFindingExplanation(
-  config: DispaterServerConfig,
-  findingId: string,
-  runId: string,
-  transport: typeof fetch = fetch,
-): Promise<FindingExplanation> {
-  const { url, token, tenantId } = resolveDispaterConfig(config);
-  const endpoint = new URL("/v1/dispater/explanations", url);
-  endpoint.searchParams.set("tenant_id", tenantId);
-  endpoint.searchParams.set("finding_id", findingId);
-  endpoint.searchParams.set("run_id", runId);
-  const response = await dispaterFetch(endpoint.toString(), token, { method: "GET" }, transport);
-  if (!response.ok) throw new Error(`DISPATER API error (${response.status})`);
-  const parsed = FindingExplanationSchema.safeParse(await response.json());
-  if (!parsed.success || parsed.data.finding_id !== findingId || parsed.data.confirmed_recovery_usd !== "0.00") {
-    throw new Error("DISPATER API returned an invalid report");
-  }
-  return parsed.data;
-}
-
-export interface GoldenLedgerView {
-  report: DispaterReconciliationReport;
-  relationships: RelationshipRead;
-  explanation: FindingExplanation;
-  unresolved: RelationshipPost["relationships"]["unresolved"];
-}
-
-export async function executeGoldenLedger(
-  config: DispaterServerConfig,
-  transport: typeof fetch = fetch,
-): Promise<GoldenLedgerView> {
-  const posted = await executeDispaterRelationships(config, goldenLedgerDataset(), transport);
-  const report = await readDispaterRun(config, posted.run_id, transport);
-  const summary = report.financial_summary;
-  if (
-    summary.identified_exposure_usd !== posted.identified_exposure_usd ||
-    summary.withheld_unresolved_usd !== posted.withheld_unresolved_usd ||
-    summary.confirmed_recovery_usd !== "0.00"
-  ) {
-    throw new Error("DISPATER API returned an invalid report");
-  }
-  const relationships = await readDispaterRelationships(config, posted.dataset_sha256, transport);
-  if (
-    relationships.objects.length !== posted.relationships.object_count ||
-    relationships.relations.length !== posted.relationships.relation_count
-  ) {
-    throw new Error("DISPATER API returned an invalid report");
-  }
-  const explanation = await readFindingExplanation(
-    config,
-    "FND-UNBILLED_JOB-J02",
-    posted.run_id,
-    transport,
-  );
-  if (explanation.suspected_exposure_usd !== "100.00" || explanation.calculated_discrepancy_usd !== null) {
-    throw new Error("DISPATER API returned an invalid report");
-  }
-  return { report, relationships, explanation, unresolved: posted.relationships.unresolved };
 }
 
 function bytesToBase64(bytes: Uint8Array): string {

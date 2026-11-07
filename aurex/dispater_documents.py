@@ -95,9 +95,7 @@ def extract_pdf(raw: bytes, source_sha256: str) -> tuple[dict[str, list[dict[str
     return tables, provenance
 
 
-def extract_xlsx(
-    raw: bytes, source_sha256: str = ""
-) -> tuple[dict[str, list[dict[str, str]]], list[dict[str, Any]]]:
+def extract_xlsx(raw: bytes) -> dict[str, list[dict[str, str]]]:
     try:
         archive = zipfile.ZipFile(io.BytesIO(raw))
     except zipfile.BadZipFile as exc:
@@ -121,66 +119,39 @@ def extract_xlsx(
         if len(workbook.sheetnames) > MAX_SHEETS:
             raise IngestError("spreadsheet has too many sheets")
         tables: dict[str, list[dict[str, str]]] = {name: [] for name in (*TABLES, "equipment", "labor")}
-        provenance: list[dict[str, Any]] = []
         for sheet_name in workbook.sheetnames:
             if sheet_name not in tables:
                 raise IngestError(f"sheet {sheet_name} is not a supported table")
             sheet = workbook[sheet_name]
-            rows = sheet.iter_rows(values_only=False)
+            rows = sheet.iter_rows(values_only=True)
             try:
                 header = next(rows)
             except StopIteration as exc:
                 raise IngestError(f"sheet {sheet_name} is empty") from exc
-            columns = [
-                str(getattr(cell, "value", None)).strip()
-                if cell is not None and getattr(cell, "value", None) is not None
-                else ""
-                for cell in header
-            ]
+            columns = [str(cell).strip() if cell is not None else "" for cell in header]
             expected = REQUIRED[sheet_name]
             if any(key not in columns for key in expected):
                 raise IngestError(f"sheet {sheet_name} is missing required columns")
             for index, row in enumerate(rows, start=2):
                 if index - 1 > 2000:
                     raise IngestError("spreadsheet exceeds the row limit")
-                values = [getattr(cell, "value", None) if cell is not None else None for cell in row]
-                coordinates = [
-                    str(getattr(cell, "coordinate", "") or "") if cell is not None else ""
-                    for cell in row
-                ]
-                if all(cell is None or str(cell).strip() == "" for cell in values):
+                if row is None or all(cell is None or str(cell).strip() == "" for cell in row):
                     continue
                 record: dict[str, str] = {}
-                for key, cell, coordinate in zip(columns, values, coordinates, strict=False):
+                for key, cell in zip(columns, row, strict=False):
                     if key not in FIELDS[sheet_name] or cell is None:
                         continue
                     if isinstance(cell, bool | int | float):
                         raise IngestError(f"sheet {sheet_name} row {index} uses a numeric cell; money must be text")
-                    text = str(cell)
+                    text = "" if cell is None else str(cell)
                     if text.startswith("="):
                         text = "'" + text
-                    cleaned = _cell(text)
-                    record[key] = cleaned
-                    provenance.append(
-                        {
-                            "field": key,
-                            "value": cleaned,
-                            "qualification": "EXTRACTED",
-                            "method": "xlsx_cell",
-                            "processor": XLSX_PROCESSOR,
-                            "page": None,
-                            "sheet": sheet_name,
-                            "cell": coordinate,
-                            "source_sha256": source_sha256,
-                            "inferred": False,
-                            "review_required": False,
-                        }
-                    )
+                    record[key] = _cell(text)
                 if any(not record.get(key) for key in expected):
                     raise IngestError(f"sheet {sheet_name} row {index} is missing a required value")
                 record["_row"] = str(index)
                 tables[sheet_name].append(record)
-        return tables, provenance
+        return tables
     finally:
         workbook.close()
 

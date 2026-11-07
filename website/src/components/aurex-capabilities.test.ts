@@ -79,18 +79,6 @@ describe("AUREX service adapter fails closed", () => {
     ).toBe("OFFLINE");
     expect((await checkAurexService(env, ok({}, 503))).state).toBe("OFFLINE");
     expect((await checkAurexService(env, ok({ status: "ok" }))).state).toBe("OFFLINE");
-    expect(
-      (
-        await checkAurexService(env, ok({
-          process: "PROCESS_HEALTHY",
-          readiness: "DEGRADED",
-          stores: { aurex: "EPHEMERAL", dispater: "EPHEMERAL" },
-          model: "MODEL_UNAVAILABLE",
-          version: "0.1.0a1",
-          time: new Date().toISOString(),
-        }))
-      ).state,
-    ).toBe("DEGRADED");
   });
   it("checks the documented routes and only connects evidence-backed capabilities", async () => {
     const calls: string[] = [];
@@ -99,14 +87,7 @@ describe("AUREX service adapter fails closed", () => {
       expect(new Headers(init.headers).get("Authorization")).toBe("Bearer " + token);
       const body =
         input.pathname === "/v1/health"
-          ? {
-              process: "PROCESS_HEALTHY",
-              readiness: "READY",
-              stores: { aurex: "DURABLE", dispater: "DURABLE" },
-              model: "NOT_CONFIGURED",
-              version: "0.1.0a1",
-              time: new Date().toISOString(),
-            }
+          ? { status: "ok", version: "0.1.0", time: new Date().toISOString() }
           : input.pathname === "/v1/capabilities"
             ? {
                 capabilities: [
