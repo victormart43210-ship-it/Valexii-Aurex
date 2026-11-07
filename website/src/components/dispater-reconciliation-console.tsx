@@ -56,6 +56,7 @@ export function DispaterReconciliationConsole() {
   const [report, setReport] = useState<DispaterReconciliationReport | null>(null);
   const [sourceLine, setSourceLine] = useState<string | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [historyNote, setHistoryNote] = useState<string | null>(null);
   const [storedMatch, setStoredMatch] = useState<"MATCH" | "UNCHECKED" | null>(null);
   const [history, setHistory] = useState<DispaterRunSummary[]>([]);
   const [observation, setObservation] = useState<ObservationDecision | null>(null);
@@ -87,6 +88,7 @@ export function DispaterReconciliationConsole() {
     const requestId = beginRequest();
     setBusy(true);
     setErrorMsg(null);
+    setHistoryNote(null);
     setStoredMatch(null);
     setObservation(null);
     setLinks(null);
@@ -104,7 +106,7 @@ export function DispaterReconciliationConsole() {
         await refreshHistory(requestId);
       } catch (historyError: unknown) {
         if (!isCurrentRequest(requestId, requestSeq.current)) return;
-        setErrorMsg(historyError instanceof Error ? historyError.message : "Stored history could not be read");
+        setHistoryNote(historyError instanceof Error ? historyError.message : "Stored history could not be read");
       }
     } catch (err: unknown) {
       if (!isCurrentRequest(requestId, requestSeq.current)) return;
@@ -121,6 +123,7 @@ export function DispaterReconciliationConsole() {
     const requestId = beginRequest();
     setBusy(true);
     setErrorMsg(null);
+    setHistoryNote(null);
     setStoredMatch(null);
     setObservation(null);
     setLinks(null);
@@ -140,7 +143,7 @@ export function DispaterReconciliationConsole() {
         await refreshHistory(requestId);
       } catch (historyError: unknown) {
         if (!isCurrentRequest(requestId, requestSeq.current)) return;
-        setErrorMsg(historyError instanceof Error ? historyError.message : "Stored history could not be read");
+        setHistoryNote(historyError instanceof Error ? historyError.message : "Stored history could not be read");
       }
     } catch (err: unknown) {
       if (!isCurrentRequest(requestId, requestSeq.current)) return;
@@ -157,6 +160,7 @@ export function DispaterReconciliationConsole() {
     const requestId = beginRequest();
     setBusy(true);
     setErrorMsg(null);
+    setHistoryNote(null);
     setObservation(null);
     try {
       const admitted = await admitFn({ data: {} });
@@ -173,7 +177,7 @@ export function DispaterReconciliationConsole() {
         await refreshHistory(requestId);
       } catch (historyError: unknown) {
         if (!isCurrentRequest(requestId, requestSeq.current)) return;
-        setErrorMsg(historyError instanceof Error ? historyError.message : "Stored history could not be read");
+        setHistoryNote(historyError instanceof Error ? historyError.message : "Stored history could not be read");
       }
     } catch (err: unknown) {
       if (!isCurrentRequest(requestId, requestSeq.current)) return;
@@ -190,6 +194,7 @@ export function DispaterReconciliationConsole() {
     const requestId = beginRequest();
     setBusy(true);
     setErrorMsg(null);
+    setHistoryNote(null);
     try {
       await refreshHistory(requestId);
     } catch (err: unknown) {
@@ -204,6 +209,7 @@ export function DispaterReconciliationConsole() {
     const requestId = beginRequest();
     setBusy(true);
     setErrorMsg(null);
+    setHistoryNote(null);
     setObservation(null);
     try {
       const stored = await readFn({ data: { runId } });
@@ -232,6 +238,7 @@ export function DispaterReconciliationConsole() {
     const requestId = beginRequest();
     setBusy(true);
     setErrorMsg(null);
+    setHistoryNote(null);
     try {
       const exported = await exportFn({ data: { runId: report.run_id } });
       if (!isCurrentRequest(requestId, requestSeq.current)) return;
@@ -258,6 +265,7 @@ export function DispaterReconciliationConsole() {
     const requestId = beginRequest();
     setBusy(true);
     setErrorMsg(null);
+    setHistoryNote(null);
     try {
       const decision = await observeFn({ data: { sourceSha256: report.receipt_sha256 } });
       if (!isCurrentRequest(requestId, requestSeq.current)) return;
@@ -340,6 +348,7 @@ export function DispaterReconciliationConsole() {
       <p className="mt-4 text-xs uppercase tracking-wider text-muted-foreground" role="status">
         {dataOrigin(dispaterLinkState(busy, report, errorMsg))} · API link:{" "}
         {dispaterLinkState(busy, report, errorMsg)} · synthetic records · not recovered revenue
+        {historyNote ? ` · stored history: ${historyNote}` : ""}
       </p>
 
       {history.length > 0 && (
