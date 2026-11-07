@@ -7,7 +7,7 @@ import { NO_BACKEND, type BackendChecks } from "./aurex-capabilities";
 import { HealthSchema, MAX_RESPONSE_BYTES, capabilityBacked } from "./aurex-api-schema";
 
 export type ServiceState = {
-  state: "NOT_CONFIGURED" | "OFFLINE" | "HEALTHY";
+  state: "NOT_CONFIGURED" | "OFFLINE" | "DEGRADED" | "HEALTHY";
   checks: BackendChecks;
 };
 
@@ -54,7 +54,9 @@ export async function checkAurexService(
     } catch {
       return { state: "OFFLINE", checks: NO_BACKEND };
     }
-    if (!HealthSchema.safeParse(body).success) return { state: "OFFLINE", checks: NO_BACKEND };
+    const health = HealthSchema.safeParse(body);
+    if (!health.success) return { state: "OFFLINE", checks: NO_BACKEND };
+    if (health.data.readiness !== "READY") return { state: "DEGRADED", checks: NO_BACKEND };
     const { createAurexClient } = await import("./aurex-client.server");
     const client = createAurexClient({ ...env, fetcher });
     const [capabilities, evidence] = await Promise.all([client.capabilities(), client.evidence()]);
