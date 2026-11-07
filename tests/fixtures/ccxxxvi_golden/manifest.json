@@ -1,0 +1,196 @@
+{
+  "schema": "ccxxxvi.golden.files.v1",
+  "dataset_type": "SYNTHETIC_ONLY",
+  "tenant_id": "ccxxxvi-golden",
+  "months": 36,
+  "files": [
+    {
+      "filename": "2024-01.json",
+      "sha256": "fe9a0789fdcb864777631be3c0b2d5e30e22edb10d7372d478fe0a40a9db2053"
+    },
+    {
+      "filename": "2024-02.json",
+      "sha256": "38f49ef28b63d990082fb8e109af9098777167186d56cc1f6b8d768a895cc50e"
+    },
+    {
+      "filename": "2024-03.json",
+      "sha256": "6fcf54a5032923c7d0ad203d0b6c6d716ecb2b27b952ba71a4d4bdd59322f265"
+    },
+    {
+      "filename": "2024-04.json",
+      "sha256": "6199eddb2f5549804347b66b79cf78f41789df154275a95797641e72a7b45b7e"
+    },
+    {
+      "filename": "2024-05.json",
+      "sha256": "0b2497dcf9ba0964ac2c56564bd5c26a3a30dc5f3dffb96864b5ab06b986ba63"
+    },
+    {
+      "filename": "2024-06.json",
+      "sha256": "74d561e62d95040a0dbc23fede7bc2b8912ec5ebc27a8e6205a20ccb9b55f41b"
+    },
+    {
+      "filename": "2024-07.json",
+      "sha256": "bac72c9e60cd7649b145f87c2f974087afdc346a76273d3f21121cc9d33d71a4"
+    },
+    {
+      "filename": "2024-08.json",
+      "sha256": "22de1f67b700c26efc0729bb0154a3b97655355630f695930bcec8fabf13631b"
+    },
+    {
+      "filename": "2024-09.json",
+      "sha256": "d8a15affd4d0dc15625b468ac78493542f97664a4d29ab0a7e02212166c7b282"
+    },
+    {
+      "filename": "2024-10.json",
+      "sha256": "3a577957cf68cb4049a7ece0b52dad48b4874241f1b27699bc35e5be6dfc520f"
+    },
+    {
+      "filename": "2024-11.json",
+      "sha256": "538c460593ce8546afeb5a4219f41863f55699bf72d792eda51474d726c686ff"
+    },
+    {
+      "filename": "2024-12.json",
+      "sha256": "48ba3084d50dec1530373a5e793043cc845ec72d67e1ca36d7d09b96c3f7711c"
+    },
+    {
+      "filename": "2025-01.json",
+      "sha256": "9815609d63a59541cbc81c74284c32a2d17ac6593d6aff17f055ecb72501d529"
+    },
+    {
+      "filename": "2025-02.json",
+      "sha256": "707ae0df75a6bc982fb19e111c67ce617469caae3744a625c3960917386178c2"
+    },
+    {
+      "filename": "2025-03.json",
+      "sha256": "95b64e6ebdb8184ce3cdafc3cbf835516de9b854653b8f01f66a27625c545f8f"
+    },
+    {
+      "filename": "2025-04.json",
+      "sha256": "5082e26441325f6121f21156fced35b0fdb197cf6a1dd0b1b63d6ba7676d98db"
+    },
+    {
+      "filename": "2025-05.json",
+      "sha256": "f5ee88bb3a90ac28b7547fa8c4cd13745542d70af8b7e4ef2a6131836f88da04"
+    },
+    {
+      "filename": "2025-06.json",
+      "sha256": "43cf25b90ef4a984403a918a662885fd61aa15258ba75ca15836b8ff91094d48"
+    },
+    {
+      "filename": "2025-07.json",
+      "sha256": "157eb41de08226b74c266378e788c1dd9f43fb7e97fb9e097ca7b0a7540e0360"
+    },
+    {
+      "filename": "2025-08.json",
+      "sha256": "70c879207d0193dcca7a32c65cf3723cac9cf131d2bf3df9133636607c7e374b"
+    },
+    {
+      "filename": "2025-09.json",
+      "sha256": "b8298b144bae3d12c4bd612663807f1e9bcd33e6eec57c3deb7e90b53613b58d"
+    },
+    {
+      "filename": "2025-10.json",
+      "sha256": "f3d025ffe1a9e76e088838a67e5cbd46d34f2042ad34b503e026413a7cc91fc6"
+    },
+    {
+      "filename": "2025-11.json",
+      "sha256": "7e84eddf0b435ee43594feba689000532be051f1ecd14c7e7908f34a77da756b"
+    },
+    {
+      "filename": "2025-12.json",
+      "sha256": "b7c50ec9ff9b3385e61e99a2506d6baa46ec577eb355859a7f72093d7e467400"
+    },
+    {
+      "filename": "2026-01.json",
+      "sha256": "fbc2da36f038d3f2bc4c5aa5222986989805d2145b6a2bc5985646f82301de00"
+    },
+    {
+      "filename": "2026-02.json",
+      "sha256": "778617650fb5b38a5789b962555ee5e424a8e28e3b6a4ecfbe6ace66b4f20b22"
+    },
+    {
+      "filename": "2026-03.json",
+      "sha256": "bdc781c5987ba08e9d4fb26e95a98ea04a9f3ec584e65b5083d45987e1ab48ae"
+    },
+    {
+      "filename": "2026-04.json",
+      "sha256": "1572951124ca47c104ed5709169983dcd86a90ab3531b8ffd50fb6ad7bb9362b"
+    },
+    {
+      "filename": "2026-05.json",
+      "sha256": "f0f8afecca6b38c5260bac1d64557aa7f90530db22f2ae5a8140713e7fa030b4"
+    },
+    {
+      "filename": "2026-06.json",
+      "sha256": "69bea7d12bf00d7e8b37c69ac26a60c87775a760a3fe22e833e87260d5f7a93a"
+    },
+    {
+      "filename": "2026-07.json",
+      "sha256": "65958ec2e82794852a622ea7f8072e1c9748d2f84927818a663a76bce2380cf9"
+    },
+    {
+      "filename": "2026-08.json",
+      "sha256": "67c4358b5b3ecd2d038227e5e8d497e6fe95cdb2d935f55ee277480b83e06bcb"
+    },
+    {
+      "filename": "2026-09.json",
+      "sha256": "5a6574ba547c3269fbc8c2b0f3ed7bb9b1c32532f0f5c7254938f5a4f940d341"
+    },
+    {
+      "filename": "2026-10.json",
+      "sha256": "e036a2f222fbdff49fa74d552ded8fc800b7a22d097732a95beda6309cd5cd5e"
+    },
+    {
+      "filename": "2026-11.json",
+      "sha256": "e6e3151c5662aad52c0a46489e59e2b5c806f061bd923b77d292d717b6b7ede4"
+    },
+    {
+      "filename": "2026-12.json",
+      "sha256": "2b74114c94e6da7af974c7a18c73a441704da3f23eb61718c1ec395ddb39fdfc"
+    }
+  ],
+  "independent_oracle": {
+    "method": "Seed arithmetic specified before engine execution; USD cents, no production imports",
+    "seeds": [
+      {
+        "month": "2024-02",
+        "case": "unbilled",
+        "identified_cents": 12525
+      },
+      {
+        "month": "2024-03",
+        "case": "overbilled",
+        "arithmetic": "15000-12525",
+        "identified_cents": 2475
+      },
+      {
+        "month": "2024-04",
+        "case": "underbilled",
+        "arithmetic": "12525-10000",
+        "identified_cents": 2525
+      },
+      {
+        "month": "2024-05",
+        "case": "partial payment",
+        "arithmetic": "12525-2500",
+        "identified_cents": 10025
+      },
+      {
+        "month": "2024-06",
+        "case": "duplicate invoice ambiguity",
+        "withheld_cents": 13000
+      }
+    ]
+  },
+  "expected": {
+    "identified_exposure_usd": "275.50",
+    "withheld_unresolved_usd": "130.00",
+    "confirmed_recovery_usd": "0.00"
+  },
+  "month37_expected": {
+    "identified_exposure_usd": "400.75",
+    "withheld_unresolved_usd": "130.00",
+    "confirmed_recovery_usd": "0.00"
+  },
+  "limits": "36 JSON files with typed rows. No PDF/OCR/XLSX or real customer correctness claim."
+}

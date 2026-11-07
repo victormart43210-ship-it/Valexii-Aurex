@@ -1,0 +1,15 @@
+{
+  "dataset_type": "SYNTHETIC_ONLY",
+  "tenant_id": "ccxxxvi-golden",
+  "jobs": [
+    {
+      "job_id": "G02",
+      "customer_id": "C",
+      "service_code": "TOW",
+      "date": "2024-02-01"
+    }
+  ],
+  "invoices": [],
+  "rates": [],
+  "payments": []
+}

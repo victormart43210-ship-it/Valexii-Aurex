@@ -1,0 +1,166 @@
+{
+  "candidate": "46befcb04d2a98633876b4239775bedbf0b265ca",
+  "checks": 14,
+  "expected_on_defective_candidate": {
+    "api audit": [
+      200,
+      0
+    ],
+    "api ingest !!!!": [
+      200,
+      0
+    ],
+    "api ingest W10=": [
+      500,
+      "Internal Server Error"
+    ],
+    "api ingest eyJrIjoxfQ==": [
+      200,
+      7
+    ],
+    "golden": [
+      72,
+      0,
+      2
+    ],
+    "parsed b'%PDF-1.4'": [
+      "application/pdf",
+      []
+    ],
+    "parsed b'abc'": [
+      "application/x-random",
+      []
+    ],
+    "parsed b'amount\\n100.00\\n'": [
+      "text/csv",
+      []
+    ],
+    "parsed b'not a PNG'": [
+      "image/png",
+      [
+        [
+          "ocr_text",
+          "",
+          "PENDING_QUALIFICATION",
+          0.9
+        ]
+      ]
+    ],
+    "parsed b'{\"amount\":\"NaN\"}'": [
+      "application/json",
+      [
+        [
+          "amount",
+          "NaN",
+          "QUALIFIED_INDEPENDENT",
+          1.0
+        ]
+      ]
+    ],
+    "parsed b'{'": [
+      "application/json",
+      []
+    ],
+    "qualification with unrelated source": [
+      [
+        [
+          "INV-36M-007",
+          "QUALIFIED_INDEPENDENT_CORROBORATION"
+        ]
+      ]
+    ],
+    "tampered finding; receipt unchanged": [
+      true
+    ],
+    "unrelated contract invalidated": [
+      [
+        "FND-RATE_MISMATCH-INV-36M-007",
+        "FND-RATE_MISMATCH-INV-36M-019"
+      ]
+    ]
+  },
+  "mismatches": [],
+  "observations": {
+    "Python": [
+      "3.12.14",
+      "/workspace/scratch/346565cd0297/review-172/aurex/dispater_pipeline.py"
+    ],
+    "api audit": [
+      200,
+      0
+    ],
+    "api ingest !!!!": [
+      200,
+      0
+    ],
+    "api ingest W10=": [
+      500,
+      "Internal Server Error"
+    ],
+    "api ingest eyJrIjoxfQ==": [
+      200,
+      7
+    ],
+    "golden": [
+      72,
+      0,
+      2
+    ],
+    "parsed b'%PDF-1.4'": [
+      "application/pdf",
+      []
+    ],
+    "parsed b'abc'": [
+      "application/x-random",
+      []
+    ],
+    "parsed b'amount\\n100.00\\n'": [
+      "text/csv",
+      []
+    ],
+    "parsed b'not a PNG'": [
+      "image/png",
+      [
+        [
+          "ocr_text",
+          "",
+          "PENDING_QUALIFICATION",
+          0.9
+        ]
+      ]
+    ],
+    "parsed b'{\"amount\":\"NaN\"}'": [
+      "application/json",
+      [
+        [
+          "amount",
+          "NaN",
+          "QUALIFIED_INDEPENDENT",
+          1.0
+        ]
+      ]
+    ],
+    "parsed b'{'": [
+      "application/json",
+      []
+    ],
+    "qualification with unrelated source": [
+      [
+        [
+          "INV-36M-007",
+          "QUALIFIED_INDEPENDENT_CORROBORATION"
+        ]
+      ]
+    ],
+    "tampered finding; receipt unchanged": [
+      true
+    ],
+    "unrelated contract invalidated": [
+      [
+        "FND-RATE_MISMATCH-INV-36M-007",
+        "FND-RATE_MISMATCH-INV-36M-019"
+      ]
+    ]
+  },
+  "reproduced": 14
+}

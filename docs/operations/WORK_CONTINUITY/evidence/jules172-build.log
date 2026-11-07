@@ -1,0 +1,308 @@
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> build
+> vite build
+
+The plugin "vite-tsconfig-paths" is detected. Vite now supports tsconfig paths resolution natively via the resolve.tsconfigPaths option. You can remove the plugin and set resolve.tsconfigPaths: true in your Vite config instead.
+vite v8.1.5 building client environment for production...
+[2K
+transforming...[plugin tanstack-start-core::server-fn:client] /workspace/scratch/346565cd0297/review-172/website/src/lib/inquiries.functions.ts:33:30 createServerFn().inputValidator() is deprecated. Use createServerFn().validator() instead.
+[plugin tanstack-start-core::server-fn:client] /workspace/scratch/346565cd0297/review-172/website/src/lib/inquiries.functions.ts:121:35 createServerFn().inputValidator() is deprecated. Use createServerFn().validator() instead.
+[plugin tanstack-start-core::server-fn:client] /workspace/scratch/346565cd0297/review-172/website/src/lib/inquiries.functions.ts:189:35 createServerFn().inputValidator() is deprecated. Use createServerFn().validator() instead.
+[plugin tanstack-start-core::server-fn:client] /workspace/scratch/346565cd0297/review-172/website/src/lib/newsletter.functions.ts:42:36 createServerFn().inputValidator() is deprecated. Use createServerFn().validator() instead.
+✓ 2290 modules transformed.
+rendering chunks...
+computing gzip size...
+.output/public/assets/bcxmet-simulator-cinematic-640-BtUXtW3A.webp         16.36 kB
+.output/public/assets/evidence-architecture-cinematic-640-CVVQrokT.webp    17.39 kB
+.output/public/assets/voynich-cinematic-480-DOo23SIo.webp                  41.48 kB
+.output/public/assets/rongorongo-cinematic-480-xtOtZKMa.webp               46.51 kB
+.output/public/assets/bcxmet-simulator-cinematic-1280-BDmPVmZK.webp        46.73 kB
+.output/public/assets/evidence-architecture-cinematic-1280-DTW122Tc.webp   57.41 kB
+.output/public/assets/linear-a-cinematic-480-BqhH1aI1.webp                 60.53 kB
+.output/public/assets/voynich-cinematic-768-B1IUrVEk.webp                  71.68 kB
+.output/public/assets/rongorongo-cinematic-768-zrSMK1Xs.webp               80.39 kB
+.output/public/assets/linear-a-cinematic-768-BNXEIG1d.webp                104.74 kB
+.output/public/assets/bcxmet-five-screens-hxntHdb6.webp                   160.33 kB
+.output/public/assets/decipherment-triptych-v5Gf5Ez2.jpg                  198.96 kB
+.output/public/assets/valexii-system-BKrKixrD.webp                        200.64 kB
+.output/public/assets/valexii-lux-C2SmnCWv.webp                           214.62 kB
+.output/public/assets/valexii-comet-DD558upB.webp                         251.26 kB
+.output/public/assets/styles-zxWXk9Ep.css                                 158.82 kB │ gzip:  27.70 kB
+.output/public/assets/git-branch-IoyJmTQ2.js                                0.22 kB │ gzip:   0.18 kB
+.output/public/assets/flask-conical-DOAtbGn3.js                             0.29 kB │ gzip:   0.22 kB
+.output/public/assets/useServerFn-DMJh2jhz.js                               0.33 kB │ gzip:   0.25 kB
+.output/public/assets/shield-question-mark-CWTpqqAq.js                      0.38 kB │ gzip:   0.27 kB
+.output/public/assets/inquiries.functions-Bf9ZcP2q.js                       0.41 kB │ gzip:   0.29 kB
+.output/public/assets/bcxmet-guardian-eye-logo.jpg.asset-BpSxyt4P.js        0.45 kB │ gzip:   0.25 kB
+.output/public/assets/shield-alert-2ms-S7Bp.js                              0.47 kB │ gzip:   0.32 kB
+.output/public/assets/topic-guide-D5v67CSi.js                               1.39 kB │ gzip:   0.66 kB
+.output/public/assets/ecosystem-Bo-sQ9k6.js                                 1.41 kB │ gzip:   0.75 kB
+.output/public/assets/early-access.confirm-CpIrRy_6.js                      1.46 kB │ gzip:   0.81 kB
+.output/public/assets/rongorongo-BK9OeTAN.js                                1.56 kB │ gzip:   0.73 kB
+.output/public/assets/linear-a-CBkGVAzw.js                                  1.57 kB │ gzip:   0.74 kB
+.output/public/assets/security-BFJEjVfC.js                                  1.65 kB │ gzip:   0.83 kB
+.output/public/assets/about-D820bX6c.js                                     1.71 kB │ gzip:   0.94 kB
+.output/public/assets/terms-BBynr5L8.js                                     2.10 kB │ gzip:   1.04 kB
+.output/public/assets/section-illustration-C4qc-Hk1.js                      2.32 kB │ gzip:   1.00 kB
+.output/public/assets/domain-reasoning-BO9cs-FD.js                          2.37 kB │ gzip:   1.08 kB
+.output/public/assets/decipherment-nqHN5w8W.js                              2.46 kB │ gzip:   1.14 kB
+.output/public/assets/contact-CwDzJt91.js                                   3.20 kB │ gzip:   1.52 kB
+.output/public/assets/xaita-Bh_d2JMq.js                                     3.24 kB │ gzip:   1.58 kB
+.output/public/assets/privacy-BB_ZhKqm.js                                   3.42 kB │ gzip:   1.59 kB
+.output/public/assets/evaluation-eDG_EPhm.js                                4.02 kB │ gzip:   1.71 kB
+.output/public/assets/support-Dt76qW5K.js                                   4.39 kB │ gzip:   1.61 kB
+.output/public/assets/preload-helper-BlbpZKGF.js                            5.25 kB │ gzip:   2.05 kB
+.output/public/assets/xaeli-BBwcDJVn.js                                     5.36 kB │ gzip:   2.01 kB
+.output/public/assets/research-EWaTkioQ.js                                  6.12 kB │ gzip:   2.27 kB
+.output/public/assets/system-DNGfAZ3b.js                                    6.29 kB │ gzip:   2.59 kB
+.output/public/assets/voynich-DL6oUCFq.js                                   7.03 kB │ gzip:   2.54 kB
+.output/public/assets/build-with-us-Bvg-Y2W8.js                             7.67 kB │ gzip:   2.73 kB
+.output/public/assets/inquiry-forms-DFwMHIjN.js                             8.43 kB │ gzip:   3.09 kB
+.output/public/assets/decipherment-frontier-Cor6_Vm8.js                     9.49 kB │ gzip:   3.23 kB
+.output/public/assets/aurex-ox-status-CaYJ9HTy.js                          14.88 kB │ gzip:   5.62 kB
+.output/public/assets/reasoning-spine-_UeaeIzQ.js                          14.95 kB │ gzip:   5.36 kB
+.output/public/assets/admin.aurex-control-DZe8-s3D.js                      17.08 kB │ gzip:   5.74 kB
+.output/public/assets/dispater-C4ZMnGA6.js                                 18.03 kB │ gzip:   5.73 kB
+.output/public/assets/routes-D-oXI96i.js                                   19.01 kB │ gzip:   6.31 kB
+.output/public/assets/aurex-Ckf3h-Yq.js                                    21.25 kB │ gzip:   6.73 kB
+.output/public/assets/site-B6xmlBxK.js                                     23.34 kB │ gzip:   7.93 kB
+.output/public/assets/bcxmet-Nfxn4zlE.js                                   23.95 kB │ gzip:   7.62 kB
+.output/public/assets/types-meP9fhJK.js                                    56.32 kB │ gzip:  12.88 kB
+.output/public/assets/ui-system-BZZ5QwJW.js                                90.27 kB │ gzip:  30.30 kB
+.output/public/assets/visuals-GdlolPy4.js                                 180.05 kB │ gzip:  59.34 kB
+.output/public/assets/index-Cy5RpPM6.js                                   577.08 kB │ gzip: 168.69 kB
+
+✓ built in 1.70s
+[plugin builtin:vite-reporter] 
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rolldownOptions.output.codeSplitting to improve chunking: https://rolldown.rs/reference/OutputOptions.codeSplitting
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+vite v8.1.5 building ssr environment for production...
+[2K
+transforming...[plugin tanstack-start-core::server-fn:ssr] /workspace/scratch/346565cd0297/review-172/website/src/lib/inquiries.functions.ts?tss-serverfn-split:33:30 createServerFn().inputValidator() is deprecated. Use createServerFn().validator() instead.
+[plugin tanstack-start-core::server-fn:ssr] /workspace/scratch/346565cd0297/review-172/website/src/lib/inquiries.functions.ts?tss-serverfn-split:121:35 createServerFn().inputValidator() is deprecated. Use createServerFn().validator() instead.
+[plugin tanstack-start-core::server-fn:ssr] /workspace/scratch/346565cd0297/review-172/website/src/lib/inquiries.functions.ts?tss-serverfn-split:189:35 createServerFn().inputValidator() is deprecated. Use createServerFn().validator() instead.
+[plugin tanstack-start-core::server-fn:ssr] /workspace/scratch/346565cd0297/review-172/website/src/lib/newsletter.functions.ts?tss-serverfn-split:42:36 createServerFn().inputValidator() is deprecated. Use createServerFn().validator() instead.
+[plugin tanstack-start-core::server-fn:ssr] /workspace/scratch/346565cd0297/review-172/website/src/lib/inquiries.functions.ts:33:30 createServerFn().inputValidator() is deprecated. Use createServerFn().validator() instead.
+[plugin tanstack-start-core::server-fn:ssr] /workspace/scratch/346565cd0297/review-172/website/src/lib/inquiries.functions.ts:121:35 createServerFn().inputValidator() is deprecated. Use createServerFn().validator() instead.
+[plugin tanstack-start-core::server-fn:ssr] /workspace/scratch/346565cd0297/review-172/website/src/lib/inquiries.functions.ts:189:35 createServerFn().inputValidator() is deprecated. Use createServerFn().validator() instead.
+[plugin tanstack-start-core::server-fn:ssr] /workspace/scratch/346565cd0297/review-172/website/src/lib/newsletter.functions.ts:42:36 createServerFn().inputValidator() is deprecated. Use createServerFn().validator() instead.
+✓ 215 modules transformed.
+rendering chunks...
+computing gzip size...
+node_modules/.nitro/vite/services/ssr/assets/bcxmet-simulator-cinematic-640-BtUXtW3A.webp                16.36 kB
+node_modules/.nitro/vite/services/ssr/assets/evidence-architecture-cinematic-640-CVVQrokT.webp           17.39 kB
+node_modules/.nitro/vite/services/ssr/assets/voynich-cinematic-480-DOo23SIo.webp                         41.48 kB
+node_modules/.nitro/vite/services/ssr/assets/rongorongo-cinematic-480-xtOtZKMa.webp                      46.51 kB
+node_modules/.nitro/vite/services/ssr/assets/bcxmet-simulator-cinematic-1280-BDmPVmZK.webp               46.73 kB
+node_modules/.nitro/vite/services/ssr/assets/evidence-architecture-cinematic-1280-DTW122Tc.webp          57.41 kB
+node_modules/.nitro/vite/services/ssr/assets/linear-a-cinematic-480-BqhH1aI1.webp                        60.53 kB
+node_modules/.nitro/vite/services/ssr/assets/voynich-cinematic-768-B1IUrVEk.webp                         71.68 kB
+node_modules/.nitro/vite/services/ssr/assets/rongorongo-cinematic-768-zrSMK1Xs.webp                      80.39 kB
+node_modules/.nitro/vite/services/ssr/assets/linear-a-cinematic-768-BNXEIG1d.webp                       104.74 kB
+node_modules/.nitro/vite/services/ssr/assets/bcxmet-five-screens-hxntHdb6.webp                          160.33 kB
+node_modules/.nitro/vite/services/ssr/assets/decipherment-triptych-v5Gf5Ez2.jpg                         198.96 kB
+node_modules/.nitro/vite/services/ssr/assets/valexii-system-BKrKixrD.webp                               200.64 kB
+node_modules/.nitro/vite/services/ssr/assets/valexii-lux-C2SmnCWv.webp                                  214.62 kB
+node_modules/.nitro/vite/services/ssr/assets/valexii-comet-DD558upB.webp                                251.26 kB
+node_modules/.nitro/vite/services/ssr/assets/styles-zxWXk9Ep.css                                        158.82 kB │ gzip: 27.70 kB
+node_modules/.nitro/vite/services/ssr/assets/empty-plugin-adapters-COpPChX9.js                            0.25 kB │ gzip:  0.18 kB
+node_modules/.nitro/vite/services/ssr/assets/createServerRpc-BdHlxuNl.js                                  0.42 kB │ gzip:  0.29 kB
+node_modules/.nitro/vite/services/ssr/assets/bcxmet-guardian-eye-logo.jpg.asset-BHXZYkVH.js               0.58 kB │ gzip:  0.31 kB
+node_modules/.nitro/vite/services/ssr/assets/useServerFn-BlafjHDt.js                                      0.66 kB │ gzip:  0.37 kB
+node_modules/.nitro/vite/services/ssr/assets/createMiddleware-B4tD3lod.js                                 0.85 kB │ gzip:  0.34 kB
+node_modules/.nitro/vite/services/ssr/assets/inquiries.functions-BFN2FRj_.js                              0.96 kB │ gzip:  0.47 kB
+node_modules/.nitro/vite/services/ssr/assets/early-access.confirm-B7sJrGjM.js                             1.07 kB │ gzip:  0.49 kB
+node_modules/.nitro/vite/services/ssr/assets/bcxmet-celestial-comet-home-mobile.webp.asset-BCyMCJV4.js    1.22 kB │ gzip:  0.40 kB
+node_modules/.nitro/vite/services/ssr/assets/contact-DpXUe3D9.js                                          1.32 kB │ gzip:  0.64 kB
+node_modules/.nitro/vite/services/ssr/assets/dispater.functions-DK6N1hyE.js                               1.34 kB │ gzip:  0.62 kB
+node_modules/.nitro/vite/services/ssr/assets/client.server-KzwUIAkW.js                                    1.73 kB │ gzip:  0.78 kB
+node_modules/.nitro/vite/services/ssr/assets/email-sender.server-C1amHqYF.js                              1.80 kB │ gzip:  0.97 kB
+node_modules/.nitro/vite/services/ssr/assets/inquiry-schema-Ct_wydpp.js                                   1.86 kB │ gzip:  0.91 kB
+node_modules/.nitro/vite/services/ssr/assets/ecosystem-8bVsM7N-.js                                        1.98 kB │ gzip:  0.88 kB
+node_modules/.nitro/vite/services/ssr/assets/about-Cg0k_kIL.js                                            2.10 kB │ gzip:  1.07 kB
+node_modules/.nitro/vite/services/ssr/assets/topic-guide-DuWrYWqC.js                                      2.15 kB │ gzip:  0.87 kB
+node_modules/.nitro/vite/services/ssr/assets/early-access.confirm-qB-iS1ew.js                             2.28 kB │ gzip:  1.02 kB
+node_modules/.nitro/vite/services/ssr/assets/security-CmTmNPe2.js                                         2.40 kB │ gzip:  1.01 kB
+node_modules/.nitro/vite/services/ssr/assets/linear-a-RdjB_DV0.js                                         2.41 kB │ gzip:  0.97 kB
+node_modules/.nitro/vite/services/ssr/assets/rongorongo-BPkyH1_0.js                                       2.42 kB │ gzip:  0.96 kB
+node_modules/.nitro/vite/services/ssr/assets/createCsrfMiddleware-BFRF5VFL.js                             2.47 kB │ gzip:  0.88 kB
+node_modules/.nitro/vite/services/ssr/assets/newsletter.functions-CidpNSfv.js                             2.54 kB │ gzip:  1.16 kB
+node_modules/.nitro/vite/services/ssr/assets/terms-DxM_XqYD.js                                            2.55 kB │ gzip:  1.14 kB
+node_modules/.nitro/vite/services/ssr/assets/aurex-service.server-C0X6OenS.js                             2.56 kB │ gzip:  1.18 kB
+node_modules/.nitro/vite/services/ssr/assets/section-illustration-ykJ14oco.js                             2.76 kB │ gzip:  1.08 kB
+node_modules/.nitro/vite/services/ssr/assets/__23tanstack-start-server-fn-resolver-BIbFd5_U.js            3.00 kB │ gzip:  1.12 kB
+node_modules/.nitro/vite/services/ssr/assets/aurex-api-schema-DrhVfWtE.js                                 3.06 kB │ gzip:  1.31 kB
+node_modules/.nitro/vite/services/ssr/assets/domain-reasoning-B6Lj8Stj.js                                 3.12 kB │ gzip:  1.29 kB
+node_modules/.nitro/vite/services/ssr/assets/request-response-DCGIP3CZ.js                                 3.16 kB │ gzip:  1.08 kB
+node_modules/.nitro/vite/services/ssr/assets/aurex-client.server-DJnbmASj.js                              3.41 kB │ gzip:  1.32 kB
+node_modules/.nitro/vite/services/ssr/assets/email-render-B-sn2F05.js                                     3.56 kB │ gzip:  1.67 kB
+node_modules/.nitro/vite/services/ssr/assets/decipherment-DqocHG2_.js                                     3.60 kB │ gzip:  1.42 kB
+node_modules/.nitro/vite/services/ssr/assets/aurex-repo.functions-CR1-rAvj.js                             3.73 kB │ gzip:  1.65 kB
+node_modules/.nitro/vite/services/ssr/assets/activation-events-CPGh_7Fo.js                                3.92 kB │ gzip:  1.53 kB
+node_modules/.nitro/vite/services/ssr/assets/privacy-BgHoAxNu.js                                          4.01 kB │ gzip:  1.70 kB
+node_modules/.nitro/vite/services/ssr/assets/xaita-EWZABGH8.js                                            4.14 kB │ gzip:  1.84 kB
+node_modules/.nitro/vite/services/ssr/assets/contact-Uhcm9nOK.js                                          4.22 kB │ gzip:  1.77 kB
+node_modules/.nitro/vite/services/ssr/assets/aurex-capabilities-DRguGpAl.js                               4.95 kB │ gzip:  2.07 kB
+node_modules/.nitro/vite/services/ssr/assets/dispater.server-C_r2RENX.js                                  5.08 kB │ gzip:  1.82 kB
+node_modules/.nitro/vite/services/ssr/assets/evaluation-DweJrEk0.js                                       5.49 kB │ gzip:  2.02 kB
+node_modules/.nitro/vite/services/ssr/assets/aurex-control-DMNVLRdz.js                                    5.51 kB │ gzip:  2.30 kB
+node_modules/.nitro/vite/services/ssr/assets/ui-system-qVWDHwYC.js                                        5.54 kB │ gzip:  1.89 kB
+node_modules/.nitro/vite/services/ssr/assets/aurex-ox-status-Cj09rt7w.js                                  5.72 kB │ gzip:  1.92 kB
+node_modules/.nitro/vite/services/ssr/index.js                                                            5.78 kB │ gzip:  2.43 kB
+node_modules/.nitro/vite/services/ssr/assets/support-Xr5i8BQd.js                                          6.36 kB │ gzip:  1.94 kB
+node_modules/.nitro/vite/services/ssr/assets/aurex-control.functions-CHbeuEWm.js                          6.67 kB │ gzip:  2.21 kB
+node_modules/.nitro/vite/services/ssr/assets/xaeli-CDyicasl.js                                            7.23 kB │ gzip:  2.30 kB
+node_modules/.nitro/vite/services/ssr/assets/inquiries.functions-CIIp8_g3.js                              7.36 kB │ gzip:  2.30 kB
+node_modules/.nitro/vite/services/ssr/assets/topic-guide-content-DzUnGjDM.js                              8.03 kB │ gzip:  3.38 kB
+node_modules/.nitro/vite/services/ssr/assets/system-CzjdhgqD.js                                           8.17 kB │ gzip:  2.77 kB
+node_modules/.nitro/vite/services/ssr/assets/_tanstack-start-manifest_v-DjNc5euH.js                       8.33 kB │ gzip:  1.41 kB
+node_modules/.nitro/vite/services/ssr/assets/research-D9hGXQJ7.js                                         8.54 kB │ gzip:  2.63 kB
+node_modules/.nitro/vite/services/ssr/assets/start-CLSBmUwX.js                                            8.64 kB │ gzip:  2.99 kB
+node_modules/.nitro/vite/services/ssr/assets/voynich-Zgu6d2UK.js                                          9.70 kB │ gzip:  2.96 kB
+node_modules/.nitro/vite/services/ssr/assets/build-with-us-OHJ6DfV8.js                                   10.03 kB │ gzip:  3.10 kB
+node_modules/.nitro/vite/services/ssr/assets/createServerFn-xEpl5deE.js                                  10.05 kB │ gzip:  3.03 kB
+node_modules/.nitro/vite/services/ssr/assets/support-roadmap-BXoNJmIf.js                                 10.58 kB │ gzip:  3.26 kB
+node_modules/.nitro/vite/services/ssr/assets/inquiry-forms-BXbCRjCB.js                                   11.11 kB │ gzip:  3.12 kB
+node_modules/.nitro/vite/services/ssr/assets/decipherment-frontier-BtchZAh_.js                           12.70 kB │ gzip:  3.54 kB
+node_modules/.nitro/vite/services/ssr/assets/reasoning-spine-CBoguZb9.js                                 18.15 kB │ gzip:  5.75 kB
+node_modules/.nitro/vite/services/ssr/assets/admin.aurex-control-BFrM-Rx2.js                             21.71 kB │ gzip:  6.06 kB
+node_modules/.nitro/vite/services/ssr/assets/dispater-B-w7X-nD.js                                        24.17 kB │ gzip:  6.23 kB
+node_modules/.nitro/vite/services/ssr/assets/site-D_JawI9_.js                                            26.14 kB │ gzip:  7.35 kB
+node_modules/.nitro/vite/services/ssr/assets/routes-DZIZ3K1d.js                                          28.85 kB │ gzip:  7.22 kB
+node_modules/.nitro/vite/services/ssr/assets/aurex-CbfaH-pF.js                                           29.68 kB │ gzip:  7.98 kB
+node_modules/.nitro/vite/services/ssr/assets/bcxmet-CHl6TQhY.js                                          34.35 kB │ gzip:  8.98 kB
+node_modules/.nitro/vite/services/ssr/assets/router-5kukNFdC.js                                          40.64 kB │ gzip:  8.79 kB
+node_modules/.nitro/vite/services/ssr/assets/server-CcdiWKes.js                                          60.68 kB │ gzip: 15.55 kB
+node_modules/.nitro/vite/services/ssr/assets/visuals-Bs9wYJin.js                                        118.56 kB │ gzip: 28.97 kB
+
+✓ built in 950ms
+
+[nitro] ◐ Building [Nitro] (preset: cloudflare-module, compatibility: 2026-11-01)
+[nitro] ✔ Generated public .output/public
+vite v8.1.5 building nitro environment for production...
+
+ WARN  inlineDynamicImports option is ignored because the codeSplitting option is specified.
+
+[2K
+transforming...✓ 2277 modules transformed.
+rendering chunks...
+computing gzip size...
+.output/server/_libs/d3-ease.mjs                                                  0.20 kB │ gzip:   0.17 kB
+.output/server/_ssr/empty-plugin-adapters-COpPChX9.mjs                            0.25 kB │ gzip:   0.18 kB
+.output/server/_ssr/createServerRpc-BdHlxuNl.mjs                                  0.43 kB │ gzip:   0.29 kB
+.output/server/_chunks/ssr-renderer.mjs                                           0.65 kB │ gzip:   0.38 kB
+.output/server/_ssr/bcxmet-guardian-eye-logo.jpg.asset-BHXZYkVH.mjs               0.71 kB │ gzip:   0.38 kB
+.output/server/_libs/radix-ui__react-direction.mjs                                0.79 kB │ gzip:   0.43 kB
+.output/server/_ssr/createMiddleware-B4tD3lod.mjs                                 0.86 kB │ gzip:   0.35 kB
+.output/server/_ssr/useServerFn-BlafjHDt.mjs                                      0.86 kB │ gzip:   0.47 kB
+.output/server/_libs/d3-selection.mjs                                             0.97 kB │ gzip:   0.43 kB
+.output/server/_ssr/inquiries.functions-BFN2FRj_.mjs                              1.03 kB │ gzip:   0.52 kB
+.output/server/_libs/hookable.mjs                                                 1.19 kB │ gzip:   0.54 kB
+.output/server/_ssr/early-access.confirm-B7sJrGjM.mjs                             1.21 kB │ gzip:   0.57 kB
+.output/server/_ssr/bcxmet-celestial-comet-home-mobile.webp.asset-BCyMCJV4.mjs    1.36 kB │ gzip:   0.47 kB
+.output/server/_ssr/contact-DpXUe3D9.mjs                                          1.42 kB │ gzip:   0.71 kB
+.output/server/_runtime.mjs                                                       1.44 kB │ gzip:   0.67 kB
+.output/server/_ssr/dispater.functions-DK6N1hyE.mjs                               1.51 kB │ gzip:   0.70 kB
+.output/server/_ssr/client.server-KzwUIAkW.mjs                                    1.85 kB │ gzip:   0.85 kB
+.output/server/_libs/radix-ui__primitive.mjs                                      1.85 kB │ gzip:   0.74 kB
+.output/server/_ssr/email-sender.server-C1amHqYF.mjs                              1.92 kB │ gzip:   1.04 kB
+.output/server/_ssr/inquiry-schema-Ct_wydpp.mjs                                   2.06 kB │ gzip:   0.99 kB
+.output/server/_ssr/ecosystem-8bVsM7N-.mjs                                        2.36 kB │ gzip:   0.98 kB
+.output/server/_libs/d3-dispatch.mjs                                              2.41 kB │ gzip:   0.92 kB
+.output/server/_ssr/createCsrfMiddleware-BFRF5VFL.mjs                             2.48 kB │ gzip:   0.88 kB
+.output/server/_ssr/about-Cg0k_kIL.mjs                                            2.48 kB │ gzip:   1.16 kB
+.output/server/_ssr/aurex-service.server-C0X6OenS.mjs                             2.63 kB │ gzip:   1.22 kB
+.output/server/_ssr/topic-guide-DuWrYWqC.mjs                                      2.64 kB │ gzip:   0.97 kB
+.output/server/_ssr/newsletter.functions-CidpNSfv.mjs                             2.75 kB │ gzip:   1.25 kB
+.output/server/_ssr/early-access.confirm-qB-iS1ew.mjs                             2.78 kB │ gzip:   1.14 kB
+.output/server/_ssr/security-CmTmNPe2.mjs                                         2.87 kB │ gzip:   1.10 kB
+.output/server/_ssr/terms-DxM_XqYD.mjs                                            2.98 kB │ gzip:   1.23 kB
+.output/server/_ssr/linear-a-RdjB_DV0.mjs                                         2.98 kB │ gzip:   1.07 kB
+.output/server/_ssr/rongorongo-BPkyH1_0.mjs                                       2.99 kB │ gzip:   1.06 kB
+.output/server/_ssr/section-illustration-ykJ14oco.mjs                             3.00 kB │ gzip:   1.18 kB
+.output/server/__23tanstack-start-server-fn-resolver-BIbFd5_U.mjs                 3.16 kB │ gzip:   1.18 kB
+.output/server/_ssr/aurex-api-schema-DrhVfWtE.mjs                                 3.16 kB │ gzip:   1.29 kB
+.output/server/_ssr/request-response-DCGIP3CZ.mjs                                 3.20 kB │ gzip:   1.11 kB
+.output/server/_libs/class-variance-authority+clsx.mjs                            3.22 kB │ gzip:   1.26 kB
+.output/server/_ssr/aurex-client.server-DJnbmASj.mjs                              3.49 kB │ gzip:   1.37 kB
+.output/server/_ssr/domain-reasoning-B6Lj8Stj.mjs                                 3.63 kB │ gzip:   1.39 kB
+.output/server/_ssr/email-render-B-sn2F05.mjs                                     3.63 kB │ gzip:   1.72 kB
+.output/server/_ssr/aurex-repo.functions-CR1-rAvj.mjs                             3.74 kB │ gzip:   1.69 kB
+.output/server/_ssr/activation-events-CPGh_7Fo.mjs                                3.99 kB │ gzip:   1.58 kB
+.output/server/_ssr/decipherment-DqocHG2_.mjs                                     4.24 kB │ gzip:   1.52 kB
+.output/server/_ssr/privacy-BgHoAxNu.mjs                                          4.56 kB │ gzip:   1.79 kB
+.output/server/_ssr/xaita-EWZABGH8.mjs                                            4.67 kB │ gzip:   1.93 kB
+.output/server/_ssr/contact-Uhcm9nOK.mjs                                          4.80 kB │ gzip:   1.86 kB
+.output/server/_ssr/aurex-capabilities-DRguGpAl.mjs                               5.23 kB │ gzip:   2.16 kB
+.output/server/_ssr/dispater.server-C_r2RENX.mjs                                  5.31 kB │ gzip:   1.90 kB
+.output/server/_ssr/aurex-control-DMNVLRdz.mjs                                    5.59 kB │ gzip:   2.35 kB
+.output/server/_ssr/ssr.mjs                                                       5.69 kB │ gzip:   2.44 kB
+.output/server/_libs/radix-ui__react-tabs.mjs                                     6.22 kB │ gzip:   1.79 kB
+.output/server/_ssr/ui-system-qVWDHwYC.mjs                                        6.31 kB │ gzip:   2.03 kB
+.output/server/_ssr/aurex-ox-status-Cj09rt7w.mjs                                  6.36 kB │ gzip:   2.01 kB
+.output/server/_ssr/evaluation-DweJrEk0.mjs                                       6.42 kB │ gzip:   2.12 kB
+.output/server/_ssr/aurex-control.functions-CHbeuEWm.mjs                          6.83 kB │ gzip:   2.28 kB
+.output/server/_ssr/inquiries.functions-CIIp8_g3.mjs                              7.43 kB │ gzip:   2.35 kB
+.output/server/_libs/d3-interpolate.mjs                                           7.46 kB │ gzip:   2.43 kB
+.output/server/_ssr/support-Xr5i8BQd.mjs                                          7.58 kB │ gzip:   2.05 kB
+.output/server/_ssr/topic-guide-content-DzUnGjDM.mjs                              8.09 kB │ gzip:   3.42 kB
+.output/server/_ssr/xaeli-CDyicasl.mjs                                            8.41 kB │ gzip:   2.40 kB
+.output/server/_tanstack-start-manifest_v-DjNc5euH.mjs                            8.41 kB │ gzip:   1.45 kB
+.output/server/_ssr/start-CLSBmUwX.mjs                                            8.50 kB │ gzip:   2.97 kB
+.output/server/_libs/d3-timer+unenv.mjs                                           8.97 kB │ gzip:   2.44 kB
+.output/server/_ssr/createServerFn-xEpl5deE.mjs                                   9.50 kB │ gzip:   3.03 kB
+.output/server/_ssr/system-CzjdhgqD.mjs                                           9.51 kB │ gzip:   2.90 kB
+.output/server/_ssr/research-D9hGXQJ7.mjs                                        10.05 kB │ gzip:   2.75 kB
+.output/server/_libs/@radix-ui/react-roving-focus+[...].mjs                      10.25 kB │ gzip:   2.85 kB
+.output/server/_libs/h3-v2+rou3+srvx.mjs                                         10.29 kB │ gzip:   3.20 kB
+.output/server/_libs/d3-color.mjs                                                10.43 kB │ gzip:   3.59 kB
+.output/server/_ssr/voynich-Zgu6d2UK.mjs                                         11.25 kB │ gzip:   3.07 kB
+.output/server/_ssr/build-with-us-OHJ6DfV8.mjs                                   11.49 kB │ gzip:   3.21 kB
+.output/server/_ssr/support-roadmap-BXoNJmIf.mjs                                 11.82 kB │ gzip:   3.38 kB
+.output/server/_libs/tanstack__history.mjs                                       12.53 kB │ gzip:   3.73 kB
+.output/server/_libs/supabase__functions-js.mjs                                  12.62 kB │ gzip:   3.50 kB
+.output/server/_ssr/inquiry-forms-BXbCRjCB.mjs                                   12.64 kB │ gzip:   3.26 kB
+.output/server/_ssr/decipherment-frontier-BtchZAh_.mjs                           15.20 kB │ gzip:   3.67 kB
+.output/server/_libs/d3-zoom.mjs                                                 16.28 kB │ gzip:   4.17 kB
+.output/server/_libs/h3+rou3+srvx.mjs                                            17.45 kB │ gzip:   5.01 kB
+.output/server/_libs/tanstack__react-query.mjs                                   18.21 kB │ gzip:   5.07 kB
+.output/server/_ssr/reasoning-spine-CBoguZb9.mjs                                 19.77 kB │ gzip:   5.91 kB
+.output/server/_libs/d3-transition.mjs                                           23.73 kB │ gzip:   4.62 kB
+.output/server/_ssr/admin.aurex-control-BFrM-Rx2.mjs                             24.45 kB │ gzip:   6.19 kB
+.output/server/index.mjs                                                         25.54 kB │ gzip:   6.74 kB
+.output/server/_libs/d3-drag+d3-selection.mjs                                    27.12 kB │ gzip:   5.50 kB
+.output/server/_ssr/dispater-B-w7X-nD.mjs                                        27.81 kB │ gzip:   6.42 kB
+.output/server/_ssr/site-D_JawI9_.mjs                                            29.93 kB │ gzip:   7.51 kB
+.output/server/_libs/@tanstack/router-core+[...].mjs                             29.98 kB │ gzip:   8.02 kB
+.output/server/_ssr/aurex-CbfaH-pF.mjs                                           33.32 kB │ gzip:   8.10 kB
+.output/server/_ssr/routes-DZIZ3K1d.mjs                                          33.55 kB │ gzip:   7.40 kB
+.output/server/_libs/lucide-react.mjs                                            35.24 kB │ gzip:   6.63 kB
+.output/server/_libs/supabase__supabase-js.mjs                                   37.91 kB │ gzip:  11.19 kB
+.output/server/_ssr/bcxmet-CHl6TQhY.mjs                                          39.64 kB │ gzip:   9.21 kB
+.output/server/_ssr/router-5kukNFdC.mjs                                          40.39 kB │ gzip:   8.78 kB
+.output/server/_libs/@radix-ui/react-collection+[...].mjs                        49.45 kB │ gzip:  11.27 kB
+.output/server/_libs/supabase__phoenix.mjs                                       50.56 kB │ gzip:  12.78 kB
+.output/server/_ssr/server-CcdiWKes.mjs                                          59.26 kB │ gzip:  15.44 kB
+.output/server/_libs/supabase__realtime-js+unenv.mjs                             82.26 kB │ gzip:  20.97 kB
+.output/server/_libs/@radix-ui/react-dialog+[...].mjs                            86.95 kB │ gzip:  20.36 kB
+.output/server/_libs/tailwind-merge.mjs                                          88.95 kB │ gzip:  15.73 kB
+.output/server/_libs/zod.mjs                                                    100.26 kB │ gzip:  17.35 kB
+.output/server/_libs/supabase__postgrest-js.mjs                                 110.49 kB │ gzip:  23.22 kB
+.output/server/_libs/@supabase/storage-js+[...].mjs                             126.20 kB │ gzip:  23.62 kB
+.output/server/_ssr/visuals-Bs9wYJin.mjs                                        132.96 kB │ gzip:  29.67 kB
+.output/server/_libs/tanstack__query-core.mjs                                   142.92 kB │ gzip:  33.86 kB
+.output/server/_libs/supabase__auth-js.mjs                                      319.88 kB │ gzip:  64.83 kB
+.output/server/_libs/@tanstack/react-router+[...].mjs                           780.77 kB │ gzip: 164.41 kB
+
+✓ built in 521ms
+[nitro] ℹ Using auto generated worker name: tanstack-start-ts
+ℹ Generated .output/server/wrangler.json
+ℹ Generated .wrangler/deploy/config.json
+ℹ Generated .output/public/_headers
+ℹ Generated .output/nitro.json
+
+[nitro] ✔ You can preview this build using npx vite preview
+[nitro] ✔ You can deploy this build using npx nitro deploy --prebuilt
