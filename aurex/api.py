@@ -44,6 +44,7 @@ app.add_middleware(CorrelationMiddleware)
 app.add_middleware(BodyLimitMiddleware)
 
 budget_guard = BudgetGuard(limit_usd=Decimal("0.00"))
+MAX_BEARER_TOKEN_LENGTH = 512
 
 
 def get_token() -> str:
@@ -57,7 +58,12 @@ def get_token() -> str:
         )
 
     token = service_token or admin_token
-    if not token or len(token) < 32:
+    if (
+        not token
+        or not 32 <= len(token) <= MAX_BEARER_TOKEN_LENGTH
+        or not token.isascii()
+        or token != token.strip()
+    ):
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Server authentication token unconfigured or insecure",
@@ -73,7 +79,12 @@ def authenticate(authorization: str | None = Header(default=None)) -> str:
             detail="Missing or malformed Authorization header",
         )
     supplied = authorization[7:]
-    if not supplied.isascii() or supplied != supplied.strip():
+    if (
+        not supplied
+        or len(supplied) > MAX_BEARER_TOKEN_LENGTH
+        or not supplied.isascii()
+        or supplied != supplied.strip()
+    ):
         raise HTTPException(status_code=401, detail="Malformed authorization credentials")
     if not hmac.compare_digest(supplied, expected):
         raise HTTPException(
