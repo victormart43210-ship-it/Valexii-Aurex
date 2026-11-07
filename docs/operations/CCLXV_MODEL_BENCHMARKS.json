@@ -1,0 +1,9 @@
+{
+  "operation": "KUSANAGI_CCLXV",
+  "tested_code_sha": "cfbf5386e679696048318ad843aeb29b520654bb",
+  "status": "NOT_RUN",
+  "reason": "No candidate weights are installed. No score was generated. The offline mock in aurex/ox/evaluation.py remains a mock and is not a live benchmark.",
+  "comparisons": [],
+  "hallucination_rate": null,
+  "latency": null
+}

@@ -1,0 +1,25 @@
+{
+  "operation": "KUSANAGI_CCLXII",
+  "tested_code_sha": "41ce726dd1664b4f85dce2e316285c4711a3b1c7",
+  "base_sha": "5285202699c362c7a10abcb02a8b5c8591517f7c",
+  "base_pr": 186,
+  "foundation_pr_184": "fa9d2254a2b2e15b7117c55ef6917d365357caf5",
+  "website_pr_185": "5978a781114368d40965092f6094273683c51c7c",
+  "origin_main_sha": "34cda4bd8f207f5b1284093b87e4760d782a4903",
+  "decision": "HOLD_WITH_BLOCKERS",
+  "production": "HOLD",
+  "financial_authority": "NONE",
+  "inherited_ci": {
+    "sha": "5285202699c362c7a10abcb02a8b5c8591517f7c",
+    "result": "5 checks passed on that documentation commit. It does not verify 41ce726."
+  },
+  "items": [
+    {"component": "CCLXI integration", "action": "PRESERVED", "evidence": "This branch starts at 5285202"},
+    {"component": "Jules CCLX recovery", "action": "NOT_FOUND", "evidence": "No branch, pull request, or commit named CCLX or CCLX-R"},
+    {"component": "Jules PR 172 and PR 176", "action": "REJECTED_BY_BOUNDARY", "evidence": "scripts/jules_import_boundary.py"},
+    {"component": "Offline ZIP kit", "action": "EXTENDED", "evidence": "tests/test_offline_kit.py"},
+    {"component": "DISPATER website journey", "action": "DEMONSTRATED_LOCALLY", "evidence": "http://127.0.0.1:5176/dispater on this machine"},
+    {"component": "XAELI live Qwen", "action": "NOT_VERIFIED", "evidence": "127.0.0.1:8080 URLError"},
+    {"component": "Post-9.9 blueprint v2.1", "action": "NOT_IN_REPOSITORY", "evidence": "No file or commit contains the blueprint"}
+  ]
+}

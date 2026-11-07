@@ -1,0 +1,25 @@
+{
+  "operation": "KUSANAGI_CCLXI",
+  "tested_code_sha": "f480c518ffcb5360b2b084470dbdb71aeac68d32",
+  "launcher": "python3 scripts/valexii_offline_kit.py --root <archive-folder> --dest <separate-work-folder>",
+  "observed_probe": {
+    "roots": ["/mnt/shared/removable", "~/dispater-kit"],
+    "asset_status": "LOCAL_ASSET_ACCESS_REQUIRED",
+    "repository_status_for_workspace": "REPOSITORY_PRESENT",
+    "downloads": "NOT_STARTED"
+  },
+  "usb_counts_from_handoff": {
+    "status": "NOT_REVALIDATED",
+    "note": "5,113 entries, 5,012 PDFs, 128 OCR pages, and 236 numeric candidates were not read from a manifest in this environment. The 236 candidates are not qualified findings.",
+    "numeric_candidates_are_findings": false
+  },
+  "behaviors_tested": [
+    "duplicate zip names stay separate",
+    "unsafe ../ entries are rejected and nothing is extracted",
+    "extraction into the archive folder is refused",
+    "a second run returns ALREADY_PRESENT",
+    "a missing repository returns REPOSITORY_ABSENT",
+    "a missing root returns LOCAL_ASSET_ACCESS_REQUIRED"
+  ],
+  "not_done": ["USB copy", "OCR resume", "SQLite checkpoint recovery", "model download"]
+}

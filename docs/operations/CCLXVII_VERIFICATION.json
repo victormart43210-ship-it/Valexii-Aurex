@@ -1,0 +1,55 @@
+{
+ "candidate_scope": "main + #188 tip + #189 (docs commit on top)",
+ "results": {
+  "backend_pytest": {
+   "status": "PASS",
+   "detail": "759 passed, 2 skipped"
+  },
+  "ruff": {
+   "status": "PASS"
+  },
+  "mypy": {
+   "status": "PASS",
+   "detail": "110 source files"
+  },
+  "website_build": {
+   "status": "PASS"
+  },
+  "website_tsc": {
+   "status": "NOT_VERIFIED",
+   "detail": "command produced no output; not independently confirmed"
+  },
+  "website_unit_tests": {
+   "status": "NOT_VERIFIED",
+   "detail": "npm test printed nothing"
+  },
+  "dispater_web_tests": {
+   "status": "NOT_RUN"
+  },
+  "browser_journeys": {
+   "status": "NOT_RUN"
+  },
+  "docker_build": {
+   "status": "NOT_RUN",
+   "detail": "daemon not started"
+  },
+  "secret_scan": {
+   "status": "NOT_RUN"
+  },
+  "dependency_license_review": {
+   "status": "NOT_RUN"
+  },
+  "live_integrations": {
+   "status": "NOT_VERIFIED",
+   "detail": "no live website<->backend / Qwen run performed"
+  },
+  "independent_review": {
+   "status": "BLOCKED",
+   "detail": "no approving review on any PR; reviewer unavailable"
+  },
+  "branch_protection": {
+   "status": "NOT_VERIFIED",
+   "detail": "main reports protected=false; protection API returned 403"
+  }
+ }
+}

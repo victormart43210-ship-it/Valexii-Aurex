@@ -1,0 +1,21 @@
+{
+  "operation": "KUSANAGI_CCLIX",
+  "tested_code_sha": "ba6db1bac46e76317e6218301f1d71f051781636",
+  "foundation_sha": "fa9d2254a2b2e15b7117c55ef6917d365357caf5",
+  "results": [
+    {"cmd": "pytest -q", "result": "745 passed, 1 skipped, exit 0", "skip": "training/tests/test_lora_smoke.py (torch absent)"},
+    {"cmd": "pytest golden, convergence, and CCLVII regressions", "result": "39 passed"},
+    {"cmd": "ruff check aurex tests", "result": "PASS"},
+    {"cmd": "mypy aurex", "result": "109 files, PASS"},
+    {"cmd": "website vitest", "result": "161 passed"},
+    {"cmd": "website tsc --noEmit", "result": "exit 0"},
+    {"cmd": "website npm run build", "result": "exit 0"},
+    {"cmd": "dispater-web npm test", "result": "25 passed, 0 skipped"},
+    {"cmd": "browser http://127.0.0.1:5173/dispater", "result": "HTTP 200. SSR contains API link DISCONNECTED and not recovered revenue. Hero screenshot captured."},
+    {"cmd": "browser http://127.0.0.1:5173/xaeli mobile", "result": "HTTP 200. Rendered Model link: unavailable. Scripted copy remains. Not a live model."},
+    {"cmd": "XAELI 127.0.0.1:8080", "result": "URLError", "status": "NOT_VERIFIED"}
+  ],
+  "github_actions_on_foundation_fa9d225": "SUCCESS for offline-practice, test, test, verify, integration, docker-build-and-smoke",
+  "github_actions_on_pushed_head_a4d9d85": "SUCCESS for offline-practice, test, test, verify, and integration. docker-build-and-smoke did not run: the workflow only watches Dockerfile, pyproject.toml, aurex, training, and workstation, and this diff does not change those paths. The image success on fa9d225 is a different SHA.",
+  "not_run": ["Docker build on this SHA", "live Qwen generation", "production Railway deploy", "authenticated click-through of Run Synthetic Audit because no service token is configured"]
+}

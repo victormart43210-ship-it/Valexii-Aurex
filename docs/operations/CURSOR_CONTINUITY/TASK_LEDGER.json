@@ -1,0 +1,17 @@
+{
+  "operation": "KUSANAGI_CCXXXIX",
+  "tasks": [
+    {"id": "ancestry", "state": "done", "note": "PR 175 not merged; PR 174 parent retained"},
+    {"id": "misapplied-payments", "state": "done"},
+    {"id": "evidence-independence", "state": "done", "note": "exact digest and one evidence root"},
+    {"id": "contract-supersession", "state": "done", "note": "only the named predecessor is retired"},
+    {"id": "hours-edges", "state": "done", "note": "duplicate ticket and unpriced overtime"},
+    {"id": "monitor-chain", "state": "done"},
+    {"id": "website-synthetic-flow", "state": "done", "note": "local Chrome against local API"},
+    {"id": "ocr", "state": "blocked", "note": "no local OCR engine; images still fail closed"},
+    {"id": "playwright", "state": "not_run"},
+    {"id": "osv-syft-semgrep", "state": "not_run"},
+    {"id": "independent-review", "state": "pending"},
+    {"id": "production-release", "state": "hold"}
+  ]
+}

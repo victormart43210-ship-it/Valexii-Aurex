@@ -1,0 +1,17 @@
+{
+ "main_sha_before": "34cda4bd8f207f5b1284093b87e4760d782a4903",
+ "branch": "integration/kusanagi-cclxxi-final",
+ "ancestry": "#192 contains #191 contains #188 (#184-#188 stack); #190 = #188+#189+ops docs",
+ "merged_in_order": [
+  "#192 (incl #191,#188,#187..#184 ancestry)",
+  "#189",
+  "#183 (1 conflict resolved)",
+  "#190 (docs)"
+ ],
+ "excluded": {
+  "#172": "duplicate pipeline/monitoring modules; conflict in dispater_api.py",
+  "#176": "conflicting commercial-pilot engine"
+ },
+ "conflict_resolution": "aurex/dispater_intelligence.py: kept #191 DUPLICATE_LABOR_RECORD withholding (role+service_date); #183 version lacked it. Distinct roles remain separately priced.",
+ "manuscript_forensics": "NOT_IMPLEMENTED: only static-analysis helpers exist; no image/multispectral/OCR module"
+}

@@ -1,0 +1,18 @@
+{
+  "operation": "KUSANAGI_CCLXII",
+  "tested_code_sha": "41ce726dd1664b4f85dce2e316285c4711a3b1c7",
+  "identified_exposure_usd": "385.00",
+  "withheld_unresolved_usd": "150.00",
+  "confirmed_recovery_usd": "0.00",
+  "result": "PASS",
+  "command": "pytest -q",
+  "suite": "755 passed, 1 skipped",
+  "included": [
+    "tests/test_dispater_golden_audit.py",
+    "tests/test_dispater_documents.py::test_thirty_six_month_workbook_matches_independent_manifest",
+    "tests/test_dispater_convergence.py::test_monitor_chain_survives_reconnect_and_rejects_a_reused_digest",
+    "tests/test_dispater_security.py tenant isolation and restart recovery"
+  ],
+  "financial_authority": "NONE",
+  "ocr_candidates_are_findings": false
+}

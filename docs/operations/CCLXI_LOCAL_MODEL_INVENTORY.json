@@ -1,0 +1,18 @@
+{
+  "operation": "KUSANAGI_CCLXI",
+  "tested_code_sha": "f480c518ffcb5360b2b084470dbdb71aeac68d32",
+  "usb_catalog_v3": "NOT_REVALIDATED. No USB was mounted and no downloader process was inspected.",
+  "downloads_this_run": "NOT_STARTED",
+  "in_repo_registry": {
+    "source": "aurex/ox/registry.py",
+    "entry_id_count": 22,
+    "weights_downloaded": false,
+    "runtime": "NOT_INSTALLED",
+    "decision": "OPTIONAL"
+  },
+  "candidates": [
+    {"name": "Qwen staging adapter", "task": "advisory explanation", "installed": false, "identity": "qwen2.5-0.5b-instruct-q4_k_m in aurex/xaeli_staging.py", "license": "Qwen license terms require separate review", "commercial_use": "REVIEW_REQUIRED", "decision": "PILOT", "evaluation": "NOT_VERIFIED"},
+    {"name": "PaddleOCR", "task": "document OCR", "installed": false, "decision": "REJECT", "reason": "Not installed. A mock fallback that emits text would be treated as a reading. It was not imported."},
+    {"name": "Mistral, Falcon, DeepSeek, K2 Horizon, Llama, and the other registry rows", "task": "catalog only", "installed": false, "decision": "OPTIONAL", "reason": "No weights and no evaluation on this head."}
+  ]
+}

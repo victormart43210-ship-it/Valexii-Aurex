@@ -55,16 +55,81 @@ def _mac(key: bytes, report: dict[str, Any]) -> str:
     return hmac.new(key, _canonical(body), hashlib.sha256).hexdigest()
 
 
-def sign_report(report: dict[str, Any]) -> dict[str, Any]:
-    """Return a copy of the report with receipt_auth and receipt_mac attached."""
+def _active_key() -> tuple[str, bytes]:
     keys = _load_keys()
     kid = os.environ.get("AUREX_DISPATER_RECEIPT_ACTIVE_KID", "")
     if kid not in keys:
         raise ReceiptKeyError("active receipt key id is not configured")
+    return kid, keys[kid]
+
+
+def _content_digest(body: dict[str, Any]) -> str:
+    raw = _canonical({k: v for k, v in body.items() if k not in ("receipt_sha256", "receipt_auth", "receipt_mac")})
+    return hashlib.sha256(raw).hexdigest()
+
+
+def sign_report(report: dict[str, Any]) -> dict[str, Any]:
+    """Legacy receipt. Identity fields are not covered. Persistence uses :func:`seal_run`."""
+    kid, key = _active_key()
     signed = {k: v for k, v in report.items() if k not in ("receipt_auth", "receipt_mac")}
     signed["receipt_auth"] = {"alg": ALGORITHM, "kid": kid}
-    signed["receipt_mac"] = _mac(keys[kid], signed)
+    signed["receipt_mac"] = _mac(key, signed)
     return signed
+
+
+def seal_run(report: dict[str, Any], *, run_id: str, created_at: str) -> dict[str, Any]:
+    """Version 2 receipt. ``run_id`` and ``created_at`` are inside both the hash and the MAC.
+
+    A stored v2 receipt is not rewritten into a legacy receipt. Removing ``v``, the identity
+    fields, or ``receipt_binding`` changes the MAC and will not verify.
+    """
+    if not isinstance(run_id, str) or len(run_id) != 36 or not run_id.startswith("run-"):
+        raise ValueError("run_id is not a canonical run identifier")
+    if not isinstance(created_at, str) or not created_at.strip():
+        raise ValueError("created_at is required")
+    kid, key = _active_key()
+    body = {
+        k: v
+        for k, v in report.items()
+        if k not in ("receipt_sha256", "receipt_auth", "receipt_mac", "run_id", "created_at", "receipt_binding")
+    }
+    body["run_id"] = run_id
+    body["created_at"] = created_at
+    body["receipt_binding"] = "BOUND_V2"
+    body["receipt_class"] = "SEALED_V2"
+    body["receipt_sha256"] = _content_digest(body)
+    body["receipt_auth"] = {"alg": ALGORITHM, "kid": kid, "v": 2}
+    body["receipt_mac"] = _mac(key, body)
+    return body
+
+
+def receipt_version(report: dict[str, Any]) -> int | None:
+    """1 legacy, 2 identity-bound. None is an unknown version and must be rejected."""
+    auth = report.get("receipt_auth")
+    if not isinstance(auth, dict) or "v" not in auth:
+        return 1
+    if auth.get("v") == 2:
+        return 2
+    return None
+
+
+def mac_mapping(body: dict[str, Any]) -> tuple[str, str]:
+    """MAC a canonical mapping with the active receipt key. This is not a human signature."""
+    kid, key = _active_key()
+    digest = hmac.new(key, _canonical(body), hashlib.sha256).hexdigest()
+    return kid, digest
+
+
+def verify_mapping_mac(body: dict[str, Any], *, kid: str, mac: str) -> bool:
+    """True when ``mac`` matches ``body`` under a configured key. Never raises."""
+    try:
+        key = _load_keys().get(kid)
+        if key is None or not isinstance(mac, str):
+            return False
+        expected = hmac.new(key, _canonical(body), hashlib.sha256).hexdigest()
+        return hmac.compare_digest(expected, mac)
+    except (ReceiptKeyError, TypeError, ValueError):
+        return False
 
 
 def verify_mac(report: dict[str, Any]) -> bool:

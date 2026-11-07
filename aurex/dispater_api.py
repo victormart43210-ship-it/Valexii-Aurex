@@ -5,6 +5,7 @@ Routes under `/v1/dispater`:
 - GET  /findings
 - GET  /dashboard
 - GET  /runs, GET /runs/{run_id}, GET /runs/{run_id}/export?format=json|csv
+- POST /observations
 
 Security model (fail closed):
 - Bearer tokens are bound to tenants via AUREX_DISPATER_TENANT_GRANTS, a JSON object
@@ -17,12 +18,14 @@ Security model (fail closed):
 
 from __future__ import annotations
 
+import base64
 import hashlib
 import hmac
 import json
 import logging
 import os
 from dataclasses import dataclass
+from datetime import UTC, datetime, timedelta
 from typing import Annotated, Any, Literal
 
 from fastapi import (
@@ -39,7 +42,16 @@ from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field, field_validator
 
 from aurex import dispater_store
-from aurex.dispater_intelligence import InvalidSnapshot, RevenueLeakageEngine, report_to_csv
+from aurex.ascendancy.proposal import propose
+from aurex.customer_sovereignty import assert_no_effect
+from aurex.dispater_ingest import IngestError, ingest_source
+from aurex.dispater_intelligence import (
+    InvalidSnapshot,
+    RevenueLeakageEngine,
+    receipt_authenticity,
+    report_to_csv,
+)
+from aurex.dispater_lifecycle import authorization_decision, deletion_request, retention_request
 
 logger = logging.getLogger("aurex.dispater")
 
@@ -114,7 +126,21 @@ SYSTEM_STATE = {
     "production_release": "HOLD",
     "financial_authority": "NONE",
     "external_paid_inference": "OFF",
+    "third_party_contact": "NONE",
+    "training_reuse": "NOT_AUTHORIZED",
+    "deletion": "NOT_IMPLEMENTED",
+    "deletion_request": "RECORDED_NOT_EXECUTED",
+    "external_anchor": "NOT_VERIFIED",
+    "customer_decides": True,
 }
+
+
+def current_system_state() -> dict[str, Any]:
+    from aurex.dispater_at_rest import encryption_status
+
+    state = dict(SYSTEM_STATE)
+    state["encryption_at_rest"] = encryption_status()
+    return state
 
 
 @dataclass(frozen=True)
@@ -181,6 +207,8 @@ class ReconciliationRequest(BaseModel):
     invoices: list[dict[str, Any]] = Field(default_factory=list, max_length=MAX_ROWS)
     rates: list[dict[str, Any]] = Field(default_factory=list, max_length=MAX_ROWS)
     payments: list[dict[str, Any]] = Field(default_factory=list, max_length=MAX_ROWS)
+    equipment: list[dict[str, Any]] | None = Field(default=None, max_length=MAX_ROWS)
+    labor: list[dict[str, Any]] | None = Field(default=None, max_length=MAX_ROWS)
 
     @field_validator("dataset_type")
     @classmethod
@@ -190,34 +218,88 @@ class ReconciliationRequest(BaseModel):
         return v
 
 
-def _internal_error(op: str) -> HTTPException:
-    logger.exception("dispater %s failed", op)
+def _internal_error(op: str, exc: BaseException | None = None) -> HTTPException:
+    logger.error("dispater %s failed (%s)", op, type(exc).__name__ if exc else "error")
     return HTTPException(status.HTTP_500_INTERNAL_SERVER_ERROR, "Internal DISPATER error")
 
 
 @router.post("/reconciliation")
 def run_reconciliation(payload: ReconciliationRequest, principal: PrincipalDep) -> dict[str, Any]:
+    assert_no_effect()
     authorize_tenant(principal, payload.tenant_id)
     try:
+        # Preserve legacy request identity when optional hour collections were absent.
+        dataset = payload.model_dump(exclude={"equipment", "labor"})
+        for collection in ("equipment", "labor"):
+            rows = getattr(payload, collection)
+            if rows is not None:
+                dataset[collection] = rows
         report = RevenueLeakageEngine(tenant_id=payload.tenant_id).reconcile_records(
-            payload.model_dump()
+            dataset
         )
     except InvalidSnapshot as exc:
         raise HTTPException(status.HTTP_400_BAD_REQUEST, str(exc)) from exc
     except Exception as exc:
-        raise _internal_error("reconciliation") from exc
+        raise _internal_error("reconciliation", exc) from exc
     try:
         stored, _created = dispater_store.save_run(payload.tenant_id, report)
     except Exception as exc:
-        raise _internal_error("persistence") from exc
+        raise _internal_error("persistence", exc) from exc
     return stored
+
+
+class DocumentRequest(BaseModel):
+    tenant_id: str = Field(pattern=TENANT_PATTERN, max_length=64)
+    filename: str = Field(min_length=1, max_length=180)
+    kind: Literal["csv", "json", "pdf", "xlsx", "png", "jpeg"]
+    content_base64: str = Field(min_length=1, max_length=2_000_000)
+    declared_byte_length: int | None = Field(default=None, ge=0, le=5_000_000)
+
+
+@router.post("/documents")
+def ingest_document(payload: DocumentRequest, principal: PrincipalDep) -> dict[str, Any]:
+    """Ingest one synthetic document and reconcile it. The wrapper is not the receipt."""
+    assert_no_effect()
+    authorize_tenant(principal, payload.tenant_id)
+    try:
+        raw = base64.b64decode(payload.content_base64, validate=True)
+        if payload.declared_byte_length is not None and payload.declared_byte_length != len(raw):
+            raise IngestError("declared byte length does not match the received source bytes")
+        batch = ingest_source(payload.tenant_id, payload.filename, raw, kind=payload.kind)
+        report = RevenueLeakageEngine(tenant_id=payload.tenant_id).reconcile_records(batch["dataset"])
+        stored, _created = dispater_store.save_run(payload.tenant_id, report)
+    except (IngestError, InvalidSnapshot) as exc:
+        raise HTTPException(status.HTTP_400_BAD_REQUEST, str(exc)) from exc
+    except Exception as exc:
+        raise _internal_error("document ingestion", exc) from exc
+    return {
+        "authority_state": "HOLD",
+        "financial_authority": "NONE",
+        "ingestion_authenticated": False,
+        "ocr_status": "NOT_INSTALLED",
+        "ingestion": {
+            "source_sha256": batch["source_sha256"],
+            "filename": batch["filename"],
+            "kind": batch["kind"],
+            "processor": batch["processor"],
+            "provenance": batch["provenance"],
+            "field_provenance": batch["field_provenance"],
+            "limits": batch["limits"],
+            "byte_length": batch["byte_length"],
+            "byte_length_scope": batch["byte_length_scope"],
+            "caller_declared_byte_length_accepted": False,
+            "source_bytes_status": batch["source_bytes_status"],
+            "source_identity": batch["source_identity"],
+        },
+        "report": stored,
+    }
 
 
 def _latest(tenant_id: str) -> dict[str, Any] | None:
     try:
         return dispater_store.latest_run(tenant_id)
     except Exception as exc:
-        raise _internal_error("read") from exc
+        raise _internal_error("read", exc) from exc
 
 
 @router.get("/findings")
@@ -248,10 +330,14 @@ def get_dashboard(principal: PrincipalDep, tenant_id: TenantQuery) -> dict[str, 
             "status": "INITIALIZED",
             "last_reconciliation_sha256": None,
             "identified_exposure_usd": "0.00",
+            "withheld_unresolved_usd": "0.00",
             "confirmed_recovery_usd": "0.00",
+            "receipt_binding": None,
+            "monitoring_event_count": dispater_store.monitor_event_count(tenant_id),
+            "ocr_status": "NOT_INSTALLED",
             "finding_counts": {"total": 0, "critical": 0, "high": 0, "medium": 0},
             "recent_findings": [],
-            "system_state": SYSTEM_STATE,
+            "system_state": current_system_state(),
         }
     findings = run.get("findings", [])
     summary = run.get("financial_summary", {})
@@ -264,8 +350,12 @@ def get_dashboard(principal: PrincipalDep, tenant_id: TenantQuery) -> dict[str, 
         "potential_underbilling_usd": summary.get("potential_underbilling_usd", "0.00"),
         "potential_overbilling_usd": summary.get("potential_overbilling_usd", "0.00"),
         "unverified_exposure_usd": summary.get("unverified_exposure_usd", "0.00"),
+        "withheld_unresolved_usd": summary.get("withheld_unresolved_usd", "0.00"),
         "human_confirmed_discrepancy_usd": "0.00",
         "confirmed_recovery_usd": "0.00",
+        "receipt_binding": run.get("receipt_binding"),
+        "monitoring_event_count": dispater_store.monitor_event_count(tenant_id),
+        "ocr_status": "NOT_INSTALLED",
         "finding_counts": {
             "total": len(findings),
             "critical": sum(1 for f in findings if f.get("severity") == "CRITICAL"),
@@ -273,7 +363,7 @@ def get_dashboard(principal: PrincipalDep, tenant_id: TenantQuery) -> dict[str, 
             "medium": sum(1 for f in findings if f.get("severity") == "MEDIUM"),
         },
         "recent_findings": findings[:10],
-        "system_state": SYSTEM_STATE,
+        "system_state": current_system_state(),
     }
 
 
@@ -285,7 +375,7 @@ def get_runs(
     try:
         runs = dispater_store.list_runs(tenant_id, limit)
     except Exception as exc:
-        raise _internal_error("history") from exc
+        raise _internal_error("history", exc) from exc
     return {"tenant_id": tenant_id, "runs": runs, "count": len(runs)}
 
 
@@ -293,7 +383,7 @@ def _run_or_404(tenant_id: str, run_id: str) -> dict[str, Any]:
     try:
         run = dispater_store.get_run(tenant_id, run_id)
     except Exception as exc:
-        raise _internal_error("read") from exc
+        raise _internal_error("read", exc) from exc
     if not run:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "Run not found")
     return run
@@ -316,8 +406,119 @@ def export_run(
     tenant_id: TenantQuery,
     format: Literal["json", "csv"] = "json",
 ) -> Response | dict[str, Any]:
+    assert_no_effect()
     authorize_tenant(principal, tenant_id)
     run = _run_or_404(tenant_id, run_id)
     if format == "csv":
-        return Response(report_to_csv(run), media_type="text/csv")
-    return run
+        return Response(
+            report_to_csv(run),
+            media_type="text/csv",
+            headers={
+                "Cache-Control": "no-store",
+                "X-Aurex-Third-Party-Release": "none",
+                "X-Aurex-Training-Reuse": "not-authorized",
+            },
+        )
+    return JSONResponse(
+        {
+            "export_authorization": "TENANT_BEARER",
+            "third_party_release": False,
+            "training_reuse": "NOT_AUTHORIZED",
+            "deletion": "NOT_IMPLEMENTED",
+            "receipt_authenticity": receipt_authenticity(run),
+            "report": run,
+        },
+        headers={
+            "Cache-Control": "no-store",
+            "X-Aurex-Third-Party-Release": "none",
+            "X-Aurex-Training-Reuse": "not-authorized",
+        },
+    )
+
+
+class ObservationRequest(BaseModel):
+    tenant_id: str = Field(pattern=TENANT_PATTERN, max_length=64)
+    source_sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
+    observed_at: datetime
+    hypothesis: str = Field(min_length=1, max_length=500)
+    counterevidence: list[str] = Field(default_factory=list, max_length=20)
+    effect: str | None = Field(default="NONE", max_length=40)
+
+    @field_validator("counterevidence")
+    @classmethod
+    def _bounded_lines(cls, value: list[str]) -> list[str]:
+        if any(len(item) > 200 for item in value):
+            raise ValueError("counterevidence line is too long")
+        return value
+
+
+@router.post("/observations")
+def post_observation(payload: ObservationRequest, principal: PrincipalDep) -> dict[str, Any]:
+    """Record an advisory observation. The caller cannot start an effect."""
+    assert_no_effect()
+    authorize_tenant(principal, payload.tenant_id)
+    observed = payload.observed_at
+    if observed.tzinfo is None:
+        raise HTTPException(status.HTTP_400_BAD_REQUEST, "observed_at requires a timezone")
+    result = propose(
+        {
+            "schema": "aurex.observation.v1",
+            "source_sha256": payload.source_sha256,
+            "observed_at": observed,
+            "hypothesis": payload.hypothesis,
+            "counterevidence": payload.counterevidence,
+            "effect": payload.effect,
+        },
+        now=datetime.now(UTC),
+        max_age=timedelta(hours=24),
+    )
+    result["tenant_id"] = payload.tenant_id
+    return result
+
+
+class DeletionRequest(BaseModel):
+    tenant_id: str = Field(pattern=TENANT_PATTERN, max_length=64)
+
+
+class RetentionRequest(BaseModel):
+    tenant_id: str = Field(pattern=TENANT_PATTERN, max_length=64)
+    retain_days: int = Field(ge=1, le=3650)
+
+
+class AuthorizationClaim(BaseModel):
+    tenant_id: str = Field(pattern=TENANT_PATTERN, max_length=64)
+    actor_id: str = Field(default="", max_length=80)
+    action: str = Field(default="", max_length=80)
+    scope: str = Field(default="", max_length=120)
+    expires_at: str = Field(default="", max_length=40)
+
+
+@router.post("/lifecycle/deletion-request")
+def post_deletion_request(payload: DeletionRequest, principal: PrincipalDep) -> dict[str, Any]:
+    """Record a deletion request. No rows are removed."""
+    assert_no_effect()
+    authorize_tenant(principal, payload.tenant_id)
+    before = dispater_store.list_runs(payload.tenant_id)
+    decision = deletion_request(payload.tenant_id)
+    if dispater_store.list_runs(payload.tenant_id) != before:
+        raise HTTPException(status.HTTP_500_INTERNAL_SERVER_ERROR, "Internal DISPATER error")
+    return decision
+
+
+@router.post("/lifecycle/retention")
+def post_retention(payload: RetentionRequest, principal: PrincipalDep) -> dict[str, Any]:
+    """Record a retention preference. It is not enforced."""
+    assert_no_effect()
+    authorize_tenant(principal, payload.tenant_id)
+    try:
+        return retention_request(payload.tenant_id, retain_days=payload.retain_days)
+    except ValueError as exc:
+        raise HTTPException(status.HTTP_400_BAD_REQUEST, str(exc)) from exc
+
+
+@router.post("/lifecycle/authorization-decision")
+def post_authorization_decision(payload: AuthorizationClaim, principal: PrincipalDep) -> dict[str, Any]:
+    """Return an unverified decision. The call does not approve a financial action."""
+    assert_no_effect()
+    authorize_tenant(principal, payload.tenant_id)
+    return authorization_decision(payload.model_dump())

@@ -3,7 +3,7 @@
 import json
 from typing import Any
 from urllib.parse import urlsplit
-from urllib.request import HTTPRedirectHandler, Request, build_opener
+from urllib.request import HTTPRedirectHandler, ProxyHandler, Request, build_opener
 
 from aurex.adapters.base import ModelAdapter, ModelAnswer
 
@@ -46,7 +46,7 @@ class OllamaAdapter(ModelAdapter):
             headers={"Content-Type": "application/json"},
             method="POST",
         )
-        with build_opener(_NoRedirect()).open(request, timeout=self.timeout_seconds) as response:
+        with build_opener(ProxyHandler({}), _NoRedirect()).open(request, timeout=self.timeout_seconds) as response:
             data = response.read(2_000_001)
         if len(data) > 2_000_000:
             raise ValueError("Ollama response exceeds allowed size")

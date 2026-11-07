@@ -1,0 +1,77 @@
+{
+  "schema_version": "1.0",
+  "operation_id": "KUSANAGI_CCLVII",
+  "entries": [
+    {
+      "timestamp_utc": "2026-11-06T19:55:27.853461+00:00",
+      "task_id": "CCLVII-01",
+      "status": "IN_PROGRESS",
+      "action": "Verified main, integration181 and Cursor182; created isolated Work branch from integration per owner instruction",
+      "files": [
+        "docs/operations/CCLVII_RECOVERY.json",
+        "docs/operations/CCLVII_RESUME.md",
+        "docs/operations/CCLVII_EXECUTION_LEDGER.json"
+      ],
+      "source_sha": "c4f45925e086bbb23b643e66707b224419d52b60",
+      "remote_checkpoint_sha": null,
+      "tests": "NOT_RUN",
+      "next_action": "Verify initial remote checkpoint, inspect existing engine and Cursor182 diff, choose nonoverlapping defect and add failing regression"
+    },
+    {
+      "timestamp_utc": "2026-11-06T19:58:34.427956+00:00",
+      "task_id": "CCLVII-02",
+      "status": "TESTED",
+      "action": "Disable ambient proxies for local-only prompts in two existing clients",
+      "files": [
+        "aurex/local_inference.py",
+        "aurex/adapters/ollama.py",
+        "tests/test_cclvii_local_proxy_isolation.py"
+      ],
+      "remote_checkpoint_sha": "7b50f9e850652b8f6f3b2ebbc6f0a49123914171",
+      "red": "2failed proxy captured prompts",
+      "green": "23passed; scopedRuffPASS",
+      "next_action": "Verify privacy repair remote savepoint; publish duplicate-unbilled-equipment repair after golden checks"
+    },
+    {
+      "timestamp_utc": "2026-11-06T19:59:56.152233+00:00",
+      "task_id": "CCLVII-03",
+      "status": "TESTED",
+      "action": "Apply existing duplicate equipment identity/date guard before unbilled hours sum",
+      "files": [
+        "aurex/dispater_intelligence.py",
+        "tests/test_cclvii_unbilled_hours.py"
+      ],
+      "remote_checkpoint_sha": "0638ace8840a65c28fc5e3c1e7513da5fe282429",
+      "red": "2failed1passed; duplicate tickets booked400",
+      "green": "37passed; duplicate amount0, single ticket200; golden385/150/0 invoice10/0",
+      "next_action": "Verify financial savepoint, fix confirmed hours collection loss at reconciliation HTTP boundary, then run integrated tests"
+    },
+    {
+      "timestamp_utc": "2026-11-06T20:05:20.620050+00:00",
+      "task_id": "CCLVII-04",
+      "status": "TESTED",
+      "action": "PreservehourcollectionsandfinancialoptionalfieldsacrosscanonicalAPIand4formatimport",
+      "files": [
+        "aurex/dispater_api.py",
+        "aurex/dispater_ingest.py",
+        "aurex/dispater_documents.py",
+        "tests/test_cclvii_hours_api.py",
+        "tests/test_cclvii_ingest_semantics.py"
+      ],
+      "red": "API3fail1pass;format4fail",
+      "green": "formatagent35pass;coordinator68selectedexit0;noexistingfixtureexpectationschanged",
+      "remote_checkpoint_sha": "bdb09ec3bcf0d90fe8b2b4620fc2610100286f13",
+      "next_action": "Fetch pushed Workhead into cleanworktree, install/link exactlocked frontend deps, runfullpytestJUnit/Ruff/Mypy/Vitest/tsc/build/HTTPsandbox; inspectCIexacthead"
+    },
+    {
+      "timestamp_utc": "2026-11-06T20:08:51.571828+00:00",
+      "task_id": "CCLVII-05",
+      "status": "TESTED",
+      "action": "Verified clean pushed code SHA and disposable Cursor182 overlay; recorded bounded secret scan",
+      "tested_commit": "a8ee5cb7abb1454058f693dc8165ae6dbad58117",
+      "remote_checkpoint_sha": "a8ee5cb7abb1454058f693dc8165ae6dbad58117",
+      "results": "741 backend passed,1 torch skip;157 website passed;25 DISPATER-web passed;Ruff/Mypy/tsc/both builds passed;54 combined overlay checks passed",
+      "next_action": "Fetch Work PR183 actual head. Copilot should incorporate the three repair commits, then Cursor182. Run frozen golden and full suites on the new reconciled SHA; request Cursor review before any owner merge decision."
+    }
+  ]
+}
