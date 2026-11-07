@@ -1,1 +1,6 @@
 aurex
+aurex_foundation
+aurex_workflows
+dispater_proof
+training
+workstation

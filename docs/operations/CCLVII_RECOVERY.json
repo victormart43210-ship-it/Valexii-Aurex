@@ -1,0 +1,178 @@
+{
+  "schema_version": "1.0",
+  "operation_id": "KUSANAGI_CCLVII",
+  "repository": "victormart43210-ship-it/Valexii-Aurex",
+  "working_branch": "work/kusanagi-cclvii-sovereign-execution",
+  "current_main_sha": "34cda4bd8f207f5b1284093b87e4760d782a4903",
+  "integration_branch": "integration/kusanagi-cclv-sovereign-mainline",
+  "integration_sha": "c4f45925e086bbb23b643e66707b224419d52b60",
+  "cursor_review_branch": "cursor/kusanagi-cclvi-convergence-assurance-4082",
+  "cursor_review_sha": "8323f6db245186b98f2bf2c99a9297e88849e15e",
+  "last_verified_commit": "a8ee5cb7abb1454058f693dc8165ae6dbad58117",
+  "last_pushed_commit": "a8ee5cb7abb1454058f693dc8165ae6dbad58117",
+  "last_passing_test_results": [
+    {
+      "tested_sha": "a8ee5cb7abb1454058f693dc8165ae6dbad58117",
+      "command": "PYTHONPATH=. AUREX_DB_PATH=<disposable> <venv>/python -m pytest -q --junitxml=<evidence>/pytest.xml",
+      "exit_code": 0,
+      "passed": 741,
+      "failed": 0,
+      "skipped": 1,
+      "status": "PASS",
+      "evidence": "docs/operations/cclvii-evidence/pytest.log",
+      "timestamp_recorded_utc": "2026-11-06T20:08:51.571828+00:00",
+      "skip_reason": "training/tests/test_lora_smoke.py: torch unavailable; no training or model weights installed"
+    },
+    {
+      "tested_sha": "a8ee5cb7abb1454058f693dc8165ae6dbad58117",
+      "command": "<venv>/ruff check .",
+      "exit_code": 0,
+      "passed": null,
+      "failed": 0,
+      "skipped": null,
+      "status": "PASS",
+      "evidence": "docs/operations/cclvii-evidence/ruff.log",
+      "timestamp_recorded_utc": "2026-11-06T20:08:51.571828+00:00"
+    },
+    {
+      "tested_sha": "a8ee5cb7abb1454058f693dc8165ae6dbad58117",
+      "command": "<venv>/mypy --strict aurex",
+      "exit_code": 0,
+      "passed": null,
+      "failed": 0,
+      "skipped": null,
+      "status": "PASS",
+      "evidence": "docs/operations/cclvii-evidence/mypy.log",
+      "timestamp_recorded_utc": "2026-11-06T20:08:51.571828+00:00",
+      "source_files": 109
+    },
+    {
+      "tested_sha": "a8ee5cb7abb1454058f693dc8165ae6dbad58117",
+      "command": "cd website && npx vitest run",
+      "exit_code": 0,
+      "passed": 157,
+      "failed": 0,
+      "skipped": 0,
+      "status": "PASS",
+      "evidence": "docs/operations/cclvii-evidence/vitest.log",
+      "timestamp_recorded_utc": "2026-11-06T20:08:51.571828+00:00"
+    },
+    {
+      "tested_sha": "a8ee5cb7abb1454058f693dc8165ae6dbad58117",
+      "command": "cd website && npx tsc --noEmit",
+      "exit_code": 0,
+      "passed": null,
+      "failed": 0,
+      "skipped": null,
+      "status": "PASS",
+      "evidence": "docs/operations/cclvii-evidence/tsc.log",
+      "timestamp_recorded_utc": "2026-11-06T20:08:51.571828+00:00"
+    },
+    {
+      "tested_sha": "a8ee5cb7abb1454058f693dc8165ae6dbad58117",
+      "command": "cd website && npm run build",
+      "exit_code": 0,
+      "passed": null,
+      "failed": 0,
+      "skipped": null,
+      "status": "PASS",
+      "evidence": "docs/operations/cclvii-evidence/website-build.log",
+      "timestamp_recorded_utc": "2026-11-06T20:08:51.571828+00:00"
+    },
+    {
+      "tested_sha": "a8ee5cb7abb1454058f693dc8165ae6dbad58117",
+      "command": "cd dispater-web && npm test",
+      "exit_code": 0,
+      "passed": 25,
+      "failed": 0,
+      "skipped": 0,
+      "status": "PASS",
+      "evidence": "docs/operations/cclvii-evidence/dispater-web.log",
+      "timestamp_recorded_utc": "2026-11-06T20:08:51.571828+00:00"
+    },
+    {
+      "tested_sha": "a8ee5cb7abb1454058f693dc8165ae6dbad58117",
+      "command": "cd dispater-web && npm run build",
+      "exit_code": 0,
+      "passed": null,
+      "failed": 0,
+      "skipped": null,
+      "status": "PASS",
+      "evidence": "docs/operations/cclvii-evidence/dispater-web-build.log",
+      "timestamp_recorded_utc": "2026-11-06T20:08:51.571828+00:00"
+    },
+    {
+      "tested_sha": "a8ee5cb7abb1454058f693dc8165ae6dbad58117",
+      "overlay_sha": "8323f6db245186b98f2bf2c99a9297e88849e15e",
+      "overlay_patch_sha256": "ac4cb6826e567d183cde9512effc185293a0ca8e3fac1cd316043c4de3ce4226",
+      "command": "git diff c4f45925 8323f6db -- aurex tests; git apply --check; git apply in disposable detached worktree; pytest selected financial/security suites",
+      "exit_code": 0,
+      "passed": 54,
+      "failed": 0,
+      "skipped": 0,
+      "status": "PASS",
+      "evidence": "docs/operations/cclvii-evidence/combined.xml",
+      "note": "Uncommitted disposable compatibility overlay; no merged/reconciled release SHA claimed"
+    },
+    {
+      "tested_sha": "a8ee5cb7abb1454058f693dc8165ae6dbad58117",
+      "command": "Bounded UTF-8 tracked-file secret-pattern scan",
+      "status": "PASS_BOUNDED_SCAN",
+      "scanned_files": 753,
+      "skipped_files": 24,
+      "pattern_hits": 0,
+      "exit_code": 0,
+      "evidence": "docs/operations/cclvii-evidence/secret-scan.json",
+      "limits": "Not entropy/history/provider validation. Binary/large/unreadable files skipped."
+    }
+  ],
+  "current_task": "CCLVII-05 final verification recorded; final remote CI/readback pending",
+  "completed_tasks": [
+    "Verified current main, integration #181 and Cursor #182",
+    "Created and remotely verified dedicated Work branch and checkpoints",
+    "Fixed local inference proxy prompt leak",
+    "Fixed duplicate unbilled equipment hours",
+    "Fixed API hour collection loss and four-format financial metadata loss",
+    "Separate agent source review completed; no critical/important bounded patch issue",
+    "Exact pushed code SHA:741 backend pass/1 skip,157 website,25 DISPATER-web; Ruff/Mypy/tsc/builds pass",
+    "Disposable Cursor182 compatibility overlay:54 pass"
+  ],
+  "unfinished_tasks": [
+    "Copilot incorporation and Cursor review of exact reconciled SHA",
+    "Conflicting job/customer reference and parser ambiguity follow-ups",
+    "Independent external/human assurance, live Qwen, browser and deployment validation"
+  ],
+  "known_blockers": [
+    "Conflicting customer IDs can override case/fullwidth-equivalent job reference ambiguity",
+    "Repeated PDF/XLSX field/header ambiguity can select last value",
+    "Delete DB rows, sidecar and server checkpoint together; no separate external witness",
+    "Finding columns plaintext; retention/deletion requests recorded only",
+    "Loopback port policy and allowlisted HTTP not deployment enforced"
+  ],
+  "relevant_pr_numbers": [
+    181,
+    182,
+    180,
+    173,
+    172,
+    168,
+    175,
+    176,
+    159
+  ],
+  "next_exact_action": "Fetch Work PR183 actual head. Copilot should incorporate the three repair commits, then Cursor182. Run frozen golden and full suites on the new reconciled SHA; request Cursor review before any owner merge decision.",
+  "checkpoint_timestamp_utc": "2026-11-06T20:08:51.571828+00:00",
+  "environment": {
+    "python": "3.12",
+    "workspace": "isolated worktree from current Copilot integration; no main or shared branch mutation"
+  },
+  "production_authority": "NONE",
+  "production_release": "HOLD",
+  "financial_authority": "NONE",
+  "customer_data": "NOT_AUTHORIZED",
+  "external_paid_inference": "OFF",
+  "autonomous_training": "OFF",
+  "third_party_contact": "PROHIBITED",
+  "mainline_merge_authority": "NONE",
+  "active_pr": "https://github.com/victormart43210-ship-it/Valexii-Aurex/pull/183"
+}
