@@ -2,10 +2,12 @@
 
 from __future__ import annotations
 
+import importlib.util
 import io
 import json
 from decimal import Decimal
 from pathlib import Path
+from types import ModuleType
 
 import pytest
 from fastapi.testclient import TestClient
@@ -18,7 +20,22 @@ from aurex.relationships.analytics import benchmark, duplicate_jobs, sum_hours_d
 from aurex.relationships.documents import parser_inventory, require_not_inferred
 from aurex.relationships.explain import explain_finding
 from aurex.relationships.log import project
-from tests.test_dispater_golden_audit import EXPECTED, build_dataset
+
+
+def _golden_fixture() -> ModuleType:
+    """Load by path. ``import tests`` is not available to ``pytest -q``."""
+    path = Path(__file__).resolve().parent / "test_dispater_golden_audit.py"
+    spec = importlib.util.spec_from_file_location("cclxxvi_golden_fixture", path)
+    if spec is None or spec.loader is None:
+        raise RuntimeError("golden fixture is missing")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+_GOLDEN = _golden_fixture()
+EXPECTED = _GOLDEN.EXPECTED
+build_dataset = _GOLDEN.build_dataset
 
 TOKEN = "d" * 32
 
