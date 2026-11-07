@@ -7,6 +7,14 @@ import { createBudgetLedger } from "@/lib/aurex-budget";
 const token = "t".repeat(32);
 const url = "https://aurex.example.com";
 const now = new Date().toISOString();
+const readyHealth = {
+  process: "PROCESS_HEALTHY",
+  readiness: "READY",
+  stores: { aurex: "DURABLE", dispater: "DURABLE" },
+  model: "NOT_CONFIGURED",
+  version: "0.1.0a1",
+  time: now,
+};
 const respond = (body: unknown, status = 200, headers: Record<string, string> = {}) =>
   (async () =>
     new Response(typeof body === "string" ? body : JSON.stringify(body), {
@@ -27,9 +35,9 @@ describe("client fails closed", () => {
   });
   it.each([
     ["non-JSON", "<html>", "malformed"],
-    ["wrong literal", { status: "up", version: "1", time: now }, "malformed"],
-    ["extra fields", { status: "ok", version: "1", time: now, secret: "x" }, "malformed"],
-    ["bad time", { status: "ok", version: "1", time: "yesterday" }, "malformed"],
+    ["old status field", { status: "ok", version: "1", time: now }, "malformed"],
+    ["extra fields", { ...readyHealth, secret: "x" }, "malformed"],
+    ["bad time", { ...readyHealth, time: "yesterday" }, "malformed"],
   ])("rejects malformed health: %s", async (_n, body, err) => {
     expect(await createAurexClient({ url, token, fetcher: respond(body) }).health()).toEqual({
       ok: false,
@@ -98,6 +106,23 @@ describe("client fails closed", () => {
       error: "network",
     });
   });
+  it("applies the deadline to a stalled response body after successful headers", async () => {
+    let signal: AbortSignal | null | undefined;
+    const stalled = (async (_url: unknown, init?: RequestInit) => {
+      signal = init?.signal;
+      return new Response(new ReadableStream({
+        start(stream) {
+          signal?.addEventListener("abort", () => stream.error(signal?.reason), { once: true });
+        },
+      }));
+    }) as typeof fetch;
+    expect(await createAurexClient({ url, token, timeoutMs: 500, fetcher: stalled }).health()).toEqual({
+      ok: false,
+      error: "timeout",
+    });
+    expect(signal?.aborted).toBe(true);
+  });
+
   it("validates job inputs and idempotency keys before any request", async () => {
     let called = 0;
     const f = (async () => {
@@ -149,8 +174,7 @@ describe("client fails closed", () => {
       expect(init.method).toBe("GET");
       expect(new Headers(init.headers).get("Authorization")).toBe("Bearer " + token);
       const body =
-        url.pathname === "/v1/health"
-          ? { status: "ok", version: "0.1.0", time: now }
+        url.pathname === "/v1/health" ? readyHealth
           : url.pathname === "/v1/capabilities"
             ? { capabilities: [] }
             : url.pathname === "/v1/evidence"

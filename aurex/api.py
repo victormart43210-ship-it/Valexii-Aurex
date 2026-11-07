@@ -26,7 +26,9 @@ from aurex.governance_math.industrial_api import router as industrial_demo_route
 from aurex.governance_math.research_api import router as research_advice_router
 from aurex.industrial_execution import router as towing_router
 from aurex.integrations.pilot_policy import review_synthetic_pilot
+from aurex.readiness import readiness
 from aurex.real_offline_probe import execute_sqlite_roundtrip
+from aurex.relationships.api import router as relationship_router
 from aurex.workflows.budget import BudgetGuard
 from aurex.xaeli_staging import router as xaeli_staging_router
 from aurex_foundation.correlation import CorrelationMiddleware
@@ -88,6 +90,7 @@ app.include_router(towing_router, dependencies=[Depends(authenticate)])
 app.include_router(xaeli_staging_router, dependencies=[Depends(authenticate)])
 # DISPATER enforces its own tenant-bound authorization (aurex.dispater_api).
 app.include_router(dispater_router)
+app.include_router(relationship_router)
 
 
 class JobCreateRequest(BaseModel):
@@ -145,11 +148,29 @@ class BudgetResponse(BaseModel):
 
 @app.get("/v1/health")
 @app.get("/health")
-def health() -> dict[str, str]:
-    return {
-        "status": "ok",
+def health() -> dict[str, Any]:
+    report = readiness()
+    body = {
+        "process": report["process"],
+        "readiness": report["readiness"],
+        "stores": report["stores"],
+        "model": report["model"],
         "version": "0.1.0a1",
         "time": datetime.now(UTC).isoformat(),
+    }
+    if report["readiness"] == "DEPENDENCY_UNAVAILABLE":
+        raise HTTPException(status_code=503, detail=body)
+    return body
+
+
+@app.get("/v1/providers")
+def providers(_: str = Depends(authenticate)) -> dict[str, Any]:
+    report = readiness()
+    return {
+        "authority": "NONE",
+        "effect": "NONE",
+        "paid_inference": "OFF",
+        "providers": [report["provider"]],
     }
 
 

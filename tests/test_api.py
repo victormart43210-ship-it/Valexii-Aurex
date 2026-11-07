@@ -21,7 +21,9 @@ def setup_token(monkeypatch, tmp_path):
 def test_health_endpoint() -> None:
     res = client.get("/health")
     assert res.status_code == 200
-    assert res.json()["status"] == "ok"
+    body = res.json()
+    assert body["process"] == "PROCESS_HEALTHY"
+    assert body["readiness"] in {"READY", "DEGRADED"}
 
 
 def test_capabilities_endpoint() -> None:

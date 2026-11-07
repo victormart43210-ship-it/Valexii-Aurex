@@ -150,7 +150,7 @@ def ingest_source(tenant_id: str, filename: str, raw: bytes, *, kind: str) -> di
     elif kind == "xlsx":
         from aurex.dispater_documents import extract_xlsx
 
-        tables = extract_xlsx(bytes(raw))
+        tables, field_provenance = extract_xlsx(bytes(raw), source_sha256)
     else:
         raise IngestError("unsupported source type")
     provenance = []

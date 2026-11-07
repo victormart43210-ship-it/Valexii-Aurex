@@ -7,13 +7,23 @@ import {
   readDispaterStoredRun,
   recordDispaterObservation,
   runDispaterDemoReconciliation,
+  runGoldenLedger,
 } from "@/lib/dispater.functions";
 import type {
   DispaterReconciliationReport,
   DispaterRunSummary,
+  FindingExplanation,
   ObservationDecision,
+  RelationshipRead,
 } from "@/lib/dispater-contract";
-import { dispaterLinkState, documentSourceLine, isCurrentRequest, storedRunAgrees } from "@/lib/dispater-link";
+import {
+  chainCoverage,
+  dataOrigin,
+  dispaterLinkState,
+  documentSourceLine,
+  isCurrentRequest,
+  storedRunAgrees,
+} from "@/lib/dispater-link";
 import { Button } from "@/components/ui/button";
 import {
   CheckCircle2,
@@ -31,10 +41,14 @@ export function DispaterReconciliationConsole() {
   const listFn = useServerFn(listDispaterStoredRuns);
   const exportFn = useServerFn(exportVerifiedDispaterRun);
   const observeFn = useServerFn(recordDispaterObservation);
+  const goldenFn = useServerFn(runGoldenLedger);
   const requestSeq = useRef(0);
-  const [presentation, setPresentation] = useState<"SYNTHETIC DEMO" | "SYNTHETIC DOCUMENT">(
-    "SYNTHETIC DEMO",
-  );
+  const [presentation, setPresentation] = useState<
+    "SYNTHETIC DEMO" | "SYNTHETIC DOCUMENT" | "SYNTHETIC GOLDEN"
+  >("SYNTHETIC DEMO");
+  const [links, setLinks] = useState<RelationshipRead | null>(null);
+  const [unresolved, setUnresolved] = useState<{ qualifier: string; reason: string; source_id: string }[]>([]);
+  const [explanation, setExplanation] = useState<FindingExplanation | null>(null);
   const [busy, setBusy] = useState(false);
   const [selectedFixture, setSelectedFixture] = useState<"oilfield_demo_v1" | "clean_control_v1">(
     "oilfield_demo_v1",
@@ -42,6 +56,7 @@ export function DispaterReconciliationConsole() {
   const [report, setReport] = useState<DispaterReconciliationReport | null>(null);
   const [sourceLine, setSourceLine] = useState<string | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [historyNote, setHistoryNote] = useState<string | null>(null);
   const [storedMatch, setStoredMatch] = useState<"MATCH" | "UNCHECKED" | null>(null);
   const [history, setHistory] = useState<DispaterRunSummary[]>([]);
   const [observation, setObservation] = useState<ObservationDecision | null>(null);
@@ -73,8 +88,12 @@ export function DispaterReconciliationConsole() {
     const requestId = beginRequest();
     setBusy(true);
     setErrorMsg(null);
+    setHistoryNote(null);
     setStoredMatch(null);
     setObservation(null);
+    setLinks(null);
+    setExplanation(null);
+    setUnresolved([]);
     try {
       const res = await reconcileFn({ data: { fixture: selectedFixture } });
       if (!isCurrentRequest(requestId, requestSeq.current)) return;
@@ -87,12 +106,51 @@ export function DispaterReconciliationConsole() {
         await refreshHistory(requestId);
       } catch (historyError: unknown) {
         if (!isCurrentRequest(requestId, requestSeq.current)) return;
-        setErrorMsg(historyError instanceof Error ? historyError.message : "Stored history could not be read");
+        setHistoryNote(historyError instanceof Error ? historyError.message : "Stored history could not be read");
       }
     } catch (err: unknown) {
       if (!isCurrentRequest(requestId, requestSeq.current)) return;
       setErrorMsg(err instanceof Error ? err.message : "Reconciliation failed");
       setReport(null);
+      setLinks(null);
+      setExplanation(null);
+    } finally {
+      if (isCurrentRequest(requestId, requestSeq.current)) setBusy(false);
+    }
+  }
+
+  async function handleGoldenLedger() {
+    const requestId = beginRequest();
+    setBusy(true);
+    setErrorMsg(null);
+    setHistoryNote(null);
+    setStoredMatch(null);
+    setObservation(null);
+    setLinks(null);
+    setExplanation(null);
+    setUnresolved([]);
+    try {
+      const view = await goldenFn({ data: {} });
+      if (!isCurrentRequest(requestId, requestSeq.current)) return;
+      setPresentation("SYNTHETIC GOLDEN");
+      setSourceLine(null);
+      setStoredMatch("MATCH");
+      setReport(view.report);
+      setLinks(view.relationships);
+      setUnresolved(view.unresolved);
+      setExplanation(view.explanation);
+      try {
+        await refreshHistory(requestId);
+      } catch (historyError: unknown) {
+        if (!isCurrentRequest(requestId, requestSeq.current)) return;
+        setHistoryNote(historyError instanceof Error ? historyError.message : "Stored history could not be read");
+      }
+    } catch (err: unknown) {
+      if (!isCurrentRequest(requestId, requestSeq.current)) return;
+      setErrorMsg(err instanceof Error ? err.message : "Golden ledger failed");
+      setReport(null);
+      setLinks(null);
+      setExplanation(null);
     } finally {
       if (isCurrentRequest(requestId, requestSeq.current)) setBusy(false);
     }
@@ -102,11 +160,15 @@ export function DispaterReconciliationConsole() {
     const requestId = beginRequest();
     setBusy(true);
     setErrorMsg(null);
+    setHistoryNote(null);
     setObservation(null);
     try {
       const admitted = await admitFn({ data: {} });
       if (!isCurrentRequest(requestId, requestSeq.current)) return;
       setPresentation("SYNTHETIC DOCUMENT");
+      setLinks(null);
+      setExplanation(null);
+      setUnresolved([]);
       setSourceLine(documentSourceLine(admitted.source));
       await confirmStored(admitted.report, requestId);
       if (!isCurrentRequest(requestId, requestSeq.current)) return;
@@ -115,12 +177,14 @@ export function DispaterReconciliationConsole() {
         await refreshHistory(requestId);
       } catch (historyError: unknown) {
         if (!isCurrentRequest(requestId, requestSeq.current)) return;
-        setErrorMsg(historyError instanceof Error ? historyError.message : "Stored history could not be read");
+        setHistoryNote(historyError instanceof Error ? historyError.message : "Stored history could not be read");
       }
     } catch (err: unknown) {
       if (!isCurrentRequest(requestId, requestSeq.current)) return;
       setErrorMsg(err instanceof Error ? err.message : "Document admission failed");
       setReport(null);
+      setLinks(null);
+      setExplanation(null);
     } finally {
       if (isCurrentRequest(requestId, requestSeq.current)) setBusy(false);
     }
@@ -130,6 +194,7 @@ export function DispaterReconciliationConsole() {
     const requestId = beginRequest();
     setBusy(true);
     setErrorMsg(null);
+    setHistoryNote(null);
     try {
       await refreshHistory(requestId);
     } catch (err: unknown) {
@@ -144,6 +209,7 @@ export function DispaterReconciliationConsole() {
     const requestId = beginRequest();
     setBusy(true);
     setErrorMsg(null);
+    setHistoryNote(null);
     setObservation(null);
     try {
       const stored = await readFn({ data: { runId } });
@@ -153,6 +219,9 @@ export function DispaterReconciliationConsole() {
       }
       setPresentation("SYNTHETIC DEMO");
       setSourceLine(null);
+      setLinks(null);
+      setExplanation(null);
+      setUnresolved([]);
       setStoredMatch("MATCH");
       setReport(stored);
     } catch (err: unknown) {
@@ -169,6 +238,7 @@ export function DispaterReconciliationConsole() {
     const requestId = beginRequest();
     setBusy(true);
     setErrorMsg(null);
+    setHistoryNote(null);
     try {
       const exported = await exportFn({ data: { runId: report.run_id } });
       if (!isCurrentRequest(requestId, requestSeq.current)) return;
@@ -195,6 +265,7 @@ export function DispaterReconciliationConsole() {
     const requestId = beginRequest();
     setBusy(true);
     setErrorMsg(null);
+    setHistoryNote(null);
     try {
       const decision = await observeFn({ data: { sourceSha256: report.receipt_sha256 } });
       if (!isCurrentRequest(requestId, requestSeq.current)) return;
@@ -256,6 +327,9 @@ export function DispaterReconciliationConsole() {
               </>
             )}
           </Button>
+          <Button type="button" variant="glass" disabled={busy} onClick={() => void handleGoldenLedger()} className="min-h-11 w-full sm:w-auto">
+            Run golden ledger
+          </Button>
           <Button type="button" variant="glass" disabled={busy} onClick={() => void handleAdmitCsv()} className="min-h-11 w-full sm:w-auto">
             Admit synthetic CSV
           </Button>
@@ -272,7 +346,9 @@ export function DispaterReconciliationConsole() {
       </div>
 
       <p className="mt-4 text-xs uppercase tracking-wider text-muted-foreground" role="status">
-        API link: {dispaterLinkState(busy, report, errorMsg)} · synthetic demonstration · not recovered revenue
+        {dataOrigin(dispaterLinkState(busy, report, errorMsg))} · API link:{" "}
+        {dispaterLinkState(busy, report, errorMsg)} · synthetic records · not recovered revenue
+        {historyNote ? ` · stored history: ${historyNote}` : ""}
       </p>
 
       {history.length > 0 && (
@@ -385,6 +461,45 @@ export function DispaterReconciliationConsole() {
               </span>
             </div>
           </div>
+
+          {links && (
+            <div aria-label="Industrial relationships">
+              <h4 className="text-sm font-semibold uppercase tracking-wider text-foreground mb-3">
+                Linked records
+              </h4>
+              <ul className="grid grid-cols-2 gap-2 md:grid-cols-4">
+                {chainCoverage(links.objects).map((item) => (
+                  <li key={item.type} className="rounded-lg border border-border bg-background p-3 text-xs">
+                    <span className="block uppercase text-muted-foreground">{item.type.replaceAll("_", " ")}</span>
+                    <span className="mt-1 block font-semibold text-foreground">
+                      {item.status === "PRESENT" ? `${item.count} in source` : "NOT IN SOURCE"}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+              <p className="mt-3 text-xs text-muted-foreground">
+                {links.relations.length} stored links. {unresolved.length} unresolved endpoints. A missing link is not invented.
+              </p>
+              {unresolved.length > 0 && (
+                <ul className="mt-2 space-y-1 text-xs text-amber">
+                  {unresolved.slice(0, 6).map((item) => (
+                    <li key={`${item.qualifier}:${item.source_id}:${item.reason}`}>
+                      {item.qualifier} · {item.source_id || "missing source"} · {item.reason}
+                    </li>
+                  ))}
+                </ul>
+              )}
+              {explanation && (
+                <p className="mt-3 text-xs text-muted-foreground" role="status">
+                  Stored explanation {explanation.finding_id}: {explanation.claim_class}. Suspected{" "}
+                  {explanation.suspected_exposure_usd ?? "none"}. Calculated{" "}
+                  {explanation.calculated_discrepancy_usd ?? "none"}. Confirmed recovery $
+                  {explanation.confirmed_recovery_usd}. Evidence records {explanation.observed_facts.length}.
+                  Authority {explanation.authority}.
+                </p>
+              )}
+            </div>
+          )}
 
           {/* Finding Cards */}
           <div>
