@@ -112,6 +112,43 @@ def test_spectral_metadata_is_not_invented_and_a_shift_is_recorded() -> None:
         examine_bands(mismatched, align=False)
 
 
+@pytest.mark.parametrize("flag", [None, "", "disabled", "ENABLED", "1", "true", " enabled", "enabled "])
+def test_only_the_exact_enabled_flag_opens_the_laboratory(monkeypatch: pytest.MonkeyPatch, flag: str | None) -> None:
+    if flag is None:
+        monkeypatch.delenv("AUREX_MANUSCRIPT_FORENSICS", raising=False)
+    else:
+        monkeypatch.setenv("AUREX_MANUSCRIPT_FORENSICS", flag)
+    monkeypatch.setenv("AUREX_SERVICE_TOKEN", "synthetic-cclxxiii-gate-token-123456789")
+    client = TestClient(app)
+    headers = {"Authorization": "Bearer synthetic-cclxxiii-gate-token-123456789"}
+    examine = client.post(
+        "/v1/manuscript-forensics/examine",
+        json={"dataset_type": "SYNTHETIC_ONLY", "fixture": "blank-v1"},
+        headers=headers,
+    )
+    spectral = client.post(
+        "/v1/manuscript-forensics/spectral",
+        json={
+            "dataset_type": "SYNTHETIC_ONLY",
+            "bands": [
+                {"name": "a", "image_base64": "YQ=="},
+                {"name": "b", "image_base64": "YQ=="},
+            ],
+        },
+        headers=headers,
+    )
+    templates = client.get("/v1/manuscript-forensics/templates", headers=headers)
+    status = client.get("/v1/manuscript-forensics/status", headers=headers)
+    assert examine.status_code == 403
+    assert spectral.status_code == 403
+    assert templates.status_code == 403
+    assert status.status_code == 200
+    body = status.json()
+    assert body["enabled"] is False
+    assert "png_base64" not in body
+    assert body["effect"] == "NONE"
+
+
 def test_the_route_is_gated_and_cannot_act(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.delenv("AUREX_MANUSCRIPT_FORENSICS", raising=False)
     monkeypatch.setenv("AUREX_SERVICE_TOKEN", "synthetic-cclxx-forensics-token-123456")
