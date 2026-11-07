@@ -13,10 +13,11 @@
     "Added a feature-gated tier-1 imaging laboratory that does not transcribe pixels.",
     "Preserved the DISPATER golden ledger.",
     "Left Hoku and HyperSpy outside the package because of their copyleft licenses.",
-    "Recorded the licenses that were actually opened."
+    "Recorded the licenses that were actually opened.",
+    "Recorded six successful GitHub checks on 353430a84ab2ba0b262d56a80a435e1a28ccf99b, including docker-build-and-smoke. The image job did not deploy."
   ],
   "outstanding": [
-    "GitHub Actions on this SHA.",
+    "GitHub Actions on the documentation note that records those checks.",
     "Local Docker.",
     "Live Qwen. The probe returned URLError.",
     "Tier-2 recognizers and tier-3 external imaging programs.",

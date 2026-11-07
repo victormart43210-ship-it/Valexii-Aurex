@@ -24,4 +24,4 @@ These are not a single product grade.
 
 ## What was not verified
 
-GitHub Actions on this SHA. Local Docker. A click of every layer. A human manuscript. Independent review. Staging. WCAG conformance.
+GitHub Actions on the documentation note after `353430a`. Local Docker. The image job `docker-build-and-smoke` passed on `353430a84ab2ba0b262d56a80a435e1a28ccf99b` at 6:30 PM CT and did not deploy. A click of every layer. A human manuscript. Independent review. Staging. WCAG conformance.

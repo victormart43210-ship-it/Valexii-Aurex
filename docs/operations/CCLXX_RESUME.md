@@ -12,6 +12,6 @@ pytest: 781 passed, 1 skipped. Ruff and mypy passed. Website vitest: 169 passed.
 
 A 390 by 844 headless Chrome session showed no recovered text and an unverified component. That browser was this same session.
 
-`127.0.0.1:8080` returned URLError. Nothing was deployed. The whole platform is not 95 percent ready. The forensics tiers that are not built are not counted as built.
+Docker was not run in this environment. GitHub Actions on `353430a84ab2ba0b262d56a80a435e1a28ccf99b` finished success by 6:31 PM CT for offline-practice, both CI test jobs, verify, integration, and docker-build-and-smoke. That tip includes the tested code. The image job built the canonical image and did not deploy. `127.0.0.1:8080` returned URLError. Nothing was deployed. The whole platform is not 95 percent ready. The forensics tiers that are not built are not counted as built.
 
 Decision: HOLD_WITH_BLOCKERS. Financial authority NONE. Do not merge or deploy.
