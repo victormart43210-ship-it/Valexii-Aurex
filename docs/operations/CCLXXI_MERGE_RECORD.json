@@ -1,4 +1,33 @@
 {
- "status": "PENDING",
- "note": "merge SHA is recorded in a follow-up docs update after merge"
+ "status": "MERGED",
+ "pr": "https://github.com/victormart43210-ship-it/Valexii-Aurex/pull/194",
+ "main_sha_before": "34cda4bd8f207f5b1284093b87e4760d782a4903",
+ "merge_sha": "061b97022797013ccd1395a377b9489e59ba83f3",
+ "method": "merge commit, --match-head-commit d3fe441",
+ "required_checks": "6/6 pass on PR; main CI success on 061b970",
+ "post_merge_fresh_clone": "pytest 775 passed 2 skipped; ruff; mypy pass",
+ "branch_protection": "not verifiable (API 403; main reports unprotected); no bypass used",
+ "closed_incorporated": [
+  192,
+  191,
+  188,
+  187,
+  186,
+  185,
+  183,
+  182,
+  180,
+  178,
+  177,
+  174,
+  163
+ ],
+ "open_prs_after": 91,
+ "remaining_owner_actions": [
+  "human review of #172/#176 reconciliation plan",
+  "provide private Qwen endpoint for live XAELI test",
+  "browser/responsive journeys and license review",
+  "manuscript forensics module development",
+  "production remains HOLD"
+ ]
 }

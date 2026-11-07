@@ -61,6 +61,7 @@ aurex/ascendancy/graph.py
 aurex/ascendancy/historical_audit.py
 aurex/ascendancy/hypothesis.py
 aurex/ascendancy/manuscript_adapter.py
+aurex/ascendancy/proposal.py
 aurex/ascendancy/provenance.py
 aurex/ascendancy/reproducible.py
 aurex/ascendancy/temporal.py
@@ -132,7 +133,11 @@ tests/test_cclvii_ingest_semantics.py
 tests/test_cclvii_local_proxy_isolation.py
 tests/test_cclvii_unbilled_hours.py
 tests/test_cclxi_synthetic_audit.py
+tests/test_cclxix_observation.py
 tests/test_cclxv_audit_readback.py
+tests/test_cclxvi_labor_duplicates.py
+tests/test_cclxvi_pr_matrix.py
+tests/test_cclxvi_proposal.py
 tests/test_clii_industrial_api.py
 tests/test_clii_sandbox_http.py
 tests/test_cliv_towing.py
