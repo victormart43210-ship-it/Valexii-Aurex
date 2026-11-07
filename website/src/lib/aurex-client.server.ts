@@ -71,7 +71,7 @@ export function createAurexClient(cfg: ClientConfig) {
       return {
         ok: false,
         error:
-          (e as Error)?.name === "TimeoutError" || (e as Error)?.name === "AbortError"
+          controller.signal.aborted || (e as Error)?.name === "TimeoutError" || (e as Error)?.name === "AbortError"
             ? "timeout"
             : "network",
       };
