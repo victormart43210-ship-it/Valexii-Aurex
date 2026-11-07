@@ -1,0 +1,12 @@
+{
+  "schema": "aurex.cclxxxi.recovery.v1",
+  "main_sha": "061b97022797013ccd1395a377b9489e59ba83f3",
+  "candidate_sha": "7ec62050d6d7061018a74aaba82ddd94a25e198f",
+  "main_moved": false,
+  "prs_merged": [],
+  "prs_closed": [],
+  "production": "HOLD",
+  "financial_authority": "NONE",
+  "paid_inference": "OFF",
+  "rollback": "No production or main change was made. Nothing to roll back."
+}

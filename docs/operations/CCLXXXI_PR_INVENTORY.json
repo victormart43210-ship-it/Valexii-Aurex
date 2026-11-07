@@ -1,0 +1,24 @@
+{
+  "schema": "aurex.cclxxxi.inventory.v1",
+  "observed_at": "2026-11-07T05:10:00-0600",
+  "main_sha": "061b97022797013ccd1395a377b9489e59ba83f3",
+  "open_pull_requests": 97,
+  "heads_contained_in_main": 0,
+  "conflicting": 42,
+  "drafts": 71,
+  "lanes": {"cursor": 5, "jules": 5, "copilot": 2, "other_or_work": 85},
+  "author_login_on_every_open_pr": "victormart43210-ship-it",
+  "chain": [
+    {"number": 196, "sha": "dfcc17d516d354c830a7d9236cb66fde01c93302", "base": "main", "disposition": "READY_FOR_REVIEW", "ci": "six checks passed", "review": "NONE"},
+    {"number": 199, "sha": "68056f2b219dde3bfebcbfb36405eac5987fe6d4", "base": "cursor/kusanagi-cclxxvi-industrial-intelligence-4082", "disposition": "READY_FOR_REVIEW", "depends_on": 196, "ci": "six checks passed", "review": "NONE"},
+    {"number": 200, "sha": "7a315e024bc8fa19d41534d5181f02a8e766fa7b", "base": "cursor/kusanagi-cclxxvii-fullstack-convergence-4082", "disposition": "READY_FOR_REVIEW", "depends_on": 199, "ci": "five checks passed; docker not triggered", "review": "NONE"},
+    {"number": 201, "sha": "7ec62050d6d7061018a74aaba82ddd94a25e198f", "base": "cursor/kusanagi-cclxxix-sovereign-mainline-4082", "disposition": "READY_FOR_REVIEW", "depends_on": 200, "ci": "six checks passed including docker-build-and-smoke", "review": "NONE"}
+  ],
+  "not_in_the_fast_forward": [
+    {"number": 193, "disposition": "RETAIN_ISOLATED", "note": "Manuscript laboratory. Not an ancestor of 7ec62050."},
+    {"number": 198, "disposition": "READY_FOR_REVIEW", "note": "Jules timeout repair on main. Mergeable. Not part of the four-PR chain. Review decision empty."}
+  ],
+  "ready_to_merge": 0,
+  "merged_by_this_operation": 0,
+  "closed_by_this_operation": 0
+}

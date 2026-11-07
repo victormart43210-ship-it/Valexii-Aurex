@@ -1,0 +1,12 @@
+{
+  "schema": "aurex.cclxxxi.readiness.v1",
+  "decision": "READY_FOR_AUTHORIZED_MERGE",
+  "production": "HOLD",
+  "merge_authorization": "NONE",
+  "candidate_sha": "7ec62050d6d7061018a74aaba82ddd94a25e198f",
+  "candidate_action_when_authorized": "Fast-forward canonical main from 061b97022797013ccd1395a377b9489e59ba83f3 to 7ec62050d6d7061018a74aaba82ddd94a25e198f. That commit already contains pull requests 196, 199, 200, and 201 in order. Do not include a later documentation commit in that fast-forward.",
+  "serial_alternative": ["Merge #196 into main", "Retarget and merge #199", "Retarget and merge #200", "Retarget and merge #201"],
+  "do_not_merge_with_this_candidate": [193, 198],
+  "ready_to_merge_count": 0,
+  "reason_count_is_zero": "Authorization has not been granted. The candidate is ready to be authorized. It is not merged."
+}

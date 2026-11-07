@@ -1,0 +1,18 @@
+{
+  "schema": "aurex.cclxxxi.mainline.v1",
+  "canonical_main_sha": "061b97022797013ccd1395a377b9489e59ba83f3",
+  "main_updated_by_this_operation": false,
+  "integration_candidate_sha": "7ec62050d6d7061018a74aaba82ddd94a25e198f",
+  "candidate_ci": {
+    "offline-practice": "pass",
+    "docker-build-and-smoke": "pass",
+    "test_pull_request": "pass",
+    "test_push": "pass",
+    "integration": "pass",
+    "verify": "pass",
+    "finished_at": "2026-11-06T22:22:56-0600"
+  },
+  "rehearsal_tests": "13 passed on the fast-forwarded tree for the relationship, golden-ledger, and readiness files",
+  "prior_full_pytest_on_candidate": "789 passed, 1 skipped",
+  "rollback": "main is unchanged. If a later authorized fast-forward is reverted, reset main to 061b97022797013ccd1395a377b9489e59ba83f3."
+}

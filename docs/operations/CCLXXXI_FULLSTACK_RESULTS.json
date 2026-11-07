@@ -1,0 +1,20 @@
+{
+  "schema": "aurex.cclxxxi.fullstack.v1",
+  "golden": {
+    "identified_exposure_usd": "385.00",
+    "withheld_unresolved_usd": "150.00",
+    "confirmed_recovery_usd": "0.00",
+    "evidence": "tests/test_cclxxvii_fullstack.py passed on the fast-forwarded tree"
+  },
+  "browser_this_operation": "NOT_RERUN",
+  "prior_browser": "Pull request 200 recorded LIVE DATA for the golden ledger, the oilfield fixture, and the synthetic CSV.",
+  "restart_this_operation": "NOT_RERUN",
+  "prior_restart": "Pull request 200 restarted the API on the same SQLite file and read the same receipt.",
+  "xaeli_qwen": {
+    "live": false,
+    "dns": "qwen-private-staging.railway.internal name not known",
+    "flags_set": false,
+    "fabricated_response": false
+  },
+  "website_design_changed": false
+}

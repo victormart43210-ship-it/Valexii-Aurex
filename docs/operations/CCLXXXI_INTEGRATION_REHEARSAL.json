@@ -1,0 +1,17 @@
+{
+  "schema": "aurex.cclxxxi.rehearsal.v1",
+  "observed_at": "2026-11-07T05:10:00-0600",
+  "method": "detached worktree at origin/main, then git merge --ff-only of the PR 201 branch",
+  "main_sha": "061b97022797013ccd1395a377b9489e59ba83f3",
+  "result_sha": "7ec62050d6d7061018a74aaba82ddd94a25e198f",
+  "fast_forward": true,
+  "conflicts": 0,
+  "ancestors_present": {
+    "196": "dfcc17d516d354c830a7d9236cb66fde01c93302",
+    "199": "68056f2b219dde3bfebcbfb36405eac5987fe6d4",
+    "200": "7a315e024bc8fa19d41534d5181f02a8e766fa7b",
+    "201": "7ec62050d6d7061018a74aaba82ddd94a25e198f"
+  },
+  "diff_stat": "56 files changed, 4456 insertions, 22 deletions",
+  "pushed_to_main": false
+}
