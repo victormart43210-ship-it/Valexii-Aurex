@@ -81,6 +81,23 @@ describe("client fails closed", () => {
       { ok: false, error: "timeout" },
     );
   });
+  it("classifies a controller abort as timeout even when fetch throws a generic error", async () => {
+    const slow = ((_u: unknown, init: RequestInit) =>
+      new Promise((_resolve, reject) => {
+        init.signal?.addEventListener("abort", () => reject(new Error("generic abort")));
+      })) as unknown as typeof fetch;
+    expect(await createAurexClient({ url, token, timeoutMs: 500, fetcher: slow }).health()).toEqual({
+      ok: false,
+      error: "timeout",
+    });
+  });
+  it("keeps genuine fetch failures classified as network errors", async () => {
+    const failing = (async () => { throw new Error("connection refused"); }) as typeof fetch;
+    expect(await createAurexClient({ url, token, fetcher: failing }).health()).toEqual({
+      ok: false,
+      error: "network",
+    });
+  });
   it("validates job inputs and idempotency keys before any request", async () => {
     let called = 0;
     const f = (async () => {
