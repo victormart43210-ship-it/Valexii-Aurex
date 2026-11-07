@@ -1,0 +1,824 @@
+{
+ "main_sha": "34cda4bd8f207f5b1284093b87e4760d782a4903",
+ "ledger": [
+  {
+   "number": 3,
+   "head_sha": "3c994b1bf4710f821c839ec26de6d5d7f017e66a",
+   "classification": "CONFLICTING",
+   "intended_disposition": "Conflicts with candidate; needs reconciliation against frozen contracts",
+   "in_candidate": false
+  },
+  {
+   "number": 4,
+   "head_sha": "92a847630f6e54de2c44c808b57dc483cd59bc5a",
+   "classification": "CI_BLOCKED",
+   "intended_disposition": "Failing checks: test, test",
+   "in_candidate": false
+  },
+  {
+   "number": 5,
+   "head_sha": "9bafcd94424907af7e93282fba8e4e733d5dcb5a",
+   "classification": "CI_BLOCKED",
+   "intended_disposition": "Failing checks: test, test",
+   "in_candidate": false
+  },
+  {
+   "number": 8,
+   "head_sha": "5765b22a9e8f4dacc9f5df1c6e57a7416b0a0822",
+   "classification": "NEEDS_REVIEW",
+   "intended_disposition": "Not in candidate; no approving review; unique changes unverified",
+   "in_candidate": false
+  },
+  {
+   "number": 11,
+   "head_sha": "60cc266a48d80b3df0c72b8fb97786f9a7649781",
+   "classification": "CI_BLOCKED",
+   "intended_disposition": "Failing checks: test",
+   "in_candidate": false
+  },
+  {
+   "number": 12,
+   "head_sha": "c6100d522958fa3bdc69398f24cf39dbfe09a84b",
+   "classification": "CI_BLOCKED",
+   "intended_disposition": "Failing checks: test",
+   "in_candidate": false
+  },
+  {
+   "number": 13,
+   "head_sha": "3aa3eda146b799026071cac2e77f06edfd24898c",
+   "classification": "CI_BLOCKED",
+   "intended_disposition": "Failing checks: test",
+   "in_candidate": false
+  },
+  {
+   "number": 14,
+   "head_sha": "2749d07a0f2d3f747e26ab64baf01168d4bafbfa",
+   "classification": "CI_BLOCKED",
+   "intended_disposition": "Failing checks: test",
+   "in_candidate": false
+  },
+  {
+   "number": 20,
+   "head_sha": "f78be71ece48f9721c30685c4f6d4abd494e0e20",
+   "classification": "CONFLICTING",
+   "intended_disposition": "Conflicts with candidate; needs reconciliation against frozen contracts",
+   "in_candidate": false
+  },
+  {
+   "number": 27,
+   "head_sha": "23f32bc74387ee0408b9b00f02f2fe9708a0d0dc",
+   "classification": "CI_BLOCKED",
+   "intended_disposition": "Failing checks: test, test",
+   "in_candidate": false
+  },
+  {
+   "number": 28,
+   "head_sha": "2d5e8c1ac4474085d5fe09d11dafa4d09cd4d1ef",
+   "classification": "CONFLICTING",
+   "intended_disposition": "Conflicts with candidate; needs reconciliation against frozen contracts",
+   "in_candidate": false
+  },
+  {
+   "number": 29,
+   "head_sha": "9aa1b0104db0531e0c8513ff68b5442cedf04d0b",
+   "classification": "CONFLICTING",
+   "intended_disposition": "Conflicts with candidate; needs reconciliation against frozen contracts",
+   "in_candidate": false
+  },
+  {
+   "number": 30,
+   "head_sha": "11fca5da6293871d96ad2b7410a7d0e17926a43e",
+   "classification": "CI_BLOCKED",
+   "intended_disposition": "Failing checks: test",
+   "in_candidate": false
+  },
+  {
+   "number": 31,
+   "head_sha": "289f40f8c065ee3dddaf32fab2cfb0e9a0178d00",
+   "classification": "CI_BLOCKED",
+   "intended_disposition": "Failing checks: test, test",
+   "in_candidate": false
+  },
+  {
+   "number": 32,
+   "head_sha": "73516234158dd1ff6b46a1db4fa6ccebda235a98",
+   "classification": "CI_BLOCKED",
+   "intended_disposition": "Failing checks: test, test",
+   "in_candidate": false
+  },
+  {
+   "number": 34,
+   "head_sha": "8afa12e31afe99dde5272d060920d84435f13022",
+   "classification": "CI_BLOCKED",
+   "intended_disposition": "Failing checks: test, test",
+   "in_candidate": false
+  },
+  {
+   "number": 36,
+   "head_sha": "57b70b6f554487c1b2e64e077e07c84b77ae5491",
+   "classification": "CI_BLOCKED",
+   "intended_disposition": "Failing checks: test, test",
+   "in_candidate": false
+  },
+  {
+   "number": 37,
+   "head_sha": "1d35a83d795850bd04dffff5c02bd9adfdccec75",
+   "classification": "CI_BLOCKED",
+   "intended_disposition": "Failing checks: verify-release-integrity, test, test",
+   "in_candidate": false
+  },
+  {
+   "number": 38,
+   "head_sha": "56b611dcede433fd6d07d0c2ad93b53e3dd3ac01",
+   "classification": "CI_BLOCKED",
+   "intended_disposition": "Failing checks: test, test",
+   "in_candidate": false
+  },
+  {
+   "number": 39,
+   "head_sha": "0f6f4b8628ebd3b3d2c7bbda013946afc9bb2efe",
+   "classification": "CI_BLOCKED",
+   "intended_disposition": "Failing checks: test, test",
+   "in_candidate": false
+  },
+  {
+   "number": 41,
+   "head_sha": "ac027699329cf0dac0216e0960d06d90394cb18a",
+   "classification": "CI_BLOCKED",
+   "intended_disposition": "Failing checks: test, test, test",
+   "in_candidate": false
+  },
+  {
+   "number": 42,
+   "head_sha": "b79cfbd6a36cba95bc1c8847d57f99d6d60c32f0",
+   "classification": "CI_BLOCKED",
+   "intended_disposition": "Failing checks: test, test",
+   "in_candidate": false
+  },
+  {
+   "number": 43,
+   "head_sha": "74f0d4bc970b60587b0135c685bc593b5e190294",
+   "classification": "CI_BLOCKED",
+   "intended_disposition": "Failing checks: test, test",
+   "in_candidate": false
+  },
+  {
+   "number": 44,
+   "head_sha": "a060ed300945a8dddb067dcbcee6e79e619471f2",
+   "classification": "CI_BLOCKED",
+   "intended_disposition": "Failing checks: test, test, test",
+   "in_candidate": false
+  },
+  {
+   "number": 45,
+   "head_sha": "e7d1292a9f343cbe9674b83751d5e75b151a23bf",
+   "classification": "CI_BLOCKED",
+   "intended_disposition": "Failing checks: test, test",
+   "in_candidate": false
+  },
+  {
+   "number": 50,
+   "head_sha": "20adaa1220a03ed41e30e8893331b1fcc37c60b7",
+   "classification": "CI_BLOCKED",
+   "intended_disposition": "Failing checks: test, test",
+   "in_candidate": false
+  },
+  {
+   "number": 51,
+   "head_sha": "d63325620e0ef43beeb0ec6d9ad3417a9f899eb3",
+   "classification": "CI_BLOCKED",
+   "intended_disposition": "Failing checks: test, test",
+   "in_candidate": false
+  },
+  {
+   "number": 56,
+   "head_sha": "16a23725f5d206d1449f8dd2b5042440802347b5",
+   "classification": "CI_BLOCKED",
+   "intended_disposition": "Failing checks: test, offline-practice, docker-build-and-smoke, test",
+   "in_candidate": false
+  },
+  {
+   "number": 60,
+   "head_sha": "9df25362828e9afbddbf345c4dfe828998adb192",
+   "classification": "CI_BLOCKED",
+   "intended_disposition": "Failing checks: docker-build-and-smoke, test, offline-practice, test",
+   "in_candidate": false
+  },
+  {
+   "number": 61,
+   "head_sha": "95f251c2f738024cc9dbea73e00695fea6bbdc2e",
+   "classification": "CI_BLOCKED",
+   "intended_disposition": "Failing checks: offline-practice, docker-build-and-smoke, test, test",
+   "in_candidate": false
+  },
+  {
+   "number": 62,
+   "head_sha": "1d138f32ffad8ef47adf7a9c10ca829ba82ac48b",
+   "classification": "CI_BLOCKED",
+   "intended_disposition": "Failing checks: test, offline-practice, test",
+   "in_candidate": false
+  },
+  {
+   "number": 63,
+   "head_sha": "5776763e8ecd3ff19517b75f6d3680cf69d8c26e",
+   "classification": "CI_BLOCKED",
+   "intended_disposition": "Failing checks: offline-practice, docker-build-and-smoke, test, test",
+   "in_candidate": false
+  },
+  {
+   "number": 66,
+   "head_sha": "4550359ff623fac359a0a6ac468c90dea50c54b2",
+   "classification": "CI_BLOCKED",
+   "intended_disposition": "Failing checks: test, offline-practice, test",
+   "in_candidate": false
+  },
+  {
+   "number": 67,
+   "head_sha": "df7ff0911b80fef4767ddadafa9cd284b06c7a1f",
+   "classification": "CI_BLOCKED",
+   "intended_disposition": "Failing checks: offline-practice, test, test",
+   "in_candidate": false
+  },
+  {
+   "number": 70,
+   "head_sha": "e17aaccc801060993fe1b1082a9d4deacc97b9da",
+   "classification": "CI_BLOCKED",
+   "intended_disposition": "Failing checks: offline-practice, docker-build-and-smoke, test, test",
+   "in_candidate": false
+  },
+  {
+   "number": 72,
+   "head_sha": "a490cbe820de7577b1767924998f81b3193d70a7",
+   "classification": "CI_BLOCKED",
+   "intended_disposition": "Failing checks: docker-build-and-smoke, test, offline-practice, test",
+   "in_candidate": false
+  },
+  {
+   "number": 73,
+   "head_sha": "aa95564e07ad9feb7edf4ea6d84acf298328c34d",
+   "classification": "CI_BLOCKED",
+   "intended_disposition": "Failing checks: test, offline-practice, test",
+   "in_candidate": false
+  },
+  {
+   "number": 76,
+   "head_sha": "2b1c57166eb55943c7216a21868bec6707a87f8a",
+   "classification": "CI_BLOCKED",
+   "intended_disposition": "Failing checks: test, offline-practice, test",
+   "in_candidate": false
+  },
+  {
+   "number": 77,
+   "head_sha": "aedd88ff28123570a508c02a44ba2e8eac1c878b",
+   "classification": "CI_BLOCKED",
+   "intended_disposition": "Failing checks: offline-practice, test, test",
+   "in_candidate": false
+  },
+  {
+   "number": 78,
+   "head_sha": "dcd463caf095ad17ba896958b6764f141d3ff218",
+   "classification": "CI_BLOCKED",
+   "intended_disposition": "Failing checks: test, offline-practice, test",
+   "in_candidate": false
+  },
+  {
+   "number": 79,
+   "head_sha": "0a9d5a1d4d4b84a695e043aa9e21c76cf2da0064",
+   "classification": "CI_BLOCKED",
+   "intended_disposition": "Failing checks: test, offline-practice, test",
+   "in_candidate": false
+  },
+  {
+   "number": 80,
+   "head_sha": "251c79ea9b0526e41ba659f070d8b15f6f702753",
+   "classification": "CI_BLOCKED",
+   "intended_disposition": "Failing checks: verify-bundled-source, offline-practice, test, test",
+   "in_candidate": false
+  },
+  {
+   "number": 81,
+   "head_sha": "4316efe96cc86dee59f398b2ab766435653754b9",
+   "classification": "CI_BLOCKED",
+   "intended_disposition": "Failing checks: offline-practice, test, test",
+   "in_candidate": false
+  },
+  {
+   "number": 82,
+   "head_sha": "225b2425b707117ac1a16a31938804ec647a3be6",
+   "classification": "CI_BLOCKED",
+   "intended_disposition": "Failing checks: test, docker-build-and-smoke, offline-practice, test",
+   "in_candidate": false
+  },
+  {
+   "number": 83,
+   "head_sha": "9be4899407470ee7e149bd68fbcb9a890bb1e9e4",
+   "classification": "CI_BLOCKED",
+   "intended_disposition": "Failing checks: docker-build-and-smoke, test, offline-practice, test",
+   "in_candidate": false
+  },
+  {
+   "number": 84,
+   "head_sha": "70281056aa5f43070c1c4415a609b3a71850d56f",
+   "classification": "CI_BLOCKED",
+   "intended_disposition": "Failing checks: test, test, offline-practice, docker-build-and-smoke, test",
+   "in_candidate": false
+  },
+  {
+   "number": 85,
+   "head_sha": "2ca2d071382d2bd20df98e69c9a06f4104a39c16",
+   "classification": "CI_BLOCKED",
+   "intended_disposition": "Failing checks: test, docker-build-and-smoke, offline-practice, test, test",
+   "in_candidate": false
+  },
+  {
+   "number": 86,
+   "head_sha": "f74f90c63ec3caabf12f076cbe194ecafac4bfc6",
+   "classification": "CI_BLOCKED",
+   "intended_disposition": "Failing checks: test, offline-practice, docker-build-and-smoke, test",
+   "in_candidate": false
+  },
+  {
+   "number": 88,
+   "head_sha": "be56a34dee3252a6f0cd396084b6a917b3f06b54",
+   "classification": "CI_BLOCKED",
+   "intended_disposition": "Failing checks: docker-build-and-smoke, offline-practice, test, test",
+   "in_candidate": false
+  },
+  {
+   "number": 89,
+   "head_sha": "13a69b0fe8880a8961a65a264f758e2efc3aa0fa",
+   "classification": "CI_BLOCKED",
+   "intended_disposition": "Failing checks: offline-practice, docker-build-and-smoke, test, test",
+   "in_candidate": false
+  },
+  {
+   "number": 90,
+   "head_sha": "b3d52c649cc5c4dbc40d7cc8a7cb5b1e4a9b80fa",
+   "classification": "CI_BLOCKED",
+   "intended_disposition": "Failing checks: test, docker-build-and-smoke, offline-practice, test",
+   "in_candidate": false
+  },
+  {
+   "number": 92,
+   "head_sha": "1e093d16985856b841931992f65f13f328233475",
+   "classification": "CI_BLOCKED",
+   "intended_disposition": "Failing checks: test, offline-practice, test",
+   "in_candidate": false
+  },
+  {
+   "number": 93,
+   "head_sha": "3f67868d1dc1b47ae718b320da23625d75360703",
+   "classification": "CI_BLOCKED",
+   "intended_disposition": "Failing checks: offline-practice, test, test",
+   "in_candidate": false
+  },
+  {
+   "number": 94,
+   "head_sha": "7c1f6cc784aa5e49b318c3407757e43d10e39977",
+   "classification": "CI_BLOCKED",
+   "intended_disposition": "Failing checks: docker-build-and-smoke, test, offline-practice, test",
+   "in_candidate": false
+  },
+  {
+   "number": 95,
+   "head_sha": "e07c189dfbadaa5136ff1d61629d3e75a96df10c",
+   "classification": "CI_BLOCKED",
+   "intended_disposition": "Failing checks: offline-practice, test, docker-build-and-smoke, test",
+   "in_candidate": false
+  },
+  {
+   "number": 96,
+   "head_sha": "57433b7fe76a1774a0d2cbcb433d39b356b7ca3a",
+   "classification": "CI_BLOCKED",
+   "intended_disposition": "Failing checks: docker-build-and-smoke, test, offline-practice, test",
+   "in_candidate": false
+  },
+  {
+   "number": 97,
+   "head_sha": "59892f36e54a707921f42640d516d40214ee41e1",
+   "classification": "CI_BLOCKED",
+   "intended_disposition": "Failing checks: test",
+   "in_candidate": false
+  },
+  {
+   "number": 99,
+   "head_sha": "8e859304d14c6aaa2cd4ed84d2e9db93fe9700b9",
+   "classification": "CI_BLOCKED",
+   "intended_disposition": "Failing checks: docker-build-and-smoke, test, offline-practice, test",
+   "in_candidate": false
+  },
+  {
+   "number": 100,
+   "head_sha": "eaec2bb64e0c858769dc06ed32c7e0dbab3d1994",
+   "classification": "CI_BLOCKED",
+   "intended_disposition": "Failing checks: offline-practice, test, test",
+   "in_candidate": false
+  },
+  {
+   "number": 101,
+   "head_sha": "92e979c45d055e0870326081ec626af271a2974d",
+   "classification": "CI_BLOCKED",
+   "intended_disposition": "Failing checks: offline-practice, docker-build-and-smoke, test, test",
+   "in_candidate": false
+  },
+  {
+   "number": 102,
+   "head_sha": "fccc777fc0d0c05396f2f23d15dc4cecb4fd31c6",
+   "classification": "CI_BLOCKED",
+   "intended_disposition": "Failing checks: test, offline-practice, docker-build-and-smoke, test",
+   "in_candidate": false
+  },
+  {
+   "number": 103,
+   "head_sha": "e507d1d32ff73be208ae2ebfcbbbb1caa3e2bfd9",
+   "classification": "CI_BLOCKED",
+   "intended_disposition": "Failing checks: test, docker-build-and-smoke, offline-practice, test",
+   "in_candidate": false
+  },
+  {
+   "number": 104,
+   "head_sha": "3b3d1de63f764a777758f709130a91324bcd06ca",
+   "classification": "CONFLICTING",
+   "intended_disposition": "Conflicts with candidate; needs reconciliation against frozen contracts",
+   "in_candidate": false
+  },
+  {
+   "number": 105,
+   "head_sha": "d6d041da5c88ac0aea173d14a99784dbd7a620e4",
+   "classification": "NEEDS_REVIEW",
+   "intended_disposition": "Not in candidate; no approving review; unique changes unverified",
+   "in_candidate": false
+  },
+  {
+   "number": 106,
+   "head_sha": "17fdd82718178544146fe7e8870b0d6eb1d56f1a",
+   "classification": "CONFLICTING",
+   "intended_disposition": "Conflicts with candidate; needs reconciliation against frozen contracts",
+   "in_candidate": false
+  },
+  {
+   "number": 107,
+   "head_sha": "b2960cfd0911c21bc96798bead4f60f7808a3907",
+   "classification": "CONFLICTING",
+   "intended_disposition": "Conflicts with candidate; needs reconciliation against frozen contracts",
+   "in_candidate": false
+  },
+  {
+   "number": 108,
+   "head_sha": "eb707fd0ad6729768451be2256160369c31f41a7",
+   "classification": "NEEDS_REVIEW",
+   "intended_disposition": "Not in candidate; no approving review; unique changes unverified",
+   "in_candidate": false
+  },
+  {
+   "number": 109,
+   "head_sha": "155ce1e969ae58df6b5400d38e5db5c1f840a047",
+   "classification": "CONFLICTING",
+   "intended_disposition": "Conflicts with candidate; needs reconciliation against frozen contracts",
+   "in_candidate": false
+  },
+  {
+   "number": 110,
+   "head_sha": "22f3ba36b5a5a2f14f1825078e9c69638b9fa11c",
+   "classification": "CI_BLOCKED",
+   "intended_disposition": "Failing checks: docker-unix-smoke, test, test",
+   "in_candidate": false
+  },
+  {
+   "number": 112,
+   "head_sha": "d22e06e9412a07e06ab8bd597e0e5ebf5b8c125c",
+   "classification": "CONFLICTING",
+   "intended_disposition": "Conflicts with candidate; needs reconciliation against frozen contracts",
+   "in_candidate": false
+  },
+  {
+   "number": 113,
+   "head_sha": "61a6c368dfa75e0ac4157913d56e1add020a2b20",
+   "classification": "CONFLICTING",
+   "intended_disposition": "Conflicts with candidate; needs reconciliation against frozen contracts",
+   "in_candidate": false
+  },
+  {
+   "number": 114,
+   "head_sha": "482acec3d108716b60d28bfe257ccb80136fa45c",
+   "classification": "CONFLICTING",
+   "intended_disposition": "Conflicts with candidate; needs reconciliation against frozen contracts",
+   "in_candidate": false
+  },
+  {
+   "number": 115,
+   "head_sha": "c25001eb015a92368220a87ad0e4dcfdb76d958d",
+   "classification": "CONFLICTING",
+   "intended_disposition": "Conflicts with candidate; needs reconciliation against frozen contracts",
+   "in_candidate": false
+  },
+  {
+   "number": 117,
+   "head_sha": "82d70c0da20ba5128c48c254987cb433ddae6b35",
+   "classification": "CONFLICTING",
+   "intended_disposition": "Conflicts with candidate; needs reconciliation against frozen contracts",
+   "in_candidate": false
+  },
+  {
+   "number": 118,
+   "head_sha": "6adc1936d09534b134182e769f88fea9c5a0125a",
+   "classification": "CONFLICTING",
+   "intended_disposition": "Conflicts with candidate; needs reconciliation against frozen contracts",
+   "in_candidate": false
+  },
+  {
+   "number": 119,
+   "head_sha": "8b92194a6c6062c58923e6ae928067de4c186023",
+   "classification": "CONFLICTING",
+   "intended_disposition": "Conflicts with candidate; needs reconciliation against frozen contracts",
+   "in_candidate": false
+  },
+  {
+   "number": 120,
+   "head_sha": "2ac51dc1b64a8fc0f4c74128bc2f8fb3298f4297",
+   "classification": "CONFLICTING",
+   "intended_disposition": "Conflicts with candidate; needs reconciliation against frozen contracts",
+   "in_candidate": false
+  },
+  {
+   "number": 125,
+   "head_sha": "d9683073ee375f7cda441495c53dcc621d5aa3f3",
+   "classification": "CONFLICTING",
+   "intended_disposition": "Conflicts with candidate; needs reconciliation against frozen contracts",
+   "in_candidate": false
+  },
+  {
+   "number": 131,
+   "head_sha": "27c0d737c32327e48246c53faccd31ba2ad48aa4",
+   "classification": "CI_BLOCKED",
+   "intended_disposition": "Failing checks: docker-build-and-smoke",
+   "in_candidate": false
+  },
+  {
+   "number": 136,
+   "head_sha": "28239abdd0fdb534c89a2c00504ed9ba4688d662",
+   "classification": "CI_BLOCKED",
+   "intended_disposition": "Failing checks: test, test",
+   "in_candidate": false
+  },
+  {
+   "number": 139,
+   "head_sha": "ebad09ffe3b867ed2a7ebbe62bf3f6804f1a5b33",
+   "classification": "NEEDS_REVIEW",
+   "intended_disposition": "Not in candidate; no approving review; unique changes unverified",
+   "in_candidate": false
+  },
+  {
+   "number": 145,
+   "head_sha": "3ba73636ce20b512de7363b82896446c4d701105",
+   "classification": "CI_BLOCKED",
+   "intended_disposition": "Failing checks: verify, test, integration, test",
+   "in_candidate": false
+  },
+  {
+   "number": 146,
+   "head_sha": "c1d6f3aeb9451c1c5d79dc0bae150512998a51e6",
+   "classification": "CI_BLOCKED",
+   "intended_disposition": "Failing checks: integration, test, verify, test",
+   "in_candidate": false
+  },
+  {
+   "number": 147,
+   "head_sha": "0693f0cb2d4c7e38977fd3d86e4bcf9ba6446510",
+   "classification": "CI_BLOCKED",
+   "intended_disposition": "Failing checks: integration, verify, test, test",
+   "in_candidate": false
+  },
+  {
+   "number": 148,
+   "head_sha": "af7a5a05037169a98e060176833e2490e7f6eaed",
+   "classification": "CI_BLOCKED",
+   "intended_disposition": "Failing checks: test, verify, integration, test",
+   "in_candidate": false
+  },
+  {
+   "number": 149,
+   "head_sha": "0b8b0b282ffa11ec814268a54647fd1769a42537",
+   "classification": "CI_BLOCKED",
+   "intended_disposition": "Failing checks: verify, test, integration, test",
+   "in_candidate": false
+  },
+  {
+   "number": 150,
+   "head_sha": "d7b1142ff6bfca9b910dd7feb90b285f57dfb101",
+   "classification": "CONFLICTING",
+   "intended_disposition": "Conflicts with candidate; needs reconciliation against frozen contracts",
+   "in_candidate": false
+  },
+  {
+   "number": 151,
+   "head_sha": "6e2d0cc262760058d1b7fbe1efbb3c22ad6d2d37",
+   "classification": "CONFLICTING",
+   "intended_disposition": "Conflicts with candidate; needs reconciliation against frozen contracts",
+   "in_candidate": false
+  },
+  {
+   "number": 154,
+   "head_sha": "41e74355c700d607afce8bbbc38c3fd3a22ab33f",
+   "classification": "CONFLICTING",
+   "intended_disposition": "Conflicts with candidate; needs reconciliation against frozen contracts",
+   "in_candidate": false
+  },
+  {
+   "number": 155,
+   "head_sha": "4b8ae406b9d23e564b65700506956de09df908ff",
+   "classification": "CI_BLOCKED",
+   "intended_disposition": "Failing checks: integration, verify, test, test",
+   "in_candidate": false
+  },
+  {
+   "number": 156,
+   "head_sha": "fe738374eea37ab8ed5dddb3a54a4cea4298edf3",
+   "classification": "NEEDS_REVIEW",
+   "intended_disposition": "Not in candidate; no approving review; unique changes unverified",
+   "in_candidate": false
+  },
+  {
+   "number": 158,
+   "head_sha": "cf2c9280d34960e86c94e8959a21c7539b9c4624",
+   "classification": "CONFLICTING",
+   "intended_disposition": "Conflicts with candidate; needs reconciliation against frozen contracts",
+   "in_candidate": false
+  },
+  {
+   "number": 159,
+   "head_sha": "08cf6b4e66d2aa0847f4a0a4830e6c5b91640aa8",
+   "classification": "CONFLICTING",
+   "intended_disposition": "Conflicts with candidate; needs reconciliation against frozen contracts",
+   "in_candidate": false
+  },
+  {
+   "number": 163,
+   "head_sha": "9395e71099a8dc9d4f1c63a558917c714febb5b6",
+   "classification": "STACKED",
+   "intended_disposition": "Included in candidate via ancestry of #188/#189; verified by candidate test run",
+   "in_candidate": true
+  },
+  {
+   "number": 164,
+   "head_sha": "404a8338e29c95945358b9523238d52b469f37fb",
+   "classification": "NEEDS_REVIEW",
+   "intended_disposition": "Not in candidate; no approving review; unique changes unverified",
+   "in_candidate": false
+  },
+  {
+   "number": 168,
+   "head_sha": "1405d7dc02bb37b6ed233e8c1078278c88cc7289",
+   "classification": "CONFLICTING",
+   "intended_disposition": "Conflicts with candidate; needs reconciliation against frozen contracts",
+   "in_candidate": false
+  },
+  {
+   "number": 169,
+   "head_sha": "324f86050ecef489d0afb9b75f6a11f495f2c728",
+   "classification": "NEEDS_REVIEW",
+   "intended_disposition": "Not in candidate; no approving review; unique changes unverified",
+   "in_candidate": false
+  },
+  {
+   "number": 170,
+   "head_sha": "d2e3df77f72fffc00efcb72b6cc87716b2f04bc0",
+   "classification": "STACKED",
+   "intended_disposition": "Included in candidate via ancestry of #188/#189; verified by candidate test run",
+   "in_candidate": true
+  },
+  {
+   "number": 171,
+   "head_sha": "db4670ab78fa36c8a2b4b8b66df842350440e437",
+   "classification": "STACKED",
+   "intended_disposition": "Included in candidate via ancestry of #188/#189; verified by candidate test run",
+   "in_candidate": true
+  },
+  {
+   "number": 172,
+   "head_sha": "a5b9cce016ca6072a2cd1094ba94eca9091e9664",
+   "classification": "SECURITY_BLOCKED",
+   "intended_disposition": "Flagged by owner as possibly conflicting with financial safeguards; not admitted pending independent review",
+   "in_candidate": false
+  },
+  {
+   "number": 173,
+   "head_sha": "7260270b012b241593021042f590e13bdfddbd1f",
+   "classification": "CI_BLOCKED",
+   "intended_disposition": "Failing checks: integration, test, verify, test",
+   "in_candidate": false
+  },
+  {
+   "number": 174,
+   "head_sha": "2d0b62400e0ad40f2780f51b26ba0d09261cd724",
+   "classification": "STACKED",
+   "intended_disposition": "Included in candidate via ancestry of #188/#189; verified by candidate test run",
+   "in_candidate": true
+  },
+  {
+   "number": 175,
+   "head_sha": "425d05470cf1463cf2b5c93b1457c1923ceb6b25",
+   "classification": "CONFLICTING",
+   "intended_disposition": "Conflicts with candidate; needs reconciliation against frozen contracts",
+   "in_candidate": false
+  },
+  {
+   "number": 176,
+   "head_sha": "27d20d32f765a55a883f2b8cf15c106238031d84",
+   "classification": "SECURITY_BLOCKED",
+   "intended_disposition": "Flagged by owner as possibly conflicting with financial safeguards; not admitted pending independent review",
+   "in_candidate": false
+  },
+  {
+   "number": 177,
+   "head_sha": "cffef9d4adcb6ff0dfca04629cacdb93760dbde7",
+   "classification": "STACKED",
+   "intended_disposition": "Included in candidate via ancestry of #188/#189; verified by candidate test run",
+   "in_candidate": true
+  },
+  {
+   "number": 178,
+   "head_sha": "9148634e75a66c1ab7f43fa4f08a039620661a9f",
+   "classification": "STACKED",
+   "intended_disposition": "Included in candidate via ancestry of #188/#189; verified by candidate test run",
+   "in_candidate": true
+  },
+  {
+   "number": 179,
+   "head_sha": "2984e6346efb453e3173773c774ac024fd659f85",
+   "classification": "NEEDS_REVIEW",
+   "intended_disposition": "Not in candidate; no approving review; unique changes unverified",
+   "in_candidate": false
+  },
+  {
+   "number": 180,
+   "head_sha": "77a97c1f1e5f3749868bd39ad6aec73513b5e64f",
+   "classification": "STACKED",
+   "intended_disposition": "Included in candidate via ancestry of #188/#189; verified by candidate test run",
+   "in_candidate": true
+  },
+  {
+   "number": 181,
+   "head_sha": "c4f45925e086bbb23b643e66707b224419d52b60",
+   "classification": "STACKED",
+   "intended_disposition": "Included in candidate via ancestry of #188/#189; verified by candidate test run",
+   "in_candidate": true
+  },
+  {
+   "number": 182,
+   "head_sha": "8323f6db245186b98f2bf2c99a9297e88849e15e",
+   "classification": "STACKED",
+   "intended_disposition": "Included in candidate via ancestry of #188/#189; verified by candidate test run",
+   "in_candidate": true
+  },
+  {
+   "number": 183,
+   "head_sha": "6a48852a6fe07bbba90a3c7a7d74ee18ab35b9f7",
+   "classification": "NEEDS_REVIEW",
+   "intended_disposition": "Not in candidate; no approving review; unique changes unverified",
+   "in_candidate": false
+  },
+  {
+   "number": 184,
+   "head_sha": "fa9d2254a2b2e15b7117c55ef6917d365357caf5",
+   "classification": "STACKED",
+   "intended_disposition": "Included in candidate via ancestry of #188/#189; verified by candidate test run",
+   "in_candidate": true
+  },
+  {
+   "number": 185,
+   "head_sha": "5978a781114368d40965092f6094273683c51c7c",
+   "classification": "STACKED",
+   "intended_disposition": "Included in candidate via ancestry of #188/#189; verified by candidate test run",
+   "in_candidate": true
+  },
+  {
+   "number": 186,
+   "head_sha": "5285202699c362c7a10abcb02a8b5c8591517f7c",
+   "classification": "STACKED",
+   "intended_disposition": "Included in candidate via ancestry of #188/#189; verified by candidate test run",
+   "in_candidate": true
+  },
+  {
+   "number": 187,
+   "head_sha": "6c99b3e7700330f99c98da7fb5cd69282368bce9",
+   "classification": "STACKED",
+   "intended_disposition": "Included in candidate via ancestry of #188/#189; verified by candidate test run",
+   "in_candidate": true
+  },
+  {
+   "number": 188,
+   "head_sha": "7daeff45efecd5d0293ff8a75afd71b98e9d4df0",
+   "classification": "STACKED",
+   "intended_disposition": "Included in candidate via ancestry of #188/#189; verified by candidate test run",
+   "in_candidate": true
+  },
+  {
+   "number": 189,
+   "head_sha": "8223918bf00337dc8cd39eed49c9cd0c6e6de573",
+   "classification": "READY_TO_INTEGRATE",
+   "intended_disposition": "Included in candidate via ancestry of #188/#189; verified by candidate test run",
+   "in_candidate": true
+  }
+ ]
+}
