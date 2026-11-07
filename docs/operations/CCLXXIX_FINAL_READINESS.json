@@ -1,0 +1,21 @@
+{
+  "schema": "aurex.cclxxix.readiness.v1",
+  "decision": "PARTIAL_WITH_BLOCKERS",
+  "main_sha": "061b97022797013ccd1395a377b9489e59ba83f3",
+  "open_pull_requests": 95,
+  "merged_by_this_operation": 0,
+  "closed_by_this_operation": 0,
+  "ready_to_merge": 0,
+  "independent_review": "PENDING",
+  "merge_authorization": "NONE",
+  "production_release": "HOLD",
+  "further_review": "GO",
+  "release": "NO-GO",
+  "workflow_coverage": "8/10",
+  "blockers": [
+    "Independent review is empty on #196 and #199.",
+    "Private Qwen cannot be reached from this environment.",
+    "Forty-two open pull requests conflict with their bases.",
+    "Public website deployment was not tested and is not authorized."
+  ]
+}
