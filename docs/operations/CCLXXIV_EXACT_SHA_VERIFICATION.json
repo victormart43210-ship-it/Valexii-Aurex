@@ -1,0 +1,70 @@
+{
+  "schema": "aurex.cclxxiv.exact_sha_verification.v1",
+  "verified_sha": "c403bf99e07e22c576174b494a37a6177924dbed",
+  "verified_at": "2026-11-06T19:25:00-0600",
+  "working_tree": "clean",
+  "note": "These results belong to c403bf99e07e22c576174b494a37a6177924dbed. A later documentation commit does not inherit them.",
+  "local": [
+    {"command": "python3 -m ruff check .", "exit_code": 0, "result": "pass"},
+    {"command": "python3 -m mypy aurex", "exit_code": 0, "result": "119 files, no issues"},
+    {"command": "python3 -m pytest -q --tb=line", "exit_code": 0, "result": "789 passed, 1 skipped, 10.12s"},
+    {"command": "npx tsc --noEmit", "cwd": "website", "exit_code": 0, "result": "pass"},
+    {"command": "npx vitest run", "cwd": "website", "exit_code": 0, "result": "169 passed, 26 files"}
+  ],
+  "github_actions": [
+    {
+      "name": "offline-practice",
+      "workflow": "AUREX independent runner smoke checks",
+      "head_sha": "c403bf99e07e22c576174b494a37a6177924dbed",
+      "conclusion": "success",
+      "completed_at": "2026-11-06T19:04:55-0600",
+      "url": "https://github.com/victormart43210-ship-it/Valexii-Aurex/actions/runs/42322023463"
+    },
+    {
+      "name": "test",
+      "workflow": "CI",
+      "event": "pull_request",
+      "head_sha": "c403bf99e07e22c576174b494a37a6177924dbed",
+      "conclusion": "success",
+      "completed_at": "2026-11-06T19:05:18-0600",
+      "url": "https://github.com/victormart43210-ship-it/Valexii-Aurex/actions/runs/42322023700"
+    },
+    {
+      "name": "test",
+      "workflow": "CI",
+      "event": "push",
+      "head_sha": "c403bf99e07e22c576174b494a37a6177924dbed",
+      "conclusion": "success",
+      "completed_at": "2026-11-06T19:05:23-0600",
+      "url": "https://github.com/victormart43210-ship-it/Valexii-Aurex/actions/runs/42322018005"
+    },
+    {
+      "name": "integration",
+      "workflow": "CLIV canonical towing and DISPATER",
+      "head_sha": "c403bf99e07e22c576174b494a37a6177924dbed",
+      "conclusion": "success",
+      "completed_at": "2026-11-06T19:05:30-0600",
+      "url": "https://github.com/victormart43210-ship-it/Valexii-Aurex/actions/runs/42322023658"
+    },
+    {
+      "name": "verify",
+      "workflow": "CLII industrial source and sandbox",
+      "head_sha": "c403bf99e07e22c576174b494a37a6177924dbed",
+      "conclusion": "success",
+      "completed_at": "2026-11-06T19:05:53-0600",
+      "url": "https://github.com/victormart43210-ship-it/Valexii-Aurex/actions/runs/42322023682"
+    },
+    {
+      "name": "docker-build-and-smoke",
+      "workflow": "Canonical Railway image",
+      "head_sha": "c403bf99e07e22c576174b494a37a6177924dbed",
+      "conclusion": "success",
+      "completed_at": "2026-11-06T19:05:08-0600",
+      "url": "https://github.com/victormart43210-ship-it/Valexii-Aurex/actions/runs/42322023660",
+      "deployed": false
+    }
+  ],
+  "local_docker": "NOT_RUN",
+  "local_docker_reason": "The docker binary is not installed in this environment. The GitHub image job above is for this same SHA and did not deploy.",
+  "ancestor_2812c8a": "Not used as evidence for this SHA."
+}

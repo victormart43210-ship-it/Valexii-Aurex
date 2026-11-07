@@ -142,6 +142,11 @@ function Research() {
               </Link>
             </Button>
             <Button asChild variant="glass">
+              <Link to="/research/manuscript-forensics">
+                Manuscript forensics <ArrowRight />
+              </Link>
+            </Button>
+            <Button asChild variant="glass">
               <Link to="/build-with-us">
                 Build with us <ArrowRight />
               </Link>

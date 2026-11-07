@@ -16,6 +16,7 @@ dependencies = [
   "cryptography>=46.0.5,<47",
   "pypdf>=6.21.4,<7",
   "openpyxl>=3.1.5,<4",
+  "pillow>=13.0.0,<14",
 ]
 
 [project.scripts]

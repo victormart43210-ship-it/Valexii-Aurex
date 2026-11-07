@@ -26,6 +26,7 @@ from aurex.governance_math.industrial_api import router as industrial_demo_route
 from aurex.governance_math.research_api import router as research_advice_router
 from aurex.industrial_execution import router as towing_router
 from aurex.integrations.pilot_policy import review_synthetic_pilot
+from aurex.manuscript_forensics.api import router as manuscript_forensics_router
 from aurex.real_offline_probe import execute_sqlite_roundtrip
 from aurex.workflows.budget import BudgetGuard
 from aurex.xaeli_staging import router as xaeli_staging_router
@@ -86,6 +87,7 @@ app.include_router(research_advice_router, dependencies=[Depends(authenticate)])
 app.include_router(industrial_demo_router, dependencies=[Depends(authenticate)])
 app.include_router(towing_router, dependencies=[Depends(authenticate)])
 app.include_router(xaeli_staging_router, dependencies=[Depends(authenticate)])
+app.include_router(manuscript_forensics_router, dependencies=[Depends(authenticate)])
 # DISPATER enforces its own tenant-bound authorization (aurex.dispater_api).
 app.include_router(dispater_router)
 

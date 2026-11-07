@@ -1,0 +1,126 @@
+{
+  "schema": "aurex.cclxx.forensics_registry.v1",
+  "code_sha": "64dadbfd673186fbe65bc653a4658d866178ca8a",
+  "reviewed_at": "2026-11-06T18:26:00-0600",
+  "method": "Official license files or project license pages opened in this session. A tool without that check is LICENSE_REVIEW_REQUIRED. None of the optional tools were downloaded.",
+  "integrated": [
+    {
+      "name": "Pillow",
+      "version": "13.0.0",
+      "source": "https://pypi.org/project/pillow/",
+      "repository": "https://github.com/python-pillow/Pillow",
+      "license": "MIT-CMU",
+      "license_evidence": "Installed package metadata License-Expression MIT-CMU. The repository LICENSE on main is the MIT-CMU notice.",
+      "status": "APPROVED",
+      "integration": "Required dependency pillow>=13.0.0,<14. Used for PNG, JPEG, and TIFF admission inside the pixel limit.",
+      "advisories": "Snyk listed vulnerabilities in 12.3.0 and none in 13.0.0 as of this session. This is not an independent advisory scan."
+    }
+  ],
+  "not_installed": [
+    {
+      "name": "OpenCV",
+      "license": "Apache-2.0 for 4.5.0 and higher",
+      "evidence": "https://opencv.org/license/",
+      "status": "OPTIONAL",
+      "reason": "Permissive and mature. Not required for the tier-1 measurements."
+    },
+    {
+      "name": "scikit-image",
+      "license": "BSD-3-Clause, with BSD-2-Clause and MIT files",
+      "evidence": "https://github.com/scikit-image/scikit-image/blob/main/LICENSE.txt",
+      "status": "OPTIONAL"
+    },
+    {
+      "name": "Kraken",
+      "license": "Apache-2.0",
+      "evidence": "https://github.com/mittagessen/kraken/blob/main/LICENSE",
+      "status": "OPTIONAL",
+      "reason": "Historical recognition engine. Model weights were not downloaded. No OCR claim is made."
+    },
+    {
+      "name": "eScriptorium",
+      "license": "MIT",
+      "evidence": "https://gitlab.com/scripta/escriptorium/-/blob/develop/LICENSE",
+      "status": "OPTIONAL",
+      "reason": "Separate transcription workspace. Not embedded."
+    },
+    {
+      "name": "Spectral Python",
+      "license": "MIT",
+      "evidence": "https://github.com/spectralpython/spectral/blob/master/LICENSE.txt",
+      "status": "OPTIONAL",
+      "reason": "Tier-1 band difference, guarded ratio, and a first principal component are implemented locally. SPy is not installed."
+    },
+    {
+      "name": "Mirador",
+      "license": "Apache-2.0",
+      "evidence": "https://github.com/ProjectMirador/mirador/blob/master/LICENSE",
+      "status": "OPTIONAL",
+      "reason": "IIIF viewer. The tier-1 page uses ordinary img elements and a display-only opacity slider."
+    },
+    {
+      "name": "OpenSeadragon",
+      "license": "BSD-3-Clause",
+      "evidence": "https://github.com/openseadragon/openseadragon/",
+      "status": "OPTIONAL"
+    },
+    {
+      "name": "Tesseract",
+      "license": "Apache-2.0",
+      "evidence": "https://github.com/tesseract-ocr/tesseract/blob/main/LICENSE",
+      "status": "OPTIONAL",
+      "reason": "Not integrated. The laboratory does not emit a transcription."
+    },
+    {
+      "name": "Hoku",
+      "version_seen": "3.2, published 2026-06-08",
+      "repository": "https://github.com/Early-Manuscripts-Electronic-Library/Hoku",
+      "license": "GPL-2.0",
+      "evidence": "https://github.com/Early-Manuscripts-Electronic-Library/Hoku/blob/main/LICENSE.md",
+      "status": "EXTERNAL_ADAPTER",
+      "reason": "Free to use is not permission to combine it with this Apache-2.0 package. It stays a separate operator-run program. It was not downloaded."
+    },
+    {
+      "name": "HyperSpy",
+      "license": "GPL-3.0",
+      "evidence": "https://github.com/hyperspy/hyperspy/blob/RELEASE_next_minor/COPYING.txt",
+      "status": "EXTERNAL_ADAPTER",
+      "reason": "Copyleft. Not imported."
+    }
+  ],
+  "license_not_opened_this_session": [
+    "NumPy",
+    "SciPy",
+    "ImageMagick",
+    "Fiji/ImageJ",
+    "SimpleITK",
+    "OpenImageIO",
+    "Rasterio",
+    "Dask",
+    "PyWavelets",
+    "WISER",
+    "MISHA",
+    "xarray",
+    "scikit-learn",
+    "OCR4all",
+    "OCR-D",
+    "OCRmyPDF",
+    "Calamari",
+    "PERO-OCR",
+    "dhSegment",
+    "LayoutParser",
+    "docTR",
+    "PaddleOCR",
+    "Universal Viewer",
+    "Annotorious",
+    "Tropy",
+    "RTIBuilder",
+    "RTIViewer",
+    "Open3D",
+    "Meshroom/AliceVision",
+    "COLMAP",
+    "OpenMVG",
+    "OpenMVS",
+    "Blender"
+  ]
+}

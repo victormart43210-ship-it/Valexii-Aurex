@@ -1,0 +1,77 @@
+{
+  "schema": "aurex.cclxx.forensics_validation.v1",
+  "code_sha": "64dadbfd673186fbe65bc653a4658d866178ca8a",
+  "independent_review": "NOT_VERIFIED",
+  "cases": [
+    {
+      "name": "faint_bar",
+      "status": "PASS",
+      "result": "The known rectangle overlaps one unverified component. recovered_text is null. Repeating the file produces the same layer hashes."
+    },
+    {
+      "name": "blank_and_salt",
+      "status": "PASS",
+      "result": "No component meets the 12-pixel minimum. The observation says this is not a reading."
+    },
+    {
+      "name": "overlap",
+      "status": "PASS",
+      "result": "The report says the bars were not separated into two readings."
+    },
+    {
+      "name": "pdf_unknown_and_oversized",
+      "status": "PASS",
+      "result": "PDF rasterization, an unknown signature, an empty file, and an 800 by 800 PNG are refused with no layers. The PDF digest is kept."
+    },
+    {
+      "name": "spectral_metadata",
+      "status": "PASS",
+      "result": "Missing wavelengths stay null and are qualified NOT_PROVIDED. Different band sizes raise BAND_DIMENSIONS_DIFFER."
+    },
+    {
+      "name": "integer_shift",
+      "status": "PASS",
+      "result": "A bar moved two pixels to the right is estimated at dx -2. Applying that shift puts the dark pixel back on the reference."
+    },
+    {
+      "name": "principal_component",
+      "status": "PASS",
+      "result": "The component mean inside the synthetic mark differs from the mean outside. The layer limitation says it is not a letter."
+    },
+    {
+      "name": "gate_auth_effect_path",
+      "status": "PASS",
+      "result": "Disabled laboratory is HTTP 403. Missing bearer is HTTP 401. effect DEPLOY returns REFUSED and effect NONE with no layers. CUSTOMER is HTTP 422. A filename of ../../etc/passwd is stored as the label passwd. A JPEG signature declared as PNG is TYPE_MISMATCH."
+    },
+    {
+      "name": "templates",
+      "status": "PASS",
+      "result": "The Voynich template is NOT_ESTABLISHED and must not claim a decipherment."
+    },
+    {
+      "name": "browser",
+      "status": "PASS",
+      "observed": "Headless Chrome at 390 by 844 on the local page showed NOT_CLAIMED, recovered text none, an unverified component, and at least two images. The service token was not in the page. This was the same session."
+    }
+  ],
+  "performance": {
+    "fixture": "faint-stroke-v1",
+    "mean_seconds": 0.0479,
+    "sample": "10 in-process calls after one warmup",
+    "scope": "local process, 96 by 64 synthetic PNG. Not a deployed measurement.",
+    "regions": 1,
+    "layers": 11
+  },
+  "not_measured": [
+    "Character error rate. There is no recognizer and no transcription ground truth.",
+    "Sub-pixel registration error.",
+    "Memory high-water mark.",
+    "A real multispectral manuscript."
+  ],
+  "github_actions_on_353430a": {
+    "status": "PASS",
+    "completed_by": "2026-11-06T18:31:46-0600",
+    "checks": ["offline-practice", "test", "test", "verify", "integration", "docker-build-and-smoke"],
+    "docker_build_and_smoke": "PASS at 2026-11-06T18:30:16-0600. The job built the image. It did not deploy."
+  }
+}

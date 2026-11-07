@@ -1,0 +1,28 @@
+{
+  "schema": "aurex.cclxx.recovery.v1",
+  "branch": "cursor/kusanagi-cclxx-forensic-ascendancy-4082",
+  "code_sha": "64dadbfd673186fbe65bc653a4658d866178ca8a",
+  "base_branch": "cursor/kusanagi-cclxix-fullstack-ascendancy-4082",
+  "base_sha": "f381db7cd121d76f0df9f67a8a5e2547733fe33d",
+  "main_sha": "34cda4bd8f207f5b1284093b87e4760d782a4903",
+  "main_changed": false,
+  "decision": "HOLD_WITH_BLOCKERS",
+  "production_authority": "NONE",
+  "financial_authority": "NONE",
+  "completed": [
+    "Added a feature-gated tier-1 imaging laboratory that does not transcribe pixels.",
+    "Preserved the DISPATER golden ledger.",
+    "Left Hoku and HyperSpy outside the package because of their copyleft licenses.",
+    "Recorded the licenses that were actually opened.",
+    "Recorded six successful GitHub checks on 353430a84ab2ba0b262d56a80a435e1a28ccf99b, including docker-build-and-smoke. The image job did not deploy."
+  ],
+  "outstanding": [
+    "GitHub Actions on the documentation note that records those checks.",
+    "Local Docker.",
+    "Live Qwen. The probe returned URLError.",
+    "Tier-2 recognizers and tier-3 external imaging programs.",
+    "Independent human review.",
+    "A real multispectral capture with instrument metadata."
+  ],
+  "next_safe_action": "Review the pull request. Do not merge it to main and do not deploy it. Leave AUREX_MANUSCRIPT_FORENSICS unset until an operator enables the laboratory."
+}
