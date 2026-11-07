@@ -89,7 +89,7 @@ describe("client fails closed", () => {
       { ok: false, error: "timeout" },
     );
   });
-  it("classifies controller-triggered generic abort as timeout", async () => {
+  it("classifies a controller abort as timeout even when fetch throws a generic error", async () => {
     const slow = ((_u: unknown, init: RequestInit) =>
       new Promise((_resolve, reject) => {
         init.signal?.addEventListener("abort", () => reject(new Error("generic abort")));
@@ -99,13 +99,30 @@ describe("client fails closed", () => {
       error: "timeout",
     });
   });
-  it("classifies real transport errors as network failures", async () => {
+  it("keeps genuine fetch failures classified as network errors", async () => {
     const failing = (async () => { throw new Error("connection refused"); }) as typeof fetch;
     expect(await createAurexClient({ url, token, fetcher: failing }).health()).toEqual({
       ok: false,
       error: "network",
     });
   });
+  it("applies the deadline to a stalled response body after successful headers", async () => {
+    let signal: AbortSignal | null | undefined;
+    const stalled = (async (_url: unknown, init?: RequestInit) => {
+      signal = init?.signal;
+      return new Response(new ReadableStream({
+        start(stream) {
+          signal?.addEventListener("abort", () => stream.error(signal?.reason), { once: true });
+        },
+      }));
+    }) as typeof fetch;
+    expect(await createAurexClient({ url, token, timeoutMs: 500, fetcher: stalled }).health()).toEqual({
+      ok: false,
+      error: "timeout",
+    });
+    expect(signal?.aborted).toBe(true);
+  });
+
   it("validates job inputs and idempotency keys before any request", async () => {
     let called = 0;
     const f = (async () => {
