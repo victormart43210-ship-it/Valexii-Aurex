@@ -1,0 +1,73 @@
+{
+  "schema": "aurex.cclxxv.mainline_verification.v1",
+  "operation": "OPERATION_KUSANAGI_CCLXXV",
+  "timestamp": "2026-11-07T02:44:00Z",
+  "tested_commit_sha": "061b97022797013ccd1395a377b9489e59ba83f3",
+  "branch": "main",
+  "pr_194_merged": true,
+  "working_tree_clean": true,
+  "verifications": {
+    "backend_ruff": {
+      "command": "ruff check .",
+      "status": "PASSED",
+      "exit_code": 0,
+      "errors": 0
+    },
+    "backend_mypy": {
+      "command": "python3 -m mypy aurex --strict",
+      "status": "PASSED",
+      "exit_code": 0,
+      "source_files_checked": 111,
+      "errors": 0
+    },
+    "backend_pytest": {
+      "command": "pytest -q",
+      "status": "PASSED",
+      "exit_code": 0,
+      "tests_passed": 776,
+      "tests_skipped": 1,
+      "tests_failed": 0
+    },
+    "frontend_bun_test": {
+      "command": "cd website && bun test",
+      "status": "PASSED",
+      "exit_code": 0,
+      "tests_passed": 167,
+      "tests_failed": 0,
+      "files_count": 25,
+      "notes": "1 test failure in aurex-wave2.test.ts resolved by replacing AbortSignal.timeout with new AbortController() + setTimeout pattern."
+    },
+    "frontend_build": {
+      "command": "cd website && bun run build",
+      "status": "PASSED",
+      "exit_code": 0,
+      "output_bundle": ".output/server/index.mjs"
+    },
+    "golden_financial_oracle": {
+      "command": "pytest -v tests/test_dispater_golden_audit.py",
+      "status": "PASSED",
+      "exit_code": 0,
+      "identified_exposure_usd": "385.00",
+      "potential_underbilling_usd": "100.00",
+      "potential_overbilling_usd": "130.00",
+      "unverified_exposure_usd": "155.00",
+      "withheld_unresolved_usd": "150.00",
+      "confirmed_recovery_usd": "0.00",
+      "authority_state": "HOLD"
+    },
+    "docker_build": {
+      "command": "docker build -t valexii-aurex-smoke:cclxxv .",
+      "status": "SANDBOX_OVERLAYFS_RESTRICTED",
+      "exit_code": 1,
+      "details": "Container virtualization in sandbox disallows nested containerd overlayfs cache mounts (mount source: overlay... err: invalid argument). Host-native testing passed 100%."
+    }
+  },
+  "governance_locks": {
+    "production_release": "HOLD",
+    "financial_authority": "NONE",
+    "paid_inference": "OFF",
+    "customer_data": "PROHIBITED",
+    "deployment_authority": "NONE",
+    "merge_authority": "NONE"
+  }
+}
