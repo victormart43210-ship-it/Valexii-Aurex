@@ -1,0 +1,53 @@
+{
+  "schema": "aurex.cclxxvi.benchmarks.v1",
+  "independent_verification": "NOT_VERIFIED",
+  "runner": "cursor-session",
+  "reviewer": "INDEPENDENT_REVIEW_PENDING",
+  "jules": "NOT_RUN",
+  "base_sha": "061b97022797013ccd1395a377b9489e59ba83f3",
+  "suite": {
+    "command": "python3 -m pytest -q --tb=line",
+    "result": "782 passed, 1 skipped, 7.96s",
+    "when": "2026-11-06T19:53:00-0600",
+    "golden": {
+      "identified_exposure_usd": "385.00",
+      "withheld_unresolved_usd": "150.00",
+      "confirmed_recovery_usd": "0.00",
+      "source": "tests/test_dispater_golden_audit.py and tests/test_cclxxvi_relationships.py"
+    }
+  },
+  "focused": {
+    "command": "python3 -m pytest -q tests/test_cclxxvi_relationships.py tests/test_dispater_documents.py tests/test_cclvii_ingest_semantics.py",
+    "result": "23 passed"
+  },
+  "static": {
+    "ruff": "pass",
+    "mypy": "pass on aurex/relationships and aurex/dispater_documents.py"
+  },
+  "grouping": {
+    "data": "synthetic in-memory rows, no customer file",
+    "python_vs_sqlite_seconds": {
+      "2000": {"python": 0.0007, "sqlite": 0.004, "match": true},
+      "20000": {"python": 0.0067, "sqlite": 0.0326, "match": true},
+      "50000": {"python": 0.0184, "sqlite": 0.0767, "match": true}
+    },
+    "loaded_query_mean_seconds_50000": {
+      "python_decimal": 0.015272,
+      "duckdb_decimal": 0.005096,
+      "polars_decimal": 0.003073,
+      "totals_match": true,
+      "sample_equipment_total": "100.00"
+    }
+  },
+  "not_measured": [
+    "Parquet files",
+    "multi-year production extracts",
+    "memory high-water mark",
+    "extraction accuracy against an independently labeled corpus",
+    "precision and recall of a new anomaly model",
+    "website rendering"
+  ],
+  "failures_found_and_fixed": [
+    "openpyxl EmptyCell has no coordinate. Spreadsheet ingestion aborted on a blank unrecognized column. The reader now uses a missing coordinate as an empty label and still ignores that column."
+  ]
+}
