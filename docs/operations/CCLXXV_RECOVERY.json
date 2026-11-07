@@ -1,0 +1,41 @@
+{
+  "schema": "aurex.cclxxv.recovery.v1",
+  "operation": "OPERATION_KUSANAGI_CCLXXV",
+  "timestamp": "2026-11-07T02:45:00Z",
+  "base_sha": "061b97022797013ccd1395a377b9489e59ba83f3",
+  "confirmed_defects": [
+    {
+      "defect_id": "DEF-001",
+      "component": "website/src/lib/aurex-client.server.ts",
+      "description": "AbortSignal.timeout(timeoutMs) hangs under Bun runtime when passed to a custom mock fetcher, causing 'times out slow services' in aurex-wave2.test.ts to exceed 5000ms test runner timeout.",
+      "reproduced": true,
+      "repair_applied": "Replaced AbortSignal.timeout(timeoutMs) with explicit new AbortController() + setTimeout(() => controller.abort(...), timeoutMs) and guaranteed clearTimeout in finally block.",
+      "retest_status": "PASSED (aurex-wave2.test.ts completes in 501ms; 167/167 Bun tests pass)."
+    }
+  ],
+  "remaining_integration_gaps": [
+    {
+      "gap_id": "GAP-001",
+      "system": "XAELI live inference",
+      "state": "LOCAL_OFFLINE_FAIL_CLOSED",
+      "description": "Local Qwen/Ollama inference endpoints are offline in standard test environment. The system truthfully reports OFFLINE and preserves scripted demo labeling."
+    },
+    {
+      "gap_id": "GAP-002",
+      "system": "MEDAURUS / BCXMET",
+      "state": "ARCHITECTURAL_SIMULATION",
+      "description": "Simulation models verify UI telemetry states without claiming live Bluetooth/hardware peripheral connection."
+    },
+    {
+      "gap_id": "GAP-003",
+      "system": "Manuscript Forensics Lab",
+      "state": "BRANCH_ISOLATED",
+      "description": "Imaging laboratory is maintained on Cursor's PR #193 branch; not merged into main to avoid unverified claims."
+    }
+  ],
+  "authority_verification": {
+    "evidence_ledger": "VERIFIED",
+    "financial_recovery_enforced": "0.00",
+    "production_hold_maintained": true
+  }
+}
