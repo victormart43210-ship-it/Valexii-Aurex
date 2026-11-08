@@ -10,4 +10,4 @@
 | Injection and models | The new paths treat source data as data and call no model. Paid inference stays off. Existing XAELI negative tests run separately. Live outage, hosted timeouts and independent hypothesis falsification are not qualified. |
 | Effects | Finance, research qualification and deployment authority remain NONE or HOLD. No customer material was used. No training, merge or deploy was initiated. |
 
-Pillow 13 is optional for offline imaging. Affected CI suites install the imaging extra. Independent reviewer findings are recorded on the integration PR.
+Pillow 13 is optional for offline imaging. The existing developer extra includes imaging so current CI install commands exercise it. Independent reviewer findings are recorded on the integration PR.

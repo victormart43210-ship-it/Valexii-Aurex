@@ -4,7 +4,7 @@
   "status": "PARTIAL",
   "repository": "victormart43210-ship-it/Valexii-Aurex",
   "base_sha": "fc2bed4dd98054503254ad1a4c11fbecd7b0deca",
-  "final_implementation_sha": "33ee06028f5ff138bd08c23fa730737067053b1b",
+  "final_implementation_sha": "76cbead5a6160f1aa907566e3de57aae20816fd1",
   "final_candidate_head": "Resolve the integration PR head. The documentation commit cannot embed its own SHA.",
   "source_prs": [
     {
@@ -39,9 +39,6 @@
     "CCCXLI": "NO_ACCESSIBLE_IMPLEMENTATION_FOUND"
   },
   "modified_files": [
-    ".github/workflows/ci.yml",
-    ".github/workflows/clii-industrial.yml",
-    ".github/workflows/cliv-iron-bridge.yml",
     "aurex/dispater_api.py",
     "aurex/dispater_documents.py",
     "aurex/manuscript_forensics/__init__.py",
@@ -92,6 +89,10 @@
         1280,
         390
       ]
+    },
+    {
+      "command": "uv pip install --dry-run -e '.[dev]'",
+      "status": "PASS"
     }
   ],
   "demonstrations": {
