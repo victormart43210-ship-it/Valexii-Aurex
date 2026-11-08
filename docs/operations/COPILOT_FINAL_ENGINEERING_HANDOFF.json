@@ -1,0 +1,57 @@
+{
+  "repository": "victormart43210-ship-it/Valexii-Aurex",
+  "base_sha": "fc2bed4dd98054503254ad1a4c11fbecd7b0deca",
+  "pr212_head": "ad6a93201516a0ec9168f95128f396d38e39f158",
+  "pr213_head": "8a0d24f822a0581e4de559cf338cc1c0e08d2a05",
+  "final_sha": "see git HEAD of branch (docs-only commit on top of pr213 head)",
+  "branch": "work/kusanagi-cccxlv-ironclad-assurance",
+  "draft_pr_url": "PENDING",
+  "verdict": "PARTIAL",
+  "defects_discovered": [],
+  "repairs_implemented": [],
+  "verification": {
+    "ruff_pr213": "PASS",
+    "ruff_pr212": "PASS",
+    "mypy_pr213": "PASS 129 files",
+    "mypy_pr212": "PASS 131 files",
+    "pytest_pr213": "938 passed, 2 skipped",
+    "pytest_pr212": "961 passed, 2 skipped",
+    "security_subset_pr213": "85 passed",
+    "frontend": "NOT RUN",
+    "docker_local": "NOT RUN",
+    "ocr": "NOT RUN (tesseract absent)",
+    "branch_protection": "NOT READABLE (403)"
+  },
+  "ci_workflow_urls": [
+    "https://github.com/victormart43210-ship-it/Valexii-Aurex/actions/runs/42444494121",
+    "https://github.com/victormart43210-ship-it/Valexii-Aurex/actions/runs/42481017065",
+    "https://github.com/victormart43210-ship-it/Valexii-Aurex/actions/runs/42481368569"
+  ],
+  "security_findings": [
+    "No boundary violations found in existing tests",
+    "Prompt-injection, MIME mismatch, unauthorized doc access only partially evidenced",
+    "Invoice $10.00 discrepancy assertion not located"
+  ],
+  "unresolved_blockers": [
+    "manuscript CCCXXXIX/XL/XLI NOT IMPLEMENTED",
+    "OCR/scanned doc unverified",
+    "frontend build unverified",
+    "docker local build unverified",
+    "required checks unreadable",
+    "invoice 10.00 assertion unlocated"
+  ],
+  "pr_dependency_order": [
+    "#208",
+    "#209",
+    "#210",
+    "#211",
+    "#212",
+    "#214",
+    "#193"
+  ],
+  "independent_review_conclusions": "PARTIAL; no regression found on #212/#213; see COPILOT_FINAL_ENGINEERING_HANDOFF.md",
+  "merge_authority": "NONE",
+  "production_release": "HOLD",
+  "financial_authority": "NONE",
+  "paid_inference": "OFF"
+}
