@@ -1,0 +1,79 @@
+{
+  "audit_identifier": "OPERATION KUSANAGI CCCLVI",
+  "project": "SOVEREIGN TOTAL SYSTEM AUDIT & JULES SUCCESSION",
+  "recorded_at": "2026-11-08T20:30:00Z",
+  "repository": "victormart43210-ship-it/Valexii-Aurex",
+  "canonical_main_sha": "fc2bed4dd98054503254ad1a4c11fbecd7b0deca",
+  "audit_commit_sha": "fc2bed4dd98054503254ad1a4c11fbecd7b0deca",
+  "governing_principle": "Evidence -> Qualification -> Reality -> Authority -> Effect. The system may never be its own sole witness.",
+  "canonical_gates": {
+    "backend_lint": {
+      "command": "ruff check .",
+      "exit_code": 0,
+      "errors": 0,
+      "status": "PASS"
+    },
+    "backend_typing": {
+      "command": "python3 -m mypy aurex --strict",
+      "exit_code": 0,
+      "source_files_checked": 129,
+      "errors": 0,
+      "status": "PASS"
+    },
+    "backend_pytest": {
+      "command": "python3 -m pytest",
+      "exit_code": 0,
+      "total_tests": 940,
+      "passed": 939,
+      "skipped": 1,
+      "failed": 0,
+      "skipped_reasons": {
+        "training/tests/test_lora_smoke.py:7": "could not import 'torch': No module named 'torch' (Optional dependency in standard CI)"
+      },
+      "status": "PASS"
+    },
+    "frontend_bun_test": {
+      "command": "cd website && bun test",
+      "exit_code": 0,
+      "total_tests": 173,
+      "passed": 173,
+      "failed": 0,
+      "test_files": 25,
+      "expect_calls": 1183,
+      "status": "PASS"
+    },
+    "frontend_build": {
+      "command": "cd website && bun run build",
+      "exit_code": 0,
+      "framework": "TanStack Start / Nitro / Vite",
+      "target": "Cloudflare / Node Server",
+      "status": "PASS"
+    }
+  },
+  "golden_financial_fixtures": {
+    "oracle_contract": "tests/test_dispater_reconciliation.py & aurex/dispater_intelligence.py",
+    "verified_golden_totals": {
+      "identified_exposure": "385.00",
+      "potential_underbilling": "100.00",
+      "potential_overbilling": "130.00",
+      "unverified_exposure": "155.00",
+      "withheld_unresolved": "150.00",
+      "confirmed_recovery": "0.00"
+    },
+    "immutable_invariants": [
+      "confirmed_recovery is locked at 0.00 unless an authorized human officer has executed explicit verified settlement",
+      "No exposure amount or unverified finding may automatically convert to confirmed cash recovery",
+      "CSV formula injection sanitization strips leading =, +, -, @, and dangerous characters"
+    ]
+  },
+  "cryptographic_digests_and_contracts": {
+    "receipt_version": "BOUND_V2",
+    "hmac_binding": "run_id + created_at + receipt_binding in signed payload",
+    "tenant_isolation": "AUREX_DISPATER_TENANT_GRANTS maps SHA-256 bearer token hashes to tenant lists; uniform 403 response on any mismatch",
+    "body_limit_ceiling": "5MB raw ASGI streaming body guard (MAX_BODY_BYTES = 5242880)"
+  },
+  "verified_archive_safety": {
+    "zip_traversal_protection": "tools/aurex_find_verified_zip.py enforces private directory permissions (mode 0o700), blocks symlinks, and validates exact 64-char hex SHA-256",
+    "regression_fixed": "tests/test_aurex_verified_zip_finder.py::test_skipped_file_replaced_during_extraction_holds"
+  }
+}
