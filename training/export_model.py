@@ -7,6 +7,18 @@ from pathlib import Path
 from training.common import verified_adapter
 
 
+def assert_export_identity(record, expected_base, expected_revision):
+    """The export names its base. GGUF conversion is not a training result."""
+    if record.get("base_model") != expected_base or record.get("revision") != expected_revision:
+        raise ValueError("export identity mismatch")
+    if str(expected_base).lower().endswith(".gguf"):
+        raise ValueError("GGUF is not a Transformers training weight")
+    conversion = record.get("gguf_conversion", "NOT RUN")
+    if conversion != "NOT RUN" and record.get("gguf_verified") is not True:
+        raise ValueError("unverified GGUF conversion")
+    return {"status": "PASS", "gguf_conversion": conversion, "financial_authority": "NONE"}
+
+
 def main():
     p = argparse.ArgumentParser()
     p.add_argument("--adapter", type=Path, required=True)

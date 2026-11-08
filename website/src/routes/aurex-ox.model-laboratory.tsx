@@ -22,6 +22,18 @@ export const Route = createFileRoute("/aurex-ox/model-laboratory")({
   component: ModelLaboratory,
 });
 
+const FORGE_STATUS = [
+  [
+    "Qwen/Qwen2.5-0.5B-Instruct",
+    "7ae557604adf67be50417f59c2c2f167def9a775",
+    "PINNED, NOT INSTALLED",
+  ],
+  ["LoRA pipeline", "tiny CPU smoke only", "NOT A 0.5B FINE-TUNE"],
+  ["QLoRA", "approved CUDA required", "NOT RUN"],
+  ["GGUF conversion", "inference artifact, not training weights", "NOT RUN"],
+  ["Promotion", "this page has no approval control", "DISABLED"],
+] as const;
+
 const UPGRADE_CANDIDATES = [
   "Qwen3.5-0.8B",
   "Falcon-H1-1.5B-Instruct",
@@ -49,10 +61,18 @@ const CANDIDATES = [
 function ModelLaboratory() {
   return (
     <PageShell>
-      <PageHero eyebrow="Model laboratory / offline" title="Registered candidates. None are connected.">
+      <PageHero
+        eyebrow="Model laboratory / offline"
+        title="Registered candidates. None are connected."
+      >
         <p>
           Every row is NOT INSTALLED and NOT EVALUATED on this site. The backend registry is the
           record. This page does not download weights, run training, or accept company records.
+        </p>
+        <p>
+          The forge ledger can record a reviewed Qwen2.5-0.5B-Instruct pin. Full training, QLoRA,
+          and GGUF conversion are NOT RUN on this page. A training record is not a promotion, and
+          this page cannot approve a model.
         </p>
       </PageHero>
       <section className="section-space">
@@ -77,10 +97,32 @@ function ModelLaboratory() {
               ))}
             </tbody>
           </table>
+          <h2 className="mt-10 text-lg font-display">Forge status</h2>
+          <p className="mt-2 text-sm text-muted-foreground">
+            These rows are the current backend records. No bar on this page is a live training job.
+          </p>
+          <table className="mt-4 w-full text-left text-sm">
+            <thead>
+              <tr className="border-b border-border text-xs text-muted-foreground">
+                <th className="py-2 pr-4">Record</th>
+                <th className="py-2 pr-4">Detail</th>
+                <th className="py-2">State</th>
+              </tr>
+            </thead>
+            <tbody>
+              {FORGE_STATUS.map(([record, detail, state]) => (
+                <tr key={record} className="border-b border-border">
+                  <td className="py-3 pr-4">{record}</td>
+                  <td className="py-3 pr-4">{detail}</td>
+                  <td className="py-3 text-amber">{state}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
           <h2 className="mt-10 text-lg font-display">Named upgrade candidates</h2>
           <p className="mt-2 text-sm text-muted-foreground">
-            These names come from the CCLXIV list. Weights were not downloaded here. No score is shown
-            because none was measured.
+            These names come from the CCLXIV list. Weights were not downloaded here. No score is
+            shown because none was measured.
           </p>
           <table className="mt-4 w-full text-left text-sm">
             <thead>

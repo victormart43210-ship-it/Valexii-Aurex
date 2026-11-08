@@ -1,0 +1,113 @@
+{
+  "schema": "aurex.ox.model_forge_acceptance.v1",
+  "observed_at": "2026-11-07T18:35:00-06:00",
+  "base_revision": "fc2bed4dd98054503254ad1a4c11fbecd7b0deca",
+  "branch": "cursor/kusanagi-ccxcvii-model-forge-4082",
+  "production": "HOLD",
+  "financial_authority": "NONE",
+  "paid_inference": "OFF",
+  "pr_208": "not modified",
+  "commands": [
+    {
+      "command": "mypy aurex",
+      "exit_code": 0,
+      "status": "PASS",
+      "observation": "130 source files, no issues"
+    },
+    {
+      "command": "ruff check .",
+      "exit_code": 0,
+      "status": "PASS",
+      "observation": "all checks passed"
+    },
+    {
+      "command": "python3 -m pytest -q",
+      "exit_code": 0,
+      "status": "PASS",
+      "observation": "953 passed"
+    },
+    {
+      "command": "npx vitest run",
+      "cwd": "website",
+      "exit_code": 0,
+      "status": "PASS",
+      "observation": "25 files, 173 tests passed"
+    },
+    {
+      "command": "npx eslint src/routes/aurex-ox.model-laboratory.tsx",
+      "cwd": "website",
+      "exit_code": 0,
+      "status": "PASS",
+      "observation": "clean after prettier"
+    },
+    {
+      "command": "GET http://127.0.0.1:4173/aurex-ox/model-laboratory",
+      "exit_code": 0,
+      "status": "PASS",
+      "observation": "HTTP 200 and the forge status table is in the server HTML"
+    }
+  ],
+  "waves": [
+    {
+      "wave": 1,
+      "name": "allowlisted acquisition",
+      "status": "PASS",
+      "observation": "Local fixture copy verifies hashes, refuses remote code, and does not overwrite a verified file. No Hugging Face download was performed."
+    },
+    {
+      "wave": 2,
+      "name": "registry ledger",
+      "status": "PASS",
+      "observation": "Stage skips and self-approval fail. The static catalog remains CANDIDATE and NOT_STARTED."
+    },
+    {
+      "wave": 3,
+      "name": "LoRA and QLoRA",
+      "status": "PASS",
+      "observation": "Tiny CPU LoRA smoke passed. QLoRA and the 0.5B run are separate NOT_RUN results in LORA_QLORA_TRAINING_REPORT.json."
+    },
+    {
+      "wave": 4,
+      "name": "synthetic datasets",
+      "status": "PASS",
+      "observation": "Domain pack writes disjoint train and eval JSONL for xaeli, dispater, aurex-ox, and medaurus. No customer corpus was used."
+    },
+    {
+      "wave": 5,
+      "name": "baseline versus adapter",
+      "status": "NOT_RUN",
+      "observation": "The external-score harness passes unit tests. No foundation model and no adapter were scored against each other."
+    },
+    {
+      "wave": 6,
+      "name": "export and serving",
+      "status": "PASS",
+      "observation": "Export identity rejects an unverified GGUF claim. Serving an unapproved ledger entry is rejected. No merged 0.5B artifact was produced."
+    },
+    {
+      "wave": 7,
+      "name": "routing",
+      "status": "PASS",
+      "observation": "Only APPROVED or STAGING entries can be selected. Disagreement is returned. Agreement is not marked as proof."
+    },
+    {
+      "wave": 8,
+      "name": "hardware",
+      "status": "PASS",
+      "observation": "This host reports CUDA ABSENT and does not request a paid GPU. An approved GPU worker was not used."
+    },
+    {
+      "wave": 9,
+      "name": "laboratory page",
+      "status": "PASS",
+      "observation": "The page shows NOT RUN for QLoRA and GGUF and says promotion is disabled. It does not animate a training job."
+    },
+    {
+      "wave": 10,
+      "name": "independent Jules review",
+      "status": "NOT_RUN",
+      "observation": "No Jules review record exists for this branch."
+    }
+  ],
+  "implementation_commit": "4b38c9401ba31fb65459ec3452ee404940a9111f"
+}
