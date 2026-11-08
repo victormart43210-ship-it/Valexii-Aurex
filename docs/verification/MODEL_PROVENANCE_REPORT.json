@@ -1,0 +1,51 @@
+{
+  "schema": "aurex.ox.model_provenance_report.v1",
+  "observed_at": "2026-11-07T18:35:00-06:00",
+  "base_revision": "fc2bed4dd98054503254ad1a4c11fbecd7b0deca",
+  "allowlist": {
+    "repository": "Qwen/Qwen2.5-0.5B-Instruct",
+    "revision": "7ae557604adf67be50417f59c2c2f167def9a775",
+    "license_name": "Apache-2.0",
+    "license_source": "training/README.md dated 2026-10-08; not re-fetched in this run",
+    "license_reverification": "NOT_RUN",
+    "weights_download": "NOT_RUN"
+  },
+  "checks": [
+    {
+      "name": "local_acquire_command",
+      "command": "python3 -m aurex.ox.forge acquire --manifest /tmp/forge-acquire/manifest.json --source /tmp/forge-acquire/src --dest /tmp/forge-acquire/store --ledger /tmp/forge-acquire/ledger.json",
+      "exit_code": 0,
+      "status": "PASS",
+      "observation": "A local config.json fixture was hashed and recorded. trust_remote_code was false. This fixture is not the Qwen weight set."
+    },
+    {
+      "name": "remote_code_rejection",
+      "status": "PASS",
+      "observation": "tests/test_ox_model_forge.py rejects trust_remote_code true before any copy."
+    },
+    {
+      "name": "corrupt_incomplete_symlink_disk_overwrite",
+      "status": "PASS",
+      "observation": "The same test rejects a hash mismatch, a missing file, a symlink, a zero-free-space report, and a second copy with a different hash."
+    },
+    {
+      "name": "unpinned_repository",
+      "status": "PASS",
+      "observation": "A repository that is not on the allowlist can be discovered and cannot be reviewed for acquisition."
+    },
+    {
+      "name": "huggingface_revision_fetch",
+      "status": "NOT_RUN",
+      "observation": "This process did not contact Hugging Face and did not confirm the pinned commit is still the model-card revision."
+    },
+    {
+      "name": "owner_commercial_approval",
+      "status": "NOT_RUN",
+      "observation": "The fixture reviewer strings are test actors. They are not an owner approval to redistribute Qwen weights."
+    }
+  ],
+  "static_registry": {
+    "status": "PASS",
+    "observation": "validate_registry() still requires approval_state CANDIDATE, training NOT_STARTED, and live_connection NOT_VERIFIED."
+  }
+}

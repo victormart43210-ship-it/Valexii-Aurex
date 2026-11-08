@@ -1,0 +1,35 @@
+{
+  "schema": "aurex.ox.baseline_adapter_evaluation.v1",
+  "observed_at": "2026-11-07T18:35:00-06:00",
+  "base_revision": "fc2bed4dd98054503254ad1a4c11fbecd7b0deca",
+  "judge": "external_key",
+  "model_as_sole_judge": false,
+  "runs": [
+    {
+      "name": "security_regression_harness",
+      "command": "python3 -m pytest -q tests/test_ox_model_forge.py",
+      "exit_code": 0,
+      "status": "PASS",
+      "observation": "compare_adapter returns FAIL and promoted false when the adapter's security failures exceed the baseline, even if the task score rises. A matching security count returns PASS, promoted false, independent_verification NOT VERIFIED."
+    },
+    {
+      "name": "foundation_versus_lora_on_qwen",
+      "status": "NOT_RUN",
+      "observation": "No Qwen2.5-0.5B-Instruct baseline and no trained adapter were loaded. There is no accuracy, grounding, latency, memory, or throughput number for that model."
+    },
+    {
+      "name": "qlora_comparison",
+      "status": "NOT_RUN",
+      "observation": "QLoRA training did not run, so there is no QLoRA adapter to score."
+    },
+    {
+      "name": "independent_evaluator",
+      "status": "NOT_RUN",
+      "observation": "Jules has not reviewed these cases. The unit test is not an independent witness."
+    }
+  ],
+  "held_out_loss": {
+    "status": "NOT_RUN",
+    "observation": "training/evaluate_lora.py still measures held-out loss only, and it was not executed because no real adapter exists."
+  }
+}

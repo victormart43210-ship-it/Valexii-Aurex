@@ -53,6 +53,11 @@ safetensors. Held-out loss is not accuracy, hallucination rate or independent gr
 Export produces merged safetensors. Converting those to GGUF requires a separately
 pinned llama.cpp converter and subsequent inference validation; it is NOT RUN here.
 A CPU LoRA smoke is implemented; CUDA/QLoRA execution is NOT VERIFIED.
+`python -m training.train_lora --execute` with `"method": "qlora"` exits 2 and
+prints `NOT_RUN` unless CUDA, bitsandbytes, and `AUREX_QLORA_APPROVED=1` are all
+present. That gate does not provision a GPU. Acquisition and promotion live in
+`python -m aurex.ox.forge` and do not change the candidate catalog in
+`aurex.ox.registry`.
 
 Use new output directories for every run. Do not upload private data or model weights
 to the git repository. Use the separate A/B/C/D CLI for behavior measurement, with

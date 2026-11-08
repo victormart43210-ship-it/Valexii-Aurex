@@ -1,0 +1,32 @@
+{
+  "schema": "aurex.ox.jules_model_forge_handoff.v1",
+  "observed_at": "2026-11-07T18:35:00-06:00",
+  "base_revision": "fc2bed4dd98054503254ad1a4c11fbecd7b0deca",
+  "branch": "cursor/kusanagi-ccxcvii-model-forge-4082",
+  "jules_review": "NOT_RUN",
+  "production": "HOLD",
+  "financial_authority": "NONE",
+  "paid_inference": "OFF",
+  "do_not_merge_without_review": true,
+  "pr_208": "left untouched; this branch was cut from origin/main",
+  "review_points": [
+    {"item": "model provenance", "status": "NOT_RUN", "where": "docs/verification/MODEL_PROVENANCE_REPORT.json"},
+    {"item": "license gating", "status": "NOT_RUN", "note": "Code requires an explicit reviewer. The Apache-2.0 card was not re-fetched."},
+    {"item": "dataset leakage", "status": "NOT_RUN", "note": "Unit tests reject duplicate prompts, canaries, and secret fields. No independent data review."},
+    {"item": "training reproducibility", "status": "NOT_RUN", "note": "Tiny CPU smoke is reproducible in-repo. The 0.5B run was not executed."},
+    {"item": "adapter and base compatibility", "status": "NOT_RUN", "note": "Smoke reloaded a tiny adapter onto a fresh tiny base. The pinned 0.5B weights were not loaded."},
+    {"item": "artifact integrity", "status": "NOT_RUN", "note": "Hash checks passed on fixtures."},
+    {"item": "registry transitions", "status": "NOT_RUN", "note": "Skip and self-approval are rejected by tests. Jules has not signed a transition."},
+    {"item": "unauthorized promotion", "status": "NOT_RUN", "note": "serving_gate rejects a DISCOVERED entry. No live serving change was deployed."},
+    {"item": "inference identity", "status": "NOT_RUN", "note": "A mismatched repository is rejected before the adapter is constructed when a ledger entry is supplied."},
+    {"item": "regression", "status": "NOT_RUN", "note": "pytest 953 passed on this workspace. That is not Jules's run."},
+    {"item": "hardware and cost", "status": "NOT_RUN", "note": "No paid GPU was requested. QLoRA exited 2."}
+  ],
+  "commands_for_a_second_party": [
+    "mypy aurex",
+    "ruff check .",
+    "python3 -m pytest -q",
+    "python3 -m aurex.ox.forge preflight",
+    "python3 -m training.train_lora --data <prepared> --config training/configs/qwen05b-lora.json --output <new-dir>"
+  ]
+}

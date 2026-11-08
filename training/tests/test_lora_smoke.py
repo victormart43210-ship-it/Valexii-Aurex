@@ -71,3 +71,8 @@ def test_real_lora_optimizer_and_reload(tmp_path):
     assert any(torch.count_nonzero(p) > 0 for n, p in loaded.named_parameters() if "lora_B" in n)
     loaded.merge_and_unload().save_pretrained(tmp_path / "merged", safe_serialization=True)
     assert (tmp_path / "merged/model.safetensors").exists()
+    from training.train_lora import validate_checkpoint
+
+    checkpoint = validate_checkpoint(tmp_path / "adapter")
+    assert checkpoint["status"] == "PASS"
+    assert checkpoint["tensors"] > 0

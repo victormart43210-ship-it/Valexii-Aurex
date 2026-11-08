@@ -1,9 +1,12 @@
 {
   "base_model": "Qwen/Qwen2.5-0.5B-Instruct",
   "revision": "7ae557604adf67be50417f59c2c2f167def9a775",
+  "architecture": "qwen2",
+  "method": "lora",
   "seed": 42,
   "rank": 8,
   "alpha": 16,
+  "lora_dropout": 0.05,
   "max_length": 1024,
   "max_steps": 20,
   "learning_rate": 0.0001,
