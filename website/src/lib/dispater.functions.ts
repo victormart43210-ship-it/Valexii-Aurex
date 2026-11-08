@@ -21,17 +21,18 @@ export const runDispaterDemoReconciliation = createServerFn({ method: "POST" })
     return report;
   });
 
-export const admitSyntheticDispaterCsv = createServerFn({ method: "POST" })
-  .validator((input: unknown) => z.object({}).parse(input ?? {}))
-  .handler(async () => {
+export const admitSyntheticDispaterDocument = createServerFn({ method: "POST" })
+  .validator((input: unknown) => z.object({ kind: z.enum(["csv", "pdf"]).default("csv") }).strict().parse(input ?? {}))
+  .handler(async ({ data }) => {
     const { currentDispaterConfig, executeDispaterDocument } = await import("./dispater.server");
-    const admitted = await executeDispaterDocument(currentDispaterConfig());
+    const admitted = await executeDispaterDocument(currentDispaterConfig(), fetch, data.kind);
     return {
       report: admitted.report,
       source: {
         filename: admitted.ingestion.filename,
         source_sha256: admitted.ingestion.source_sha256,
         rows: admitted.ingestion.provenance.map((item) => item.row),
+        kind: data.kind,
       },
     };
   });

@@ -74,6 +74,13 @@ def test_blank_pdf_is_not_a_successful_extraction() -> None:
         extract_pdf(_blank_pdf(), "ab" * 32)
 
 
+@pytest.mark.parametrize("duplicate", ["table: invoices", "amount: 999.00"])
+def test_pdf_rejects_ambiguous_fields(duplicate: str) -> None:
+    raw = _one_page(["table: invoices", "invoice_id: I01", "job_id: J01", "amount: 150.00", "status: open", duplicate])
+    with pytest.raises(IngestError, match="duplicate"):
+        extract_pdf(raw, hashlib.sha256(raw).hexdigest())
+
+
 def test_png_is_rejected_without_being_read_as_money() -> None:
     png = b"\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR" + (1).to_bytes(4, "big") + (1).to_bytes(4, "big")
     with pytest.raises(IngestError, match="OCR runtime is not installed"):
@@ -339,6 +346,12 @@ def test_document_api_reconciles_a_pdf_and_rejects_another_tenant(tmp_path: Path
     monkeypatch.setenv("AUREX_DISPATER_DB", str(tmp_path / "api.db"))
     raw = _one_page(["table: invoices", "invoice_id: I9", "job_id: " + "MISSING", "amount: 10.00", "status: open"])
     client = TestClient(app, raise_server_exceptions=False)
+    invalid = client.post(
+        "/v1/dispater/documents",
+        headers={"Authorization": f"Bearer {token}"},
+        json={"tenant_id": "tenant-a", "filename": "invoice.pdf", "kind": "pdf", "content_base64": "!!!"},
+    )
+    assert invalid.status_code == 400
     denied = client.post(
         "/v1/dispater/documents",
         headers={"Authorization": f"Bearer {token}"},

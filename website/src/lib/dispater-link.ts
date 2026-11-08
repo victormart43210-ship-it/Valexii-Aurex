@@ -4,6 +4,7 @@ export interface DocumentSourceSummary {
   filename: string;
   source_sha256: string;
   rows: string[];
+  kind?: "csv" | "pdf";
 }
 
 export function dispaterLinkState(
@@ -64,5 +65,5 @@ export function dataOrigin(
 }
 
 export function documentSourceLine(source: DocumentSourceSummary): string {
-  return `${source.filename} · ${source.source_sha256.slice(0, 16)} · rows ${source.rows.join(", ") || "none"}`;
+  return `${source.filename} · ${source.source_sha256.slice(0, 16)} · ${source.kind === "pdf" ? "pages" : "rows"} ${source.rows.join(", ") || "none"}`;
 }

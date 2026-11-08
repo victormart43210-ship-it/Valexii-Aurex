@@ -264,6 +264,9 @@ def ingest_document(payload: DocumentRequest, principal: PrincipalDep) -> dict[s
     authorize_tenant(principal, payload.tenant_id)
     try:
         raw = base64.b64decode(payload.content_base64, validate=True)
+    except ValueError as exc:
+        raise HTTPException(status.HTTP_400_BAD_REQUEST, "Invalid document base64") from exc
+    try:
         if payload.declared_byte_length is not None and payload.declared_byte_length != len(raw):
             raise IngestError("declared byte length does not match the received source bytes")
         batch = ingest_source(payload.tenant_id, payload.filename, raw, kind=payload.kind)
