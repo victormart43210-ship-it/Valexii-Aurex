@@ -9,14 +9,27 @@ from training.prepare_dataset import read_rows, sha
 def verified_data(directory):
     directory = Path(directory)
     manifest = json.loads((directory / "manifest.json").read_text())
-    for name in ("train.jsonl", "eval.jsonl", "provenance.json"):
-        if sha(directory / name) != manifest["files"][name]:
+    for name in manifest["files"]:
+        if Path(name).name != name or sha(directory / name) != manifest["files"][name]:
             raise ValueError("Prepared dataset hash mismatch")
+    if manifest.get("training_approval") not in {None, "UNREVIEWED", "APPROVED_FOR_TRAINING"}:
+        raise ValueError("Unknown dataset approval state")
     return manifest, read_rows(directory / "train.jsonl"), read_rows(directory / "eval.jsonl")
 
 
 def encode(row, tokenizer, max_length):
-    messages = row["messages"]
+    messages = row.get("messages")
+    if not isinstance(messages, list) or len(messages) < 2:
+        raise ValueError("malformed conversation")
+    for message in messages:
+        if (
+            not isinstance(message, dict)
+            or set(message) != {"role", "content"}
+            or message["role"] not in {"system", "user", "assistant"}
+            or not isinstance(message["content"], str)
+            or not message["content"].strip()
+        ):
+            raise ValueError("malformed message")
     tokens = tokenizer.apply_chat_template(messages, tokenize=True, add_generation_prompt=False)
     if len(tokens) > max_length:
         raise ValueError("Example exceeds max_length; curate it rather than silently truncating")
@@ -78,6 +91,39 @@ def verified_adapter(directory):
             raise ValueError("Adapter artifact hash mismatch")
     validate_model_config(record["config"])
     return record
+
+
+def verify_lineage(
+    directory, expected_base, expected_revision, expected_targets, expected_tokenizer_sha256=None
+):
+    """Integrity against the training record. A hash is not publisher or license trust."""
+    directory = Path(directory)
+    record = verified_adapter(directory)
+    config = record["config"]
+    if config["base_model"] != expected_base or config["revision"] != expected_revision:
+        raise ValueError("training record names a different base revision")
+    adapter_config = json.loads((directory / "adapter_config.json").read_text())
+    base_name = str(adapter_config.get("base_model_name_or_path") or "")
+    if base_name.lower().endswith(".gguf"):
+        raise ValueError("GGUF is not the adapter base")
+    if base_name and base_name != expected_base:
+        raise ValueError("adapter metadata names a different base")
+    targets = adapter_config.get("target_modules")
+    if targets is not None and list(targets) != list(expected_targets):
+        raise ValueError("adapter target modules do not match the reviewed set")
+    if expected_tokenizer_sha256 is not None:
+        tokenizer = directory / "tokenizer_config.json"
+        if (
+            tokenizer.is_symlink()
+            or not tokenizer.is_file()
+            or sha(tokenizer) != expected_tokenizer_sha256
+        ):
+            raise ValueError("tokenizer does not match the expected digest")
+    return {
+        "status": "INTEGRITY_MATCH",
+        "publisher_trust": "NOT_VERIFIED",
+        "license_trust": "NOT_VERIFIED",
+    }
 
 
 def require_finite_loss(metrics, key):

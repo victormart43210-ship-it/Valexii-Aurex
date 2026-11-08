@@ -1,0 +1,88 @@
+{
+  "schema": "valexii.kusanagi.cccliv.recovery_ledger.v1",
+  "operation": "OPERATION KUSANAGI CCCLIV",
+  "mission": "PROJECT SOVEREIGN CONVERGENCE",
+  "canonical_base": "fc2bed4dd98054503254ad1a4c11fbecd7b0deca",
+  "recovery_entries": [
+    {
+      "wave": "WAVE_A_SOVEREIGN_KERNEL",
+      "source_branch": "origin/work/valexii-sovereign-kernel-foundation-20261108",
+      "source_commit": "a14a92a62f695186017f67388d7d999b90add4de",
+      "repaired_files": [
+        "aurex/sovereign_kernel.py",
+        "tests/test_sovereign_kernel.py"
+      ],
+      "security_status": "VERIFIED_FAIL_CLOSED",
+      "authority_impact": "Evaluates eligibility only; never grants execution authority."
+    },
+    {
+      "wave": "WAVE_B_MODEL_FORGE",
+      "source_branch": "origin/work/kusanagi-cccxiv-forge-ci-optional-torch",
+      "source_commit": "e3244e7ae6304b1f4aecf82f70f6400decb3af91",
+      "repaired_files": [
+        "aurex/ox/forge.py",
+        "aurex/ox/registry.py",
+        "aurex/adapters/llama_cpp.py",
+        "tests/test_ox_model_forge.py",
+        "tests/test_forge_adversarial.py",
+        "training/common.py",
+        "training/train_lora.py",
+        "training/evaluate_lora.py",
+        "training/export_model.py",
+        "training/prepare_dataset.py",
+        "training/tests/test_assistant_mask.py",
+        "training/tests/test_lora_smoke.py"
+      ],
+      "security_status": "VERIFIED_FORGED_APPROVALS_REJECTED",
+      "authority_impact": "Training completion divorced from promotion; external-key verification enforced."
+    },
+    {
+      "wave": "WAVE_C_AUSEKLIS_DISPATER",
+      "source_branch": "origin/work/kusanagi-cccxxix-auseklis-99-contract",
+      "source_commit": "ad6a93201516a0ec9168f95128f396d38e39f158",
+      "repaired_files": [
+        "aurex/auseklis/knowledge_treasury.py",
+        "aurex/auseklis/knowledge_treasury_seed_v1.json",
+        "aurex/dispater_maintenance_advisory.py",
+        "tests/test_auseklis_knowledge_treasury.py",
+        "tests/test_dispater_maintenance_advisory.py"
+      ],
+      "security_status": "VERIFIED_READ_ONLY_SEEDS",
+      "authority_impact": "Knowledge treasury candidate-only; maintenance advisory deterministic without autonomous effects."
+    },
+    {
+      "wave": "WAVE_D_DOCUMENT_IMAGING",
+      "source_branch": "origin/work/kusanagi-cccxl-ii-one-intelligence",
+      "source_commit": "1eebb543b8d79b2effe45778d1885800a061f12e",
+      "repaired_files": [
+        "aurex/manuscript_forensics/__init__.py",
+        "aurex/manuscript_forensics/fixtures.py",
+        "aurex/manuscript_forensics/images.py",
+        "aurex/manuscript_forensics/pipeline.py",
+        "aurex/manuscript_forensics/pixels.py",
+        "aurex/dispater_api.py",
+        "aurex/dispater_documents.py",
+        "website/src/lib/dispater.server.ts",
+        "website/src/lib/dispater.functions.ts",
+        "website/src/components/dispater-reconciliation-console.tsx",
+        "website/src/lib/dispater-link.ts",
+        "website/src/lib/dispater-invoice-fixture.json",
+        "website/src/lib/dispater.test.ts",
+        "tests/test_manuscript_imaging.py"
+      ],
+      "security_status": "VERIFIED_BOUNDED_IMAGING",
+      "authority_impact": "Bounded pixel decompression, metadata isolation, and synthetic PDF invoice verification."
+    },
+    {
+      "wave": "WAVE_PREFLIGHT_AND_ZIP_HARDENING",
+      "source_branch": "origin/work/kusanagi-cccli-one-mainline-preflight",
+      "source_commit": "b846d0a864a4f8c93cc0741ae0bd96ebef817d7d",
+      "repaired_files": [
+        "scripts/mainline_candidate_preflight.py",
+        "tests/test_aurex_verified_zip_finder.py"
+      ],
+      "security_status": "VERIFIED_PERMISSIONS_BOUND",
+      "authority_impact": "Mainline preflight enforces zero-merge gate; ZIP extraction safe under all Linux umasks."
+    }
+  ]
+}

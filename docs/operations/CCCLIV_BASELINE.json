@@ -1,0 +1,83 @@
+{
+  "schema": "valexii.kusanagi.cccliv.baseline.v1",
+  "operation": "OPERATION KUSANAGI CCCLIV",
+  "mission": "PROJECT SOVEREIGN CONVERGENCE",
+  "canonical_repository": "victormart43210-ship-it/Valexii-Aurex",
+  "canonical_remote_url": "https://github.com/victormart43210-ship-it/Valexii-Aurex",
+  "mainline_sha": "fc2bed4dd98054503254ad1a4c11fbecd7b0deca",
+  "current_working_head": "fc2bed4dd98054503254ad1a4c11fbecd7b0deca",
+  "working_tree_clean": true,
+  "active_pull_requests_inspected": [
+    "#208",
+    "#209",
+    "#210",
+    "#211",
+    "#212",
+    "#214",
+    "#216",
+    "#219"
+  ],
+  "recovery_sources": {
+    "wave_a_kernel": {
+      "branch": "origin/work/valexii-sovereign-kernel-foundation-20261108",
+      "commit": "a14a92a62f695186017f67388d7d999b90add4de",
+      "scope": [
+        "aurex/sovereign_kernel.py",
+        "tests/test_sovereign_kernel.py"
+      ]
+    },
+    "wave_b_forge": {
+      "branch": "origin/work/kusanagi-cccxiv-forge-ci-optional-torch",
+      "commit": "e3244e7ae6304b1f4aecf82f70f6400decb3af91",
+      "scope": [
+        "aurex/ox/forge.py",
+        "aurex/ox/registry.py",
+        "aurex/adapters/llama_cpp.py",
+        "tests/test_ox_model_forge.py",
+        "tests/test_forge_adversarial.py",
+        "training/"
+      ]
+    },
+    "wave_c_auseklis_dispater": {
+      "branch": "origin/work/kusanagi-cccxxix-auseklis-99-contract",
+      "commit": "ad6a93201516a0ec9168f95128f396d38e39f158",
+      "scope": [
+        "aurex/auseklis/",
+        "aurex/dispater_maintenance_advisory.py",
+        "tests/test_auseklis_knowledge_treasury.py",
+        "tests/test_dispater_maintenance_advisory.py"
+      ]
+    },
+    "wave_d_document_imaging": {
+      "branch": "origin/work/kusanagi-cccxl-ii-one-intelligence",
+      "commit": "1eebb543b8d79b2effe45778d1885800a061f12e",
+      "scope": [
+        "aurex/manuscript_forensics/",
+        "tests/test_manuscript_imaging.py",
+        "website/src/lib/dispater-invoice-fixture.json",
+        "aurex/dispater_api.py",
+        "aurex/dispater_documents.py"
+      ]
+    },
+    "preflight": {
+      "branch": "origin/work/kusanagi-cccli-one-mainline-preflight",
+      "commit": "b846d0a864a4f8c93cc0741ae0bd96ebef817d7d",
+      "scope": [
+        "scripts/mainline_candidate_preflight.py"
+      ]
+    }
+  },
+  "governance_locks": {
+    "production_release": "HOLD",
+    "financial_authority": "NONE",
+    "paid_inference": "OFF",
+    "customer_data": "PROHIBITED",
+    "non_delegable_rule": "The system may never be its own sole witness."
+  },
+  "verified_test_baseline": {
+    "python_backend_tests": 937,
+    "bun_frontend_tests": 173,
+    "bun_test_files": 25,
+    "website_production_build": "SUCCESS"
+  }
+}
