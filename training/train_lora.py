@@ -235,8 +235,6 @@ def main():
         if plan["status"] == "NOT_RUN":
             raise SystemExit(2)
         return
-    from transformers import AutoModelForCausalLM, AutoTokenizer, set_seed
-
     if config.get("min_free_bytes") is not None:
         import shutil
 
@@ -249,6 +247,8 @@ def main():
                 )
             )
             raise SystemExit(2)
+    from transformers import AutoModelForCausalLM, AutoTokenizer, set_seed
+
     set_seed(config["seed"])
     tokenizer = AutoTokenizer.from_pretrained(
         config["base_model"], revision=config["revision"], trust_remote_code=False
