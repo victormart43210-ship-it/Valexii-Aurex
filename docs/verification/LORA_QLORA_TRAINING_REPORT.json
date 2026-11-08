@@ -1,0 +1,52 @@
+{
+  "schema": "aurex.ox.lora_qlora_training_report.v1",
+  "observed_at": "2026-11-07T18:35:00-06:00",
+  "base_revision": "fc2bed4dd98054503254ad1a4c11fbecd7b0deca",
+  "stack": {
+    "python": "3.12.3",
+    "torch": "2.6.0+cpu",
+    "transformers": "4.51.3",
+    "peft": "0.15.2",
+    "accelerate": "1.6.0",
+    "cuda": "ABSENT",
+    "bitsandbytes": "ABSENT"
+  },
+  "pinned_target": {
+    "repository": "Qwen/Qwen2.5-0.5B-Instruct",
+    "revision": "7ae557604adf67be50417f59c2c2f167def9a775",
+    "config": "training/configs/qwen05b-lora.json",
+    "weights_downloaded": false,
+    "status": "NOT_RUN"
+  },
+  "runs": [
+    {
+      "name": "lora_preflight_without_execute",
+      "command": "python3 -m training.train_lora --data /tmp/forge-preflight/prepared --config training/configs/qwen05b-lora.json --output /tmp/forge-preflight/not-run",
+      "exit_code": 0,
+      "status": "NOT_RUN",
+      "observation": "Printed status NOT RUN and plan READY for method lora. No weights were loaded."
+    },
+    {
+      "name": "qlora_execute_on_this_host",
+      "command": "python3 -m training.train_lora --data /tmp/forge-preflight/prepared --config /tmp/forge-preflight/qlora.json --output /tmp/forge-preflight/qlora-out --execute",
+      "exit_code": 2,
+      "status": "NOT_RUN",
+      "observation": "Reason: QLoRA is not authorized on this host. owner_approval ABSENT. No model download started."
+    },
+    {
+      "name": "tiny_random_qwen2_cpu_lora",
+      "command": "training.train_lora.fit on a randomly initialized Qwen2Config with hidden_size 32, rank 2, max_steps 2, seed 42",
+      "exit_code": 0,
+      "status": "PASS",
+      "observation": "train_loss 2.2353527545928955, finite true, checkpoint tensors 4, adapter_model.safetensors written. pytest training/tests/test_lora_smoke.py also reloaded and merged that class of adapter. This is not a Qwen2.5-0.5B fine-tune.",
+      "full_qwen_training": "NOT_RUN",
+      "gguf_conversion": "NOT_RUN"
+    }
+  ],
+  "pytest": {
+    "command": "python3 -m pytest -q",
+    "exit_code": 0,
+    "passed": 953
+  },
+  "implementation_commit": "4b38c9401ba31fb65459ec3452ee404940a9111f"
+}

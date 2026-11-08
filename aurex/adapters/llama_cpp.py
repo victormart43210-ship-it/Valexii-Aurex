@@ -12,12 +12,18 @@ class LlamaCppAdapter(OpenAICompatibleAdapter):
         base_url: str = "http://127.0.0.1:8080/v1",
         generation: GenerationSettings | None = None,
         timeout_seconds: float = 60,
+        forge_entry: dict[str, object] | None = None,
     ) -> None:
+        if forge_entry is not None:
+            from aurex.ox.forge import serving_gate
+
+            serving_gate(forge_entry, model)
         private_url = "http://qwen-private-staging.railway.internal:8080/v1"
         private_staging = base_url == private_url
 
         if private_staging:
             import os
+
             if os.environ.get("AUREX_RAILWAY_PRIVATE_QWEN_ENABLED") != "1":
                 raise ValueError("Private Qwen staging is disabled")
             if not os.environ.get("RAILWAY_ENVIRONMENT_ID"):

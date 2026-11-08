@@ -1,0 +1,138 @@
+{
+  "schema": "aurex.ox.model_forge_adversarial_review.v1",
+  "observed_at": "2026-11-07T18:53:00-06:00",
+  "main_base_sha": "fc2bed4dd98054503254ad1a4c11fbecd7b0deca",
+  "parent_forge_commit": "b995df784182ed3bba129c3010d00b8048f6537b",
+  "branch": "cursor/kusanagi-ccxcviii-adversarial-repair-4082",
+  "production": "HOLD",
+  "financial_authority": "NONE",
+  "paid_inference": "OFF",
+  "pr_208": "not modified",
+  "reviewer": "NOT_RUN",
+  "commands": [
+    {
+      "command": "ruff check .",
+      "exit_code": 0,
+      "status": "PASS"
+    },
+    {
+      "command": "mypy aurex",
+      "exit_code": 0,
+      "status": "PASS",
+      "observation": "130 source files"
+    },
+    {
+      "command": "python3 -m pytest -q",
+      "exit_code": 0,
+      "status": "PASS",
+      "observation": "962 passed"
+    },
+    {
+      "command": "website vitest",
+      "status": "NOT_RUN",
+      "observation": "no frontend file changed in this repair"
+    }
+  ],
+  "cases": [
+    {
+      "id": 1,
+      "attack": "forged provenance receipt",
+      "status": "PASS",
+      "observation": "A mismatched train hash, a self-signed reviewer, and a receipt that claims legal verification are rejected."
+    },
+    {
+      "id": 2,
+      "attack": "corrupted adapter weights",
+      "status": "PASS",
+      "observation": "verified_adapter rejects bytes that no longer match the training-record hash."
+    },
+    {
+      "id": 3,
+      "attack": "mismatched tokenizer digest",
+      "status": "PASS",
+      "observation": "verify_lineage rejects an expected tokenizer digest that is not the file."
+    },
+    {
+      "id": 4,
+      "attack": "incorrect base revision",
+      "status": "PASS",
+      "observation": "A training record whose revision differs from the expected commit is rejected."
+    },
+    {
+      "id": 5,
+      "attack": "unsupported LoRA target",
+      "status": "PASS",
+      "observation": "gate_proj is rejected when the module list only contains q_proj and v_proj."
+    },
+    {
+      "id": 6,
+      "attack": "reordered train/eval tokens",
+      "status": "PASS",
+      "observation": "Token-set overlap with different answers raises contradictory targets."
+    },
+    {
+      "id": 7,
+      "attack": "benchmark canary",
+      "status": "PASS",
+      "observation": "hle:3r2s text is rejected before a dataset directory is published."
+    },
+    {
+      "id": 8,
+      "attack": "prompt injection compliance",
+      "status": "PASS",
+      "observation": "An adapter string containing COMPLY on an injection case counts as a security violation."
+    },
+    {
+      "id": 9,
+      "attack": "non-finite loss",
+      "status": "PASS",
+      "observation": "NaN train_loss cannot establish success."
+    },
+    {
+      "id": 10,
+      "attack": "interrupted checkpoint",
+      "status": "PASS",
+      "observation": "A directory without adapter files is an incomplete checkpoint."
+    },
+    {
+      "id": 11,
+      "attack": "insufficient storage",
+      "status": "PASS",
+      "observation": "train_lora --execute with min_free_bytes 1e18 exits 2 and does not create the output directory."
+    },
+    {
+      "id": 12,
+      "attack": "unauthorized promotion",
+      "status": "PASS",
+      "observation": "A model reviewer, a missing external key, a rejected evaluation, and a static catalog row cannot authorize inference."
+    },
+    {
+      "id": 13,
+      "attack": "GGUF treated as a finished export",
+      "status": "PASS",
+      "observation": "gguf_gate(true) returns NOT_RUN and production_ready false. No converter ran."
+    },
+    {
+      "id": 14,
+      "attack": "accuracy gain with a security regression",
+      "status": "PASS",
+      "observation": "score_external returns REJECTED when adapter accuracy rises and security violations also rise."
+    },
+    {
+      "id": 15,
+      "attack": "missing license approval",
+      "status": "PASS",
+      "observation": "reviewer model:qwen is rejected. A receipt cannot set legal_license_authentication to VERIFIED."
+    },
+    {
+      "id": 16,
+      "attack": "cross-tenant dataset",
+      "status": "PASS",
+      "observation": "tenant-a data with tenant-b config exits 2 before a weight download."
+    }
+  ],
+  "actual_memory_exhaustion": "NOT_RUN",
+  "full_qwen_training": "NOT_RUN",
+  "qlora_gpu_execution": "NOT_RUN",
+  "repair_commit": "d437fab14b56b079551b27497eee7aae5ed97467"
+}

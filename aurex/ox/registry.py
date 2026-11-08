@@ -102,3 +102,16 @@ def get_model(entry_id: str) -> dict[str, Any]:
         if entry["entry_id"] == entry_id:
             return copy.deepcopy(entry)
     raise RegistryError(f"unknown model {entry_id}")
+
+
+def static_catalog_is_not_an_inference_target(entry_id: str) -> dict[str, Any]:
+    """A catalog row is not an approved serving identity."""
+    entry = get_model(entry_id)
+    if entry["approval_state"] != "CANDIDATE" or entry["runtime"] != "NOT_INSTALLED":
+        raise RegistryError("the static catalog cannot describe an installed model")
+    return {
+        "entry_id": entry_id,
+        "inference_allowed": False,
+        "reason": "candidate records are not inference targets",
+        "financial_authority": "NONE",
+    }
