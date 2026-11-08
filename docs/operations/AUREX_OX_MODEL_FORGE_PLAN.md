@@ -1,6 +1,6 @@
 # AUREX-OX Model Forge
 
-Observed on 2026-11-07 at 6:35 PM America/Chicago, from `fc2bed4dd98054503254ad1a4c11fbecd7b0deca`. Production remains HOLD. Financial authority remains NONE. Paid inference remains OFF. This branch does not include PR #208.
+Observed on 2026-11-07 at 6:35 PM America/Chicago, from `fc2bed4dd98054503254ad1a4c11fbecd7b0deca`. Implementation commit `4b38c9401ba31fb65459ec3452ee404940a9111f`. Production remains HOLD. Financial authority remains NONE. Paid inference remains OFF. This branch does not include PR #208.
 
 The static catalog in `aurex.ox.registry` stays a candidate list. `validate_registry()` still rejects self-approval, installed runtimes, and a training state other than `NOT_STARTED`. Promotions live in the separate ledger in `aurex.ox.forge`. A model cannot move its own entry. Training completion is not deployment approval.
 

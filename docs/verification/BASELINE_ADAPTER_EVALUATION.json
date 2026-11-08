@@ -31,5 +31,6 @@
   "held_out_loss": {
     "status": "NOT_RUN",
     "observation": "training/evaluate_lora.py still measures held-out loss only, and it was not executed because no real adapter exists."
-  }
+  },
+  "implementation_commit": "4b38c9401ba31fb65459ec3452ee404940a9111f"
 }

@@ -43,5 +43,10 @@
       "gguf_conversion": "NOT_RUN"
     }
   ],
-  "pytest": {"command": "python3 -m pytest -q", "exit_code": 0, "passed": 953}
+  "pytest": {
+    "command": "python3 -m pytest -q",
+    "exit_code": 0,
+    "passed": 953
+  },
+  "implementation_commit": "4b38c9401ba31fb65459ec3452ee404940a9111f"
 }
