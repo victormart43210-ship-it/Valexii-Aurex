@@ -1,0 +1,147 @@
+{
+  "schema": "valexii.one_intelligence.handoff.v1",
+  "operation": "KUSANAGI CCCXLII",
+  "status": "PARTIAL",
+  "repository": "victormart43210-ship-it/Valexii-Aurex",
+  "base_sha": "fc2bed4dd98054503254ad1a4c11fbecd7b0deca",
+  "final_implementation_sha": "33ee06028f5ff138bd08c23fa730737067053b1b",
+  "final_candidate_head": "Resolve the integration PR head. The documentation commit cannot embed its own SHA.",
+  "source_prs": [
+    {
+      "number": 193,
+      "head": "ff62f319c4c37ea3660d008b8fb119ca3dee476a",
+      "relationship": "Selected offline files recovered; source PR unmerged"
+    },
+    {
+      "number": 205,
+      "relationship": "Merged industrial baseline"
+    },
+    {
+      "number": 212,
+      "relationship": "Unmerged and outside integration"
+    },
+    {
+      "number": 208,
+      "relationship": "Unmerged Qwen lane"
+    },
+    {
+      "numbers": [
+        209,
+        210,
+        211
+      ],
+      "relationship": "Unmerged Forge stack"
+    }
+  ],
+  "jules_assignments": {
+    "CCCXXXIX": "NO_ACCESSIBLE_IMPLEMENTATION_FOUND",
+    "CCCXL": "NO_ACCESSIBLE_IMPLEMENTATION_FOUND",
+    "CCCXLI": "NO_ACCESSIBLE_IMPLEMENTATION_FOUND"
+  },
+  "modified_files": [
+    ".github/workflows/ci.yml",
+    ".github/workflows/clii-industrial.yml",
+    ".github/workflows/cliv-iron-bridge.yml",
+    "aurex/dispater_api.py",
+    "aurex/dispater_documents.py",
+    "aurex/manuscript_forensics/__init__.py",
+    "aurex/manuscript_forensics/fixtures.py",
+    "aurex/manuscript_forensics/images.py",
+    "aurex/manuscript_forensics/pipeline.py",
+    "aurex/manuscript_forensics/pixels.py",
+    "pyproject.toml",
+    "tests/test_dispater_documents.py",
+    "tests/test_manuscript_imaging.py",
+    "website/src/components/dispater-reconciliation-console.tsx",
+    "website/src/lib/dispater-invoice-fixture.json",
+    "website/src/lib/dispater-link.ts",
+    "website/src/lib/dispater.functions.ts",
+    "website/src/lib/dispater.server.ts",
+    "website/src/lib/dispater.test.ts",
+    "docs/operations/ONE_INTELLIGENCE_REPOSITORY_AUDIT.md",
+    "docs/operations/ONE_INTELLIGENCE_CONTRACTS.md",
+    "docs/operations/ONE_INTELLIGENCE_INTEGRATION_REPORT.md",
+    "docs/operations/DOCUMENT_PROCESSING_E2E_REPORT.md",
+    "docs/operations/MANUSCRIPT_INTELLIGENCE_E2E_REPORT.md",
+    "docs/operations/ONE_INTELLIGENCE_SECURITY_REPORT.md",
+    "docs/operations/CHATGPT_WORK_ONE_INTELLIGENCE_HANDOFF.json"
+  ],
+  "tests": [
+    {
+      "command": "pytest -q -rs",
+      "passed": 961,
+      "skipped": 1,
+      "reason": "optional Torch absent"
+    },
+    {
+      "command": "ruff check .; mypy --strict aurex",
+      "status": "PASS"
+    },
+    {
+      "command": "npx vitest run",
+      "passed": 175
+    },
+    {
+      "command": "npx tsc --noEmit; npm run build",
+      "status": "PASS"
+    },
+    {
+      "command": "Chromium Playwright loopback /dispater",
+      "status": "PASS",
+      "viewports": [
+        1280,
+        390
+      ]
+    }
+  ],
+  "demonstrations": {
+    "pdf": {
+      "status": "LOCAL_BROWSER_PASS",
+      "source_sha256": "c1fdbd390764b0c06a0fd8a7460f7fc998cda7adfe355dca89017dee73eeeef0",
+      "page": 1,
+      "unverified_exposure_usd": "10.00",
+      "confirmed_recovery_usd": "0.00"
+    },
+    "scan": {
+      "status": "OFFLINE_OCR_ONLY",
+      "source_sha256": "f679f10450553829e0db72f5a7cff00404986fdd56b0d44a275439b2d4a97ea0",
+      "ocr": "Tesseract 5.3.4",
+      "amount": "10.00",
+      "identifier_correct": false
+    },
+    "manuscript": {
+      "status": "OFFLINE_HISTORICAL_IMAGE_PASS",
+      "source": "https://commons.wikimedia.org/wiki/File:Voynich_Manuscript_(3).jpg",
+      "license": "Wikimedia Commons PD-Art / public domain in the United States",
+      "original_sha256": "c0f11e98eb472063c812876a0dafec1e1344f0be92c7847e2e22e294b2253e17",
+      "derived_sha256": "5608271b4b87a57b3e109ad9047781520ade4b5bbe1182cbebe19be356273ed9",
+      "layers": 11,
+      "retained_regions": 24,
+      "decipherment": "NOT_CLAIMED"
+    }
+  },
+  "artifacts": [
+    "website/src/lib/dispater-invoice-fixture.json",
+    "docs/operations/DOCUMENT_PROCESSING_E2E_REPORT.md",
+    "docs/operations/MANUSCRIPT_INTELLIGENCE_E2E_REPORT.md"
+  ],
+  "independent_review": {
+    "status": "COMPLETED_CODE_REVIEW_BOUNDED_SCOPE",
+    "reviewer": "Separate Work reviewer cclvii_review",
+    "python_tests_passed": 35,
+    "typescript_tests_passed": 13,
+    "findings": "No blocking code finding. Cosmetic final fixture newline corrected. Exact candidate workflow and hosted verification remain separate."
+  },
+  "blockers": [
+    "Controlled staging approval and candidate deployment",
+    "Bounded OCR worker and source-versus-extraction browser view",
+    "Manuscript research route and independent scientific control/annotation contract",
+    "Durable source custody and separately authenticated qualification records",
+    "No confirmed Jules implementation for the three named assignments"
+  ],
+  "production_authority": "HOLD",
+  "merge_authority": "NONE",
+  "financial_authority": "NONE",
+  "paid_inference": "OFF",
+  "next_action": "Finish exact-head CI and review the draft. Qualify an isolated OCR worker and versioned scholarly annotation interface before integrating hosted manuscript workflows."
+}
