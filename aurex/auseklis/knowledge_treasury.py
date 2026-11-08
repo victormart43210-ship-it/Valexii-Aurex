@@ -6,6 +6,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+from typing import Any, cast
 
 ALLOWED_CLASSIFICATIONS = {"DESIGN", "RESEARCH_FRAMEWORK", "TEST_FRAMEWORK", "SYNTHETIC_TEST_REFERENCE", "VERIFIED_IMPLEMENTATION"}
 ALLOWED_USES = {"RESEARCH_ONLY", "SKILL_CANDIDATE", "EVALUATION_CANDIDATE", "TRAINING_CANDIDATE"}
@@ -13,7 +14,7 @@ ALLOWED_VERIFICATION = {"NOT_RUN", "REVERIFY_EXACT_SHA", "INDEPENDENTLY_VERIFIED
 REQUIRED = {"id", "owner", "purpose", "source", "classification", "training_use", "verification"}
 
 
-def validate_treasury(data: dict) -> tuple[str, ...]:
+def validate_treasury(data: dict[str, Any]) -> tuple[str, ...]:
     errors: list[str] = []
     if data.get("schema") != "valexii.auseklis.knowledge_treasury.v1":
         errors.append("invalid schema")
@@ -52,6 +53,9 @@ def validate_treasury(data: dict) -> tuple[str, ...]:
     return tuple(errors)
 
 
-def load_seed() -> dict:
+def load_seed() -> dict[str, Any]:
     path = Path(__file__).resolve().parents[2] / "docs/architecture/auseklis_knowledge_treasury_seed_v1.json"
-    return json.loads(path.read_text(encoding="utf-8"))
+    data = json.loads(path.read_text(encoding="utf-8"))
+    if not isinstance(data, dict):
+        raise ValueError("knowledge treasury seed must be an object")
+    return cast(dict[str, Any], data)
