@@ -15,7 +15,7 @@ Related research: [IFS public capability blueprint](../competitive/IFS_PUBLIC_CA
 ## Near-term milestones
 M0: reconcile canonical branches and existing modules; freeze typed contracts.
 M1: execute and repair existing maintenance advisory and treasury test suites.
-M2: implement original work-order proposal state machine with immutable evidence receipts.
+M2: after M1 is independently qualified, freeze a tenant-bound, idempotent work-order proposal contract with evidence references and a separate human approval boundary.
 M3: connect synthetic field ticket and approved rate to existing reconciliation without payments.
 M4: demonstrate end-to-end governed workflow and independent review.
 M5: pilot only after separate owner authorization, legal/privacy/security review and measured acceptance.

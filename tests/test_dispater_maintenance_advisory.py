@@ -67,3 +67,11 @@ def test_report_digest_changes_with_finding():
     b = sample()
     b["assets"][0]["asset_id"] = "PUMP-002"
     assert assess_maintenance(a)["receipt_sha256"] != assess_maintenance(b)["receipt_sha256"]
+
+
+def test_service_due_date_overflow_fails_closed():
+    data = sample()
+    data["as_of"] = "9999-12-31"
+    data["assets"][0].update(last_service_date="9999-12-31", service_interval_days=1)
+    with pytest.raises(MaintenanceInputError, match="due date"):
+        assess_maintenance(data)

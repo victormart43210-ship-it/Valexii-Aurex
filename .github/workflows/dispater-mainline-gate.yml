@@ -26,4 +26,11 @@ jobs:
       - run: ruff check aurex/dispater_maintenance_advisory.py tests/test_dispater_maintenance_advisory.py aurex/auseklis/knowledge_treasury.py tests/test_auseklis_knowledge_treasury.py
       - run: mypy aurex
       - run: pytest -q tests/test_dispater_maintenance_advisory.py tests/test_auseklis_knowledge_treasury.py
+      - name: Verify treasury seed in installed wheel
+        run: |
+          wheel_dir="$RUNNER_TEMP/auseklis-wheel"
+          python -m pip wheel --no-deps --wheel-dir "$wheel_dir" .
+          python -m pip install --no-deps --target "$wheel_dir/installed" "$wheel_dir"/*.whl
+          cd "$wheel_dir"
+          PYTHONPATH="$wheel_dir/installed" python -c 'from aurex.auseklis.knowledge_treasury import load_seed, validate_treasury; assert not validate_treasury(load_seed())'
       - run: pytest -q

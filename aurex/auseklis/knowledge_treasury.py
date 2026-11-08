@@ -5,7 +5,7 @@ No training, inference, filesystem mutation, or authority promotion.
 from __future__ import annotations
 
 import json
-from pathlib import Path
+from importlib.resources import files
 from typing import Any, cast
 
 ALLOWED_CLASSIFICATIONS = {"DESIGN", "RESEARCH_FRAMEWORK", "TEST_FRAMEWORK", "SYNTHETIC_TEST_REFERENCE", "VERIFIED_IMPLEMENTATION"}
@@ -37,6 +37,9 @@ def validate_treasury(data: dict[str, Any]) -> tuple[str, ...]:
             continue
         if any(not isinstance(entry[k], str) or not entry[k].strip() for k in REQUIRED):
             errors.append(f"entry {index} has empty or invalid fields")
+            continue
+        if entry.get("authority", "NONE") != "NONE":
+            errors.append(f"entry {index} cannot confer authority")
         if entry["id"] in seen:
             errors.append(f"duplicate id: {entry['id']}")
         seen.add(entry["id"])
@@ -46,7 +49,9 @@ def validate_treasury(data: dict[str, Any]) -> tuple[str, ...]:
             errors.append(f"entry {index} invalid training use")
         if entry["verification"] not in ALLOWED_VERIFICATION:
             errors.append(f"entry {index} invalid verification")
-        if entry["training_use"] == "TRAINING_CANDIDATE" and entry["verification"] != "INDEPENDENTLY_VERIFIED":
+        if entry["verification"] == "INDEPENDENTLY_VERIFIED":
+            errors.append(f"entry {index} independent verification requires an external witness")
+        if entry["training_use"] == "TRAINING_CANDIDATE":
             errors.append(f"entry {index} unverified training candidate")
         if entry["classification"] == "RESEARCH_FRAMEWORK" and entry["training_use"] != "RESEARCH_ONLY":
             errors.append(f"entry {index} research promoted to training")
@@ -54,7 +59,7 @@ def validate_treasury(data: dict[str, Any]) -> tuple[str, ...]:
 
 
 def load_seed() -> dict[str, Any]:
-    path = Path(__file__).resolve().parents[2] / "docs/architecture/auseklis_knowledge_treasury_seed_v1.json"
+    path = files("aurex.auseklis").joinpath("knowledge_treasury_seed_v1.json")
     data = json.loads(path.read_text(encoding="utf-8"))
     if not isinstance(data, dict):
         raise ValueError("knowledge treasury seed must be an object")

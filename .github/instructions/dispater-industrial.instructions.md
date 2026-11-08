@@ -8,6 +8,7 @@ Before editing, read:
 - `docs/competitive/IFS_PUBLIC_CAPABILITY_DISPATER_BLUEPRINT_2026-11-07.md`
 - `docs/operations/DISPATER_AGENT_EXECUTION_AND_MAINLINE_GATE.md`
 - repository root `AGENTS.md` and `docs/AGENT_MAINLINE_POLICY.md`.
+- `docs/operations/MAINLINE_VERIFICATION_REPORT.md` for the current integration sequence and merge gates.
 
 Work only in the canonical Valexii-Aurex repository. No new repositories, no duplicate orchestration spines, no new production services without approval. Reuse existing DISPATER endpoints and data models; freeze a typed contract before implementation.
 

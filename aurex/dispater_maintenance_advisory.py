@@ -76,7 +76,10 @@ def assess_maintenance(snapshot: dict[str, Any]) -> dict[str, Any]:
         serviced = _hours(asset.get("last_service_meter_hours"))
         if current < serviced:
             raise MaintenanceInputError("meter rollback requires independent reconciliation")
-        due_date = last + timedelta(days=interval)
+        try:
+            due_date = last + timedelta(days=interval)
+        except OverflowError as exc:
+            raise MaintenanceInputError("due date out of bounds") from exc
         calendar_due = as_of >= due_date
         hour_due = False
         due_hours = None
@@ -118,6 +121,7 @@ def assess_maintenance(snapshot: dict[str, Any]) -> dict[str, Any]:
         "work_orders_created": 0,
         "findings": findings,
     }
+    # This digest covers the advisory report, not the input snapshot or its provenance.
     raw = json.dumps(report, sort_keys=True, separators=(",", ":"), ensure_ascii=True)
     report["receipt_sha256"] = hashlib.sha256(raw.encode("utf-8")).hexdigest()
     return report
