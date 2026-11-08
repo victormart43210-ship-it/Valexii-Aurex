@@ -32,5 +32,6 @@
     "status": "NOT_RUN",
     "observation": "execution_plan returns NOT_RUN without CUDA, bitsandbytes, and AUREX_QLORA_APPROVED=1. No GPU job was started."
   },
-  "gguf_conversion": "NOT_RUN"
+  "gguf_conversion": "NOT_RUN",
+  "repair_commit": "d437fab14b56b079551b27497eee7aae5ed97467"
 }

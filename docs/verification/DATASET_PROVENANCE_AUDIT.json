@@ -5,14 +5,51 @@
   "legal_license_authentication": "NOT_VERIFIED",
   "semantic_leakage_review": "SCREENED_NOT_PROVEN",
   "checks": [
-    {"name": "author-signed receipt", "status": "PASS", "observation": "validate_receipt rejects reviewer equal to the dataset author."},
-    {"name": "forged file hash", "status": "PASS", "observation": "prepare rejects a receipt whose train_sha256 is not the train file."},
-    {"name": "self-declared legal verification", "status": "PASS", "observation": "A receipt with legal_license_authentication VERIFIED is rejected."},
-    {"name": "unreviewed dataset execution", "status": "PASS", "observation": "train_lora --execute on UNREVIEWED data exits 2 and does not create an output directory."},
-    {"name": "secret text", "status": "PASS", "observation": "password= text is rejected."},
-    {"name": "canary", "status": "PASS", "observation": "hle:3r2s text is rejected."},
-    {"name": "token rearrangement", "status": "PASS", "observation": "The same token set with a different answer is rejected as contradictory targets."},
-    {"name": "cross-tenant", "status": "PASS", "observation": "A tenant mismatch exits 2 before weights are loaded."},
-    {"name": "independent legal review of a real corpus", "status": "NOT_RUN", "observation": "No customer or third-party corpus was submitted. Screening does not prove a license or the absence of contamination."}
-  ]
+    {
+      "name": "author-signed receipt",
+      "status": "PASS",
+      "observation": "validate_receipt rejects reviewer equal to the dataset author."
+    },
+    {
+      "name": "forged file hash",
+      "status": "PASS",
+      "observation": "prepare rejects a receipt whose train_sha256 is not the train file."
+    },
+    {
+      "name": "self-declared legal verification",
+      "status": "PASS",
+      "observation": "A receipt with legal_license_authentication VERIFIED is rejected."
+    },
+    {
+      "name": "unreviewed dataset execution",
+      "status": "PASS",
+      "observation": "train_lora --execute on UNREVIEWED data exits 2 and does not create an output directory."
+    },
+    {
+      "name": "secret text",
+      "status": "PASS",
+      "observation": "password= text is rejected."
+    },
+    {
+      "name": "canary",
+      "status": "PASS",
+      "observation": "hle:3r2s text is rejected."
+    },
+    {
+      "name": "token rearrangement",
+      "status": "PASS",
+      "observation": "The same token set with a different answer is rejected as contradictory targets."
+    },
+    {
+      "name": "cross-tenant",
+      "status": "PASS",
+      "observation": "A tenant mismatch exits 2 before weights are loaded."
+    },
+    {
+      "name": "independent legal review of a real corpus",
+      "status": "NOT_RUN",
+      "observation": "No customer or third-party corpus was submitted. Screening does not prove a license or the absence of contamination."
+    }
+  ],
+  "repair_commit": "d437fab14b56b079551b27497eee7aae5ed97467"
 }

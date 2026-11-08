@@ -16,17 +16,55 @@
     "tests/test_ox_model_forge.py",
     "tests/test_forge_adversarial.py"
   ],
-  "not_owned": ["PR #208 files", "Railway entrypoint", "XAELI verifier", "website routes"],
+  "not_owned": [
+    "PR #208 files",
+    "Railway entrypoint",
+    "XAELI verifier",
+    "website routes"
+  ],
   "repairs": [
-    {"id": "P0-loss-only-eval", "status": "PASS", "change": "evaluate_lora scores an external key and, on the weight path, records baseline and adapter loss. Loss status is LOSS_DIAGNOSTIC."},
-    {"id": "P0-training-pass-label", "status": "PASS", "change": "The training record status is TRAINING_COMPLETED with model_quality NOT_EVALUATED and deployment_approval NOT_APPROVED."},
-    {"id": "P0-provenance-receipt", "status": "PASS", "change": "An approval receipt must match the train and eval bytes and must be signed by a person other than the author. Legal authentication stays NOT_VERIFIED."},
-    {"id": "P0-identity", "status": "PASS", "change": "verify_lineage checks the recorded revision, adapter base name, target modules, and an optional tokenizer digest. A hash is not publisher trust."},
-    {"id": "P1-contamination", "status": "PASS", "change": "Preparation rejects secret text, canaries, character near-duplicates, and token-set Jaccard at or above 0.8. The manifest says SCREENED_NOT_PROVEN."},
-    {"id": "P1-target-modules", "status": "PASS", "change": "fit rejects target names that are not modules on the loaded architecture, and it rejects lm_head and embed_tokens."},
-    {"id": "P1-merge-equivalence", "status": "PASS", "change": "The tiny smoke compares greedy tokens of the adapter and the merge on the same base weights. production_ready stays false. GGUF stays NOT_RUN."},
-    {"id": "P1-hardware-bounds", "status": "PASS", "change": "QLoRA without CUDA, bitsandbytes, and AUREX_QLORA_APPROVED exits 2. min_free_bytes stops execution before download."}
+    {
+      "id": "P0-loss-only-eval",
+      "status": "PASS",
+      "change": "evaluate_lora scores an external key and, on the weight path, records baseline and adapter loss. Loss status is LOSS_DIAGNOSTIC."
+    },
+    {
+      "id": "P0-training-pass-label",
+      "status": "PASS",
+      "change": "The training record status is TRAINING_COMPLETED with model_quality NOT_EVALUATED and deployment_approval NOT_APPROVED."
+    },
+    {
+      "id": "P0-provenance-receipt",
+      "status": "PASS",
+      "change": "An approval receipt must match the train and eval bytes and must be signed by a person other than the author. Legal authentication stays NOT_VERIFIED."
+    },
+    {
+      "id": "P0-identity",
+      "status": "PASS",
+      "change": "verify_lineage checks the recorded revision, adapter base name, target modules, and an optional tokenizer digest. A hash is not publisher trust."
+    },
+    {
+      "id": "P1-contamination",
+      "status": "PASS",
+      "change": "Preparation rejects secret text, canaries, character near-duplicates, and token-set Jaccard at or above 0.8. The manifest says SCREENED_NOT_PROVEN."
+    },
+    {
+      "id": "P1-target-modules",
+      "status": "PASS",
+      "change": "fit rejects target names that are not modules on the loaded architecture, and it rejects lm_head and embed_tokens."
+    },
+    {
+      "id": "P1-merge-equivalence",
+      "status": "PASS",
+      "change": "The tiny smoke compares greedy tokens of the adapter and the merge on the same base weights. production_ready stays false. GGUF stays NOT_RUN."
+    },
+    {
+      "id": "P1-hardware-bounds",
+      "status": "PASS",
+      "change": "QLoRA without CUDA, bitsandbytes, and AUREX_QLORA_APPROVED exits 2. min_free_bytes stops execution before download."
+    }
   ],
   "registry": "The static catalog still fails closed. static_catalog_is_not_an_inference_target returns inference_allowed false.",
-  "second_registry": false
+  "second_registry": false,
+  "repair_commit": "d437fab14b56b079551b27497eee7aae5ed97467"
 }

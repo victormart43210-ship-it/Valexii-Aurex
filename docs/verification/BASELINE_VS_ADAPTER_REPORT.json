@@ -28,5 +28,6 @@
       "status": "NOT_RUN",
       "observation": "The pinned weights were not downloaded and no adapter was trained on them."
     }
-  ]
+  ],
+  "repair_commit": "d437fab14b56b079551b27497eee7aae5ed97467"
 }
