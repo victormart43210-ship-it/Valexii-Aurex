@@ -60,4 +60,3 @@ def overlap() -> bytes:
     paint(pixels, 96, 16, 20, 78, 26, 80)
     paint(pixels, 96, 40, 10, 48, 52, 120)
     return _png(pixels, 96, 64)
-
