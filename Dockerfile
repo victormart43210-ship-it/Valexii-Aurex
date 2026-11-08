@@ -6,10 +6,13 @@ COPY aurex/ ./aurex/
 COPY aurex_foundation/ ./aurex_foundation/
 COPY training/ ./training/
 COPY workstation/ ./workstation/
+COPY docker/entrypoint.py /entrypoint.py
+COPY tools/verify_xaeli_private_qwen.py /app/tools/verify_xaeli_private_qwen.py
 RUN pip install --no-cache-dir . \
     && useradd --uid 10001 --create-home --shell /usr/sbin/nologin aurex \
-    && mkdir -p /data \
-    && chown 10001:10001 /data
-USER 10001:10001
+    && mkdir -p /data /app/tools \
+    && chown 10001:10001 /data \
+    && chmod 755 /entrypoint.py
+USER root
 EXPOSE 8080
-CMD ["sh", "-c", "exec uvicorn aurex.api:app --host 0.0.0.0 --port ${PORT:-8080} --no-access-log"]
+ENTRYPOINT ["python", "/entrypoint.py"]
