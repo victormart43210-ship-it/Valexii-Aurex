@@ -409,11 +409,12 @@ def select_model(task: str, entries: list[dict[str, Any]]) -> dict[str, Any]:
 
 def hardware_preflight() -> dict[str, str]:
     """Report the machine. Do not start a paid or full-size job."""
+    import importlib
     import importlib.util
 
     cuda = False
     try:
-        import torch
+        torch = importlib.import_module("torch")
 
         cuda = bool(torch.cuda.is_available())
     except ImportError:
