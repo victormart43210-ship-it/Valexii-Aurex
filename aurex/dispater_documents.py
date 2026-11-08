@@ -30,17 +30,21 @@ XLSX_PROCESSOR = f"openpyxl@{openpyxl.__version__}"
 def _pages_from_text(text: str, page_number: int, source_sha256: str) -> tuple[str, dict[str, str], list[dict[str, Any]]]:
     rows: dict[str, str] = {}
     provenance: list[dict[str, Any]] = []
-    table = ""
+    table: str | None = None
     for line in text.splitlines():
         if ":" not in line:
             continue
         key, value = line.split(":", 1)
         key = key.strip()
         if key == "table":
+            if table is not None:
+                raise IngestError(f"page {page_number} has a duplicate table label")
             table = _cell(value)
             continue
         if not key:
             continue
+        if key in rows:
+            raise IngestError(f"page {page_number} has a duplicate field")
         cleaned = _cell(value)
         rows[key] = cleaned
         provenance.append(
@@ -56,7 +60,7 @@ def _pages_from_text(text: str, page_number: int, source_sha256: str) -> tuple[s
                 "review_required": False,
             }
         )
-    if table not in TABLES and table not in ("equipment", "labor"):
+    if table is None or table not in TABLES:
         raise IngestError(f"page {page_number} has no supported table label")
     return table, rows, provenance
 

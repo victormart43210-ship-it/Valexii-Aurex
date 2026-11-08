@@ -1,0 +1,68 @@
+{
+  "schema": "valexii.kusanagi.cccliv.integration_ledger.v1",
+  "operation": "OPERATION KUSANAGI CCCLIV",
+  "serialized_waves": [
+    {
+      "wave": "WAVE_A",
+      "name": "Sovereign Kernel",
+      "files": [
+        "aurex/sovereign_kernel.py",
+        "tests/test_sovereign_kernel.py"
+      ],
+      "status": "INTEGRATED",
+      "tests_passed": 10
+    },
+    {
+      "wave": "WAVE_B",
+      "name": "Model Forge & Adversarial Hardening",
+      "files": [
+        "aurex/ox/forge.py",
+        "aurex/ox/registry.py",
+        "aurex/adapters/llama_cpp.py",
+        "tests/test_ox_model_forge.py",
+        "tests/test_forge_adversarial.py",
+        "training/"
+      ],
+      "status": "INTEGRATED",
+      "tests_passed": 31
+    },
+    {
+      "wave": "WAVE_C",
+      "name": "AUSEKLIS & DISPATER Advisory",
+      "files": [
+        "aurex/auseklis/knowledge_treasury.py",
+        "aurex/auseklis/knowledge_treasury_seed_v1.json",
+        "aurex/dispater_maintenance_advisory.py",
+        "tests/test_auseklis_knowledge_treasury.py",
+        "tests/test_dispater_maintenance_advisory.py"
+      ],
+      "status": "INTEGRATED",
+      "tests_passed": 23
+    },
+    {
+      "wave": "WAVE_D",
+      "name": "Industrial Document Intelligence & Forensics",
+      "files": [
+        "aurex/manuscript_forensics/",
+        "aurex/dispater_api.py",
+        "aurex/dispater_documents.py",
+        "website/src/lib/dispater*",
+        "tests/test_manuscript_imaging.py"
+      ],
+      "status": "INTEGRATED",
+      "tests_passed": 33
+    },
+    {
+      "wave": "WAVE_E",
+      "name": "Candidate Preflight & Hardened ZIP Fixture",
+      "files": [
+        "scripts/mainline_candidate_preflight.py",
+        "tests/test_aurex_verified_zip_finder.py"
+      ],
+      "status": "INTEGRATED",
+      "tests_passed": 16
+    }
+  ],
+  "file_collision_status": "ZERO_COLLISIONS_DETECTED",
+  "reconciliation_rule": "Mainline security contracts strictly preserved; no regressions admitted."
+}

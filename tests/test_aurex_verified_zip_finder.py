@@ -186,7 +186,8 @@ def test_skipped_file_replaced_during_extraction_holds(tmp_path: Path, monkeypat
     archive = tmp_path / "release.zip"
     _archive(archive, contents={"AUREX_release/old": b"approved", "AUREX_release/new": b"new"})
     directory = tmp_path / "AUREX_release"
-    directory.mkdir()
+    directory.mkdir(mode=0o700)
+    directory.chmod(0o700)
     old = directory / "old"
     old.write_bytes(b"approved")
     real_open = finder.os.open

@@ -1,7 +1,7 @@
 import { useRef, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import {
-  admitSyntheticDispaterCsv,
+  admitSyntheticDispaterDocument,
   exportVerifiedDispaterRun,
   listDispaterStoredRuns,
   readDispaterStoredRun,
@@ -36,7 +36,7 @@ import {
 
 export function DispaterReconciliationConsole() {
   const reconcileFn = useServerFn(runDispaterDemoReconciliation);
-  const admitFn = useServerFn(admitSyntheticDispaterCsv);
+  const admitFn = useServerFn(admitSyntheticDispaterDocument);
   const readFn = useServerFn(readDispaterStoredRun);
   const listFn = useServerFn(listDispaterStoredRuns);
   const exportFn = useServerFn(exportVerifiedDispaterRun);
@@ -156,22 +156,23 @@ export function DispaterReconciliationConsole() {
     }
   }
 
-  async function handleAdmitCsv() {
+  async function handleAdmitDocument(kind: "csv" | "pdf") {
     const requestId = beginRequest();
     setBusy(true);
     setErrorMsg(null);
     setHistoryNote(null);
     setObservation(null);
+    setSourceLine(null);
     try {
-      const admitted = await admitFn({ data: {} });
+      const admitted = await admitFn({ data: { kind } });
       if (!isCurrentRequest(requestId, requestSeq.current)) return;
       setPresentation("SYNTHETIC DOCUMENT");
       setLinks(null);
       setExplanation(null);
       setUnresolved([]);
-      setSourceLine(documentSourceLine(admitted.source));
       await confirmStored(admitted.report, requestId);
       if (!isCurrentRequest(requestId, requestSeq.current)) return;
+      setSourceLine(documentSourceLine(admitted.source));
       setReport(admitted.report);
       try {
         await refreshHistory(requestId);
@@ -330,8 +331,11 @@ export function DispaterReconciliationConsole() {
           <Button type="button" variant="glass" disabled={busy} onClick={() => void handleGoldenLedger()} className="min-h-11 w-full sm:w-auto">
             Run golden ledger
           </Button>
-          <Button type="button" variant="glass" disabled={busy} onClick={() => void handleAdmitCsv()} className="min-h-11 w-full sm:w-auto">
+          <Button type="button" variant="glass" disabled={busy} onClick={() => void handleAdmitDocument("csv")} className="min-h-11 w-full sm:w-auto">
             Admit synthetic CSV
+          </Button>
+          <Button type="button" variant="glass" disabled={busy} onClick={() => void handleAdmitDocument("pdf")} className="min-h-11 w-full sm:w-auto">
+            Process synthetic invoice PDF
           </Button>
           <Button
             type="button"

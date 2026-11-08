@@ -1,0 +1,43 @@
+{
+  "schema": "valexii.kusanagi.cccliv.final_chatgpt_handoff.v1",
+  "operation": "OPERATION KUSANAGI CCCLIV",
+  "mission": "PROJECT SOVEREIGN CONVERGENCE",
+  "executor_transition": {
+    "originator": "Jules",
+    "transition_target": "ChatGPT Work",
+    "handoff_mode": "CANONICAL_MAINLINE_CANDIDATE"
+  },
+  "repository_state": {
+    "base_sha": "fc2bed4dd98054503254ad1a4c11fbecd7b0deca",
+    "current_head": "fc2bed4dd98054503254ad1a4c11fbecd7b0deca",
+    "branch": "jules-4758645370107964157-1d650244",
+    "target_integration_branch": "work/kusanagi-cccliv-sovereign-convergence"
+  },
+  "integrated_waves": [
+    "WAVE_A_SOVEREIGN_KERNEL",
+    "WAVE_B_MODEL_FORGE_ADVERSARIAL",
+    "WAVE_C_AUSEKLIS_DISPATER_ADVISORY",
+    "WAVE_D_DOCUMENT_FORENSICS_AND_IMAGING",
+    "WAVE_E_PREFLIGHT_AND_ZIP_HARDENING"
+  ],
+  "verification_summary": {
+    "backend_pytest": "1012 passed, 2 skipped, 0 failed",
+    "ruff_lint": "0 errors",
+    "mypy_strict": "138 source files checked, 0 errors",
+    "frontend_bun": "175 passed across 25 files, 0 failed",
+    "website_build": "production build successful"
+  },
+  "governance_locks": {
+    "production_release": "HOLD",
+    "financial_authority": "NONE",
+    "paid_inference": "OFF",
+    "customer_data": "PROHIBITED",
+    "merge_authority": "PENDING_EXPLICIT_OWNER_AUTHORIZATION"
+  },
+  "continuation_directives_for_chatgpt_work": [
+    "1. Confirm full regression suites using: pytest -q, ruff check ., python3 -m mypy aurex --strict, cd website && bun test, cd website && bun run build.",
+    "2. Do not unlock financial authority or production release without human owner decision package.",
+    "3. Maintain strict separation of Sovereign Kernel eligibility from authority execution.",
+    "4. Keep private Qwen inference fail-closed with verified model identity checks."
+  ]
+}

@@ -1,0 +1,53 @@
+{
+  "schema": "valexii.kusanagi.cccliv.security_report.v1",
+  "operation": "OPERATION KUSANAGI CCCLIV",
+  "mission": "PROJECT SOVEREIGN CONVERGENCE",
+  "commit_evaluated": "fc2bed4dd98054503254ad1a4c11fbecd7b0deca",
+  "audit_timestamp": "2026-11-08T22:00:00Z",
+  "security_gates": {
+    "G1_FORGED_AUTHORITY_DENIAL": {
+      "status": "PASS",
+      "evidence": "aurex.sovereign_kernel.evaluate_proposal rejects self-witness (ghost_id == independent_witness_id) and unauthorized shell actions. authority_granted is strictly False."
+    },
+    "G2_FINANCIAL_EXECUTION_PROHIBITED": {
+      "status": "PASS",
+      "evidence": "EXECUTE_FINANCIAL proposals evaluate strictly to HOLD in sovereign_kernel. Confirmed recovery remains locked at $0.00 in DISPATER."
+    },
+    "G3_MODEL_FORGE_APPROVAL_BYPASS": {
+      "status": "PASS",
+      "evidence": "aurex.ox.forge rejects forged promotion receipts, enforces commercial and redistribution approval from distinct reviewers, and requires independent keys."
+    },
+    "G4_STALE_AND_REPLAY_PROTECTION": {
+      "status": "PASS",
+      "evidence": "sovereign_kernel checks evidence_current=True and requires >= 2 independent evidence roots. Receipt v2 enforces HMAC BOUND_V2 bindings."
+    },
+    "G5_CROSS_TENANT_ISOLATION": {
+      "status": "PASS",
+      "evidence": "Tenant path canonicalization, bearer token SHA-256 hash grants, and maintenance advisory tenant matching verified."
+    },
+    "G6_FAIL_CLOSED_INFERENCE": {
+      "status": "PASS",
+      "evidence": "OpenAICompatibleAdapter validates served model identity against allowlisted Qwen weights before and after generation. Website reports OFFLINE/SIMULATED truthfully."
+    },
+    "G7_ZIP_PATH_TRAVERSAL_AND_PERMISSIONS": {
+      "status": "PASS",
+      "evidence": "aurex_find_verified_zip enforces bounded depth, checks SHA-256 before write, verifies parent ownership and 0o022 bits, and safe_extract operates under restrictive umasks."
+    },
+    "G8_MANUSCRIPT_IMAGING_CONTAINMENT": {
+      "status": "PASS",
+      "evidence": "manuscript_forensics caps pixel decompression, isolates image metadata from reading claims, and rejects unverified formats."
+    }
+  },
+  "governance_locks": {
+    "production_release": "HOLD",
+    "financial_authority": "NONE",
+    "paid_inference": "OFF",
+    "customer_data": "PROHIBITED"
+  },
+  "adversarial_suite_summary": {
+    "kernel_adversarial_tests": "PASSED (10/10)",
+    "model_forge_adversarial_tests": "PASSED (20/20)",
+    "zip_safety_adversarial_tests": "PASSED (16/16)",
+    "website_ssrf_and_auth_bypass_tests": "PASSED (175/175)"
+  }
+}
