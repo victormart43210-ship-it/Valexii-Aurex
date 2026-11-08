@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Read-only, fail-closed mainline candidate preflight. No merge or deployment."""
 from __future__ import annotations
+
 import json
 import subprocess
 import sys
