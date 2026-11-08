@@ -16,7 +16,7 @@ class MaintenanceInputError(ValueError):
     """Invalid or unsupported maintenance data."""
 
 
-def _day(value: str) -> date:
+def _day(value: object) -> date:
     if not isinstance(value, str):
         raise MaintenanceInputError("date must be ISO text")
     try:
@@ -28,14 +28,14 @@ def _day(value: str) -> date:
     return parsed
 
 
-def _hours(value: str) -> Decimal:
+def _hours(value: object) -> Decimal:
     if not isinstance(value, str):
         raise MaintenanceInputError("meter values must be decimal strings")
     try:
         n = Decimal(value)
     except InvalidOperation as exc:
         raise MaintenanceInputError("invalid meter value") from exc
-    if not n.is_finite() or n < 0 or n > 100000000 or n.as_tuple().exponent < -2:
+    if not n.is_finite() or n < 0 or n > 100000000 or n.quantize(Decimal("0.01")) != n:
         raise MaintenanceInputError("meter value out of bounds")
     return n
 
