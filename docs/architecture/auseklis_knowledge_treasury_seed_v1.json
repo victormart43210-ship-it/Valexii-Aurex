@@ -1,0 +1,16 @@
+{
+  "schema": "valexii.auseklis.knowledge_treasury.v1",
+  "status": "CANDIDATE_ONLY",
+  "authority": "NONE",
+  "training_started": false,
+  "external_inference_spend_authorized": false,
+  "entries": [
+    {"id":"four-d-spine","owner":"AUSEKLIS","purpose":"Versioned intent/evidence/authority/time mission representation","source":"VALEXII_MASTER_HANDOFF_2026-09-19.md","classification":"DESIGN","training_use":"SKILL_CANDIDATE","verification":"NOT_RUN"},
+    {"id":"math-fabric","owner":"AUREX","purpose":"Typed, provenance-aware mathematical analyses with uncertainty","source":"CoreGuard_Manus_Mathematical_Intelligence_Foundation_V1_Handoff.docx","classification":"DESIGN","training_use":"SKILL_CANDIDATE","verification":"NOT_RUN"},
+    {"id":"twin-dissent","owner":"ZALI_XAELI","purpose":"Generate distinct hypotheses and preserve disagreement","source":"XAITA_Canonical_Architecture_Lock_v1.md","classification":"DESIGN","training_use":"EVALUATION_CANDIDATE","verification":"NOT_RUN"},
+    {"id":"adversarial-reconstruction","owner":"SHRIKE_GHOST","purpose":"Independent reverse verification and falsification","source":"VALEXII_MASTER_HANDOFF_2026-09-19.md","classification":"DESIGN","training_use":"EVALUATION_CANDIDATE","verification":"NOT_RUN"},
+    {"id":"teth-matrix","owner":"MODEL_FORGE","purpose":"Nine-domain research and uncertainty taxonomy","source":"XAITA_Teth_Matrix_v1.md","classification":"RESEARCH_FRAMEWORK","training_use":"RESEARCH_ONLY","verification":"NOT_RUN"},
+    {"id":"htc-56","owner":"MODEL_FORGE","purpose":"Seven-axis by eight-state metamorphic test design; applicability required","source":"XAITA_Teth_Matrix_v1.md","classification":"TEST_FRAMEWORK","training_use":"EVALUATION_CANDIDATE","verification":"NOT_RUN"},
+    {"id":"industrial-golden-ledger","owner":"DISPATER","purpose":"Synthetic audit regression without exposure-to-recovery promotion","source":"docs/operations/CCXLVI_ASSURANCE.md","classification":"SYNTHETIC_TEST_REFERENCE","training_use":"EVALUATION_CANDIDATE","verification":"REVERIFY_EXACT_SHA"}
+  ]
+}
