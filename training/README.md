@@ -48,8 +48,14 @@ python -m training.export_model --adapter training/runs/qwen-v1 --output trainin
 ```
 
 Training uses assistant-only loss, rejects overlength examples rather than silently
-truncating, sets seeds, records source manifest hash/configuration/metrics and saves
-safetensors. Held-out loss is not accuracy, hallucination rate or independent grading.
+truncating, sets seeds, records package versions, hardware, the source manifest
+hash, and safetensors. A finished run is `TRAINING_COMPLETED`. That record sets
+`model_quality` to `NOT_EVALUATED` and `deployment_approval` to `NOT_APPROVED`.
+`--execute` refuses a dataset whose approval receipt is missing, forged, or signed
+by the dataset author. The receipt does not prove that the license was independently
+authenticated. Held-out loss is not accuracy, and `training/evaluate_lora.py` records
+a paired loss plus an external answer-key score. The candidate model does not supply
+that key.
 Export produces merged safetensors. Converting those to GGUF requires a separately
 pinned llama.cpp converter and subsequent inference validation; it is NOT RUN here.
 A CPU LoRA smoke is implemented; CUDA/QLoRA execution is NOT VERIFIED.

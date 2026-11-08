@@ -82,6 +82,28 @@ def model_load_kwargs(config, plan):
     return kwargs
 
 
+def validate_target_modules(model, modules):
+    """Targets must exist on this architecture. Names in the config are not enough."""
+    present = {name.split(".")[-1] for name, _module in model.named_modules()}
+    missing = [name for name in modules if name not in present]
+    if missing:
+        raise ValueError("LoRA targets are absent from this architecture: " + ", ".join(missing))
+    if {"lm_head", "embed_tokens"}.intersection(modules):
+        raise ValueError("LoRA targets must be attention projections")
+
+
+def package_versions():
+    from importlib.metadata import PackageNotFoundError, version
+
+    found = {}
+    for name in ("torch", "transformers", "peft", "accelerate"):
+        try:
+            found[name] = version(name)
+        except PackageNotFoundError:
+            found[name] = "ABSENT"
+    return found
+
+
 def validate_checkpoint(directory):
     """A resume source must be a complete LoRA safetensors adapter."""
     directory = Path(directory)
@@ -113,6 +135,8 @@ def fit(model, tokenizer, rows, config, output):
         raise ValueError("rank or dropout is outside the bounded range")
     if int(config.get("gradient_accumulation_steps", 1)) < 1:
         raise ValueError("gradient accumulation must be positive")
+    modules = lora_targets(config)
+    validate_target_modules(model, modules)
     set_seed(config["seed"])
     model = get_peft_model(
         model,
@@ -121,7 +145,7 @@ def fit(model, tokenizer, rows, config, output):
             r=rank,
             lora_alpha=config["alpha"],
             lora_dropout=dropout,
-            target_modules=lora_targets(config),
+            target_modules=modules,
             bias="none",
         ),
     )
@@ -177,6 +201,24 @@ def main():
     if a.output.exists():
         raise ValueError("Use a new output directory")
     plan = execution_plan(config)
+    if a.execute and manifest.get("training_approval") != "APPROVED_FOR_TRAINING":
+        print(
+            json.dumps(
+                {
+                    "status": "NOT_RUN",
+                    "reason": "dataset approval receipt is missing or not accepted",
+                    "training_approval": manifest.get("training_approval", "UNREVIEWED"),
+                    "legal_license_authentication": manifest.get(
+                        "legal_license_authentication", "NOT_VERIFIED"
+                    ),
+                }
+            )
+        )
+        raise SystemExit(2)
+    dataset_tenant = manifest.get("provenance", {}).get("tenant_id")
+    if config.get("tenant_id") and dataset_tenant and config["tenant_id"] != dataset_tenant:
+        print(json.dumps({"status": "NOT_RUN", "reason": "dataset tenant does not match the run"}))
+        raise SystemExit(2)
     if not a.execute or plan["status"] == "NOT_RUN":
         print(
             json.dumps(
@@ -195,6 +237,18 @@ def main():
         return
     from transformers import AutoModelForCausalLM, AutoTokenizer, set_seed
 
+    if config.get("min_free_bytes") is not None:
+        import shutil
+
+        parent = a.output.parent if a.output.parent.as_posix() not in {"", "."} else Path(".")
+        free = shutil.disk_usage(parent).free
+        if free < int(config["min_free_bytes"]):
+            print(
+                json.dumps(
+                    {"status": "NOT_RUN", "reason": "insufficient storage", "free_bytes": free}
+                )
+            )
+            raise SystemExit(2)
     set_seed(config["seed"])
     tokenizer = AutoTokenizer.from_pretrained(
         config["base_model"], revision=config["revision"], trust_remote_code=False
@@ -206,15 +260,23 @@ def main():
         **model_load_kwargs(config, plan),
     )
     metrics = fit(model, tokenizer, rows, config, a.output)
+    from aurex.ox.forge import hardware_preflight
+
     record = {
-        "status": "PASS",
+        "status": "TRAINING_COMPLETED",
         "scope": "training execution only",
+        "model_quality": "NOT_EVALUATED",
+        "deployment_approval": "NOT_APPROVED",
         "config": config,
+        "package_versions": package_versions(),
+        "hardware": hardware_preflight(),
+        "seed": config["seed"],
         "data_manifest_sha256": sha(a.data / "manifest.json"),
         "metrics": metrics,
         "artifact_sha256": {f.name: sha(f) for f in a.output.iterdir() if f.is_file()},
         "architecture_review": manifest["architecture_review"],
-        "independent_evaluation": "NOT RUN",
+        "independent_evaluation": "NOT_RUN",
+        "legal_license_authentication": "NOT_VERIFIED",
     }
     (a.output / "training-record.json").write_text(json.dumps(record, indent=2))
     print(json.dumps(record, indent=2))

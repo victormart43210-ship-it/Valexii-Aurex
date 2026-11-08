@@ -7,6 +7,45 @@ from pathlib import Path
 from training.common import verified_adapter
 
 
+def greedy_token_ids(model, input_ids, max_new_tokens):
+    import torch
+
+    model.eval()
+    generated = input_ids
+    with torch.no_grad():
+        for _ in range(max_new_tokens):
+            logits = model(generated).logits
+            next_id = logits[0, -1].argmax().view(1, 1)
+            generated = torch.cat([generated, next_id], dim=1)
+    return [int(token) for token in generated[0].tolist()]
+
+
+def assert_merge_agreement(adapter_model, merged_model, input_ids, max_new_tokens=2):
+    """Greedy tokens must match. A match is not production approval."""
+    left = greedy_token_ids(adapter_model, input_ids, max_new_tokens)
+    right = greedy_token_ids(merged_model, input_ids, max_new_tokens)
+    if left != right:
+        raise ValueError("merged weights do not match the adapter outputs")
+    return {
+        "status": "MATCH",
+        "tokens": len(left),
+        "production_ready": False,
+        "gguf_conversion": "NOT_RUN",
+        "deployment_approval": "NOT_APPROVED",
+    }
+
+
+def gguf_gate(requested):
+    """Conversion is a separate operation and was not executed here."""
+    if requested:
+        return {
+            "gguf_conversion": "NOT_RUN",
+            "reason": "no pinned converter was executed",
+            "production_ready": False,
+        }
+    return {"gguf_conversion": "NOT_RUN", "production_ready": False}
+
+
 def assert_export_identity(record, expected_base, expected_revision):
     """The export names its base. GGUF conversion is not a training result."""
     if record.get("base_model") != expected_base or record.get("revision") != expected_revision:

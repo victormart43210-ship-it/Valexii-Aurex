@@ -122,10 +122,27 @@ def test_promotion_cannot_skip_or_self_approve() -> None:
     trained = advance(entry, "ACQUIRED", actor="person-b")
     trained = advance(trained, "TRAINED", actor="person-b")
     assert trained["training"] == "RECORDED_NOT_A_DEPLOYMENT"
-    evaluated = advance(trained, "EVALUATED", actor="person-b")
+    evidence = {
+        "judge": "external_key",
+        "status": "EVALUATED",
+        "deployment_approval": "NOT_APPROVED",
+    }
     with pytest.raises(ForgeError):
-        advance(evaluated, "APPROVED", actor="person-b", reviewer="person-b")
-    approved = advance(evaluated, "APPROVED", actor="person-b", reviewer="person-c")
+        advance(trained, "EVALUATED", actor="person-b")
+    evaluated = advance(trained, "EVALUATED", actor="person-b", evidence=evidence)
+    rejected = advance(
+        trained,
+        "EVALUATED",
+        actor="person-b",
+        evidence={**evidence, "status": "REJECTED"},
+    )
+    with pytest.raises(ForgeError, match="rejected"):
+        advance(rejected, "APPROVED", actor="person-b", reviewer="person-c", evidence=evidence)
+    with pytest.raises(ForgeError):
+        advance(evaluated, "APPROVED", actor="person-b", reviewer="person-b", evidence=evidence)
+    approved = advance(
+        evaluated, "APPROVED", actor="person-b", reviewer="person-c", evidence=evidence
+    )
     with pytest.raises(ForgeError, match="rollback"):
         advance(approved, "STAGING", actor="person-b", reviewer="person-c")
     staged = advance(

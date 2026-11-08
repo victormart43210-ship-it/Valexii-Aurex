@@ -206,6 +206,7 @@ def advance(
     actor: str,
     reviewer: str | None = None,
     rollback_target: str | None = None,
+    evidence: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Move one stage. The actor cannot approve or stage their own model."""
     if to_state not in STAGES:
@@ -230,10 +231,33 @@ def advance(
             {"kind": "lora", "base_revision": entry.get("revision")},
         ]
     if to_state == "EVALUATED":
+        if not evidence or evidence.get("judge") != "external_key":
+            raise ForgeError("evaluation requires an external answer key")
+        if evidence.get("authored_by") == "candidate_model":
+            raise ForgeError("the candidate model cannot certify itself")
+        if evidence.get("status") not in {"EVALUATED", "REJECTED"}:
+            raise ForgeError("evaluation evidence has no admission")
+        if evidence.get("deployment_approval") not in {None, "NOT_APPROVED"}:
+            raise ForgeError("an evaluation cannot approve deployment")
+        updated["admission"] = evidence["status"]
         updated["evaluation_history"] = [
             *entry.get("evaluation_history", []),
-            {"actor": actor, "judge": "external_key", "independent_verification": "NOT VERIFIED"},
+            {
+                "actor": actor,
+                "judge": "external_key",
+                "status": evidence["status"],
+                "independent_verification": "NOT VERIFIED",
+            },
         ]
+    if to_state == "APPROVED":
+        if entry.get("admission") == "REJECTED":
+            raise ForgeError("a rejected evaluation cannot be approved")
+        if (
+            not evidence
+            or evidence.get("judge") != "external_key"
+            or evidence.get("status") != "EVALUATED"
+        ):
+            raise ForgeError("approval requires an external evaluation")
     if to_state == "STAGING":
         updated["rollback_target"] = rollback_target
         updated["deployment_state"] = "STAGING_NOT_PRODUCTION"
