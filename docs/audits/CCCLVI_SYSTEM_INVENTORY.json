@@ -1,0 +1,165 @@
+{
+  "system_identifier": "VALEXII / AUREX / DISPATER",
+  "audit_version": "OPERATION KUSANAGI CCCLVI",
+  "recorded_at": "2026-11-08T20:30:00Z",
+  "subsystems": {
+    "AUREX_OX": {
+      "path": "aurex/",
+      "source_status": "IMPLEMENTED",
+      "test_status": "939_PASSING_TESTS",
+      "staging_status": "STAGING_READY_FAIL_CLOSED",
+      "production_status": "HOLD",
+      "key_modules": [
+        "aurex/api.py",
+        "aurex/engine.py",
+        "aurex/fenced_worker.py",
+        "aurex/telemetry.py",
+        "aurex/evidence.py",
+        "aurex/sovereign_kernel.py"
+      ],
+      "capabilities": [
+        "External challenge & evaluation witness",
+        "Asynchronous fenced worker leases with terminal failure tracking",
+        "Evidence qualification ledger with SHA-256 integrity",
+        "Cost governor with zero-spend default enforcement"
+      ]
+    },
+    "SOVEREIGN_KERNEL": {
+      "path": "aurex/sovereign_kernel.py",
+      "source_status": "IMPLEMENTED_IN_BRANCH_CANDIDATE",
+      "test_status": "VERIFIED_ON_CANDIDATE_BRANCH",
+      "staging_status": "NOT_DEPLOYED",
+      "production_status": "HOLD",
+      "key_modules": [
+        "aurex/sovereign_kernel.py (branch: work/valexii-sovereign-kernel-foundation-20261108)",
+        "tests/test_sovereign_kernel.py"
+      ],
+      "capabilities": [
+        "Fail-closed proposal evaluation",
+        "Shell transition preflight",
+        "Self-authority and privilege carryover rejection",
+        "Stale evidence invalidation"
+      ]
+    },
+    "XAELI": {
+      "path": "aurex/adapters/openai_compatible.py, website/src/routes/xaeli.tsx",
+      "source_status": "IMPLEMENTED",
+      "test_status": "VERIFIED_FAIL_CLOSED",
+      "staging_status": "PRIVATE_STAGING_CONFIGURED",
+      "production_status": "HOLD",
+      "key_modules": [
+        "aurex/adapters/openai_compatible.py",
+        "tools/verify_xaeli_private_qwen.py",
+        "website/src/lib/xaeli-status.ts",
+        "website/src/lib/xaeli.functions.ts",
+        "website/src/routes/xaeli.tsx"
+      ],
+      "capabilities": [
+        "Private local Qwen 2.5 adapter with strict identity verification before/after generation",
+        "Zero unverified fallback; fails closed without local server",
+        "Safe synthetic-only evaluation on web interface without external paid inference"
+      ]
+    },
+    "DISPATER_AI": {
+      "path": "aurex/dispater_*.py, website/src/routes/dispater.tsx",
+      "source_status": "IMPLEMENTED",
+      "test_status": "FULLY_VERIFIED_939_TESTS",
+      "staging_status": "STAGING_VERIFIED",
+      "production_status": "HOLD",
+      "key_modules": [
+        "aurex/dispater_intelligence.py",
+        "aurex/dispater_api.py",
+        "aurex/dispater_store.py",
+        "aurex/dispater_documents.py",
+        "aurex/dispater_monitoring.py",
+        "aurex/dispater_pipeline.py",
+        "aurex/dispater_receipt.py",
+        "website/src/routes/dispater.tsx",
+        "website/src/components/dispater-command-center.tsx"
+      ],
+      "capabilities": [
+        "Commercial towing & industrial equipment revenue reconciliation",
+        "Deterministic rate contract evaluation with independent test oracle",
+        "5-step XAELI findings (NOW, CHANGED, NEXT, WHY, PROOF)",
+        "Durable SQLite persistence with WAL mode & persistent mount verification",
+        "Tenant isolation via SHA-256 token digest grants",
+        "5MB body size ASGI streaming limit",
+        "Stateless DOT/FMCSA audit package generation"
+      ]
+    },
+    "MEDAURUS_BCXMET": {
+      "path": "docs/architecture/BCXMET_*.md (External Android Repo)",
+      "source_status": "EXTERNAL_SEGREGATED_REPOSITORY",
+      "test_status": "DEVICE_TESTED_EXTERNALLY",
+      "staging_status": "SEPARATE_PIPELINE",
+      "production_status": "HOLD",
+      "key_modules": [
+        "BCXMET Android Client (External Repo)",
+        "docs/architecture/BCXMET_APK_IMPLEMENTATION_INVENTORY.md",
+        "docs/architecture/BCXMET_AUREX_DISPATER_TRANSFER_MATRIX.md"
+      ],
+      "capabilities": [
+        "Samsung physical mobile security shield",
+        "Zero proprietary code committed to public repository",
+        "AUREX witness-only integration boundary strictly preserved"
+      ]
+    },
+    "CUSTOS_AUSEKLIS": {
+      "path": "docs/CUSTOS_TEST_MATRIX.md, aurex/dispater_contracts.py",
+      "source_status": "IMPLEMENTED",
+      "test_status": "VERIFIED_15_GATES",
+      "staging_status": "ENFORCED",
+      "production_status": "HOLD",
+      "key_modules": [
+        "docs/CUSTOS_TEST_MATRIX.md",
+        "aurex/dispater_contracts.py"
+      ],
+      "capabilities": [
+        "Evidence qualification criteria (C01-C15)",
+        "Reverse audit integrity",
+        "Proof withholding and freshness evaluation",
+        "Non-delegable human authority enforcement"
+      ]
+    },
+    "MODEL_FORGE": {
+      "path": "workstation/, training/, aurex/ox/forge.py (in candidate branch)",
+      "source_status": "IMPLEMENTED_IN_WORKSTATION_AND_CANDIDATE",
+      "test_status": "SMOKE_TESTED_OPTIONAL_TORCH",
+      "staging_status": "LOCAL_ONLY",
+      "production_status": "HOLD",
+      "key_modules": [
+        "workstation/model_forge.py",
+        "workstation/hle_practice.py",
+        "training/train_lora.py",
+        "training/export_model.py",
+        "aurex/ox/forge.py (branch: cursor/kusanagi-ccxcvii-model-forge-4082)"
+      ],
+      "capabilities": [
+        "Local CPU/GPU LoRA fine-tuning smoke harness",
+        "Dataset provenance verification",
+        "Black Diamond HLE evaluation readiness harness",
+        "Fail-closed fallback when torch is absent"
+      ]
+    },
+    "WEBSITE_VALEXII": {
+      "path": "website/",
+      "source_status": "IMPLEMENTED",
+      "test_status": "173_PASSING_BUN_TESTS",
+      "staging_status": "BUILD_PASS_STAGING_READY",
+      "production_status": "HOLD",
+      "key_modules": [
+        "website/src/routes/index.tsx",
+        "website/src/routes/dispater.tsx",
+        "website/src/routes/xaeli.tsx",
+        "website/src/routes/admin.aurex-control.tsx",
+        "website/src/lib/aurex-client.server.ts"
+      ],
+      "capabilities": [
+        "VALEXII Sovereign Design System with midnight navy & electric cyan aesthetics",
+        "Full SSR TanStack Start frontend with Nitro engine",
+        "Authenticated owner-only admin workstation (/admin/aurex-workstation)",
+        "Interactive DISPATER reconciliation console and audit package export"
+      ]
+    }
+  }
+}

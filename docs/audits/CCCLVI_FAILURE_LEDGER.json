@@ -1,0 +1,78 @@
+{
+  "audit": "OPERATION KUSANAGI CCCLVI",
+  "generated_at": "2026-11-08T20:30:00Z",
+  "severity_classification": {
+    "S0": "Critical Security / Data Leakage / Financial Violation",
+    "S1": "Build / Test Suite / Environment Regression Blocker",
+    "S2": "System Integration / Cross-boundary Inconsistency",
+    "S3": "Operational Hygiene / Documentation Drift / Agent Coordination Gap"
+  },
+  "failures": [
+    {
+      "id": "FAIL-001",
+      "severity": "S1",
+      "component": "Verified ZIP Finder / ChromeOS Archive Safety",
+      "symptom": "Pytest failure in tests/test_aurex_verified_zip_finder.py::test_skipped_file_replaced_during_extraction_holds",
+      "root_cause": "The test created a test directory using default umask (0o775), violating the strict _require_private_directory() assertion (which asserts not (st_mode & 0o022)).",
+      "reproduction": "python3 -m pytest tests/test_aurex_verified_zip_finder.py with umask 0002",
+      "repair": "Explicitly enforce mode=0o700 during directory.mkdir() in the test fixture.",
+      "current_status": "REPAIRED_AND_VERIFIED",
+      "acceptance_criteria": "All 16 zip finder tests pass without altering strict security assertion in production tool."
+    },
+    {
+      "id": "FAIL-002",
+      "severity": "S1",
+      "component": "Bun Frontend Test Runtime / Missing Node Modules",
+      "symptom": "7 Bun test errors: 'Cannot find package zod', 'Cannot find package react' when running fresh bun test.",
+      "root_cause": "Node modules were not installed in the website workspace in the pristine sandbox environment.",
+      "reproduction": "Run bun test in website directory without prior bun install.",
+      "repair": "Run bun install in website directory.",
+      "current_status": "REPAIRED_AND_VERIFIED",
+      "acceptance_criteria": "173 bun tests across 25 files pass cleanly, 0 failures."
+    },
+    {
+      "id": "FAIL-003",
+      "severity": "S2",
+      "component": "Multi-agent Branch Drift / Fragmentation",
+      "symptom": "Over 145 remote branches diverged from canonical main with unmerged features, duplicated fixes, and conflicting handoff logs across Jules, Cursor, and Copilot.",
+      "root_cause": "Absence of a single authoritative gatekeeper and concurrent agent execution creating independent PRs and candidate branches without serialized promotion.",
+      "reproduction": "Inspect git branch -r --no-merged origin/main.",
+      "repair": "Transition away from Jules to ChatGPT Work as lead investigator and architect, enforce strict PR convergence policy, freeze merge authority on HOLD pending owner sign-off.",
+      "current_status": "CONTAINED_IN_AUDIT",
+      "acceptance_criteria": "Establish single canonical branch/PR matrix (CCCLVI_BRANCH_PR_MATRIX.csv) and execution roadmap."
+    },
+    {
+      "id": "FAIL-004",
+      "severity": "S2",
+      "component": "XAELI / Qwen Private Staging Adapter",
+      "symptom": "Staging private Qwen connectivity can fail closed if model identity does not match or if network is unconfigured; paid remote inference must never be triggered.",
+      "root_cause": "Commit fc2bed4 correctly locked down unverified fallback, but live inference requires local hardware serving Qwen 2.5 7B/14B with verified identity headers.",
+      "reproduction": "Call verify_xaeli_private_qwen.py without local server running.",
+      "repair": "Enforce fail-closed state where website /xaeli displays UNCONFIGURED / NOT_CONNECTED rather than simulating live answers.",
+      "current_status": "VERIFIED_FAIL_CLOSED",
+      "acceptance_criteria": "Website returns proper unconfigured diagnostics and refuses synthetic promotion to live."
+    },
+    {
+      "id": "FAIL-005",
+      "severity": "S3",
+      "component": "Model Forge / PyTorch Environment Dependency",
+      "symptom": "1 pytest test skipped (training/tests/test_lora_smoke.py) due to torch not being present in standard lightweight test environment.",
+      "root_cause": "PyTorch is an optional heavy dependency excluded from minimal pyproject.toml dev profile to prevent massive container bloat.",
+      "reproduction": "python3 -m pytest training/tests/test_lora_smoke.py without torch installed.",
+      "repair": "Branch work/kusanagi-cccxiv-forge-ci-optional-torch isolates optional torch checks. Model Forge design ensures fail-closed fallback without torch.",
+      "current_status": "DOCUMENTED_OPTIONAL",
+      "acceptance_criteria": "Test gracefully skips with informative warning when torch is absent; passes when torch is available."
+    },
+    {
+      "id": "FAIL-006",
+      "severity": "S0",
+      "component": "Financial Authority / Golden Recovery Invariant",
+      "symptom": "Historical risk of unverified exposure being reported as recovered cash.",
+      "root_cause": "Ambiguity in initial commercial designs between identified leakage and collected funds.",
+      "reproduction": "Check test_dispater_reconciliation.py and test_dispater_financial_recovery.py.",
+      "repair": "Golden oracle locks confirmed_recovery strictly to 0.00 in all automated runs. Only human owner key can confirm recovery.",
+      "current_status": "LOCKED_IN_CODE",
+      "acceptance_criteria": "Golden oracle tests strictly enforce exposure categories: identified $385.00, confirmed $0.00."
+    }
+  ]
+}
