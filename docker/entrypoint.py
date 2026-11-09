@@ -1,13 +1,13 @@
-"""Start AUREX as uid 10001 after making the data directory writable.
+"""Start AUREX as uid 10001 after safely preparing the data directory.
 
-Railway volumes are often root-owned. The image may start as root only long
-enough to chown /data, then the API process drops privileges. A non-root start
-skips the chown and execs uvicorn directly.
+Do not follow symlinks while changing ownership: /data can be a mounted
+volume, and entries within it must not redirect root-owned startup operations.
 """
 
 from __future__ import annotations
 
 import os
+import stat
 
 SERVICE_UID = 10001
 SERVICE_GID = 10001
@@ -15,12 +15,27 @@ SERVICE_GID = 10001
 
 def prepare_data_dir() -> None:
     os.makedirs("/data", mode=0o750, exist_ok=True)
-    os.chown("/data", SERVICE_UID, SERVICE_GID)
-    for name in os.listdir("/data"):
-        try:
-            os.chown(os.path.join("/data", name), SERVICE_UID, SERVICE_GID)
-        except OSError:
-            continue
+    flags = os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW
+    directory_fd = os.open("/data", flags)
+    try:
+        os.fchown(directory_fd, SERVICE_UID, SERVICE_GID)
+        for name in os.listdir(directory_fd):
+            # Open relative to the verified directory; O_NOFOLLOW prevents
+            # an attacker-controlled symlink from redirecting fchown.
+            try:
+                entry_fd = os.open(name, os.O_RDONLY | os.O_NONBLOCK | os.O_NOFOLLOW, dir_fd=directory_fd)
+            except OSError:
+                continue
+            try:
+                mode = os.fstat(entry_fd).st_mode
+                if stat.S_ISREG(mode) or stat.S_ISDIR(mode):
+                    os.fchown(entry_fd, SERVICE_UID, SERVICE_GID)
+            except OSError:
+                continue
+            finally:
+                os.close(entry_fd)
+    finally:
+        os.close(directory_fd)
 
 
 def drop_privileges() -> None:
