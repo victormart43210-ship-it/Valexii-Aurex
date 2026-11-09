@@ -1,0 +1,37 @@
+{
+  "schema": "aurex.ox.lora_correctness_report.v1",
+  "observed_at": "2026-11-07T18:53:00-06:00",
+  "main_base_sha": "fc2bed4dd98054503254ad1a4c11fbecd7b0deca",
+  "stack": {
+    "python": "3.12.3",
+    "torch": "2.6.0+cpu",
+    "transformers": "4.51.3",
+    "peft": "0.15.2",
+    "accelerate": "1.6.0",
+    "cuda": "ABSENT"
+  },
+  "assistant_masking": {
+    "command": "python3 -m pytest -q training/tests/test_assistant_mask.py",
+    "status": "PASS",
+    "observation": "A multi-turn tiny template supervises two HOLD tokens, masks the system and user tokens, pads labels with -100, rejects an over-length row, a blank assistant message, and a template that cannot isolate the assistant span."
+  },
+  "tiny_lora": {
+    "command": "python3 -m pytest -q training/tests/test_lora_smoke.py",
+    "exit_code": 0,
+    "status": "PASS",
+    "model": "randomly initialized Qwen2, hidden_size 32, two optimizer steps, seed 42",
+    "train_loss_observed_in_session": 2.2353527545928955,
+    "paired_eval_loss": "both finite; the test does not persist the two numbers",
+    "merge_agreement": "MATCH on greedy continuation of 2 tokens when both sides use the same base state",
+    "production_ready": false,
+    "model_quality": "NOT_EVALUATED",
+    "deployment_approval": "NOT_APPROVED",
+    "full_qwen_0_5b": "NOT_RUN"
+  },
+  "qlora": {
+    "status": "NOT_RUN",
+    "observation": "execution_plan returns NOT_RUN without CUDA, bitsandbytes, and AUREX_QLORA_APPROVED=1. No GPU job was started."
+  },
+  "gguf_conversion": "NOT_RUN",
+  "repair_commit": "d437fab14b56b079551b27497eee7aae5ed97467"
+}

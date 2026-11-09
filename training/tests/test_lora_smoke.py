@@ -55,6 +55,7 @@ def test_real_lora_optimizer_and_reload(tmp_path):
         num_key_value_heads=2,
     )
     model = Qwen2ForCausalLM(cfg)
+    base_state = {key: value.detach().clone() for key, value in model.state_dict().items()}
     params = {
         "seed": 42,
         "rank": 2,
@@ -67,7 +68,35 @@ def test_real_lora_optimizer_and_reload(tmp_path):
     metrics = fit(model, tok, [row], params, tmp_path / "adapter")
     assert math.isfinite(metrics["train_loss"])
     assert (tmp_path / "adapter/adapter_model.safetensors").exists()
-    loaded = PeftModel.from_pretrained(Qwen2ForCausalLM(cfg), tmp_path / "adapter")
+    same_base = Qwen2ForCausalLM(cfg)
+    same_base.load_state_dict(base_state)
+    loaded = PeftModel.from_pretrained(same_base, tmp_path / "adapter")
     assert any(torch.count_nonzero(p) > 0 for n, p in loaded.named_parameters() if "lora_B" in n)
-    loaded.merge_and_unload().save_pretrained(tmp_path / "merged", safe_serialization=True)
+    merge_base = Qwen2ForCausalLM(cfg)
+    merge_base.load_state_dict(base_state)
+    merged = PeftModel.from_pretrained(merge_base, tmp_path / "adapter").merge_and_unload()
+    from training.evaluate_lora import diagnostic_loss, paired_loss_report
+    from training.export_model import assert_merge_agreement
+
+    baseline_model = Qwen2ForCausalLM(cfg)
+    baseline_model.load_state_dict(base_state)
+    report = paired_loss_report(
+        diagnostic_loss(baseline_model, tok, [row], 64, tmp_path / "base-eval"),
+        diagnostic_loss(loaded, tok, [row], 64, tmp_path / "adapter-eval"),
+    )
+    assert report["model_quality"] == "NOT_EVALUATED"
+    assert report["deployment_approval"] == "NOT_APPROVED"
+    assert math.isfinite(report["baseline_eval_loss"])
+    assert math.isfinite(report["adapter_eval_loss"])
+    agreement = assert_merge_agreement(
+        loaded, merged, torch.tensor([encoded["input_ids"]]), max_new_tokens=2
+    )
+    assert agreement["status"] == "MATCH"
+    assert agreement["production_ready"] is False
+    merged.save_pretrained(tmp_path / "merged", safe_serialization=True)
     assert (tmp_path / "merged/model.safetensors").exists()
+    from training.train_lora import validate_checkpoint
+
+    checkpoint = validate_checkpoint(tmp_path / "adapter")
+    assert checkpoint["status"] == "PASS"
+    assert checkpoint["tensors"] > 0

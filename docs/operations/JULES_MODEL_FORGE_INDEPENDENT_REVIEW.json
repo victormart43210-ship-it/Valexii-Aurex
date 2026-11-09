@@ -1,0 +1,36 @@
+{
+  "schema": "aurex.ox.jules_model_forge_independent_review.v1",
+  "observed_at": "2026-11-07T18:53:00-06:00",
+  "main_base_sha": "fc2bed4dd98054503254ad1a4c11fbecd7b0deca",
+  "branch": "cursor/kusanagi-ccxcviii-adversarial-repair-4082",
+  "jules_review": "NOT_RUN",
+  "do_not_merge_until_independently_reviewed": true,
+  "production": "HOLD",
+  "financial_authority": "NONE",
+  "paid_inference": "OFF",
+  "pr_208": "not included",
+  "commands_run_by_cursor": [
+    {
+      "command": "ruff check .",
+      "exit_code": 0
+    },
+    {
+      "command": "mypy aurex",
+      "exit_code": 0
+    },
+    {
+      "command": "python3 -m pytest -q",
+      "exit_code": 0,
+      "observation": "962 passed"
+    }
+  ],
+  "unresolved": [
+    "Jules has not executed these checks.",
+    "Qwen/Qwen2.5-0.5B-Instruct revision 7ae557604adf67be50417f59c2c2f167def9a775 was not downloaded or fine-tuned.",
+    "QLoRA on an approved GPU is NOT_RUN.",
+    "GGUF conversion is NOT_RUN.",
+    "No external party has authenticated a dataset license.",
+    "Task accuracy, latency, and memory for a real foundation model were not measured."
+  ],
+  "repair_commit": "d437fab14b56b079551b27497eee7aae5ed97467"
+}
