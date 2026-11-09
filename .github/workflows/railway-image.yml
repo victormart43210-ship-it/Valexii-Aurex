@@ -1,6 +1,8 @@
 name: Canonical Railway image
 on:
-  pull_request:
+  push:
+    branches:
+      - main
     paths:
       - Dockerfile
       - pyproject.toml
@@ -8,6 +10,9 @@ on:
       - training/**
       - workstation/**
       - .github/workflows/railway-image.yml
+  # Always report this required check on PRs; a path filter would leave
+  # documentation-only PRs blocked waiting for a skipped status context.
+  pull_request:
   workflow_dispatch:
 jobs:
   docker-build-and-smoke:
@@ -35,3 +40,5 @@ jobs:
           docker exec aurex-ci python -c 'from aurex.database import DEFAULT_DB_PATH, get_db; assert DEFAULT_DB_PATH == "/data/aurex_jobs.db"; c=get_db(); c.execute("select 1"); c.close()'
           test -f ci-db/aurex_jobs.db
           test "$(curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:18080/v1/jobs)" = 401
+          # Verify source is packaged into the deployable image, not just importable in pytest.
+          docker exec aurex-ci python -c 'import aurex.bayesian_evidence, aurex.governance_math.spine, aurex.evals.research_assurance, aurex.railway_readiness; print("canonical modules import PASS")'
