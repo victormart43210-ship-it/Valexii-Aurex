@@ -1,0 +1,301 @@
+{
+  "schema": "valexii.mainline.convergence.v1",
+  "operation": "KUSANAGI CCCXXXV",
+  "repository": "victormart43210-ship-it/Valexii-Aurex",
+  "main_baseline": "fc2bed4dd98054503254ad1a4c11fbecd7b0deca",
+  "prs": [
+    {
+      "number": 208,
+      "inspected_head": "f014111853c3dd89641297519871afdc957e969a",
+      "base": "fc2bed4dd98054503254ad1a4c11fbecd7b0deca",
+      "classification_at_inspection": "READY_FOR_REVIEW",
+      "changed_paths": [
+        "Dockerfile",
+        "docker/entrypoint.py",
+        "tests/test_xaeli_connectivity_probe.py",
+        "tools/verify_xaeli_private_qwen.py"
+      ],
+      "notes": "Separate observability and staging filesystem lane. Review rollback and environment impact before admission."
+    },
+    {
+      "number": 209,
+      "inspected_head": "b995df784182ed3bba129c3010d00b8048f6537b",
+      "base": "fc2bed4dd98054503254ad1a4c11fbecd7b0deca",
+      "classification_at_inspection": "STACKED_DEPENDENCY",
+      "changed_paths": [
+        "aurex/adapters/llama_cpp.py",
+        "aurex/ox/forge.py",
+        "docs/operations/AUREX_OX_MODEL_FORGE_PLAN.md",
+        "docs/operations/JULES_MODEL_FORGE_HANDOFF.json",
+        "docs/verification/BASELINE_ADAPTER_EVALUATION.json",
+        "docs/verification/LORA_QLORA_TRAINING_REPORT.json",
+        "docs/verification/MODEL_FORGE_ACCEPTANCE.json",
+        "docs/verification/MODEL_PROVENANCE_REPORT.json",
+        "tests/test_ox_model_forge.py",
+        "training/README.md",
+        "training/configs/qwen05b-lora.json",
+        "training/export_model.py",
+        "training/tests/test_lora_smoke.py",
+        "training/train_lora.py",
+        "website/src/routes/aurex-ox.model-laboratory.tsx"
+      ],
+      "notes": "Core CI missing optional torch. Ancestor of #210 and #211."
+    },
+    {
+      "number": 210,
+      "inspected_head": "b3d4062771ab81ff417240d803c00d4bb6166330",
+      "base": "fc2bed4dd98054503254ad1a4c11fbecd7b0deca",
+      "classification_at_inspection": "STACKED_DEPENDENCY",
+      "changed_paths": [
+        "aurex/adapters/llama_cpp.py",
+        "aurex/ox/forge.py",
+        "aurex/ox/registry.py",
+        "docs/operations/AUREX_OX_MODEL_FORGE_PLAN.md",
+        "docs/operations/JULES_MODEL_FORGE_HANDOFF.json",
+        "docs/operations/JULES_MODEL_FORGE_INDEPENDENT_REVIEW.json",
+        "docs/verification/BASELINE_ADAPTER_EVALUATION.json",
+        "docs/verification/BASELINE_VS_ADAPTER_REPORT.json",
+        "docs/verification/DATASET_PROVENANCE_AUDIT.json",
+        "docs/verification/LORA_CORRECTNESS_REPORT.json",
+        "docs/verification/LORA_QLORA_TRAINING_REPORT.json",
+        "docs/verification/MODEL_FORGE_ACCEPTANCE.json",
+        "docs/verification/MODEL_FORGE_ADVERSARIAL_REVIEW.json",
+        "docs/verification/MODEL_FORGE_REPAIR_MATRIX.json",
+        "docs/verification/MODEL_PROVENANCE_REPORT.json",
+        "tests/test_forge_adversarial.py",
+        "tests/test_ox_model_forge.py",
+        "training/README.md",
+        "training/common.py",
+        "training/configs/qwen05b-lora.json",
+        "training/evaluate_lora.py",
+        "training/export_model.py",
+        "training/prepare_dataset.py",
+        "training/tests/test_assistant_mask.py",
+        "training/tests/test_lora_smoke.py",
+        "training/train_lora.py",
+        "website/src/routes/aurex-ox.model-laboratory.tsx"
+      ],
+      "notes": "Core CI missing optional torch. Ancestor of #211."
+    },
+    {
+      "number": 211,
+      "inspected_head": "96254c0c57fceef4508199bb502f93da0e638d33",
+      "base": "fc2bed4dd98054503254ad1a4c11fbecd7b0deca",
+      "classification_at_inspection": "NEEDS_REPAIR",
+      "changed_paths": [
+        "aurex/adapters/llama_cpp.py",
+        "aurex/ox/forge.py",
+        "aurex/ox/registry.py",
+        "docs/operations/AUREX_OX_MODEL_FORGE_PLAN.md",
+        "docs/operations/JULES_MODEL_FORGE_HANDOFF.json",
+        "docs/operations/JULES_MODEL_FORGE_INDEPENDENT_REVIEW.json",
+        "docs/verification/BASELINE_ADAPTER_EVALUATION.json",
+        "docs/verification/BASELINE_VS_ADAPTER_REPORT.json",
+        "docs/verification/DATASET_PROVENANCE_AUDIT.json",
+        "docs/verification/LORA_CORRECTNESS_REPORT.json",
+        "docs/verification/LORA_QLORA_TRAINING_REPORT.json",
+        "docs/verification/MODEL_FORGE_ACCEPTANCE.json",
+        "docs/verification/MODEL_FORGE_ADVERSARIAL_REVIEW.json",
+        "docs/verification/MODEL_FORGE_REPAIR_MATRIX.json",
+        "docs/verification/MODEL_PROVENANCE_REPORT.json",
+        "tests/test_forge_adversarial.py",
+        "tests/test_ox_model_forge.py",
+        "training/README.md",
+        "training/common.py",
+        "training/configs/qwen05b-lora.json",
+        "training/evaluate_lora.py",
+        "training/export_model.py",
+        "training/prepare_dataset.py",
+        "training/tests/test_assistant_mask.py",
+        "training/tests/test_lora_smoke.py",
+        "training/train_lora.py",
+        "website/src/routes/aurex-ox.model-laboratory.tsx"
+      ],
+      "notes": "Mypy passes; three pytest jobs fail because the denial path imports optional transformers before authorization."
+    },
+    {
+      "number": 212,
+      "inspected_head": "53af65bedee7ecb2e3a7f3d4ddd4e0106717a8ab",
+      "base": "fc2bed4dd98054503254ad1a4c11fbecd7b0deca",
+      "classification_at_inspection": "NEEDS_REPAIR",
+      "changed_paths": [
+        ".github/instructions/dispater-industrial.instructions.md",
+        ".github/workflows/dispater-mainline-gate.yml",
+        "aurex/auseklis/knowledge_treasury.py",
+        "aurex/dispater_maintenance_advisory.py",
+        "docs/architecture/AUSEKLIS_99_QUALIFICATION_CONTRACT.md",
+        "docs/architecture/auseklis_knowledge_treasury_seed_v1.json",
+        "docs/competitive/IFS_PUBLIC_CAPABILITY_DISPATER_BLUEPRINT_2026-11-07.md",
+        "docs/operations/DISPATER_AGENT_EXECUTION_AND_MAINLINE_GATE.md",
+        "docs/operations/DISPATER_INDUSTRIAL_INTELLIGENCE_STRATEGY_LOCK_2026-11-07.md",
+        "docs/operations/MAINLINE_VERIFICATION_REPORT.md",
+        "tests/test_auseklis_knowledge_treasury.py",
+        "tests/test_dispater_maintenance_advisory.py"
+      ],
+      "notes": "Reviewed historical baseline has green CI but malformed input, witness claims and packaging blockers. Requalify the repair head."
+    }
+  ],
+  "overlaps": [
+    {
+      "prs": [
+        208,
+        209
+      ],
+      "first_is_ancestor_of_second": false,
+      "paths": []
+    },
+    {
+      "prs": [
+        208,
+        210
+      ],
+      "first_is_ancestor_of_second": false,
+      "paths": []
+    },
+    {
+      "prs": [
+        208,
+        211
+      ],
+      "first_is_ancestor_of_second": false,
+      "paths": []
+    },
+    {
+      "prs": [
+        208,
+        212
+      ],
+      "first_is_ancestor_of_second": false,
+      "paths": []
+    },
+    {
+      "prs": [
+        209,
+        210
+      ],
+      "first_is_ancestor_of_second": true,
+      "paths": [
+        "aurex/adapters/llama_cpp.py",
+        "aurex/ox/forge.py",
+        "docs/operations/AUREX_OX_MODEL_FORGE_PLAN.md",
+        "docs/operations/JULES_MODEL_FORGE_HANDOFF.json",
+        "docs/verification/BASELINE_ADAPTER_EVALUATION.json",
+        "docs/verification/LORA_QLORA_TRAINING_REPORT.json",
+        "docs/verification/MODEL_FORGE_ACCEPTANCE.json",
+        "docs/verification/MODEL_PROVENANCE_REPORT.json",
+        "tests/test_ox_model_forge.py",
+        "training/README.md",
+        "training/configs/qwen05b-lora.json",
+        "training/export_model.py",
+        "training/tests/test_lora_smoke.py",
+        "training/train_lora.py",
+        "website/src/routes/aurex-ox.model-laboratory.tsx"
+      ]
+    },
+    {
+      "prs": [
+        209,
+        211
+      ],
+      "first_is_ancestor_of_second": true,
+      "paths": [
+        "aurex/adapters/llama_cpp.py",
+        "aurex/ox/forge.py",
+        "docs/operations/AUREX_OX_MODEL_FORGE_PLAN.md",
+        "docs/operations/JULES_MODEL_FORGE_HANDOFF.json",
+        "docs/verification/BASELINE_ADAPTER_EVALUATION.json",
+        "docs/verification/LORA_QLORA_TRAINING_REPORT.json",
+        "docs/verification/MODEL_FORGE_ACCEPTANCE.json",
+        "docs/verification/MODEL_PROVENANCE_REPORT.json",
+        "tests/test_ox_model_forge.py",
+        "training/README.md",
+        "training/configs/qwen05b-lora.json",
+        "training/export_model.py",
+        "training/tests/test_lora_smoke.py",
+        "training/train_lora.py",
+        "website/src/routes/aurex-ox.model-laboratory.tsx"
+      ]
+    },
+    {
+      "prs": [
+        209,
+        212
+      ],
+      "first_is_ancestor_of_second": false,
+      "paths": []
+    },
+    {
+      "prs": [
+        210,
+        211
+      ],
+      "first_is_ancestor_of_second": true,
+      "paths": [
+        "aurex/adapters/llama_cpp.py",
+        "aurex/ox/forge.py",
+        "aurex/ox/registry.py",
+        "docs/operations/AUREX_OX_MODEL_FORGE_PLAN.md",
+        "docs/operations/JULES_MODEL_FORGE_HANDOFF.json",
+        "docs/operations/JULES_MODEL_FORGE_INDEPENDENT_REVIEW.json",
+        "docs/verification/BASELINE_ADAPTER_EVALUATION.json",
+        "docs/verification/BASELINE_VS_ADAPTER_REPORT.json",
+        "docs/verification/DATASET_PROVENANCE_AUDIT.json",
+        "docs/verification/LORA_CORRECTNESS_REPORT.json",
+        "docs/verification/LORA_QLORA_TRAINING_REPORT.json",
+        "docs/verification/MODEL_FORGE_ACCEPTANCE.json",
+        "docs/verification/MODEL_FORGE_ADVERSARIAL_REVIEW.json",
+        "docs/verification/MODEL_FORGE_REPAIR_MATRIX.json",
+        "docs/verification/MODEL_PROVENANCE_REPORT.json",
+        "tests/test_forge_adversarial.py",
+        "tests/test_ox_model_forge.py",
+        "training/README.md",
+        "training/common.py",
+        "training/configs/qwen05b-lora.json",
+        "training/evaluate_lora.py",
+        "training/export_model.py",
+        "training/prepare_dataset.py",
+        "training/tests/test_assistant_mask.py",
+        "training/tests/test_lora_smoke.py",
+        "training/train_lora.py",
+        "website/src/routes/aurex-ox.model-laboratory.tsx"
+      ]
+    },
+    {
+      "prs": [
+        210,
+        212
+      ],
+      "first_is_ancestor_of_second": false,
+      "paths": []
+    },
+    {
+      "prs": [
+        211,
+        212
+      ],
+      "first_is_ancestor_of_second": false,
+      "paths": []
+    }
+  ],
+  "handoff": {
+    "work": {
+      "scope": "PR #212, exact-head verification and sequencing",
+      "status": "REPAIRS_IMPLEMENTED_PENDING_EXACT_SHA_CI"
+    },
+    "copilot": {
+      "scope": "PR #211, gate training before optional imports; no training or external access",
+      "status": "OWNER_LANE_RECORDED_LIVE_ACKNOWLEDGMENT_UNCONFIRMED"
+    },
+    "jules": {
+      "scope": "Independently review current #212 after repairs; then verify #211 denial behavior",
+      "status": "LIVE_ACKNOWLEDGMENT_UNCONFIRMED"
+    }
+  },
+  "rollback": "Revert the qualified PR commit after merge if needed. No migrations or live effects.",
+  "owner_approval": "REQUIRED",
+  "merge": "HOLD",
+  "deployment": "NOT_DEPLOYED",
+  "financial_authority": "NONE",
+  "production_authority": "NONE",
+  "paid_inference": "OFF"
+}

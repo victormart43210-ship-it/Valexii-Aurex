@@ -33,6 +33,7 @@ dev = [
 include = ["aurex*", "dispater_proof*", "training", "workstation*"]
 
 [tool.setuptools.package-data]
+"aurex.auseklis" = ["knowledge_treasury_seed_v1.json"]
 training = ["configs/*.json", "requirements.txt", "README.md"]
 
 [tool.pytest.ini_options]
