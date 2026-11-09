@@ -31,6 +31,41 @@ const REPORT = {
 };
 
 describe("dispater server config", () => {
+  it("sends only the selected synthetic PDF and refuses redirects", async () => {
+    const transport = (async (url: unknown, init?: RequestInit) => {
+      expect(String(url)).toBe("https://a.example/v1/dispater/documents");
+      expect(init?.redirect).toBe("error");
+      const body = JSON.parse(String(init?.body));
+      expect(body.tenant_id).toBe("tenant-x");
+      expect(body.kind).toBe("pdf");
+      expect(body.filename).toBe("synthetic-invoice.pdf");
+      expect(atob(body.content_base64).startsWith("%PDF-")).toBe(true);
+      expect(atob(body.content_base64).length).toBe(body.declared_byte_length);
+      return new Response(null, { status: 400 });
+    }) as typeof fetch;
+    await expect(executeDispaterDocument(
+      { serviceUrl: "https://a.example", serviceToken: TOKEN, tenantId: "tenant-x" }, transport, "pdf",
+    )).rejects.toThrow("DISPATER API error (400)");
+  });
+
+  it("withholds PDF results with a mismatched source digest", async () => {
+    const transport = (async () => Response.json({
+      authority_state: "HOLD", financial_authority: "NONE", ingestion_authenticated: false,
+      ocr_status: "NOT_INSTALLED",
+      ingestion: {
+        source_sha256: "ab".repeat(32), filename: "synthetic-invoice.pdf", kind: "pdf",
+        processor: { name: "dispater_ingest", version: "v1", model: null, ocr: "NOT_INSTALLED" },
+        provenance: [{ source_sha256: "ab".repeat(32), row: "1" }],
+        field_provenance: [{ field: "amount", page: 1, method: "pdf_text", source_sha256: "ab".repeat(32) }],
+        limits: "synthetic",
+      },
+      report: REPORT,
+    })) as typeof fetch;
+    await expect(executeDispaterDocument(
+      { serviceUrl: "https://a.example", serviceToken: TOKEN, tenantId: "tenant-x" }, transport, "pdf",
+    )).rejects.toThrow("mismatched PDF evidence");
+  });
+
   it("fails closed without configuration (no localhost or placeholder fallback)", async () => {
     await expect(executeDispaterReconciliation({})).rejects.toBeInstanceOf(DispaterConfigError);
     expect(() => resolveDispaterConfig({ serviceUrl: "https://x.example" })).toThrow();

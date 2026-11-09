@@ -1,5 +1,6 @@
 // Server-only handler for DISPATER reconciliation. No client secrets exposed.
 import goldenLedger from "./golden-ledger.json";
+import syntheticInvoicePdf from "./dispater-invoice-fixture.json";
 import {
   DispaterDocumentIngestionSchema,
   DispaterReconciliationReportSchema,
@@ -450,13 +451,19 @@ function bytesToBase64(bytes: Uint8Array): string {
 export async function executeDispaterDocument(
   config: DispaterServerConfig,
   transport: typeof fetch = fetch,
+  kind: "csv" | "pdf" = "csv",
 ): Promise<DispaterDocumentIngestion> {
   const { url, token, tenantId } = resolveDispaterConfig(config);
   const endpoint = new URL("/v1/dispater/documents", url).toString();
+  const filename = `synthetic-invoice.${kind}`;
+  const fixture = kind === "pdf" ? syntheticInvoicePdf : {
+    content_base64: bytesToBase64(SYNTHETIC_CSV), byte_length: SYNTHETIC_CSV.length,
+  };
   let response: Response;
   try {
     response = await transport(endpoint, {
       method: "POST",
+      redirect: "error",
       headers: {
         Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
@@ -464,9 +471,10 @@ export async function executeDispaterDocument(
       },
       body: JSON.stringify({
         tenant_id: tenantId,
-        filename: "synthetic-invoice.csv",
-        kind: "csv",
-        content_base64: bytesToBase64(SYNTHETIC_CSV),
+        filename,
+        kind,
+        content_base64: fixture.content_base64,
+        declared_byte_length: fixture.byte_length,
       }),
       signal: AbortSignal.timeout(6000),
     });
@@ -476,6 +484,16 @@ export async function executeDispaterDocument(
   if (!response.ok) throw new Error(`DISPATER API error (${response.status})`);
   const parsed = DispaterDocumentIngestionSchema.safeParse(await response.json());
   if (!parsed.success) throw new Error("DISPATER API returned an invalid report");
-  if (parsed.data.report.tenant_id !== tenantId) throw new Error("DISPATER API returned an invalid report");
+  const { ingestion, report } = parsed.data;
+  if (report.tenant_id !== tenantId || ingestion.kind !== kind || ingestion.filename !== filename) {
+    throw new Error("DISPATER API returned an invalid report");
+  }
+  if (kind === "pdf" && (
+    ingestion.source_sha256 !== syntheticInvoicePdf.source_sha256 ||
+    !ingestion.field_provenance.some((field) =>
+      field["field"] === "amount" && field["page"] === 1 && field["method"] === "pdf_text" &&
+      field["source_sha256"] === ingestion.source_sha256
+    )
+  )) throw new Error("DISPATER API returned mismatched PDF evidence");
   return parsed.data;
 }
