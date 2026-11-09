@@ -1,0 +1,38 @@
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> dispater-sovereign-preview@0.1.0 test
+> node --test tests/*.test.mjs
+
+✔ both industry fixtures produce bounded synthetic HOLD reports (1.721785ms)
+✔ towing example flags missing invoice, rate gap and payment mismatch (0.5511ms)
+✔ oilfield example flags unbilled and rate mismatch but no payment action (0.242705ms)
+✔ review acknowledgement never upgrades authority or report status (0.530468ms)
+✔ invalid industries are rejected and all example dollars are fictional (0.995255ms)
+✔ DISPATER audit-readiness message leads the page, models then dashboard (9.720143ms)
+✔ both decorative 3D models remain present in their intended separate sections without fake metrics (1.891448ms)
+✔ shadcn-style dashboard includes IRS, DOT, and revenue evidence paths (3.152583ms)
+✔ build ships actual React/Radix dashboard and two GPU models, no external CDN (3.697313ms)
+✔ MagicPath premium design is realized with real three-piece arrangement and no redundant artwork card (5.859558ms)
+✔ AI is presented as source-linked assistance, never autonomous audit authority (1.023749ms)
+✔ frac tree is geometric model, has high-pressure hardware but NO live telemetry (41.591269ms)
+✔ tow truck is independently rotatable 3D geometry, not a decorative PNG (10.832258ms)
+✔ both models rotate in independent viewports, no visible model explanations (16.20742ms)
+✔ Railway probe rejects methods other than GET (2.008899ms)
+✔ Railway healthy endpoint is NOT audit execution authority (0.606415ms)
+✔ Railway request failure fails closed (0.486861ms)
+✔ Railway v1 authorization cannot be bypassed or misreported as ready (0.352043ms)
+✔ Roman Dis Pater artwork is preserved and tow truck is relocated into the process (9.930287ms)
+✔ triad remains responsive, isolated from security/audit authority and honors reduced motion (4.313724ms)
+✔ unconfigured staging adapter fails closed without sending requests (1.759164ms)
+✔ wrong origin rejected before authentication (0.315667ms)
+✔ customer data rejected (0.253691ms)
+✔ real canonical receipt digest validates; tampering rejects (2.42459ms)
+✔ authenticated proxy retrieves stored receipt separately and leaks no bearer (6.160212ms)
+ℹ tests 25
+ℹ suites 0
+ℹ pass 25
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 260.645249

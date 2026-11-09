@@ -1,0 +1,123 @@
+{
+  "schema_version": "1.0",
+  "tasks": [
+    {
+      "task_id": "C36-001",
+      "description": "Inspect current repository and active ownership",
+      "priority": "P0",
+      "dependencies": [],
+      "assigned_owner": "ChatGPT Work",
+      "status": "IMPLEMENTED",
+      "branch": "work/ccxxxvi-continuity-verification",
+      "commit_sha": "a83b82677bc7a76107abca131ac92af1c65d44e2",
+      "verification_status": "REMOTE_READBACK_VERIFIED",
+      "blockers": []
+    },
+    {
+      "task_id": "C36-002",
+      "description": "Persist and verify continuity infrastructure",
+      "priority": "P0",
+      "dependencies": [
+        "C36-001"
+      ],
+      "assigned_owner": "ChatGPT Work",
+      "status": "IMPLEMENTED",
+      "branch": "work/ccxxxvi-continuity-verification",
+      "commit_sha": "a83b82677bc7a76107abca131ac92af1c65d44e2",
+      "verification_status": "REMOTE_READBACK_VERIFIED",
+      "blockers": []
+    },
+    {
+      "task_id": "C36-003",
+      "description": "Preserve prior useful local CCXXV work as superseded archive",
+      "priority": "P0",
+      "dependencies": [
+        "C36-002"
+      ],
+      "assigned_owner": "ChatGPT Work",
+      "status": "TESTED",
+      "branch": "work/ccxxxvi-continuity-verification",
+      "commit_sha": "b0c1725b1895ca170c156d272b1866da5c2af63d",
+      "verification_status": "REMOTE_READBACK_VERIFIED",
+      "blockers": []
+    },
+    {
+      "task_id": "C36-004",
+      "description": "Independently challenge pinned Cursor #171 and Jules #172 with reproducible artifacts",
+      "priority": "P0",
+      "dependencies": [
+        "C36-002"
+      ],
+      "assigned_owner": "ChatGPT Work",
+      "status": "TESTED",
+      "branch": "work/ccxxxvi-continuity-verification",
+      "commit_sha": null,
+      "verification_status": "COUNTEREXAMPLES_REPRODUCED; RELEASE_REVIEW_PENDING",
+      "blockers": [
+        "Cursor #171 fails 7/9 semantic challenge gates",
+        "Jules #172 reproduces 14 defective observations including false independent qualification and nonpersistent API ingestion"
+      ]
+    },
+    {
+      "task_id": "C36-005",
+      "description": "Run compatible backend/frontend verification and final remote checkpoint",
+      "priority": "P1",
+      "dependencies": [
+        "C36-004"
+      ],
+      "assigned_owner": "ChatGPT Work",
+      "status": "TESTED",
+      "branch": "work/ccxxxvi-continuity-verification",
+      "commit_sha": null,
+      "verification_status": "PASS_AVAILABLE_SUITES; BROWSER_NOT_RUN",
+      "blockers": []
+    },
+    {
+      "task_id": "C36-006",
+      "description": "Validate recovery records and negative failure cases",
+      "priority": "P0",
+      "dependencies": [
+        "C36-002"
+      ],
+      "assigned_owner": "ChatGPT Work",
+      "status": "TESTED",
+      "branch": "work/ccxxxvi-continuity-verification",
+      "commit_sha": null,
+      "verification_status": "12_DEVELOPER_TESTS_PASS; SOURCE_REVIEW_FIXES_APPLIED",
+      "blockers": []
+    },
+    {
+      "task_id": "C36-007",
+      "description": "Review own artifacts, dependency inventory and final remote recovery verification",
+      "priority": "P1",
+      "dependencies": [
+        "C36-004",
+        "C36-005",
+        "C36-006"
+      ],
+      "assigned_owner": "ChatGPT Work",
+      "status": "IN_PROGRESS",
+      "branch": "work/ccxxxvi-continuity-verification",
+      "commit_sha": null,
+      "verification_status": "NOT_VERIFIED",
+      "blockers": []
+    },
+    {
+      "task_id": "C36-008",
+      "description": "Review newly published Cursor CCXXXV #174 and recheck inherited failures",
+      "priority": "P0",
+      "dependencies": [
+        "C36-004"
+      ],
+      "assigned_owner": "ChatGPT Work",
+      "status": "TESTED",
+      "branch": "work/ccxxxvi-continuity-verification",
+      "commit_sha": "2d0b62400e0ad40f2780f51b26ba0d09261cd724",
+      "verification_status": "651_REGRESSION_PASS;13_SEMANTIC_GATES_FAIL;SOURCE_REVIEW_ONLY",
+      "blockers": [
+        "Latest Cursor #174:13/18 financial/API/monitor checks fail; optional data dropped at boundaries yields inconsistent amounts",
+        "Latest Cursor #174 document probe reproduces11 reference observations including ambiguous field overwrite and parser limit bypass"
+      ]
+    }
+  ]
+}

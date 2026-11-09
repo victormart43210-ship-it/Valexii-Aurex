@@ -1,0 +1,28 @@
+{
+  "dataset_type": "SYNTHETIC_ONLY",
+  "tenant_id": "ccxxxvi-golden",
+  "jobs": [
+    {
+      "job_id": "G26",
+      "customer_id": "C",
+      "service_code": "TOW",
+      "date": "2026-02-01"
+    }
+  ],
+  "invoices": [
+    {
+      "invoice_id": "B26",
+      "job_id": "G26",
+      "amount": "125.25",
+      "status": "paid"
+    }
+  ],
+  "rates": [],
+  "payments": [
+    {
+      "payment_id": "PB26",
+      "invoice_id": "B26",
+      "amount": "125.25"
+    }
+  ]
+}
