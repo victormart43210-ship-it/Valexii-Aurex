@@ -4,7 +4,7 @@ from datetime import UTC, datetime
 from enum import StrEnum
 from typing import Any
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class ChallengeStatus(StrEnum):
@@ -30,6 +30,10 @@ class ChallengeRequest(BaseModel):
 
 
 class ChallengeResult(BaseModel):
+    # Challenger outputs are untrusted. Unknown control fields fail closed.
+    # Revalidate even previously constructed/mutated model instances.
+    model_config = ConfigDict(extra="forbid", revalidate_instances="always")
+
     request_id: str
     status: ChallengeStatus
     rationale: str
