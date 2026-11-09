@@ -1,0 +1,8 @@
+{
+  "authorized_usd": "42000.00",
+  "company_id": "fictional_northstar_001",
+  "id": "PO-1001",
+  "quantity": 10,
+  "type": "purchase_order",
+  "unit_rate_usd": "4200.00"
+}

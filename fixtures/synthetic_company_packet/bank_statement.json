@@ -1,0 +1,8 @@
+{
+  "company_id": "fictional_northstar_001",
+  "id": "BANK-1001",
+  "masked_account": "xxxx0011",
+  "payment_id": "PAY-1001",
+  "transaction_amount_usd": "47950.00",
+  "type": "bank_statement"
+}

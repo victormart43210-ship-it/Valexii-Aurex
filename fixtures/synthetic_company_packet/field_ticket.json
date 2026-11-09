@@ -1,0 +1,10 @@
+{
+  "company_id": "fictional_northstar_001",
+  "declared_total_usd": "42000.00",
+  "id": "FT-1001",
+  "po_id": "PO-1001",
+  "quantity": 10,
+  "service_date": "2026-09-15",
+  "type": "field_ticket",
+  "unit_rate_usd": "4200.00"
+}
