@@ -1,0 +1,36 @@
+{
+  "cxcv": {
+    "checkpoint": "CXCV_CP002",
+    "utc": "2026-10-27T13:21:04.867897+00:00",
+    "branch": "work/kusanagi-qwen-private-bridge-20261027",
+    "base_sha": "758448b29be48f86cfcf5f634707f6afe0451346",
+    "main_sha": "585023a09fdbff5ec2349a67cc50ef45a9b6f9fd",
+    "pr": 156,
+    "source_sha_semantics": "Containing commit is exact source; git rev-parse HEAD after remote fetch.",
+    "tests": {
+      "dedicated": "38 passed",
+      "backend": "487 passed, 2 skipped, 5 subtests passed",
+      "ruff": "PASS",
+      "mypy": "PASS 78 files",
+      "independent_source_retest": "PASS 38 tests plus four manual reproductions; local ab527411450eafab841cdc027b9caf4e49f35366"
+    },
+    "deployment": "NOT RUN",
+    "live_inference": "NOT RUN",
+    "next_action": "Complete independent source review, inspect exact-head CI, verify private model ID/auth and staging storage isolation before deployment.",
+    "remote_save": "Implementation pushed; final documentation commit requires remote readback",
+    "release": "HOLD",
+    "implementation_sha": "e5e5cf82dd9a6ec43b12d7bcdaf51217d1125bd4"
+  },
+  "cxcviii": {
+    "checkpoint": "CXCVIII_CP002",
+    "reviewed_deploy_sha": "d2e55319f3261f51b2239350e44952e96b7db074",
+    "qwen_deployment": "2e8a0944-592b-4e7f-a53f-73b04de12a39",
+    "patch": "89057db4-9bb5-4390-be04-f63ffdd687b0",
+    "next_action": "Obtain approval for exact staged seven-change patch89057db4-9bb5-4390-be04-f63ffdd687b0, re-read before applying; then private auth/model tests.",
+    "release": "HOLD",
+    "prior_remote_checkpoint": "33db59db6c1938dca7e6cb3c3b37b7efcd6cf193",
+    "deployment": "BLOCKED: accept-deploy returned user did not approve; patch remains staged",
+    "live_inference": "NOT VERIFIED",
+    "remote_save": "Containing commit pending remote readback"
+  }
+}
