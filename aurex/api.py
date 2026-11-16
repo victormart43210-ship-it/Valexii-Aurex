@@ -37,6 +37,8 @@ from aurex.readiness import readiness
 from aurex.real_offline_probe import execute_sqlite_roundtrip
 from aurex.relationships.api import router as relationship_router
 from aurex.workflows.budget import BudgetGuard
+from aurex.xaeli_chat import ChatBodyLimitMiddleware
+from aurex.xaeli_chat import router as xaeli_chat_router
 from aurex.xaeli_staging import router as xaeli_staging_router
 from aurex_foundation.correlation import CorrelationMiddleware
 from aurex_foundation.opa import evaluate_policy
@@ -49,6 +51,7 @@ app = FastAPI(
 
 app.add_middleware(CorrelationMiddleware)
 app.add_middleware(BodyLimitMiddleware)
+app.add_middleware(ChatBodyLimitMiddleware)
 
 budget_guard = BudgetGuard(limit_usd=Decimal("0.00"))
 MAX_BEARER_TOKEN_LENGTH = 512
@@ -106,6 +109,7 @@ app.include_router(research_advice_router, dependencies=[Depends(authenticate)])
 app.include_router(industrial_demo_router, dependencies=[Depends(authenticate)])
 app.include_router(towing_router, dependencies=[Depends(authenticate)])
 app.include_router(xaeli_staging_router, dependencies=[Depends(authenticate)])
+app.include_router(xaeli_chat_router, dependencies=[Depends(authenticate)])
 # DISPATER enforces its own tenant-bound authorization (aurex.dispater_api).
 app.include_router(dispater_router)
 app.include_router(relationship_router)
