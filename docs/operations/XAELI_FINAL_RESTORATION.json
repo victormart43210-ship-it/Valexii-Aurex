@@ -1,0 +1,78 @@
+{
+  "operation": "KUSANAGI_PROJECT_PHOENIX_XAELI_FINAL_RESTORATION",
+  "repository": "victormart43210-ship-it/Valexii-Aurex",
+  "recorded_at": "2026-11-16",
+  "tested_base_commit": "2af1a8f",
+  "tested_tree": "base commit plus the uncommitted changes listed in modified_files; the PR head SHA is authoritative for the committed result",
+  "production": "HOLD",
+  "release_authority": "NONE",
+  "merge_authority": "NONE",
+  "paid_inference": "OFF",
+  "customer_data": "PROHIBITED",
+  "root_cause": {
+    "summary": "POST /v1/xaeli-chat/ask is absent from every branch, tag and commit of the repository; only the synthetic /v1/xaeli-staging/explain exists.",
+    "evidence": "git log --all -S'xaeli-chat' returned nothing across 1501 commits; no file contains the string; commit de6a78d is not resolvable",
+    "live_gateway_source_in_repo": false
+  },
+  "recovered": ["adapters", "identity check", "auth", "zero-budget gate", "unsafe-output filter", "/v1/xaeli-staging/explain (unchanged)"],
+  "reconstructed": ["/v1/xaeli-chat/ask route and schema", "XAELI grounding", "rate and concurrency limits", "route-scoped body cap"],
+  "modified_files": [
+    "aurex/api.py",
+    "aurex/xaeli_chat.py",
+    "aurex/xaeli_knowledge.py",
+    "tests/test_xaeli_chat.py",
+    "tools/verify_xaeli_chat_route.py",
+    "docs/operations/XAELI_FINAL_RESTORATION.md",
+    "docs/operations/XAELI_FINAL_RESTORATION.json"
+  ],
+  "contract": {
+    "method": "POST",
+    "path": "/v1/xaeli-chat/ask",
+    "required_headers": ["Authorization: Bearer <AUREX_SERVICE_TOKEN>", "x-aurex-operator-approval: advisory-chat"],
+    "request": {"message": "1..800 chars", "history": "max 4 turns, 1..400 chars each", "extra_fields": "rejected", "max_body_bytes": 16384},
+    "response_fields": ["state", "authority", "independent_verification", "mode", "paid_inference", "execution", "generated_answer", "model", "grounding_version", "diagnostic_ref", "input_sha256", "output_sha256", "elapsed_ms", "error_code"],
+    "gateway_timeout_ms_minimum": 110000,
+    "verified_against_live_gateway": false
+  },
+  "required_railway_environment": {
+    "service": "aurex-api",
+    "variables": ["AUREX_XAELI_CHAT_ENABLED=1", "AUREX_XAELI_OPERATOR_APPROVED=1", "AUREX_SERVICE_TOKEN", "AUREX_QWEN_BASE_URL=http://qwen-private-staging.railway.internal:8080/v1", "AUREX_RAILWAY_PRIVATE_QWEN_ENABLED=1", "AUREX_MODEL_API_KEY", "AUREX_BUDGET_USD=0"],
+    "applied": false
+  },
+  "test_results": {
+    "pytest_full": {"passed": 971, "skipped": 1, "failed": 1, "failed_test": "tests/test_forge_adversarial.py::test_execute_blocks_unapproved_data_wrong_tenant_and_low_storage", "failure_pre_existing_on_main": true},
+    "pytest_xaeli_chat": {"passed": 31, "failed": 0},
+    "ruff": "PASS (aurex tests tools/verify_xaeli_chat_route.py)",
+    "mypy_strict": "1 pre-existing error (torch stub in aurex/ox/forge.py); no new errors",
+    "frontend_bun_tests": "NOT_RUN",
+    "frontend_build": "NOT_RUN",
+    "docker_build": "NOT_RUN",
+    "live_staging_inference": "NOT_RUN"
+  },
+  "deployment_status": {
+    "fb50076f-562b-4317-acd1-d08dd35cce6f": "previously working per owner; not inspected",
+    "a0f412a1-4e74-49ac-bdcd-137e642a1cd6": "November 7 replacement; not inspected",
+    "6ad48a93-8922-4838-8835-79b18b0eca43": "restoration deployment; outcome UNVERIFIED (no Railway access)",
+    "this_change_deployed": false
+  },
+  "independently_verified_checks": [],
+  "unresolved_blockers": [
+    "Railway access needed: inspect deployment 6ad48a93, deploy this branch to aurex-staging, set environment, verify private Qwen served model id, DNS and IPv6 binding",
+    "Lovable gateway must be aligned to the contract (path, headers, body, response mapping, timeout >= 110 s)",
+    "Live acceptance of the eight questions on https://valexii.com/xaeli not run",
+    "No approved public text for CODEX 666, ARBATEL Seven, VCX2S; minimal for LUX",
+    "Independent verification and owner merge decision pending"
+  ],
+  "recovery_manifest": {
+    "last_known_working_deployment": "fb50076f-562b-4317-acd1-d08dd35cce6f",
+    "railway_project_id": "78095d3d-5911-41c8-aa3e-f9ebf5d81054",
+    "railway_environment": "aurex-staging",
+    "railway_environment_id": "98c103eb-a1af-46b6-948e-19c80e4d720d",
+    "aurex_api_service_id": "2b51dfe6-2175-4cb0-aac2-eb40ecbc3a1d",
+    "qwen_service": "qwen-private-staging",
+    "qwen_service_id": "d4972c2b-e9da-4dc3-915a-44130d1cae10",
+    "historical_commit": "de6a78d (unresolvable on GitHub; unverified)",
+    "last_known_working_commit": "UNKNOWN (not recoverable from repository history)",
+    "main_at_restoration": "2af1a8f"
+  }
+}
